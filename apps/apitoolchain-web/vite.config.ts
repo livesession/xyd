@@ -15,8 +15,12 @@ export default defineConfig({
     // The design system is a source-exported linked package; keep a single React.
     dedupe: ["react", "react-dom"],
   },
-  // Transpile the linked design-system TS source (it ships source, not dist) for
-  // both the SSR and client builds instead of treating it as an external dep.
-  ssr: { noExternal: ["@apitoolchain/design-system"] },
-  optimizeDeps: { exclude: ["@apitoolchain/design-system"] },
+  // Transpile the linked source-exported packages (design-system + filters ship
+  // TS source, not dist) for both the SSR and client builds instead of treating
+  // them as external deps. `kysely` (a real dep of @apitoolchain/filters) is
+  // bundled through it — its compile-only path is isomorphic.
+  ssr: { noExternal: ["@apitoolchain/design-system", "@apitoolchain/filters"] },
+  optimizeDeps: {
+    exclude: ["@apitoolchain/design-system", "@apitoolchain/filters"],
+  },
 });

@@ -9,7 +9,7 @@ const meta: Meta<typeof Button> = {
   argTypes: {
     variant: {
       control: "inline-radio",
-      options: ["primary", "secondary", "ghost", "warning"],
+      options: ["primary", "secondary", "ghost", "warning", "danger"],
     },
     size: { control: "inline-radio", options: ["sm", "md"] },
     icon: { control: "select", options: ["", ...ICON_NAMES] },
@@ -38,7 +38,11 @@ export const Ghost: Story = {
 };
 
 export const Warning: Story = {
-  args: { children: "Delete", variant: "warning" },
+  args: { children: "Archive", variant: "warning" },
+};
+
+export const Danger: Story = {
+  args: { children: "Delete", variant: "danger" },
 };
 
 export const WithIcon: Story = {

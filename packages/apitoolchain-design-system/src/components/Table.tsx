@@ -73,10 +73,10 @@ export function Table<T>({
 }: TableProps<T>) {
   const Link = linkComponent ?? AnchorLink;
   const rowCls =
-    "flex items-center border-t border-line text-body no-underline transition-colors hover:bg-surface-muted";
+    "flex items-center border-line text-body no-underline transition-colors hover:bg-surface-muted";
   return (
-    <div className="overflow-hidden rounded-box border border-line">
-      <div className="flex items-center bg-surface-muted">
+    <div className="overflow-hidden border-line">
+      <div className="flex items-center rounded-t-[10px] bg-surface-muted">
         {columns.map((c) => (
           <div
             key={c.key}
@@ -88,7 +88,7 @@ export function Table<T>({
       </div>
       {rows.length === 0
         ? (empty ?? null)
-        : rows.map((row) => {
+        : rows.map((row, i) => {
             const href = rowHref?.(row);
             if (href) {
               return (
@@ -112,7 +112,7 @@ export function Table<T>({
             return (
               <div
                 key={getRowKey(row)}
-                className="flex items-center border-t border-line"
+                className={`flex items-center ${i == 0 ? "" : "border-line"}`}
               >
                 <RowCells row={row} columns={columns} />
               </div>

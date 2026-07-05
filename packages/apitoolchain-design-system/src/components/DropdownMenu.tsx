@@ -25,6 +25,8 @@ export interface DropdownMenuProps {
   items: DropdownMenuItem[];
   align?: "left" | "right";
   linkComponent?: LinkComponent;
+  /** Keep the panel open after selecting an item (for multi-select). Default true. */
+  closeOnSelect?: boolean;
 }
 
 /**
@@ -37,6 +39,7 @@ export function DropdownMenu({
   items,
   align = "left",
   linkComponent,
+  closeOnSelect = true,
 }: DropdownMenuProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -79,6 +82,7 @@ export function DropdownMenu({
               item={it}
               Link={Link}
               onClose={() => setOpen(false)}
+              closeOnSelect={closeOnSelect}
             />
           ))}
         </div>
@@ -91,10 +95,12 @@ function DropdownMenuRow({
   item,
   Link,
   onClose,
+  closeOnSelect,
 }: {
   item: DropdownMenuItem;
   Link: LinkComponent;
   onClose: () => void;
+  closeOnSelect: boolean;
 }) {
   const cls = `flex w-full cursor-pointer items-center gap-2.5 rounded-control border-none bg-transparent px-2.5 py-2 text-left text-sm no-underline hover:bg-hover ${
     item.active ? "font-semibold text-ink" : "font-normal text-body"
@@ -118,7 +124,7 @@ function DropdownMenuRow({
       type="button"
       onClick={() => {
         item.onSelect?.();
-        onClose();
+        if (closeOnSelect) onClose();
       }}
       className={cls}
     >

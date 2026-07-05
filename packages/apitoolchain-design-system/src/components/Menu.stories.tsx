@@ -9,7 +9,7 @@ const items = [
     icon: "bolt" as const,
     active: true,
   },
-  { key: "staging", label: "Staging", icon: "cube" as const },
+  { key: "staging", label: "Staging", icon: "box" as const },
   { key: "development", label: "Development", icon: "box" as const },
 ];
 

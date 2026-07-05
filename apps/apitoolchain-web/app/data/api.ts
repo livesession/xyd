@@ -1,20 +1,30 @@
 import {
   APIS,
   DOCS_PROJECTS,
+  GIT_PROVIDERS,
   MCP_SERVERS,
   NOTIFICATIONS,
   ORGANIZATION,
   PROJECT,
+  REPO_CONNECTIONS,
   SDK_TARGETS,
+  SDKS,
 } from "./fixtures";
 import type {
   DocsProject,
+  GitProvider,
+  GitProviderKind,
+  GitRepoOption,
   McpServer,
   Notification,
   Organization,
   OverviewStats,
   Project,
   RegistryEntry,
+  RepoConnection,
+  RepoTargetKind,
+  Sdk,
+  SdkLanguage,
   SdkTarget,
   UsageRange,
   UsageSeries,
@@ -220,6 +230,153 @@ export async function listSdkTargets(apiId?: string): Promise<SdkTarget[]> {
   return (await get<SdkTarget[]>(`/sdk-targets${qs}`)).map(mapSdk);
 }
 
+export async function getSdkTarget(id: string): Promise<SdkTarget | undefined> {
+  if (!apiBase()) return SDK_TARGETS.find((t) => t.id === id);
+  const res = await fetch(`${apiBase()}/sdk-targets/${encodeURIComponent(id)}`);
+  if (res.status === 404) return undefined;
+  if (!res.ok) throw new Response(res.statusText, { status: res.status });
+  return mapSdk(await res.json());
+}
+
+/** Proxy the generated SDK zip from the gateway (server-side; for a download route). */
+export async function fetchSdkArtifact(id: string): Promise<Response | null> {
+  if (!apiBase()) return null;
+  const res = await fetch(
+    `${apiBase()}/sdk-targets/${encodeURIComponent(id)}/artifact`,
+  );
+  if (!res.ok) return null;
+  return res;
+}
+
+/** Delete an SDK target (from the detail danger zone). */
+export async function deleteSdkTarget(
+  id: string,
+): Promise<{ ok: boolean; message?: string }> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await fetch(
+    `${apiBase()}/sdk-targets/${encodeURIComponent(id)}`,
+    { method: "DELETE" },
+  );
+  if (res.ok) return { ok: true };
+  const body = (await res.json().catch(() => ({}))) as { message?: string };
+  return {
+    ok: false,
+    message: body.message ?? `Delete failed (${res.status})`,
+  };
+}
+
+// ── SDKs (named projects that group per-language targets) ──
+
+// The SDK wire field is `ns` (namespace is a TypeSpec keyword) — map it to
+// `namespace`, same as mapEntry does for registry entries.
+interface WireSdk extends Omit<Sdk, "namespace"> {
+  ns: string;
+}
+const mapSdkEntity = (w: WireSdk): Sdk => ({
+  id: w.id,
+  apiId: w.apiId,
+  name: w.name,
+  description: w.description,
+  namespace: w.ns,
+  targetCount: w.targetCount,
+  createdAt: ts(w.createdAt),
+  updatedAt: ts(w.updatedAt),
+});
+
+export async function listSdks(apiId?: string): Promise<Sdk[]> {
+  if (!apiBase()) {
+    return apiId ? SDKS.filter((s) => s.apiId === apiId) : SDKS;
+  }
+  const qs = apiId ? `?apiId=${encodeURIComponent(apiId)}` : "";
+  return (await get<WireSdk[]>(`/sdks${qs}`)).map(mapSdkEntity);
+}
+
+export async function getSdk(id: string): Promise<Sdk | undefined> {
+  if (!apiBase()) return SDKS.find((s) => s.id === id);
+  const res = await fetch(`${apiBase()}/sdks/${encodeURIComponent(id)}`);
+  if (res.status === 404) return undefined;
+  if (!res.ok) throw new Response(res.statusText, { status: res.status });
+  return mapSdkEntity(await res.json());
+}
+
+export async function listSdkTargetsBySdk(sdkId: string): Promise<SdkTarget[]> {
+  if (!apiBase()) return SDK_TARGETS.filter((t) => t.sdkId === sdkId);
+  return (
+    await get<SdkTarget[]>(`/sdks/${encodeURIComponent(sdkId)}/targets`)
+  ).map(mapSdk);
+}
+
+export type CreateSdkResult =
+  | { ok: true; sdk: Sdk }
+  | { ok: false; message: string };
+
+/** Create a named SDK for an API via the gateway `POST /sdks`. */
+export async function createSdk(input: {
+  apiId: string;
+  name?: string;
+  description?: string;
+}): Promise<CreateSdkResult> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await fetch(`${apiBase()}/sdks`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  const body = (await res.json()) as WireSdk & {
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number") {
+    return {
+      ok: false,
+      message: body.message ?? `Create failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, sdk: mapSdkEntity(body) };
+}
+
+/** Add a language target to an SDK (kicks generation) via `POST /sdks/{id}/targets`. */
+export async function addSdkTarget(
+  sdkId: string,
+  language: SdkLanguage,
+): Promise<{ ok: true; target: SdkTarget } | { ok: false; message: string }> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await fetch(
+    `${apiBase()}/sdks/${encodeURIComponent(sdkId)}/targets`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ language }),
+    },
+  );
+  const body = (await res.json()) as SdkTarget & {
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number") {
+    return {
+      ok: false,
+      message: body.message ?? `Add target failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, target: mapSdk(body) };
+}
+
+export async function deleteSdk(
+  id: string,
+): Promise<{ ok: boolean; message?: string }> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await fetch(`${apiBase()}/sdks/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+  if (res.ok) return { ok: true };
+  const body = (await res.json().catch(() => ({}))) as { message?: string };
+  return {
+    ok: false,
+    message: body.message ?? `Delete failed (${res.status})`,
+  };
+}
+
 export async function listDocsProjects(apiId?: string): Promise<DocsProject[]> {
   if (!apiBase()) {
     return apiId
@@ -261,6 +418,183 @@ export async function getCurrentContext(): Promise<{
 }> {
   if (!apiBase()) return { org: ORGANIZATION, project: PROJECT };
   return get<{ org: Organization; project: Project }>("/context");
+}
+
+// ── git providers + repo connections + sync ─────────────────────────────────
+const mapProvider = (w: GitProvider): GitProvider => ({
+  ...w,
+  createdAt: ts(w.createdAt),
+});
+const mapConn = (w: RepoConnection): RepoConnection => ({
+  ...w,
+  lastSyncedAt: tsOpt(w.lastSyncedAt),
+});
+
+export async function listGitProviders(): Promise<GitProvider[]> {
+  if (!apiBase()) return GIT_PROVIDERS;
+  return (await get<GitProvider[]>("/git-providers")).map(mapProvider);
+}
+
+export async function connectGitProvider(input: {
+  kind: GitProviderKind;
+  token: string;
+  name?: string;
+  baseUrl?: string;
+}): Promise<
+  { ok: true; provider: GitProvider } | { ok: false; message: string }
+> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await fetch(`${apiBase()}/git-providers`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  const body = (await res.json()) as GitProvider & {
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number") {
+    return {
+      ok: false,
+      message: body.message ?? `Connect failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, provider: mapProvider(body) };
+}
+
+export async function removeGitProvider(
+  id: string,
+): Promise<{ ok: boolean; message?: string }> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await fetch(
+    `${apiBase()}/git-providers/${encodeURIComponent(id)}`,
+    {
+      method: "DELETE",
+    },
+  );
+  if (res.ok) return { ok: true };
+  const body = (await res.json().catch(() => ({}))) as { message?: string };
+  return {
+    ok: false,
+    message: body.message ?? `Delete failed (${res.status})`,
+  };
+}
+
+export async function listProviderRepos(
+  providerId: string,
+): Promise<GitRepoOption[]> {
+  if (!apiBase()) return [];
+  // `no-store`: always hit the provider live so a just-created repo shows up.
+  const res = await fetch(
+    `${apiBase()}/git-providers/${encodeURIComponent(providerId)}/repos`,
+    { cache: "no-store" },
+  );
+  if (!res.ok) return [];
+  return (await res.json()) as GitRepoOption[];
+}
+
+export async function listProviderBranches(
+  providerId: string,
+  repo: string,
+): Promise<string[]> {
+  if (!apiBase()) return [];
+  const res = await fetch(
+    `${apiBase()}/git-providers/${encodeURIComponent(providerId)}/branches?repo=${encodeURIComponent(repo)}`,
+    { cache: "no-store" },
+  );
+  if (!res.ok) return [];
+  return (await res.json()) as string[];
+}
+
+export async function listRepoConnections(
+  targetKind?: RepoTargetKind,
+  targetId?: string,
+): Promise<RepoConnection[]> {
+  if (!apiBase()) {
+    return targetKind && targetId
+      ? REPO_CONNECTIONS.filter(
+          (c) => c.targetKind === targetKind && c.targetId === targetId,
+        )
+      : REPO_CONNECTIONS;
+  }
+  const qs =
+    targetKind && targetId
+      ? `?targetKind=${encodeURIComponent(targetKind)}&targetId=${encodeURIComponent(targetId)}`
+      : "";
+  return (await get<RepoConnection[]>(`/repo-connections${qs}`)).map(mapConn);
+}
+
+export async function createRepoConnection(input: {
+  providerId: string;
+  targetKind: RepoTargetKind;
+  targetId: string;
+  repo: string;
+  /** When true, `repo` is a new repo NAME to create under the account. */
+  createRepo?: boolean;
+  makePrivate?: boolean;
+  ref?: string;
+  branch?: string;
+  prefix?: string;
+}): Promise<
+  { ok: true; connection: RepoConnection } | { ok: false; message: string }
+> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await fetch(`${apiBase()}/repo-connections`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  const body = (await res.json()) as RepoConnection & {
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number") {
+    return {
+      ok: false,
+      message: body.message ?? `Connect failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, connection: mapConn(body) };
+}
+
+export async function removeRepoConnection(
+  id: string,
+): Promise<{ ok: boolean; message?: string }> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await fetch(
+    `${apiBase()}/repo-connections/${encodeURIComponent(id)}`,
+    { method: "DELETE" },
+  );
+  if (res.ok) return { ok: true };
+  const body = (await res.json().catch(() => ({}))) as { message?: string };
+  return {
+    ok: false,
+    message: body.message ?? `Delete failed (${res.status})`,
+  };
+}
+
+/** Kick a sync (push spec/SDK into the repo). Returns the building connection. */
+export async function syncRepoConnection(
+  id: string,
+): Promise<
+  { ok: true; connection: RepoConnection } | { ok: false; message: string }
+> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await fetch(
+    `${apiBase()}/repo-connections/${encodeURIComponent(id)}/sync`,
+    { method: "POST" },
+  );
+  const body = (await res.json()) as RepoConnection & {
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number") {
+    return {
+      ok: false,
+      message: body.message ?? `Sync failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, connection: mapConn(body) };
 }
 
 // ── Usage (deterministic mock series — no Date/random → SSR-stable) ──────────

@@ -3,7 +3,7 @@
  * (CI/CD or CLI push). Scaffolding for now: a client-side (localStorage) store,
  * NOT yet a backend concept or a real GitHub connection. The registry backend
  * stays repo-agnostic; this only powers the "Import from repo" UX + the
- * `/settings/repos` config page. SSR-safe (guards `window`).
+ * `/settings/connections` config page. SSR-safe (guards `window`).
  */
 
 export interface Repo {

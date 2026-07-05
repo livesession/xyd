@@ -17,22 +17,7 @@ const preview: Preview = {
       ],
     },
     options: {
-      storySort: {
-        order: [
-          "Design System",
-          [
-            "Icon",
-            "Card",
-            "StatTile",
-            "NavItem",
-            "Segmented",
-            "ChecklistItem",
-            "PromoCard",
-            "Sidebar",
-          ],
-          "Screens",
-        ],
-      },
+      storySort: { method: "alphabetical" },
     },
   },
 };

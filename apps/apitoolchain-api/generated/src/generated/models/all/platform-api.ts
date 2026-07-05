@@ -4,8 +4,10 @@ import {
   RegistryEntry,
   RegisterApiInput,
   SetDistTagInput,
+  Sdk,
+  CreateSdkInput,
   SdkTarget,
-  CreateSdkTargetInput,
+  AddSdkTargetInput,
   DocsProject,
   CreateDocsProjectInput,
   McpServer,
@@ -16,6 +18,11 @@ import {
   UsageSeries,
   CurrentContext,
   UpdateContextInput,
+  GitProvider,
+  ConnectGitProviderInput,
+  GitRepoOption,
+  RepoConnection,
+  CreateRepoConnectionInput,
 } from "./apitoolchain.js";
 
 import { ListOptions } from "../synthetic.js";
@@ -65,13 +72,36 @@ export interface Apis<Context = unknown> {
   ): Promise<RegistryEntry | NotFoundError | ValidationError>;
 }
 
-export interface SdkTargets<Context = unknown> {
-  list(ctx: Context, options?: ListOptions): Promise<SdkTarget[]>;
+export interface Sdks<Context = unknown> {
+  list(ctx: Context, options?: ListOptions): Promise<Sdk[]>;
+
+  read(ctx: Context, id: string): Promise<Sdk | NotFoundError>;
 
   create(
     ctx: Context,
-    input: CreateSdkTargetInput,
+    input: CreateSdkInput,
+  ): Promise<Sdk | NotFoundError | ValidationError>;
+
+  remove(ctx: Context, id: string): Promise<void | NotFoundError>;
+
+  listTargets(
+    ctx: Context,
+    sdkId: string,
+  ): Promise<SdkTarget[] | NotFoundError>;
+
+  addTarget(
+    ctx: Context,
+    sdkId: string,
+    input: AddSdkTargetInput,
   ): Promise<SdkTarget | NotFoundError | ValidationError>;
+}
+
+export interface SdkTargets<Context = unknown> {
+  list(ctx: Context, options?: ListOptions): Promise<SdkTarget[]>;
+
+  read(ctx: Context, id: string): Promise<SdkTarget | NotFoundError>;
+
+  remove(ctx: Context, id: string): Promise<void | NotFoundError>;
 }
 
 export interface DocsProjects<Context = unknown> {
@@ -110,4 +140,54 @@ export interface Context<Context = unknown> {
   read(ctx: Context): Promise<CurrentContext>;
 
   update(ctx: Context, input: UpdateContextInput): Promise<CurrentContext>;
+}
+
+/**
+ * Connected git-provider accounts (GitHub/GitLab/Bitbucket/Gitea via gitproviderd).
+ */
+export interface GitProviders<Context = unknown> {
+  list(ctx: Context): Promise<GitProvider[]>;
+
+  create(
+    ctx: Context,
+    input: ConnectGitProviderInput,
+  ): Promise<GitProvider | ValidationError>;
+
+  remove(ctx: Context, id: string): Promise<void | NotFoundError>;
+
+  /**
+   * Repos the provider's token can access (for the connect picker).
+   */
+  listRepos(
+    ctx: Context,
+    id: string,
+  ): Promise<GitRepoOption[] | NotFoundError | ValidationError>;
+
+  /**
+   * Branch names of one repo (for the branch picker after a repo is chosen).
+   */
+  listBranches(
+    ctx: Context,
+    id: string,
+    repo: string,
+  ): Promise<string[] | NotFoundError | ValidationError>;
+}
+
+/**
+ * Spec/SDK ↔ repo links; `sync` pushes the artifact into the repo.
+ */
+export interface RepoConnections<Context = unknown> {
+  list(ctx: Context, options?: ListOptions): Promise<RepoConnection[]>;
+
+  create(
+    ctx: Context,
+    input: CreateRepoConnectionInput,
+  ): Promise<RepoConnection | NotFoundError | ValidationError>;
+
+  remove(ctx: Context, id: string): Promise<void | NotFoundError>;
+
+  sync(
+    ctx: Context,
+    id: string,
+  ): Promise<RepoConnection | NotFoundError | ValidationError>;
 }

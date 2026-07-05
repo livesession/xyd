@@ -1,12 +1,20 @@
 import type {
   DocsProject,
+  GitProvider,
   McpServer,
   Notification,
   Organization,
   Project,
   RegistryEntry,
+  RepoConnection,
+  Sdk,
   SdkTarget,
 } from "./types";
+
+// Git providers/connections need the live gateway (a Go service + real repo);
+// with no backend the UI shows the "connect a provider" empty state.
+export const GIT_PROVIDERS: GitProvider[] = [];
+export const REPO_CONNECTIONS: RepoConnection[] = [];
 
 /**
  * Mock data for the front-end pass. Timestamps are friendly relative strings
@@ -27,6 +35,30 @@ export const PROJECT: Project = {
 };
 
 export const APIS: RegistryEntry[] = [
+  {
+    id: "livesession-api",
+    name: "LiveSession API",
+    description: "Sessions, events, and analytics — the LiveSession REST API.",
+    format: "openapi",
+    namespace: "livesession",
+    source: "github.com/livesession/livesession-openapi",
+    kind: "api",
+    updatedAt: "just now",
+    versions: [
+      {
+        version: "v1",
+        specUrl: "livesession/livesession-api@v1",
+        updatedAt: "just now",
+        current: true,
+      },
+    ],
+    distTags: [{ tag: "latest", version: "v1" }],
+    registryUrl:
+      "http://localhost:8787/@livesession/apis/livesession-api@latest",
+    sdkTargetCount: 0,
+    docsProjectCount: 0,
+    mcpServerCount: 0,
+  },
   {
     id: "petstore",
     name: "Petstore API",
@@ -197,10 +229,44 @@ export const APIS: RegistryEntry[] = [
   },
 ];
 
+export const SDKS: Sdk[] = [
+  {
+    id: "sdkp_petstore",
+    apiId: "petstore",
+    name: "Petstore SDK",
+    description: "Client libraries generated from the Petstore API.",
+    namespace: "acme",
+    targetCount: 3,
+    createdAt: "2 hours ago",
+    updatedAt: "2 hours ago",
+  },
+  {
+    id: "sdkp_payments",
+    apiId: "payments",
+    name: "Payments SDK",
+    description: "Client libraries generated from the Payments API.",
+    namespace: "acme",
+    targetCount: 6,
+    createdAt: "yesterday",
+    updatedAt: "yesterday",
+  },
+  {
+    id: "sdkp_identity",
+    apiId: "identity",
+    name: "Identity SDK",
+    description: "Client libraries generated from the Identity API.",
+    namespace: "acme",
+    targetCount: 1,
+    createdAt: "5 days ago",
+    updatedAt: "5 days ago",
+  },
+];
+
 export const SDK_TARGETS: SdkTarget[] = [
   {
     id: "sdk_petstore_go",
     apiId: "petstore",
+    sdkId: "sdkp_petstore",
     language: "go",
     packageName: "github.com/acme/petstore-go",
     output: "./sdk/go",
@@ -212,6 +278,7 @@ export const SDK_TARGETS: SdkTarget[] = [
   {
     id: "sdk_petstore_node",
     apiId: "petstore",
+    sdkId: "sdkp_petstore",
     language: "node",
     packageName: "@acme/petstore",
     output: "./sdk/node",
@@ -223,6 +290,7 @@ export const SDK_TARGETS: SdkTarget[] = [
   {
     id: "sdk_petstore_python",
     apiId: "petstore",
+    sdkId: "sdkp_petstore",
     language: "python",
     packageName: "acme-petstore",
     output: "./sdk/python",
@@ -233,6 +301,7 @@ export const SDK_TARGETS: SdkTarget[] = [
   {
     id: "sdk_payments_go",
     apiId: "payments",
+    sdkId: "sdkp_payments",
     language: "go",
     packageName: "github.com/acme/payments-go",
     output: "./sdk/go",
@@ -243,6 +312,7 @@ export const SDK_TARGETS: SdkTarget[] = [
   {
     id: "sdk_payments_node",
     apiId: "payments",
+    sdkId: "sdkp_payments",
     language: "node",
     packageName: "@acme/payments",
     output: "./sdk/node",
@@ -254,6 +324,7 @@ export const SDK_TARGETS: SdkTarget[] = [
   {
     id: "sdk_payments_python",
     apiId: "payments",
+    sdkId: "sdkp_payments",
     language: "python",
     packageName: "acme-payments",
     output: "./sdk/python",
@@ -264,6 +335,7 @@ export const SDK_TARGETS: SdkTarget[] = [
   {
     id: "sdk_payments_ruby",
     apiId: "payments",
+    sdkId: "sdkp_payments",
     language: "ruby",
     packageName: "acme-payments",
     output: "./sdk/ruby",
@@ -274,6 +346,7 @@ export const SDK_TARGETS: SdkTarget[] = [
   {
     id: "sdk_payments_java",
     apiId: "payments",
+    sdkId: "sdkp_payments",
     language: "java",
     packageName: "com.acme.payments",
     output: "./sdk/java",
@@ -283,6 +356,7 @@ export const SDK_TARGETS: SdkTarget[] = [
   {
     id: "sdk_payments_dotnet",
     apiId: "payments",
+    sdkId: "sdkp_payments",
     language: "dotnet",
     packageName: "Acme.Payments",
     output: "./sdk/dotnet",
@@ -293,6 +367,7 @@ export const SDK_TARGETS: SdkTarget[] = [
   {
     id: "sdk_identity_node",
     apiId: "identity",
+    sdkId: "sdkp_identity",
     language: "node",
     packageName: "@acme/identity",
     output: "./sdk/node",

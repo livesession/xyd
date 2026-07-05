@@ -11,3 +11,12 @@ export interface ListOptions {
 export interface ListOptions {
   apiId?: string;
 }
+
+export interface ListOptions {
+  apiId?: string;
+}
+
+export interface ListOptions {
+  targetKind?: string;
+  targetId?: string;
+}

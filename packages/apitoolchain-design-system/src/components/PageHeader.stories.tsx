@@ -14,6 +14,7 @@ const meta: Meta<typeof PageHeader> = {
     breadcrumb: { control: false },
     actions: { control: false },
     tabs: { control: false },
+    divider: { control: "boolean" },
   },
   args: {
     title: "Registry",
@@ -42,8 +43,13 @@ export const Default: Story = {
   },
 };
 
-/** No actions — just the title and description. */
+/** No actions — just the title and description (with the default divider). */
 export const TitleOnly: Story = {};
+
+/** Opt out of the default bottom divider. */
+export const NoDivider: Story = {
+  args: { divider: false },
+};
 
 /** Two actions: a secondary and a primary button. */
 export const WithActions: Story = {

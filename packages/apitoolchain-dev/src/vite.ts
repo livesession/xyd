@@ -1,4 +1,9 @@
-import { type ChildProcess, spawn } from "node:child_process";
+import {
+  type ChildProcess,
+  execFileSync,
+  spawn,
+  spawnSync,
+} from "node:child_process";
 import { existsSync } from "node:fs";
 import { createServer } from "node:net";
 import { resolve } from "node:path";
@@ -14,6 +19,35 @@ import {
 import type { Plugin } from "vite";
 
 type Env = Record<string, string>;
+
+// A stable label stamped on every container this plugin starts, so a fresh
+// dev-server boot can reap any containers a previous (crashed / hard-killed)
+// run leaked instead of piling up a new Postgres/MinIO/Gitea stack each time.
+const DEV_LABEL = "com.apitoolchain.dev";
+const DEV_LABELS = { [DEV_LABEL]: "1" };
+
+// Force-remove any containers left over from a previous run (identified by the
+// dev label). testcontainers has no Ryuk reaper here, so without this each
+// restart leaks a new stack. Best-effort: never let a docker hiccup block boot.
+function reapStaleContainers(log: (m: string) => void): void {
+  try {
+    const ids = execFileSync(
+      "docker",
+      ["ps", "-aq", "--filter", `label=${DEV_LABEL}`],
+      { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] },
+    )
+      .split("\n")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (ids.length === 0) return;
+    log(`reaping ${ids.length} stale container(s) from a previous run…`);
+    execFileSync("docker", ["rm", "-f", ...ids], {
+      stdio: ["ignore", "ignore", "ignore"],
+    });
+  } catch {
+    // docker missing / daemon down / nothing to reap — ignore.
+  }
+}
 
 export interface ApitoolchainViteDevOptions {
   /**
@@ -69,6 +103,102 @@ function spawnService(name: string, cwd: string, env: Env): ChildProcess {
   return child;
 }
 
+/** Spawn the Go git-provider service (`go run`), prefixing its logs. */
+function spawnGo(name: string, cwd: string, env: Env): ChildProcess {
+  const child = spawn("go", ["run", "./cmd/gitproviderd"], {
+    cwd,
+    env: { ...process.env, GOTOOLCHAIN: "auto", ...env },
+  });
+  const prefix = `\x1b[2m[${name}]\x1b[0m `;
+  child.stdout?.on("data", (d) => process.stdout.write(prefix + d));
+  child.stderr?.on("data", (d) => process.stderr.write(prefix + d));
+  return child;
+}
+
+/** Is a Go toolchain available? (git-provider dev is skipped without it.) */
+function hasGo(): boolean {
+  const r = spawnSync("go", ["version"], { stdio: "ignore" });
+  return !r.error && r.status === 0;
+}
+
+interface GiteaSeed {
+  url: string;
+  token: string;
+  user: string;
+  repo: string;
+}
+
+/**
+ * Seed a fresh Gitea container: create an admin user, mint a raw access token,
+ * and create one auto-initialised demo repo. Runs the Gitea CLI as the `git`
+ * user (Gitea refuses to run as root). Returns everything the platform seed
+ * needs to register a local git provider + demo connection.
+ */
+async function seedGitea(container: StartedTestContainer): Promise<GiteaSeed> {
+  const user = "apitoolchain";
+  const pass = "apitoolchain-secret";
+  const name = "livesession-sdk";
+  const url = `http://${container.getHost()}:${container.getMappedPort(3000)}`;
+
+  // Seed via the Docker CLI (`docker exec -u git`) rather than testcontainers'
+  // `.exec()` — the latter's output stream can hang in some Docker setups, and
+  // Gitea refuses to run its admin CLI as root.
+  const id = container.getId();
+  const dexec = (args: string[]): string =>
+    execFileSync("docker", ["exec", "-u", "git", id, ...args], {
+      encoding: "utf8",
+    });
+
+  dexec([
+    "gitea",
+    "admin",
+    "user",
+    "create",
+    "--admin",
+    "--username",
+    user,
+    "--password",
+    pass,
+    "--email",
+    "dev@apitoolchain.local",
+    "--must-change-password=false",
+  ]);
+  const raw = dexec([
+    "gitea",
+    "admin",
+    "user",
+    "generate-access-token",
+    "--username",
+    user,
+    "--raw",
+    "--scopes",
+    "all",
+  ]);
+  const token = (raw.match(/[0-9a-f]{40}/) ?? [""])[0];
+  if (!token) {
+    throw new Error("gitea: could not read access token from CLI output");
+  }
+
+  const created = await fetch(`${url}/api/v1/user/repos`, {
+    method: "POST",
+    headers: {
+      Authorization: `token ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name,
+      auto_init: true,
+      private: false,
+      default_branch: "main",
+    }),
+  });
+  if (!created.ok && created.status !== 409) {
+    throw new Error(`gitea: create repo → HTTP ${created.status}`);
+  }
+
+  return { url, token, user, repo: `${user}/${name}` };
+}
+
 async function waitHealthz(url: string, timeoutMs: number): Promise<void> {
   const deadline = Date.now() + timeoutMs;
   while (Date.now() < deadline) {
@@ -108,8 +238,10 @@ export function apitoolchainViteDev(
 ): Plugin {
   let pg: StartedPostgreSqlContainer | undefined;
   let minio: StartedTestContainer | undefined;
+  let gitea: StartedTestContainer | undefined;
   let registry: ChildProcess | undefined;
   let platform: ChildProcess | undefined;
+  let gitprovider: ChildProcess | undefined;
   let started = false;
 
   async function boot(
@@ -126,12 +258,26 @@ export function apitoolchainViteDev(
     }
 
     // 2. containers (random host ports → no conflict with a local Postgres/MinIO)
-    log("starting Postgres + MinIO (testcontainers)…");
-    [pg, minio] = await Promise.all([
+    // Gitea comes up too when a Go toolchain is present, so SDK/spec → repo sync
+    // can be tested fully locally with no external tokens.
+    const gitEnabled = process.env.APITOOLCHAIN_GIT !== "off" && hasGo();
+    if (process.env.APITOOLCHAIN_GIT !== "off" && !gitEnabled) {
+      log("git provider disabled (no `go` toolchain on PATH)");
+    }
+    log(
+      gitEnabled
+        ? "starting Postgres + MinIO + Gitea (testcontainers)…"
+        : "starting Postgres + MinIO (testcontainers)…",
+    );
+    // Clean up any leaked containers from a previous run before starting a new
+    // stack, so restarts don't pile up Postgres/MinIO/Gitea instances.
+    reapStaleContainers(log);
+    const containers = await Promise.all([
       new PostgreSqlContainer("postgres:16")
         .withDatabase("apitoolchain")
         .withUsername("apitoolchain")
         .withPassword("apitoolchain")
+        .withLabels(DEV_LABELS)
         .start(),
       new GenericContainer("minio/minio:latest")
         .withExposedPorts(9000)
@@ -140,11 +286,29 @@ export function apitoolchainViteDev(
           MINIO_ROOT_PASSWORD: "apitoolchain-secret",
         })
         .withCommand(["server", "/data"])
+        .withLabels(DEV_LABELS)
         .withWaitStrategy(
           Wait.forHttp("/minio/health/live", 9000).forStatusCode(200),
         )
         .start(),
+      gitEnabled
+        ? new GenericContainer("gitea/gitea:1.22")
+            .withExposedPorts(3000)
+            .withEnvironment({
+              GITEA__database__DB_TYPE: "sqlite3",
+              GITEA__security__INSTALL_LOCK: "true",
+              GITEA__log__LEVEL: "warn",
+            })
+            .withLabels(DEV_LABELS)
+            .withWaitStrategy(
+              Wait.forHttp("/api/v1/version", 3000).forStatusCode(200),
+            )
+            .start()
+        : Promise.resolve(undefined),
     ]);
+    pg = containers[0];
+    minio = containers[1];
+    gitea = containers[2] as StartedTestContainer | undefined;
 
     const storage: Env = {
       DATABASE_URL: pg.getConnectionUri(),
@@ -181,6 +345,30 @@ export function apitoolchainViteDev(
       REGISTRY_API_URL: regUrl,
       PORT: String(platPort),
     };
+
+    // 4b. git provider service (Go) + Gitea seed — optional. The platform seed
+    // reads GITEA_* to register a local provider; the gateway calls gitproviderd
+    // at GITPROVIDER_API_URL. Started before the platform migrate/seed/boot so
+    // those env vars are in scope.
+    if (gitEnabled && gitea) {
+      log("gitea: seeding admin + token + demo repo…");
+      const seed = await seedGitea(gitea);
+      const gpDir = resolve(apps, "apitoolchain-gitprovider");
+      const gpPort = await freePort();
+      const gpUrl = `http://localhost:${gpPort}`;
+      log("gitproviderd: go run (first run compiles the module)…");
+      gitprovider = spawnGo("gitproviderd", gpDir, { PORT: String(gpPort) });
+      await waitHealthz(`${gpUrl}/healthz`, 90000);
+      Object.assign(platEnv, {
+        GITPROVIDER_API_URL: gpUrl,
+        GITEA_URL: seed.url,
+        GITEA_TOKEN: seed.token,
+        GITEA_USER: seed.user,
+        GITEA_REPO: seed.repo,
+      });
+      log(`git provider ready → ${gpUrl} (gitea ${seed.url})`);
+    }
+
     await ensureDeps(platDir);
     log("platform-api: migrate + seed…");
     await run("bun", ["db/migrate.ts"], platDir, platEnv);
@@ -194,7 +382,8 @@ export function apitoolchainViteDev(
   async function teardown(): Promise<void> {
     registry?.kill("SIGTERM");
     platform?.kill("SIGTERM");
-    await Promise.allSettled([pg?.stop(), minio?.stop()]);
+    gitprovider?.kill("SIGTERM");
+    await Promise.allSettled([pg?.stop(), minio?.stop(), gitea?.stop()]);
   }
 
   return {
@@ -245,6 +434,7 @@ export function apitoolchainViteDev(
       process.once("exit", () => {
         registry?.kill();
         platform?.kill();
+        gitprovider?.kill();
       });
       for (const sig of ["SIGINT", "SIGTERM"] as const) {
         process.once(sig, async () => {

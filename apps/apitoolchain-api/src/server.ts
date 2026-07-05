@@ -7,9 +7,12 @@ import {
   apis,
   context,
   docsProjects,
+  gitProviders,
   mcpServers,
   notifications,
   overview,
+  repoConnections,
+  sdks,
   sdkTargets,
   usage,
 } from "./handlers";
@@ -17,6 +20,7 @@ import { ensureBucket, storage } from "./storage";
 
 const router = createPlatformApiRouter(
   apis,
+  sdks,
   sdkTargets,
   docsProjects,
   mcpServers,
@@ -24,6 +28,8 @@ const router = createPlatformApiRouter(
   overview,
   usage,
   context,
+  gitProviders,
+  repoConnections,
 );
 
 // Owned binary route: download the generated SDK zip (the future "Download SDK"

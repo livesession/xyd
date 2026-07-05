@@ -14,6 +14,7 @@
     "!packages/apitoolchain-xyd-bridge",
     "!packages/apitoolchain-schemas",
     "!packages/apitoolchain-dev",
+    "!packages/apitoolchain-filters",
     ".xyd/host"
   ],
   "scripts": {

@@ -117,8 +117,47 @@ export interface SetDistTagInput {
   version: string;
 }
 
+/**
+ * A named SDK project tied to one API — a collection of per-language targets.
+ */
+export interface Sdk {
+  id: string;
+
+  apiId: string;
+
+  name: string;
+
+  description: string;
+
+  ns: string;
+
+  targetCount: number;
+
+  createdAt: string;
+
+  updatedAt: string;
+}
+
+/**
+ * Create a named SDK for an API.
+ */
+export interface CreateSdkInput {
+  apiId: string;
+
+  name?: string;
+
+  description?: string;
+
+  ns?: string;
+}
+
 export interface SdkTarget {
   id: string;
+
+  /**
+   * The parent SDK this target belongs to.
+   */
+  sdkId: string;
 
   apiId: string;
 
@@ -153,12 +192,11 @@ export enum BuildStatus {
   Draft = "draft",
 }
 
-export interface CreateSdkTargetInput {
-  apiId: string;
-
+/**
+ * Add a language target to an SDK (kicks off generation).
+ */
+export interface AddSdkTargetInput {
   language: SdkLanguage;
-
-  version?: string;
 
   packageName?: string;
 }
@@ -254,6 +292,7 @@ export enum NotificationSource {
   Mcp = "mcp",
   Registry = "registry",
   System = "system",
+  Git = "git",
 }
 
 export interface MarkReadInput {
@@ -326,3 +365,160 @@ export interface UpdateContextInput {
 
   projectName?: string;
 }
+
+/**
+ * A connected git-provider account (the token lives server-side only).
+ */
+export interface GitProvider {
+  id: string;
+
+  kind: GitProviderKind;
+
+  name: string;
+
+  baseUrl: string;
+
+  /**
+   * The username the token authenticated as (from the provider's whoami).
+   */
+  connectedAs: string;
+
+  createdAt: string;
+}
+
+/**
+ * The git platforms the gitprovider service can connect to.
+ */
+export enum GitProviderKind {
+  Github = "github",
+  Gitlab = "gitlab",
+  Bitbucket = "bitbucket",
+  Gitea = "gitea",
+}
+
+/**
+ * Connect a git provider (validated via the provider's whoami).
+ */
+export interface ConnectGitProviderInput {
+  kind: GitProviderKind;
+
+  name?: string;
+
+  /**
+   * Provider base URL; optional for github.com/gitlab.com, required for self-hosted.
+   */
+  baseUrl?: string;
+
+  token: string;
+}
+
+/**
+ * A git repo option surfaced by a provider (for the connect picker).
+ */
+export interface GitRepoOption {
+  fullName: string;
+
+  defaultBranch: string;
+
+  htmlUrl: string;
+
+  _private: boolean;
+}
+
+/**
+ * Links an API spec or SDK target to a repo; `sync` pushes it there.
+ */
+export interface RepoConnection {
+  id: string;
+
+  providerId: string;
+
+  targetKind: RepoTargetKind;
+
+  /**
+   * The API id (spec) or SDK target id (sdk) this connection syncs.
+   */
+  targetId: string;
+
+  /**
+   * Optional version/dist-tag ref for spec targets (defaults to current).
+   */
+  ref?: string;
+
+  /**
+   * "owner/name" on the provider.
+   */
+  repo: string;
+
+  branch: string;
+
+  /**
+   * Repo subdirectory the files land under (e.g. `specs/` or `sdk/go/`).
+   */
+  prefix: string;
+
+  lastSyncedAt?: string;
+
+  lastSyncStatus?: BuildStatus;
+
+  lastSyncError?: string;
+}
+
+/**
+ * What a repo connection syncs into a repo.
+ */
+export enum RepoTargetKind {
+  Spec = "spec",
+  Sdk = "sdk",
+}
+
+/**
+ * Link an API spec or SDK target to a repo.
+ */
+export interface CreateRepoConnectionInput {
+  providerId: string;
+
+  targetKind: RepoTargetKind;
+
+  targetId: string;
+
+  ref?: string;
+
+  /**
+   * For an existing repo: "owner/name". For a new repo: just the name.
+   */
+  repo: string;
+
+  /**
+   * When true, create `repo` (a name) under the account before connecting.
+   */
+  createRepo?: boolean;
+
+  /**
+   * Visibility for a newly-created repo.
+   */
+  makePrivate?: boolean;
+
+  branch?: string;
+
+  prefix?: string;
+}
+
+export const GitRepoOption = {
+  toJsonObject(input: GitRepoOption): any {
+    return {
+      fullName: input.fullName,
+      defaultBranch: input.defaultBranch,
+      htmlUrl: input.htmlUrl,
+      private: input._private,
+    };
+  },
+  fromJsonObject(input: any): GitRepoOption {
+    return {
+      fullName: input.fullName,
+      defaultBranch: input.defaultBranch,
+      htmlUrl: input.htmlUrl,
+      _private: input.private,
+    };
+  },
+} as const;

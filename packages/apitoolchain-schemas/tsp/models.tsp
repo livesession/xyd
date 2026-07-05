@@ -56,6 +56,24 @@ enum NotificationSource {
   mcp,
   registry,
   system,
+  git,
+}
+
+/** The git platforms the gitprovider service can connect to. */
+enum GitProviderKind {
+  github,
+  gitlab,
+  bitbucket,
+  gitea,
+}
+
+/** What a repo connection syncs into a repo. */
+enum RepoTargetKind {
+  /** An API spec (pushes the raw openapi/graphql/… document). */
+  spec,
+
+  /** An SDK target (pushes the whole generated file map). */
+  sdk,
 }
 
 enum UsageRange {
@@ -117,8 +135,27 @@ model RegistryEntry {
   mcpServerCount: int32;
 }
 
+/** A named SDK project tied to one API — a collection of per-language targets. */
+model Sdk {
+  id: string;
+  apiId: string;
+  name: string;
+  description: string;
+
+  // `namespace` is a TypeSpec keyword; wire field is `ns`.
+  ns: string;
+
+  targetCount: int32;
+  createdAt: string;
+  updatedAt: string;
+}
+
 model SdkTarget {
   id: string;
+
+  /** The parent SDK this target belongs to. */
+  sdkId: string;
+
   apiId: string;
   language: SdkLanguage;
   packageName: string;
@@ -200,6 +237,52 @@ model CurrentContext {
   project: Project;
 }
 
+/** A connected git-provider account (the token lives server-side only). */
+model GitProvider {
+  id: string;
+  kind: GitProviderKind;
+  name: string;
+  baseUrl: string;
+
+  /** The username the token authenticated as (from the provider's whoami). */
+  connectedAs: string;
+
+  createdAt: string;
+}
+
+/** A git repo option surfaced by a provider (for the connect picker). */
+model GitRepoOption {
+  fullName: string;
+  defaultBranch: string;
+  htmlUrl: string;
+  private: boolean;
+}
+
+/** Links an API spec or SDK target to a repo; `sync` pushes it there. */
+model RepoConnection {
+  id: string;
+  providerId: string;
+  targetKind: RepoTargetKind;
+
+  /** The API id (spec) or SDK target id (sdk) this connection syncs. */
+  targetId: string;
+
+  /** Optional version/dist-tag ref for spec targets (defaults to current). */
+  ref?: string;
+
+  /** "owner/name" on the provider. */
+  repo: string;
+
+  branch: string;
+
+  /** Repo subdirectory the files land under (e.g. `specs/` or `sdk/go/`). */
+  prefix: string;
+
+  lastSyncedAt?: string;
+  lastSyncStatus?: BuildStatus;
+  lastSyncError?: string;
+}
+
 // ── inputs (request bodies) ──
 model RegisterApiInput {
   name: string;
@@ -227,10 +310,17 @@ model SetDistTagInput {
   version: string;
 }
 
-model CreateSdkTargetInput {
+/** Create a named SDK for an API. */
+model CreateSdkInput {
   apiId: string;
+  name?: string;
+  description?: string;
+  ns?: string;
+}
+
+/** Add a language target to an SDK (kicks off generation). */
+model AddSdkTargetInput {
   language: SdkLanguage;
-  version?: string;
   packageName?: string;
 }
 
@@ -255,4 +345,35 @@ model MarkReadInput {
 model UpdateContextInput {
   orgName?: string;
   projectName?: string;
+}
+
+/** Connect a git provider (validated via the provider's whoami). */
+model ConnectGitProviderInput {
+  kind: GitProviderKind;
+  name?: string;
+
+  /** Provider base URL; optional for github.com/gitlab.com, required for self-hosted. */
+  baseUrl?: string;
+
+  token: string;
+}
+
+/** Link an API spec or SDK target to a repo. */
+model CreateRepoConnectionInput {
+  providerId: string;
+  targetKind: RepoTargetKind;
+  targetId: string;
+  ref?: string;
+
+  /** For an existing repo: "owner/name". For a new repo: just the name. */
+  repo: string;
+
+  /** When true, create `repo` (a name) under the account before connecting. */
+  createRepo?: boolean;
+
+  /** Visibility for a newly-created repo. */
+  makePrivate?: boolean;
+
+  branch?: string;
+  prefix?: string;
 }

@@ -3,14 +3,17 @@ import {
   Button,
   type Column,
   EmptyState,
+  LaTable,
   Menu,
   Mono,
   PageHeader,
   StatusPill,
-  Table,
 } from "@apitoolchain/design-system";
+import { useMemo } from "react";
 import { RouterLink } from "~/components/RouterLink";
 import { type DocsProject, listApis, listDocsProjects } from "~/data";
+import { docsFilterSchema } from "~/data/filters";
+import { useUrlFilters } from "~/hooks/useUrlFilters";
 import type { Route } from "./+types/docs";
 
 export function meta() {
@@ -30,6 +33,15 @@ const CELL_LINK =
 
 export default function DocsRoute({ loaderData }: Route.ComponentProps) {
   const { apis, apiId, selectedName, projects } = loaderData;
+
+  const themes = [...new Set(projects.map((d) => d.theme))].sort();
+  const themeKey = themes.join(",");
+  // biome-ignore lint/correctness/useExhaustiveDependencies: recompute on the theme SET, not array identity
+  const schema = useMemo(() => docsFilterSchema(themes), [themeKey]);
+  const filter = useUrlFilters(schema);
+  // Preserve the active `?q=` when switching the API selector.
+  const qActive = filter.rules.length > 0 || filter.query.trim().length > 0;
+  const qParam = qActive ? `&q=${encodeURIComponent(filter.toQuery())}` : "";
 
   const columns: Column<DocsProject>[] = [
     {
@@ -98,7 +110,7 @@ export default function DocsRoute({ loaderData }: Route.ComponentProps) {
               items={apis.map((a) => ({
                 key: a.id,
                 label: a.name,
-                href: `/docs?apiId=${a.id}`,
+                href: `/docs?apiId=${a.id}${qParam}`,
                 active: a.id === apiId,
               }))}
             />
@@ -108,15 +120,17 @@ export default function DocsRoute({ loaderData }: Route.ComponentProps) {
           </>
         }
       />
-      <Table
+      <LaTable
+        filter={filter}
+        data={projects}
         columns={columns}
-        rows={projects}
         getRowKey={(d) => d.id}
+        searchPlaceholder="Search docs sites…"
         empty={
           <EmptyState
             icon="docs"
-            title="No docs sites"
-            description="Create a docs site to publish reference + guides for this API."
+            title="No docs sites match"
+            description="Create a docs site to publish reference + guides for this API, or clear the filters above."
             action={
               <Button variant="primary" icon="plus">
                 New docs site

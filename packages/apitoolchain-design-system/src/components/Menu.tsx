@@ -40,7 +40,8 @@ export function Menu({
         <Button
           variant={variant === "select" ? "secondary" : "ghost"}
           icon={icon}
-          iconRight="chevronDown"
+          iconRight="chevronUpDown"
+          iconRightSize={13}
         >
           {label}
         </Button>

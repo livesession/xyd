@@ -20,8 +20,8 @@ import {
   type NotificationSeverity,
   type RegistryEntry,
 } from "~/data";
+import { FORMAT } from "~/components/RegistryListPage";
 import type { Route } from "./+types/home";
-import { FORMAT } from "./registry";
 
 export function meta() {
   return [
@@ -95,6 +95,7 @@ export default function HomeRoute({ loaderData }: Route.ComponentProps) {
       <PageHeader
         title="Home"
         description="Register an API, then ship SDKs, docs, and an MCP server from one spec."
+        divider={false}
       />
 
       <div className="mb-9">

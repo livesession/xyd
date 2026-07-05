@@ -3,12 +3,17 @@ import type {
   BuildStatus,
   DocsProject,
   EntryKind,
+  GitProvider,
+  GitProviderKind,
   McpServer,
   McpTransport,
   Notification,
   NotificationSeverity,
   NotificationSource,
   RegistryEntry,
+  RepoConnection,
+  RepoTargetKind,
+  Sdk,
   SdkLanguage,
   SdkTarget,
 } from "../generated/src/generated/models/all/apitoolchain";
@@ -21,6 +26,7 @@ const iso = (d: Date | null | undefined): string | undefined =>
 // distinct-but-identical per query).
 type SdkRow = {
   id: string;
+  sdkId: string;
   apiId: string;
   language: string;
   packageName: string;
@@ -29,6 +35,15 @@ type SdkRow = {
   status: string;
   lastPublishedAt: Date | null;
   registryUrl: string | null;
+};
+type SdkProjectRow = {
+  id: string;
+  apiId: string;
+  name: string;
+  description: string;
+  namespace: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 type DocsRow = {
   id: string;
@@ -61,9 +76,23 @@ type NotifRow = {
   createdAt: Date;
 };
 
+export function toSdk(r: SdkProjectRow, targetCount: number): Sdk {
+  return {
+    id: r.id,
+    apiId: r.apiId,
+    name: r.name,
+    description: r.description,
+    ns: r.namespace,
+    targetCount,
+    createdAt: r.createdAt.toISOString(),
+    updatedAt: r.updatedAt.toISOString(),
+  };
+}
+
 export function toSdkTarget(r: SdkRow): SdkTarget {
   return {
     id: r.id,
+    sdkId: r.sdkId,
     apiId: r.apiId,
     language: r.language as SdkLanguage,
     packageName: r.packageName,
@@ -111,6 +140,59 @@ export function toNotification(r: NotifRow): Notification {
     read: r.read,
     source: r.source as NotificationSource,
     apiId: r.apiId ?? undefined,
+  };
+}
+
+type GitProviderRow = {
+  id: string;
+  kind: string;
+  name: string;
+  baseUrl: string;
+  connectedAs: string;
+  createdAt: Date;
+};
+type RepoConnectionRow = {
+  id: string;
+  providerId: string;
+  targetKind: string;
+  targetId: string;
+  ref: string;
+  repo: string;
+  branch: string;
+  prefix: string;
+  lastSyncedAt: Date | null;
+  lastSyncStatus: string;
+  lastSyncError: string;
+};
+
+// The token column is deliberately NOT part of GitProviderRow — it never leaves
+// the server (mappers feed the wire response).
+export function toGitProvider(r: GitProviderRow): GitProvider {
+  return {
+    id: r.id,
+    kind: r.kind as GitProviderKind,
+    name: r.name,
+    baseUrl: r.baseUrl,
+    connectedAs: r.connectedAs,
+    createdAt: r.createdAt.toISOString(),
+  };
+}
+
+export function toRepoConnection(r: RepoConnectionRow): RepoConnection {
+  return {
+    id: r.id,
+    providerId: r.providerId,
+    targetKind: r.targetKind as RepoTargetKind,
+    targetId: r.targetId,
+    ref: r.ref || undefined,
+    repo: r.repo,
+    branch: r.branch,
+    prefix: r.prefix,
+    lastSyncedAt: iso(r.lastSyncedAt),
+    lastSyncStatus: r.lastSyncStatus
+      ? (r.lastSyncStatus as BuildStatus)
+      : undefined,
+    lastSyncError: r.lastSyncError || undefined,
   };
 }
 

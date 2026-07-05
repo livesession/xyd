@@ -3,7 +3,12 @@ import type { IconName } from "../icons";
 import { Icon } from "../icons";
 import { AnchorLink, type LinkComponent } from "./routing";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost" | "warning";
+export type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "ghost"
+  | "warning"
+  | "danger";
 export type ButtonSize = "sm" | "md";
 
 export interface ButtonProps {
@@ -14,6 +19,8 @@ export interface ButtonProps {
   icon?: IconName;
   /** Trailing icon (e.g. a chevron for a dropdown trigger). */
   iconRight?: IconName;
+  /** Override the trailing icon size (px). Defaults to the button's icon size. */
+  iconRightSize?: number;
   onClick?: () => void;
   /** Render as a link (uses `linkComponent` when provided, else a plain <a>). */
   href?: string;
@@ -28,6 +35,7 @@ const VARIANT: Record<ButtonVariant, string> = {
   ghost: "border-transparent bg-transparent text-muted hover:bg-hover",
   warning:
     "border-transparent bg-amber-btn text-white hover:bg-amber-btn-hover",
+  danger: "border-transparent bg-danger text-white hover:opacity-90",
 };
 
 const SIZE: Record<ButtonSize, string> = {
@@ -42,19 +50,20 @@ export function Button({
   size = "md",
   icon,
   iconRight,
+  iconRightSize,
   onClick,
   href,
   linkComponent,
   disabled,
   type = "button",
 }: ButtonProps) {
-  const cls = `inline-flex cursor-pointer items-center justify-center whitespace-nowrap rounded-control border font-medium leading-5 no-underline transition-[background-color,transform] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 ${VARIANT[variant]} ${SIZE[size]}`;
+  const cls = `inline-flex cursor-pointer items-center justify-start whitespace-nowrap rounded-control border font-medium leading-5 no-underline transition-[background-color,transform] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 ${VARIANT[variant]} ${SIZE[size]}`;
   const isz = size === "sm" ? 14 : 16;
   const inner = (
     <>
       {icon && <Icon icon={icon} size={isz} />}
       {children}
-      {iconRight && <Icon icon={iconRight} size={isz} />}
+      {iconRight && <Icon icon={iconRight} size={iconRightSize ?? isz} />}
     </>
   );
 

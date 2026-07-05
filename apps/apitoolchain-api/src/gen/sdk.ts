@@ -12,7 +12,7 @@ import * as notifQ from "../db/generated/notifications_sql";
 import * as sdkQ from "../db/generated/sdk_targets_sql";
 import { pool } from "../db/pool";
 import { storage } from "../storage";
-import { randomId, slugify } from "../util";
+import { randomId } from "../util";
 
 let registered = false;
 function ensureEmitters(): void {
@@ -22,15 +22,88 @@ function ensureEmitters(): void {
   }
 }
 
-const PACKAGE_NAME: Record<string, (slug: string) => string> = {
-  go: (s) => s,
-  node: (s) => `@acme/${s}`,
-  python: (s) => s,
-  ruby: (s) => s,
-  java: (s) => `com.acme.${s}`,
-  dotnet: (s) =>
-    `Acme.${s.replace(/(^|-)([a-z])/g, (_m, _p, c: string) => c.toUpperCase())}`,
-};
+/**
+ * Split a title into lowercase tokens on word SEPARATORS only (space, dash,
+ * dot, …) — a brand like "LiveSession" stays ONE token (not "live-session"),
+ * so "LiveSession API" → ["livesession", "api"].
+ */
+function titleTokens(input: string): string[] {
+  return input
+    .split(/[^a-zA-Z0-9]+/)
+    .map((w) => w.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+const capitalize = (w: string): string =>
+  w.charAt(0).toUpperCase() + w.slice(1);
+/** identifier segment: lowercase alphanumerics, non-empty. */
+const identSeg = (s: string): string =>
+  s.toLowerCase().replace(/[^a-z0-9]+/g, "") || "sdk";
+
+/**
+ * The package identity for a generated SDK: the string we store on the target
+ * AND the emitter option that bakes the *same* name into the SDK's manifest and
+ * README — so the "package" shown in the UI can never diverge from what the
+ * generated README tells users to install/import.
+ *
+ * The name is `<title>-<language>` (title collapsed on separators, so the brand
+ * stays intact): e.g. "LiveSession API" → `livesession-api-node`,
+ * `livesession-api-go`, `livesession-api-python`. Languages whose identifiers
+ * forbid dashes (Java packages, .NET namespaces) use the idiomatic dotted form.
+ */
+function sdkPackageIdentity(
+  language: string,
+  namespace: string,
+  title: string,
+): { packageName: string; options: Record<string, unknown> } {
+  const tokens = titleTokens(title);
+  const dash = tokens.join("-") || "sdk"; // livesession-api
+  const snake = tokens.join("_") || "sdk"; // livesession_api
+  const squash = tokens.join("") || "sdk"; // livesessionapi
+  const pascal = tokens.map(capitalize).join("") || "Sdk"; // LivesessionApi
+  const nsIdent = identSeg(namespace); // livesession
+  const nsPascal = capitalize(nsIdent); // Livesession
+
+  switch (language) {
+    case "node": {
+      const p = `${dash}-node`; // livesession-api-node
+      return { packageName: p, options: { packageName: p } };
+    }
+    case "ruby": {
+      const p = `${dash}-ruby`; // livesession-api-ruby
+      return { packageName: p, options: { packageName: p } };
+    }
+    case "go": {
+      const p = `${dash}-go`; // livesession-api-go
+      return { packageName: p, options: { modulePath: p } };
+    }
+    case "python": {
+      // The Python emitter's packageName IS the import module (underscores); it
+      // derives the pip/dist name as that with "_"→"-". Pass the module, store
+      // the dist name so the UI shows what you `pip install`.
+      const module = `${snake}_python`; // livesession_api_python
+      return {
+        packageName: `${dash}-python`, // livesession-api-python
+        options: { packageName: module },
+      };
+    }
+    case "java": {
+      // Java packages can't contain dashes; use the idiomatic dotted form.
+      const p = `com.${nsIdent}.${squash}`; // com.livesession.livesessionapi
+      return {
+        packageName: p,
+        options: { packageName: squash, basePackage: `com.${nsIdent}` },
+      };
+    }
+    case "dotnet": {
+      // .NET namespaces can't contain dashes; use the idiomatic dotted form.
+      const p = `${nsPascal}.${pascal}`; // Livesession.LivesessionApi
+      return { packageName: p, options: { namespace: p } };
+    }
+    default:
+      return { packageName: `${dash}-${language}`, options: {} };
+  }
+}
 
 export const SDK_OUTPUT: Record<string, string> = {
   go: "./sdk/go",
@@ -52,8 +125,9 @@ export async function runSdkGeneration(opts: {
   apiId: string;
   version: string;
   language: string;
+  namespace: string;
 }): Promise<void> {
-  const { targetId, jobId, apiId, version, language } = opts;
+  const { targetId, jobId, apiId, version, language, namespace } = opts;
   try {
     const spec = await registryClient.fetchSpecRaw(apiId, version || "current");
     if (!spec) throw new Error("spec not found in registry");
@@ -64,7 +138,14 @@ export async function runSdkGeneration(opts: {
     ensureEmitters();
     const ir = openapi2opensdk(doc);
     const emitter = getEmitter(language);
-    const files = generate(ir, emitter, {});
+    // One source of truth: the package identity drives BOTH the emitter (so the
+    // generated manifest + README use this name) and what we store below.
+    const { packageName, options } = sdkPackageIdentity(
+      language,
+      namespace,
+      ir.info.title ?? "sdk",
+    );
+    const files = generate(ir, emitter, options);
 
     const zip = new JSZip();
     for (const [path, content] of Object.entries(files))
@@ -74,8 +155,6 @@ export async function runSdkGeneration(opts: {
     const key = `artifacts/sdk/${targetId}/sdk.zip`;
     await storage.write(key, buf, { mimeType: "application/zip" });
 
-    const slug = slugify(ir.info.title ?? "sdk");
-    const packageName = (PACKAGE_NAME[language] ?? ((s) => s))(slug);
     const ver = ir.info.version ?? "0.1.0";
 
     await sdkQ.markSdkTargetReady(pool, {

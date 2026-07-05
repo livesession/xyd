@@ -11,6 +11,7 @@ import {
   Apis,
   NotFoundError,
   ValidationError,
+  Sdks,
   SdkTargets,
   DocsProjects,
   McpServers,
@@ -19,14 +20,18 @@ import {
   Overview,
   Usage,
   Context,
+  GitProviders,
+  RepoConnections,
 } from "../../models/all/platform-api.js";
 
 import {
   RegistryEntry,
   RegisterApiInput,
   SetDistTagInput,
+  Sdk,
+  CreateSdkInput,
   SdkTarget,
-  CreateSdkTargetInput,
+  AddSdkTargetInput,
   DocsProject,
   CreateDocsProjectInput,
   McpServer,
@@ -37,6 +42,11 @@ import {
   UsageSeries,
   CurrentContext,
   UpdateContextInput,
+  GitProvider,
+  ConnectGitProviderInput,
+  GitRepoOption,
+  RepoConnection,
+  CreateRepoConnectionInput,
 } from "../../models/all/apitoolchain.js";
 
 import { parseHeaderValueParameters } from "../../helpers/header.js";
@@ -201,16 +211,16 @@ export async function apis_set_dist_tag(
   }
 }
 
-export async function sdk_targets_list(
+export async function sdks_list(
   __ctx_22: HttpContext,
-  __operations_24: SdkTargets,
+  __operations_24: Sdks,
 ): Promise<void> {
   const __queryParams_25 = new URLSearchParams(
     __ctx_22.request.url!.split("?", 2)[1] ?? "",
   );
 
   const apiId = __queryParams_25.get("apiId") ?? undefined;
-  let __result_23: SdkTarget[];
+  let __result_23: Sdk[];
 
   try {
     __result_23 = await __operations_24.list(__ctx_22, {
@@ -226,46 +236,15 @@ export async function sdk_targets_list(
   __ctx_22.response.end(globalThis.JSON.stringify(__result_23));
 }
 
-export async function sdk_targets_create(
+export async function sdks_read(
   __ctx_26: HttpContext,
-  __operations_28: SdkTargets,
+  __operations_28: Sdks,
+  id: string,
 ): Promise<void> {
-  const __contentType_31 = parseHeaderValueParameters(
-    __ctx_26.request.headers["content-type"] as string | undefined,
-  );
-  if (__contentType_31?.value !== "application/json") {
-    return __ctx_26.errorHandlers.onInvalidRequest(
-      __ctx_26,
-      "/sdk-targets",
-      `unexpected "content-type": '${__contentType_31?.value}', expected '"application/json"'`,
-    );
-  }
-
-  const __input_30 = (await new Promise(function parseInput(resolve, reject) {
-    const chunks: Array<Buffer> = [];
-    __ctx_26.request.on("data", function appendChunk(chunk) {
-      chunks.push(chunk);
-    });
-    __ctx_26.request.on("end", function finalize() {
-      try {
-        const body = Buffer.concat(chunks).toString();
-        resolve(JSON.parse(body));
-      } catch {
-        __ctx_26.errorHandlers.onInvalidRequest(
-          __ctx_26,
-          "/sdk-targets",
-          "invalid JSON in request body",
-        );
-        reject();
-      }
-    });
-    __ctx_26.request.on("error", reject);
-  })) as CreateSdkTargetInput;
-
-  let __result_27: SdkTarget | NotFoundError | ValidationError;
+  let __result_27: Sdk | NotFoundError;
 
   try {
-    __result_27 = await __operations_28.create(__ctx_26, __input_30);
+    __result_27 = await __operations_28.read(__ctx_26, id);
   } catch (e) {
     if (__isHttpResponder_0(e)) {
       return e[__httpResponderSymbol_1](__ctx_26);
@@ -279,251 +258,274 @@ export async function sdk_targets_create(
     __ctx_26.response.statusCode = 404;
     __ctx_26.response.setHeader("content-type", "application/json");
     __ctx_26.response.end(globalThis.JSON.stringify(__result_27));
-  } else if ("statusCode" in __result_27 && __result_27.statusCode === 422) {
-    __ctx_26.response.statusCode = 422;
-    __ctx_26.response.setHeader("content-type", "application/json");
-    __ctx_26.response.end(globalThis.JSON.stringify(__result_27));
   }
 }
 
-export async function docs_projects_list(
-  __ctx_32: HttpContext,
-  __operations_34: DocsProjects,
+export async function sdks_create(
+  __ctx_30: HttpContext,
+  __operations_32: Sdks,
 ): Promise<void> {
-  const __queryParams_35 = new URLSearchParams(
-    __ctx_32.request.url!.split("?", 2)[1] ?? "",
+  const __contentType_35 = parseHeaderValueParameters(
+    __ctx_30.request.headers["content-type"] as string | undefined,
   );
-
-  const apiId = __queryParams_35.get("apiId") ?? undefined;
-  let __result_33: DocsProject[];
-
-  try {
-    __result_33 = await __operations_34.list(__ctx_32, {
-      apiId: apiId === undefined ? undefined : apiId,
-    });
-  } catch (e) {
-    if (__isHttpResponder_0(e)) {
-      return e[__httpResponderSymbol_1](__ctx_32);
-    } else throw e;
-  }
-
-  __ctx_32.response.setHeader("content-type", "application/json");
-  __ctx_32.response.end(globalThis.JSON.stringify(__result_33));
-}
-
-export async function docs_projects_create(
-  __ctx_36: HttpContext,
-  __operations_38: DocsProjects,
-): Promise<void> {
-  const __contentType_41 = parseHeaderValueParameters(
-    __ctx_36.request.headers["content-type"] as string | undefined,
-  );
-  if (__contentType_41?.value !== "application/json") {
-    return __ctx_36.errorHandlers.onInvalidRequest(
-      __ctx_36,
-      "/docs-projects",
-      `unexpected "content-type": '${__contentType_41?.value}', expected '"application/json"'`,
+  if (__contentType_35?.value !== "application/json") {
+    return __ctx_30.errorHandlers.onInvalidRequest(
+      __ctx_30,
+      "/sdks",
+      `unexpected "content-type": '${__contentType_35?.value}', expected '"application/json"'`,
     );
   }
 
-  const __input_40 = (await new Promise(function parseInput(resolve, reject) {
+  const __input_34 = (await new Promise(function parseInput(resolve, reject) {
     const chunks: Array<Buffer> = [];
-    __ctx_36.request.on("data", function appendChunk(chunk) {
+    __ctx_30.request.on("data", function appendChunk(chunk) {
       chunks.push(chunk);
     });
-    __ctx_36.request.on("end", function finalize() {
+    __ctx_30.request.on("end", function finalize() {
       try {
         const body = Buffer.concat(chunks).toString();
         resolve(JSON.parse(body));
       } catch {
-        __ctx_36.errorHandlers.onInvalidRequest(
-          __ctx_36,
-          "/docs-projects",
+        __ctx_30.errorHandlers.onInvalidRequest(
+          __ctx_30,
+          "/sdks",
           "invalid JSON in request body",
         );
         reject();
       }
     });
-    __ctx_36.request.on("error", reject);
-  })) as CreateDocsProjectInput;
+    __ctx_30.request.on("error", reject);
+  })) as CreateSdkInput;
 
-  let __result_37: DocsProject | NotFoundError;
+  let __result_31: Sdk | NotFoundError | ValidationError;
 
   try {
-    __result_37 = await __operations_38.create(__ctx_36, __input_40);
+    __result_31 = await __operations_32.create(__ctx_30, __input_34);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_30);
+    } else throw e;
+  }
+
+  if ("id" in __result_31) {
+    __ctx_30.response.setHeader("content-type", "application/json");
+    __ctx_30.response.end(globalThis.JSON.stringify(__result_31));
+  } else if ("statusCode" in __result_31 && __result_31.statusCode === 404) {
+    __ctx_30.response.statusCode = 404;
+    __ctx_30.response.setHeader("content-type", "application/json");
+    __ctx_30.response.end(globalThis.JSON.stringify(__result_31));
+  } else if ("statusCode" in __result_31 && __result_31.statusCode === 422) {
+    __ctx_30.response.statusCode = 422;
+    __ctx_30.response.setHeader("content-type", "application/json");
+    __ctx_30.response.end(globalThis.JSON.stringify(__result_31));
+  }
+}
+
+export async function sdks_remove(
+  __ctx_36: HttpContext,
+  __operations_38: Sdks,
+  id: string,
+): Promise<void> {
+  let __result_37: void | NotFoundError;
+
+  try {
+    __result_37 = await __operations_38.remove(__ctx_36, id);
   } catch (e) {
     if (__isHttpResponder_0(e)) {
       return e[__httpResponderSymbol_1](__ctx_36);
     } else throw e;
   }
 
-  if ("id" in __result_37) {
-    __ctx_36.response.setHeader("content-type", "application/json");
-    __ctx_36.response.end(globalThis.JSON.stringify(__result_37));
-  } else if ("statusCode" in __result_37 && __result_37.statusCode === 404) {
-    __ctx_36.response.statusCode = 404;
-    __ctx_36.response.setHeader("content-type", "application/json");
-    __ctx_36.response.end(globalThis.JSON.stringify(__result_37));
+  if (__result_37 === undefined) {
+    __ctx_36.response.statusCode = 204;
+    __ctx_36.response.end();
+  } else {
+    if ("statusCode" in __result_37 && __result_37.statusCode === 404) {
+      __ctx_36.response.statusCode = 404;
+      __ctx_36.response.setHeader("content-type", "application/json");
+      __ctx_36.response.end(globalThis.JSON.stringify(__result_37));
+    }
   }
 }
 
-export async function mcp_servers_list(
-  __ctx_42: HttpContext,
-  __operations_44: McpServers,
+export async function sdks_list_targets(
+  __ctx_40: HttpContext,
+  __operations_42: Sdks,
+  sdkId: string,
 ): Promise<void> {
-  const __queryParams_45 = new URLSearchParams(
-    __ctx_42.request.url!.split("?", 2)[1] ?? "",
-  );
-
-  const apiId = __queryParams_45.get("apiId") ?? undefined;
-  let __result_43: McpServer[];
+  let __result_41: SdkTarget[] | NotFoundError;
 
   try {
-    __result_43 = await __operations_44.list(__ctx_42, {
+    __result_41 = await __operations_42.listTargets(__ctx_40, sdkId);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_40);
+    } else throw e;
+  }
+
+  if (globalThis.Array.isArray(__result_41)) {
+    __ctx_40.response.setHeader("content-type", "application/json");
+    __ctx_40.response.end(globalThis.JSON.stringify(__result_41));
+  } else if ("statusCode" in __result_41 && __result_41.statusCode === 404) {
+    __ctx_40.response.statusCode = 404;
+    __ctx_40.response.setHeader("content-type", "application/json");
+    __ctx_40.response.end(globalThis.JSON.stringify(__result_41));
+  }
+}
+
+export async function sdks_add_target(
+  __ctx_44: HttpContext,
+  __operations_46: Sdks,
+  sdkId: string,
+): Promise<void> {
+  const __contentType_49 = parseHeaderValueParameters(
+    __ctx_44.request.headers["content-type"] as string | undefined,
+  );
+  if (__contentType_49?.value !== "application/json") {
+    return __ctx_44.errorHandlers.onInvalidRequest(
+      __ctx_44,
+      "/sdks/{sdkId}/targets",
+      `unexpected "content-type": '${__contentType_49?.value}', expected '"application/json"'`,
+    );
+  }
+
+  const __input_48 = (await new Promise(function parseInput(resolve, reject) {
+    const chunks: Array<Buffer> = [];
+    __ctx_44.request.on("data", function appendChunk(chunk) {
+      chunks.push(chunk);
+    });
+    __ctx_44.request.on("end", function finalize() {
+      try {
+        const body = Buffer.concat(chunks).toString();
+        resolve(JSON.parse(body));
+      } catch {
+        __ctx_44.errorHandlers.onInvalidRequest(
+          __ctx_44,
+          "/sdks/{sdkId}/targets",
+          "invalid JSON in request body",
+        );
+        reject();
+      }
+    });
+    __ctx_44.request.on("error", reject);
+  })) as AddSdkTargetInput;
+
+  let __result_45: SdkTarget | NotFoundError | ValidationError;
+
+  try {
+    __result_45 = await __operations_46.addTarget(__ctx_44, sdkId, __input_48);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_44);
+    } else throw e;
+  }
+
+  if ("id" in __result_45) {
+    __ctx_44.response.setHeader("content-type", "application/json");
+    __ctx_44.response.end(globalThis.JSON.stringify(__result_45));
+  } else if ("statusCode" in __result_45 && __result_45.statusCode === 404) {
+    __ctx_44.response.statusCode = 404;
+    __ctx_44.response.setHeader("content-type", "application/json");
+    __ctx_44.response.end(globalThis.JSON.stringify(__result_45));
+  } else if ("statusCode" in __result_45 && __result_45.statusCode === 422) {
+    __ctx_44.response.statusCode = 422;
+    __ctx_44.response.setHeader("content-type", "application/json");
+    __ctx_44.response.end(globalThis.JSON.stringify(__result_45));
+  }
+}
+
+export async function sdk_targets_list(
+  __ctx_50: HttpContext,
+  __operations_52: SdkTargets,
+): Promise<void> {
+  const __queryParams_53 = new URLSearchParams(
+    __ctx_50.request.url!.split("?", 2)[1] ?? "",
+  );
+
+  const apiId = __queryParams_53.get("apiId") ?? undefined;
+  let __result_51: SdkTarget[];
+
+  try {
+    __result_51 = await __operations_52.list(__ctx_50, {
       apiId: apiId === undefined ? undefined : apiId,
     });
   } catch (e) {
     if (__isHttpResponder_0(e)) {
-      return e[__httpResponderSymbol_1](__ctx_42);
+      return e[__httpResponderSymbol_1](__ctx_50);
     } else throw e;
   }
 
-  __ctx_42.response.setHeader("content-type", "application/json");
-  __ctx_42.response.end(globalThis.JSON.stringify(__result_43));
+  __ctx_50.response.setHeader("content-type", "application/json");
+  __ctx_50.response.end(globalThis.JSON.stringify(__result_51));
 }
 
-export async function mcp_servers_create(
-  __ctx_46: HttpContext,
-  __operations_48: McpServers,
+export async function sdk_targets_read(
+  __ctx_54: HttpContext,
+  __operations_56: SdkTargets,
+  id: string,
 ): Promise<void> {
-  const __contentType_51 = parseHeaderValueParameters(
-    __ctx_46.request.headers["content-type"] as string | undefined,
-  );
-  if (__contentType_51?.value !== "application/json") {
-    return __ctx_46.errorHandlers.onInvalidRequest(
-      __ctx_46,
-      "/mcp-servers",
-      `unexpected "content-type": '${__contentType_51?.value}', expected '"application/json"'`,
-    );
-  }
-
-  const __input_50 = (await new Promise(function parseInput(resolve, reject) {
-    const chunks: Array<Buffer> = [];
-    __ctx_46.request.on("data", function appendChunk(chunk) {
-      chunks.push(chunk);
-    });
-    __ctx_46.request.on("end", function finalize() {
-      try {
-        const body = Buffer.concat(chunks).toString();
-        resolve(JSON.parse(body));
-      } catch {
-        __ctx_46.errorHandlers.onInvalidRequest(
-          __ctx_46,
-          "/mcp-servers",
-          "invalid JSON in request body",
-        );
-        reject();
-      }
-    });
-    __ctx_46.request.on("error", reject);
-  })) as CreateMcpServerInput;
-
-  let __result_47: McpServer | NotFoundError;
+  let __result_55: SdkTarget | NotFoundError;
 
   try {
-    __result_47 = await __operations_48.create(__ctx_46, __input_50);
+    __result_55 = await __operations_56.read(__ctx_54, id);
   } catch (e) {
     if (__isHttpResponder_0(e)) {
-      return e[__httpResponderSymbol_1](__ctx_46);
+      return e[__httpResponderSymbol_1](__ctx_54);
     } else throw e;
   }
 
-  if ("id" in __result_47) {
-    __ctx_46.response.setHeader("content-type", "application/json");
-    __ctx_46.response.end(globalThis.JSON.stringify(__result_47));
-  } else if ("statusCode" in __result_47 && __result_47.statusCode === 404) {
-    __ctx_46.response.statusCode = 404;
-    __ctx_46.response.setHeader("content-type", "application/json");
-    __ctx_46.response.end(globalThis.JSON.stringify(__result_47));
+  if ("id" in __result_55) {
+    __ctx_54.response.setHeader("content-type", "application/json");
+    __ctx_54.response.end(globalThis.JSON.stringify(__result_55));
+  } else if ("statusCode" in __result_55 && __result_55.statusCode === 404) {
+    __ctx_54.response.statusCode = 404;
+    __ctx_54.response.setHeader("content-type", "application/json");
+    __ctx_54.response.end(globalThis.JSON.stringify(__result_55));
   }
 }
 
-export async function notifications_list(
-  __ctx_52: HttpContext,
-  __operations_54: Notifications,
+export async function sdk_targets_remove(
+  __ctx_58: HttpContext,
+  __operations_60: SdkTargets,
+  id: string,
 ): Promise<void> {
-  let __result_53: Notification[];
+  let __result_59: void | NotFoundError;
 
   try {
-    __result_53 = await __operations_54.list(__ctx_52);
+    __result_59 = await __operations_60.remove(__ctx_58, id);
   } catch (e) {
     if (__isHttpResponder_0(e)) {
-      return e[__httpResponderSymbol_1](__ctx_52);
+      return e[__httpResponderSymbol_1](__ctx_58);
     } else throw e;
   }
 
-  __ctx_52.response.setHeader("content-type", "application/json");
-  __ctx_52.response.end(globalThis.JSON.stringify(__result_53));
+  if (__result_59 === undefined) {
+    __ctx_58.response.statusCode = 204;
+    __ctx_58.response.end();
+  } else {
+    if ("statusCode" in __result_59 && __result_59.statusCode === 404) {
+      __ctx_58.response.statusCode = 404;
+      __ctx_58.response.setHeader("content-type", "application/json");
+      __ctx_58.response.end(globalThis.JSON.stringify(__result_59));
+    }
+  }
 }
 
-export async function notifications_mark_read(
-  __ctx_56: HttpContext,
-  __operations_58: Notifications,
-): Promise<void> {
-  const __contentType_61 = parseHeaderValueParameters(
-    __ctx_56.request.headers["content-type"] as string | undefined,
-  );
-  if (__contentType_61?.value !== "application/json") {
-    return __ctx_56.errorHandlers.onInvalidRequest(
-      __ctx_56,
-      "/notifications/read",
-      `unexpected "content-type": '${__contentType_61?.value}', expected '"application/json"'`,
-    );
-  }
-
-  const __input_60 = (await new Promise(function parseInput(resolve, reject) {
-    const chunks: Array<Buffer> = [];
-    __ctx_56.request.on("data", function appendChunk(chunk) {
-      chunks.push(chunk);
-    });
-    __ctx_56.request.on("end", function finalize() {
-      try {
-        const body = Buffer.concat(chunks).toString();
-        resolve(JSON.parse(body));
-      } catch {
-        __ctx_56.errorHandlers.onInvalidRequest(
-          __ctx_56,
-          "/notifications/read",
-          "invalid JSON in request body",
-        );
-        reject();
-      }
-    });
-    __ctx_56.request.on("error", reject);
-  })) as MarkReadInput;
-
-  let __result_57: MarkReadResult;
-
-  try {
-    __result_57 = await __operations_58.markRead(__ctx_56, __input_60);
-  } catch (e) {
-    if (__isHttpResponder_0(e)) {
-      return e[__httpResponderSymbol_1](__ctx_56);
-    } else throw e;
-  }
-
-  __ctx_56.response.setHeader("content-type", "application/json");
-  __ctx_56.response.end(globalThis.JSON.stringify(__result_57));
-}
-
-export async function overview_stats(
+export async function docs_projects_list(
   __ctx_62: HttpContext,
-  __operations_64: Overview,
+  __operations_64: DocsProjects,
 ): Promise<void> {
-  let __result_63: OverviewStats;
+  const __queryParams_65 = new URLSearchParams(
+    __ctx_62.request.url!.split("?", 2)[1] ?? "",
+  );
+
+  const apiId = __queryParams_65.get("apiId") ?? undefined;
+  let __result_63: DocsProject[];
 
   try {
-    __result_63 = await __operations_64.stats(__ctx_62);
+    __result_63 = await __operations_64.list(__ctx_62, {
+      apiId: apiId === undefined ? undefined : apiId,
+    });
   } catch (e) {
     if (__isHttpResponder_0(e)) {
       return e[__httpResponderSymbol_1](__ctx_62);
@@ -534,101 +536,643 @@ export async function overview_stats(
   __ctx_62.response.end(globalThis.JSON.stringify(__result_63));
 }
 
-export async function usage_list(
+export async function docs_projects_create(
   __ctx_66: HttpContext,
-  __operations_68: Usage,
+  __operations_68: DocsProjects,
 ): Promise<void> {
-  const __queryParams_69 = new URLSearchParams(
-    __ctx_66.request.url!.split("?", 2)[1] ?? "",
+  const __contentType_71 = parseHeaderValueParameters(
+    __ctx_66.request.headers["content-type"] as string | undefined,
   );
-
-  const range = __queryParams_69.get("range") ?? undefined;
-  if (!range) {
+  if (__contentType_71?.value !== "application/json") {
     return __ctx_66.errorHandlers.onInvalidRequest(
       __ctx_66,
-      "/usage",
-      "missing required query parameter 'range'",
+      "/docs-projects",
+      `unexpected "content-type": '${__contentType_71?.value}', expected '"application/json"'`,
     );
   }
 
-  let __result_67: UsageSeries[];
+  const __input_70 = (await new Promise(function parseInput(resolve, reject) {
+    const chunks: Array<Buffer> = [];
+    __ctx_66.request.on("data", function appendChunk(chunk) {
+      chunks.push(chunk);
+    });
+    __ctx_66.request.on("end", function finalize() {
+      try {
+        const body = Buffer.concat(chunks).toString();
+        resolve(JSON.parse(body));
+      } catch {
+        __ctx_66.errorHandlers.onInvalidRequest(
+          __ctx_66,
+          "/docs-projects",
+          "invalid JSON in request body",
+        );
+        reject();
+      }
+    });
+    __ctx_66.request.on("error", reject);
+  })) as CreateDocsProjectInput;
+
+  let __result_67: DocsProject | NotFoundError;
 
   try {
-    __result_67 = await __operations_68.list(__ctx_66, range);
+    __result_67 = await __operations_68.create(__ctx_66, __input_70);
   } catch (e) {
     if (__isHttpResponder_0(e)) {
       return e[__httpResponderSymbol_1](__ctx_66);
     } else throw e;
   }
 
-  __ctx_66.response.setHeader("content-type", "application/json");
-  __ctx_66.response.end(globalThis.JSON.stringify(__result_67));
+  if ("id" in __result_67) {
+    __ctx_66.response.setHeader("content-type", "application/json");
+    __ctx_66.response.end(globalThis.JSON.stringify(__result_67));
+  } else if ("statusCode" in __result_67 && __result_67.statusCode === 404) {
+    __ctx_66.response.statusCode = 404;
+    __ctx_66.response.setHeader("content-type", "application/json");
+    __ctx_66.response.end(globalThis.JSON.stringify(__result_67));
+  }
 }
 
-export async function context_read(
-  __ctx_70: HttpContext,
-  __operations_72: Context,
+export async function mcp_servers_list(
+  __ctx_72: HttpContext,
+  __operations_74: McpServers,
 ): Promise<void> {
-  let __result_71: CurrentContext;
+  const __queryParams_75 = new URLSearchParams(
+    __ctx_72.request.url!.split("?", 2)[1] ?? "",
+  );
+
+  const apiId = __queryParams_75.get("apiId") ?? undefined;
+  let __result_73: McpServer[];
 
   try {
-    __result_71 = await __operations_72.read(__ctx_70);
+    __result_73 = await __operations_74.list(__ctx_72, {
+      apiId: apiId === undefined ? undefined : apiId,
+    });
   } catch (e) {
     if (__isHttpResponder_0(e)) {
-      return e[__httpResponderSymbol_1](__ctx_70);
+      return e[__httpResponderSymbol_1](__ctx_72);
     } else throw e;
   }
 
-  __ctx_70.response.setHeader("content-type", "application/json");
-  __ctx_70.response.end(globalThis.JSON.stringify(__result_71));
+  __ctx_72.response.setHeader("content-type", "application/json");
+  __ctx_72.response.end(globalThis.JSON.stringify(__result_73));
 }
 
-export async function context_update(
-  __ctx_74: HttpContext,
-  __operations_76: Context,
+export async function mcp_servers_create(
+  __ctx_76: HttpContext,
+  __operations_78: McpServers,
 ): Promise<void> {
-  const __contentType_79 = parseHeaderValueParameters(
-    __ctx_74.request.headers["content-type"] as string | undefined,
+  const __contentType_81 = parseHeaderValueParameters(
+    __ctx_76.request.headers["content-type"] as string | undefined,
   );
-  if (__contentType_79?.value !== "application/json") {
-    return __ctx_74.errorHandlers.onInvalidRequest(
-      __ctx_74,
-      "/context",
-      `unexpected "content-type": '${__contentType_79?.value}', expected '"application/json"'`,
+  if (__contentType_81?.value !== "application/json") {
+    return __ctx_76.errorHandlers.onInvalidRequest(
+      __ctx_76,
+      "/mcp-servers",
+      `unexpected "content-type": '${__contentType_81?.value}', expected '"application/json"'`,
     );
   }
 
-  const __input_78 = (await new Promise(function parseInput(resolve, reject) {
+  const __input_80 = (await new Promise(function parseInput(resolve, reject) {
     const chunks: Array<Buffer> = [];
-    __ctx_74.request.on("data", function appendChunk(chunk) {
+    __ctx_76.request.on("data", function appendChunk(chunk) {
       chunks.push(chunk);
     });
-    __ctx_74.request.on("end", function finalize() {
+    __ctx_76.request.on("end", function finalize() {
       try {
         const body = Buffer.concat(chunks).toString();
         resolve(JSON.parse(body));
       } catch {
-        __ctx_74.errorHandlers.onInvalidRequest(
-          __ctx_74,
+        __ctx_76.errorHandlers.onInvalidRequest(
+          __ctx_76,
+          "/mcp-servers",
+          "invalid JSON in request body",
+        );
+        reject();
+      }
+    });
+    __ctx_76.request.on("error", reject);
+  })) as CreateMcpServerInput;
+
+  let __result_77: McpServer | NotFoundError;
+
+  try {
+    __result_77 = await __operations_78.create(__ctx_76, __input_80);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_76);
+    } else throw e;
+  }
+
+  if ("id" in __result_77) {
+    __ctx_76.response.setHeader("content-type", "application/json");
+    __ctx_76.response.end(globalThis.JSON.stringify(__result_77));
+  } else if ("statusCode" in __result_77 && __result_77.statusCode === 404) {
+    __ctx_76.response.statusCode = 404;
+    __ctx_76.response.setHeader("content-type", "application/json");
+    __ctx_76.response.end(globalThis.JSON.stringify(__result_77));
+  }
+}
+
+export async function notifications_list(
+  __ctx_82: HttpContext,
+  __operations_84: Notifications,
+): Promise<void> {
+  let __result_83: Notification[];
+
+  try {
+    __result_83 = await __operations_84.list(__ctx_82);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_82);
+    } else throw e;
+  }
+
+  __ctx_82.response.setHeader("content-type", "application/json");
+  __ctx_82.response.end(globalThis.JSON.stringify(__result_83));
+}
+
+export async function notifications_mark_read(
+  __ctx_86: HttpContext,
+  __operations_88: Notifications,
+): Promise<void> {
+  const __contentType_91 = parseHeaderValueParameters(
+    __ctx_86.request.headers["content-type"] as string | undefined,
+  );
+  if (__contentType_91?.value !== "application/json") {
+    return __ctx_86.errorHandlers.onInvalidRequest(
+      __ctx_86,
+      "/notifications/read",
+      `unexpected "content-type": '${__contentType_91?.value}', expected '"application/json"'`,
+    );
+  }
+
+  const __input_90 = (await new Promise(function parseInput(resolve, reject) {
+    const chunks: Array<Buffer> = [];
+    __ctx_86.request.on("data", function appendChunk(chunk) {
+      chunks.push(chunk);
+    });
+    __ctx_86.request.on("end", function finalize() {
+      try {
+        const body = Buffer.concat(chunks).toString();
+        resolve(JSON.parse(body));
+      } catch {
+        __ctx_86.errorHandlers.onInvalidRequest(
+          __ctx_86,
+          "/notifications/read",
+          "invalid JSON in request body",
+        );
+        reject();
+      }
+    });
+    __ctx_86.request.on("error", reject);
+  })) as MarkReadInput;
+
+  let __result_87: MarkReadResult;
+
+  try {
+    __result_87 = await __operations_88.markRead(__ctx_86, __input_90);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_86);
+    } else throw e;
+  }
+
+  __ctx_86.response.setHeader("content-type", "application/json");
+  __ctx_86.response.end(globalThis.JSON.stringify(__result_87));
+}
+
+export async function overview_stats(
+  __ctx_92: HttpContext,
+  __operations_94: Overview,
+): Promise<void> {
+  let __result_93: OverviewStats;
+
+  try {
+    __result_93 = await __operations_94.stats(__ctx_92);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_92);
+    } else throw e;
+  }
+
+  __ctx_92.response.setHeader("content-type", "application/json");
+  __ctx_92.response.end(globalThis.JSON.stringify(__result_93));
+}
+
+export async function usage_list(
+  __ctx_96: HttpContext,
+  __operations_98: Usage,
+): Promise<void> {
+  const __queryParams_99 = new URLSearchParams(
+    __ctx_96.request.url!.split("?", 2)[1] ?? "",
+  );
+
+  const range = __queryParams_99.get("range") ?? undefined;
+  if (!range) {
+    return __ctx_96.errorHandlers.onInvalidRequest(
+      __ctx_96,
+      "/usage",
+      "missing required query parameter 'range'",
+    );
+  }
+
+  let __result_97: UsageSeries[];
+
+  try {
+    __result_97 = await __operations_98.list(__ctx_96, range);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_96);
+    } else throw e;
+  }
+
+  __ctx_96.response.setHeader("content-type", "application/json");
+  __ctx_96.response.end(globalThis.JSON.stringify(__result_97));
+}
+
+export async function context_read(
+  __ctx_100: HttpContext,
+  __operations_102: Context,
+): Promise<void> {
+  let __result_101: CurrentContext;
+
+  try {
+    __result_101 = await __operations_102.read(__ctx_100);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_100);
+    } else throw e;
+  }
+
+  __ctx_100.response.setHeader("content-type", "application/json");
+  __ctx_100.response.end(globalThis.JSON.stringify(__result_101));
+}
+
+export async function context_update(
+  __ctx_104: HttpContext,
+  __operations_106: Context,
+): Promise<void> {
+  const __contentType_109 = parseHeaderValueParameters(
+    __ctx_104.request.headers["content-type"] as string | undefined,
+  );
+  if (__contentType_109?.value !== "application/json") {
+    return __ctx_104.errorHandlers.onInvalidRequest(
+      __ctx_104,
+      "/context",
+      `unexpected "content-type": '${__contentType_109?.value}', expected '"application/json"'`,
+    );
+  }
+
+  const __input_108 = (await new Promise(function parseInput(resolve, reject) {
+    const chunks: Array<Buffer> = [];
+    __ctx_104.request.on("data", function appendChunk(chunk) {
+      chunks.push(chunk);
+    });
+    __ctx_104.request.on("end", function finalize() {
+      try {
+        const body = Buffer.concat(chunks).toString();
+        resolve(JSON.parse(body));
+      } catch {
+        __ctx_104.errorHandlers.onInvalidRequest(
+          __ctx_104,
           "/context",
           "invalid JSON in request body",
         );
         reject();
       }
     });
-    __ctx_74.request.on("error", reject);
+    __ctx_104.request.on("error", reject);
   })) as UpdateContextInput;
 
-  let __result_75: CurrentContext;
+  let __result_105: CurrentContext;
 
   try {
-    __result_75 = await __operations_76.update(__ctx_74, __input_78);
+    __result_105 = await __operations_106.update(__ctx_104, __input_108);
   } catch (e) {
     if (__isHttpResponder_0(e)) {
-      return e[__httpResponderSymbol_1](__ctx_74);
+      return e[__httpResponderSymbol_1](__ctx_104);
     } else throw e;
   }
 
-  __ctx_74.response.setHeader("content-type", "application/json");
-  __ctx_74.response.end(globalThis.JSON.stringify(__result_75));
+  __ctx_104.response.setHeader("content-type", "application/json");
+  __ctx_104.response.end(globalThis.JSON.stringify(__result_105));
+}
+
+export async function git_providers_list(
+  __ctx_110: HttpContext,
+  __operations_112: GitProviders,
+): Promise<void> {
+  let __result_111: GitProvider[];
+
+  try {
+    __result_111 = await __operations_112.list(__ctx_110);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_110);
+    } else throw e;
+  }
+
+  __ctx_110.response.setHeader("content-type", "application/json");
+  __ctx_110.response.end(globalThis.JSON.stringify(__result_111));
+}
+
+export async function git_providers_create(
+  __ctx_114: HttpContext,
+  __operations_116: GitProviders,
+): Promise<void> {
+  const __contentType_119 = parseHeaderValueParameters(
+    __ctx_114.request.headers["content-type"] as string | undefined,
+  );
+  if (__contentType_119?.value !== "application/json") {
+    return __ctx_114.errorHandlers.onInvalidRequest(
+      __ctx_114,
+      "/git-providers",
+      `unexpected "content-type": '${__contentType_119?.value}', expected '"application/json"'`,
+    );
+  }
+
+  const __input_118 = (await new Promise(function parseInput(resolve, reject) {
+    const chunks: Array<Buffer> = [];
+    __ctx_114.request.on("data", function appendChunk(chunk) {
+      chunks.push(chunk);
+    });
+    __ctx_114.request.on("end", function finalize() {
+      try {
+        const body = Buffer.concat(chunks).toString();
+        resolve(JSON.parse(body));
+      } catch {
+        __ctx_114.errorHandlers.onInvalidRequest(
+          __ctx_114,
+          "/git-providers",
+          "invalid JSON in request body",
+        );
+        reject();
+      }
+    });
+    __ctx_114.request.on("error", reject);
+  })) as ConnectGitProviderInput;
+
+  let __result_115: GitProvider | ValidationError;
+
+  try {
+    __result_115 = await __operations_116.create(__ctx_114, __input_118);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_114);
+    } else throw e;
+  }
+
+  if ("id" in __result_115) {
+    __ctx_114.response.setHeader("content-type", "application/json");
+    __ctx_114.response.end(globalThis.JSON.stringify(__result_115));
+  } else if ("statusCode" in __result_115 && __result_115.statusCode === 422) {
+    __ctx_114.response.statusCode = 422;
+    __ctx_114.response.setHeader("content-type", "application/json");
+    __ctx_114.response.end(globalThis.JSON.stringify(__result_115));
+  }
+}
+
+export async function git_providers_remove(
+  __ctx_120: HttpContext,
+  __operations_122: GitProviders,
+  id: string,
+): Promise<void> {
+  let __result_121: void | NotFoundError;
+
+  try {
+    __result_121 = await __operations_122.remove(__ctx_120, id);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_120);
+    } else throw e;
+  }
+
+  if (__result_121 === undefined) {
+    __ctx_120.response.statusCode = 204;
+    __ctx_120.response.end();
+  } else {
+    if ("statusCode" in __result_121 && __result_121.statusCode === 404) {
+      __ctx_120.response.statusCode = 404;
+      __ctx_120.response.setHeader("content-type", "application/json");
+      __ctx_120.response.end(globalThis.JSON.stringify(__result_121));
+    }
+  }
+}
+
+export async function git_providers_list_repos(
+  __ctx_124: HttpContext,
+  __operations_126: GitProviders,
+  id: string,
+): Promise<void> {
+  let __result_125: GitRepoOption[] | NotFoundError | ValidationError;
+
+  try {
+    __result_125 = await __operations_126.listRepos(__ctx_124, id);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_124);
+    } else throw e;
+  }
+
+  if (globalThis.Array.isArray(__result_125)) {
+    __ctx_124.response.setHeader("content-type", "application/json");
+    __ctx_124.response.end(
+      globalThis.JSON.stringify(
+        __result_125?.map((item) => GitRepoOption.toJsonObject(item)),
+      ),
+    );
+  } else if ("statusCode" in __result_125 && __result_125.statusCode === 404) {
+    __ctx_124.response.statusCode = 404;
+    __ctx_124.response.setHeader("content-type", "application/json");
+    __ctx_124.response.end(globalThis.JSON.stringify(__result_125));
+  } else if ("statusCode" in __result_125 && __result_125.statusCode === 422) {
+    __ctx_124.response.statusCode = 422;
+    __ctx_124.response.setHeader("content-type", "application/json");
+    __ctx_124.response.end(globalThis.JSON.stringify(__result_125));
+  }
+}
+
+export async function git_providers_list_branches(
+  __ctx_128: HttpContext,
+  __operations_130: GitProviders,
+  id: string,
+): Promise<void> {
+  const __queryParams_131 = new URLSearchParams(
+    __ctx_128.request.url!.split("?", 2)[1] ?? "",
+  );
+
+  const repo = __queryParams_131.get("repo") ?? undefined;
+  if (!repo) {
+    return __ctx_128.errorHandlers.onInvalidRequest(
+      __ctx_128,
+      "/git-providers/{id}/branches",
+      "missing required query parameter 'repo'",
+    );
+  }
+
+  let __result_129: string[] | NotFoundError | ValidationError;
+
+  try {
+    __result_129 = await __operations_130.listBranches(__ctx_128, id, repo);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_128);
+    } else throw e;
+  }
+
+  if (globalThis.Array.isArray(__result_129)) {
+    __ctx_128.response.setHeader("content-type", "application/json");
+    __ctx_128.response.end(globalThis.JSON.stringify(__result_129));
+  } else if ("statusCode" in __result_129 && __result_129.statusCode === 404) {
+    __ctx_128.response.statusCode = 404;
+    __ctx_128.response.setHeader("content-type", "application/json");
+    __ctx_128.response.end(globalThis.JSON.stringify(__result_129));
+  } else if ("statusCode" in __result_129 && __result_129.statusCode === 422) {
+    __ctx_128.response.statusCode = 422;
+    __ctx_128.response.setHeader("content-type", "application/json");
+    __ctx_128.response.end(globalThis.JSON.stringify(__result_129));
+  }
+}
+
+export async function repo_connections_list(
+  __ctx_132: HttpContext,
+  __operations_134: RepoConnections,
+): Promise<void> {
+  const __queryParams_135 = new URLSearchParams(
+    __ctx_132.request.url!.split("?", 2)[1] ?? "",
+  );
+
+  const targetKind = __queryParams_135.get("targetKind") ?? undefined;
+  const targetId = __queryParams_135.get("targetId") ?? undefined;
+  let __result_133: RepoConnection[];
+
+  try {
+    __result_133 = await __operations_134.list(__ctx_132, {
+      targetKind: targetKind === undefined ? undefined : targetKind,
+      targetId: targetId === undefined ? undefined : targetId,
+    });
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_132);
+    } else throw e;
+  }
+
+  __ctx_132.response.setHeader("content-type", "application/json");
+  __ctx_132.response.end(globalThis.JSON.stringify(__result_133));
+}
+
+export async function repo_connections_create(
+  __ctx_136: HttpContext,
+  __operations_138: RepoConnections,
+): Promise<void> {
+  const __contentType_141 = parseHeaderValueParameters(
+    __ctx_136.request.headers["content-type"] as string | undefined,
+  );
+  if (__contentType_141?.value !== "application/json") {
+    return __ctx_136.errorHandlers.onInvalidRequest(
+      __ctx_136,
+      "/repo-connections",
+      `unexpected "content-type": '${__contentType_141?.value}', expected '"application/json"'`,
+    );
+  }
+
+  const __input_140 = (await new Promise(function parseInput(resolve, reject) {
+    const chunks: Array<Buffer> = [];
+    __ctx_136.request.on("data", function appendChunk(chunk) {
+      chunks.push(chunk);
+    });
+    __ctx_136.request.on("end", function finalize() {
+      try {
+        const body = Buffer.concat(chunks).toString();
+        resolve(JSON.parse(body));
+      } catch {
+        __ctx_136.errorHandlers.onInvalidRequest(
+          __ctx_136,
+          "/repo-connections",
+          "invalid JSON in request body",
+        );
+        reject();
+      }
+    });
+    __ctx_136.request.on("error", reject);
+  })) as CreateRepoConnectionInput;
+
+  let __result_137: RepoConnection | NotFoundError | ValidationError;
+
+  try {
+    __result_137 = await __operations_138.create(__ctx_136, __input_140);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_136);
+    } else throw e;
+  }
+
+  if ("id" in __result_137) {
+    __ctx_136.response.setHeader("content-type", "application/json");
+    __ctx_136.response.end(globalThis.JSON.stringify(__result_137));
+  } else if ("statusCode" in __result_137 && __result_137.statusCode === 404) {
+    __ctx_136.response.statusCode = 404;
+    __ctx_136.response.setHeader("content-type", "application/json");
+    __ctx_136.response.end(globalThis.JSON.stringify(__result_137));
+  } else if ("statusCode" in __result_137 && __result_137.statusCode === 422) {
+    __ctx_136.response.statusCode = 422;
+    __ctx_136.response.setHeader("content-type", "application/json");
+    __ctx_136.response.end(globalThis.JSON.stringify(__result_137));
+  }
+}
+
+export async function repo_connections_remove(
+  __ctx_142: HttpContext,
+  __operations_144: RepoConnections,
+  id: string,
+): Promise<void> {
+  let __result_143: void | NotFoundError;
+
+  try {
+    __result_143 = await __operations_144.remove(__ctx_142, id);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_142);
+    } else throw e;
+  }
+
+  if (__result_143 === undefined) {
+    __ctx_142.response.statusCode = 204;
+    __ctx_142.response.end();
+  } else {
+    if ("statusCode" in __result_143 && __result_143.statusCode === 404) {
+      __ctx_142.response.statusCode = 404;
+      __ctx_142.response.setHeader("content-type", "application/json");
+      __ctx_142.response.end(globalThis.JSON.stringify(__result_143));
+    }
+  }
+}
+
+export async function repo_connections_sync(
+  __ctx_146: HttpContext,
+  __operations_148: RepoConnections,
+  id: string,
+): Promise<void> {
+  let __result_147: RepoConnection | NotFoundError | ValidationError;
+
+  try {
+    __result_147 = await __operations_148.sync(__ctx_146, id);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_146);
+    } else throw e;
+  }
+
+  if ("id" in __result_147) {
+    __ctx_146.response.setHeader("content-type", "application/json");
+    __ctx_146.response.end(globalThis.JSON.stringify(__result_147));
+  } else if ("statusCode" in __result_147 && __result_147.statusCode === 404) {
+    __ctx_146.response.statusCode = 404;
+    __ctx_146.response.setHeader("content-type", "application/json");
+    __ctx_146.response.end(globalThis.JSON.stringify(__result_147));
+  } else if ("statusCode" in __result_147 && __result_147.statusCode === 422) {
+    __ctx_146.response.statusCode = 422;
+    __ctx_146.response.setHeader("content-type", "application/json");
+    __ctx_146.response.end(globalThis.JSON.stringify(__result_147));
+  }
 }

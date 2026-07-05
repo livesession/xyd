@@ -1,5 +1,14 @@
 # Shared dev infra for the apitoolchain backend services (registry-api + api):
-# Postgres + MinIO (S3-compatible), mirroring the apiatlas MinIO precedent.
+# Postgres + MinIO (S3-compatible), mirroring the apiatlas MinIO precedent, plus
+# Gitea for local git-provider sync tests (no external tokens). Seed the Gitea
+# admin/token/repo with:
+#   docker compose exec -u git gitea gitea admin user create --admin \
+#     --username apitoolchain --password apitoolchain-secret \
+#     --email dev@apitoolchain.local --must-change-password=false
+#   docker compose exec -u git gitea gitea admin user generate-access-token \
+#     --username apitoolchain --raw --scopes all
+# The gitproviderd Go service runs via `mise run dev:apitoolchain-gitprovider`.
+# (The Vite dev plugin does all of this automatically via testcontainers.)
 services:
   postgres:
     image: postgres:16
@@ -35,6 +44,17 @@ services:
       mc mb -p local/apitoolchain-artifacts;
       exit 0"
 
+  gitea:
+    image: gitea/gitea:1.22
+    environment:
+      GITEA__database__DB_TYPE: sqlite3
+      GITEA__security__INSTALL_LOCK: "true"
+      GITEA__server__ROOT_URL: http://localhost:3000/
+      GITEA__log__LEVEL: warn
+    ports: ["3000:3000"]
+    volumes: ["apitoolchain-gitea:/data"]
+
 volumes:
   apitoolchain-pg:
   apitoolchain-minio:
+  apitoolchain-gitea:

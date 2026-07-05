@@ -11,6 +11,7 @@ packages:
   - '!packages/apitoolchain-xyd-bridge'
   - '!packages/apitoolchain-schemas'
   - '!packages/apitoolchain-dev'
+  - '!packages/apitoolchain-filters'
   # - 'cli'
   # - '!packages/xyd-mcp-server' # temporary? cuz it's bun
   - '.xyd/host'

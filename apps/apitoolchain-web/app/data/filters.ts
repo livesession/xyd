@@ -1,0 +1,140 @@
+import { defineFilterSchema, type FilterSchema } from "@apitoolchain/filters";
+
+/**
+ * Filter schemas per surface. The field `key` doubles as the row property read
+ * by `filter.run(rows)` and the SQL column serialized into `?q=`. Enum `values`
+ * (e.g. namespaces) are data-driven, so these take the distinct values present.
+ */
+
+export function registryFilterSchema(namespaces: string[]): FilterSchema {
+  return defineFilterSchema({
+    table: "registry",
+    fields: [
+      {
+        key: "namespace",
+        label: "Namespace",
+        column: "namespace",
+        type: "enum",
+        icon: "registry",
+        values: namespaces.map((n) => ({ value: n, label: n })),
+      },
+      {
+        key: "format",
+        label: "Format",
+        column: "format",
+        type: "enum",
+        icon: "docs",
+        values: [
+          { value: "openapi", label: "OpenAPI" },
+          { value: "graphql", label: "GraphQL" },
+          { value: "asyncapi", label: "AsyncAPI" },
+          { value: "jsonschema", label: "JSON Schema" },
+        ],
+      },
+      {
+        key: "name",
+        label: "Name",
+        column: "name",
+        type: "text",
+        icon: "search",
+        freeText: true,
+      },
+    ],
+  });
+}
+
+export function sdkFilterSchema(namespaces: string[]): FilterSchema {
+  return defineFilterSchema({
+    table: "sdks",
+    fields: [
+      {
+        key: "namespace",
+        label: "Namespace",
+        column: "namespace",
+        type: "enum",
+        icon: "registry",
+        values: namespaces.map((n) => ({ value: n, label: n })),
+      },
+      {
+        key: "name",
+        label: "Name",
+        column: "name",
+        type: "text",
+        icon: "search",
+        freeText: true,
+      },
+    ],
+  });
+}
+
+export function sdkTargetFilterSchema(
+  namespaces: string[],
+  languages: string[],
+): FilterSchema {
+  return defineFilterSchema({
+    table: "sdk_targets",
+    fields: [
+      {
+        key: "namespace",
+        label: "Namespace",
+        column: "namespace",
+        type: "enum",
+        icon: "registry",
+        values: namespaces.map((n) => ({ value: n, label: n })),
+      },
+      {
+        key: "language",
+        label: "Language",
+        column: "language",
+        type: "enum",
+        icon: "sdk",
+        values: languages.map((l) => ({ value: l, label: l })),
+      },
+      {
+        // Searches a combined string on each row (package + SDK + language).
+        key: "search",
+        label: "Name",
+        column: "search",
+        type: "text",
+        icon: "search",
+        freeText: true,
+      },
+    ],
+  });
+}
+
+export function docsFilterSchema(themes: string[]): FilterSchema {
+  return defineFilterSchema({
+    table: "docs",
+    fields: [
+      {
+        key: "theme",
+        label: "Theme",
+        column: "theme",
+        type: "enum",
+        icon: "docs",
+        values: themes.map((t) => ({ value: t, label: t })),
+      },
+      {
+        key: "status",
+        label: "Status",
+        column: "status",
+        type: "enum",
+        icon: "check",
+        values: [
+          { value: "ready", label: "Ready" },
+          { value: "building", label: "Building" },
+          { value: "error", label: "Error" },
+        ],
+      },
+      {
+        key: "name",
+        label: "Name",
+        column: "name",
+        type: "text",
+        icon: "search",
+        freeText: true,
+      },
+    ],
+  });
+}

@@ -18,10 +18,8 @@ export function meta() {
 const FILTERS = ["all", "unread"] as const;
 type Filter = (typeof FILTERS)[number];
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const param = new URL(request.url).searchParams.get(
-    "filter",
-  ) as Filter | null;
+export async function loader({ params }: Route.LoaderArgs) {
+  const param = params.filter as Filter | undefined;
   const filter: Filter = param && FILTERS.includes(param) ? param : "all";
   const all = await listNotifications();
   const items = filter === "unread" ? all.filter((n) => !n.read) : all;
@@ -82,13 +80,13 @@ export default function NotificationsRoute({
               {
                 key: "all",
                 label: "All",
-                href: "/notifications?filter=all",
+                href: "/notifications",
                 count: total,
               },
               {
                 key: "unread",
                 label: "Unread",
-                href: "/notifications?filter=unread",
+                href: "/notifications/unread",
                 count: unread,
               },
             ]}

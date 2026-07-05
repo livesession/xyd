@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { AppShell } from "./AppShell";
+import { Button } from "./Button";
 import { PageHeader } from "./PageHeader";
+import { RightPanel, RightPanelSection } from "./RightPanel";
 import { Sidebar } from "./Sidebar";
 import { Tabs } from "./Tabs";
 
@@ -30,6 +32,69 @@ type Story = StoryObj<typeof AppShell>;
 
 /** The default frame: `<Sidebar/>` next to a scrollable content column. */
 export const Default: Story = {};
+
+/** A page fills the contextual right rail by rendering `<RightPanel>`. */
+export const WithRightPanel: Story = {
+  args: {
+    children: (
+      <>
+        <PageHeader
+          title="LiveSession API"
+          description="Sessions, events, and analytics."
+        />
+        <div className="rounded-box border border-line p-6 text-ink">
+          Page content. The right rail holds contextual actions.
+        </div>
+        <RightPanel>
+          <RightPanelSection title="Actions">
+            <Button variant="secondary" icon="plus">
+              New version
+            </Button>
+            <Button variant="secondary" icon="sdk">
+              Generate SDKs
+            </Button>
+          </RightPanelSection>
+        </RightPanel>
+      </>
+    ),
+  },
+};
+
+/**
+ * `placement="content-right"`: the panel is inline, to the right of the page
+ * content and below the header — its border meets the header's bottom border and
+ * runs the full content height. (The page composes the flex row.)
+ */
+export const ContentRightPanel: Story = {
+  args: {
+    children: (
+      <>
+        <PageHeader
+          title="LiveSession API"
+          description="Sessions, events, and analytics."
+        />
+        <div className="-mt-6 -mb-16 flex flex-1">
+          <div className="min-w-0 flex-1 pt-6 pr-8 pb-16">
+            <div className="rounded-box border border-line p-6 text-ink">
+              Main content. The right panel border meets the header divider and
+              runs to the bottom.
+            </div>
+          </div>
+          <RightPanel placement="content-right">
+            <RightPanelSection title="Actions">
+              <Button variant="secondary" icon="plus">
+                New version
+              </Button>
+              <Button variant="secondary" icon="sdk">
+                Generate SDKs
+              </Button>
+            </RightPanelSection>
+          </RightPanel>
+        </div>
+      </>
+    ),
+  },
+};
 
 /** The typical page shape: a {@link PageHeader} (with tabs whose underline is
  * full-bleed to the sidebar) above the page content. */

@@ -48,7 +48,10 @@ export const registerApi: Apis["register"] = async (_ctx, input) => {
   }
 
   const id = slugify(input.name);
-  const namespace = input.ns ?? "default";
+  // Namespaces are required and never empty — an empty namespace would cascade
+  // to any SDK/schema derived from this entry.
+  const namespace = (input.ns ?? "").trim();
+  if (!namespace) return invalid("namespace is required.");
   const source = input.source ?? input.url ?? "upload";
 
   // Entry ids are globally unique across kinds. Refuse to let a schema/api of

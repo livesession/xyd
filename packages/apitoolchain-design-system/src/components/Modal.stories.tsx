@@ -10,7 +10,7 @@ const meta: Meta<typeof Modal> = {
   component: Modal,
   parameters: { layout: "centered" },
   argTypes: {
-    size: { control: "inline-radio", options: ["md", "lg"] },
+    size: { control: "inline-radio", options: ["sm", "md", "lg"] },
     open: { control: false },
     onClose: { action: "closed" },
   },
@@ -56,6 +56,11 @@ type Story = StoryObj<typeof Modal>;
 
 /** The default medium modal with a title, description and a single field body. */
 export const Default: Story = {};
+
+/** The compact (`sm`) variant — focused dialogs and short wizards. */
+export const Small: Story = {
+  args: { size: "sm" },
+};
 
 /** The wide (`lg`) variant for denser forms. */
 export const Large: Story = {

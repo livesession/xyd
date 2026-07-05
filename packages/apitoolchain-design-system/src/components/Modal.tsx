@@ -10,10 +10,11 @@ export interface ModalProps {
   children: ReactNode;
   /** Footer actions (e.g. Cancel / Submit buttons), right-aligned. */
   footer?: ReactNode;
-  size?: "md" | "lg";
+  size?: "sm" | "md" | "lg";
 }
 
 const SIZE: Record<NonNullable<ModalProps["size"]>, string> = {
+  sm: "max-w-[448px]",
   md: "max-w-[520px]",
   lg: "max-w-[720px]",
 };

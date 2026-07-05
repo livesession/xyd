@@ -5,7 +5,7 @@ interface Client {
 }
 
 export const listSdkTargetsQuery = `-- name: ListSdkTargets :many
-SELECT id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at FROM sdk_targets ORDER BY created_at DESC`;
+SELECT id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at, sdk_id FROM sdk_targets ORDER BY created_at DESC`;
 
 export interface ListSdkTargetsRow {
     id: string;
@@ -22,6 +22,7 @@ export interface ListSdkTargetsRow {
     registryUrl: string | null;
     createdAt: Date;
     updatedAt: Date;
+    sdkId: string;
 }
 
 export async function listSdkTargets(client: Client): Promise<ListSdkTargetsRow[]> {
@@ -45,13 +46,14 @@ export async function listSdkTargets(client: Client): Promise<ListSdkTargetsRow[
             lastPublishedAt: row[10],
             registryUrl: row[11],
             createdAt: row[12],
-            updatedAt: row[13]
+            updatedAt: row[13],
+            sdkId: row[14]
         };
     });
 }
 
 export const listSdkTargetsByApiQuery = `-- name: ListSdkTargetsByApi :many
-SELECT id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at FROM sdk_targets WHERE api_id = $1 ORDER BY created_at DESC`;
+SELECT id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at, sdk_id FROM sdk_targets WHERE api_id = $1 ORDER BY created_at DESC`;
 
 export interface ListSdkTargetsByApiArgs {
     apiId: string;
@@ -72,6 +74,7 @@ export interface ListSdkTargetsByApiRow {
     registryUrl: string | null;
     createdAt: Date;
     updatedAt: Date;
+    sdkId: string;
 }
 
 export async function listSdkTargetsByApi(client: Client, args: ListSdkTargetsByApiArgs): Promise<ListSdkTargetsByApiRow[]> {
@@ -95,13 +98,66 @@ export async function listSdkTargetsByApi(client: Client, args: ListSdkTargetsBy
             lastPublishedAt: row[10],
             registryUrl: row[11],
             createdAt: row[12],
-            updatedAt: row[13]
+            updatedAt: row[13],
+            sdkId: row[14]
+        };
+    });
+}
+
+export const listSdkTargetsBySdkQuery = `-- name: ListSdkTargetsBySdk :many
+SELECT id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at, sdk_id FROM sdk_targets WHERE sdk_id = $1 ORDER BY created_at DESC`;
+
+export interface ListSdkTargetsBySdkArgs {
+    sdkId: string;
+}
+
+export interface ListSdkTargetsBySdkRow {
+    id: string;
+    apiId: string;
+    apiVersion: string;
+    language: string;
+    packageName: string;
+    output: string;
+    version: string;
+    status: string;
+    artifactRef: string | null;
+    errorMessage: string | null;
+    lastPublishedAt: Date | null;
+    registryUrl: string | null;
+    createdAt: Date;
+    updatedAt: Date;
+    sdkId: string;
+}
+
+export async function listSdkTargetsBySdk(client: Client, args: ListSdkTargetsBySdkArgs): Promise<ListSdkTargetsBySdkRow[]> {
+    const result = await client.query({
+        text: listSdkTargetsBySdkQuery,
+        values: [args.sdkId],
+        rowMode: "array"
+    });
+    return result.rows.map(row => {
+        return {
+            id: row[0],
+            apiId: row[1],
+            apiVersion: row[2],
+            language: row[3],
+            packageName: row[4],
+            output: row[5],
+            version: row[6],
+            status: row[7],
+            artifactRef: row[8],
+            errorMessage: row[9],
+            lastPublishedAt: row[10],
+            registryUrl: row[11],
+            createdAt: row[12],
+            updatedAt: row[13],
+            sdkId: row[14]
         };
     });
 }
 
 export const getSdkTargetQuery = `-- name: GetSdkTarget :one
-SELECT id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at FROM sdk_targets WHERE id = $1`;
+SELECT id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at, sdk_id FROM sdk_targets WHERE id = $1`;
 
 export interface GetSdkTargetArgs {
     id: string;
@@ -122,6 +178,7 @@ export interface GetSdkTargetRow {
     registryUrl: string | null;
     createdAt: Date;
     updatedAt: Date;
+    sdkId: string;
 }
 
 export async function getSdkTarget(client: Client, args: GetSdkTargetArgs): Promise<GetSdkTargetRow | null> {
@@ -148,17 +205,19 @@ export async function getSdkTarget(client: Client, args: GetSdkTargetArgs): Prom
         lastPublishedAt: row[10],
         registryUrl: row[11],
         createdAt: row[12],
-        updatedAt: row[13]
+        updatedAt: row[13],
+        sdkId: row[14]
     };
 }
 
 export const insertSdkTargetQuery = `-- name: InsertSdkTarget :one
-INSERT INTO sdk_targets (id, api_id, api_version, language, package_name, output, version, status)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-RETURNING id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at`;
+INSERT INTO sdk_targets (id, sdk_id, api_id, api_version, language, package_name, output, version, status)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+RETURNING id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at, sdk_id`;
 
 export interface InsertSdkTargetArgs {
     id: string;
+    sdkId: string;
     apiId: string;
     apiVersion: string;
     language: string;
@@ -183,12 +242,13 @@ export interface InsertSdkTargetRow {
     registryUrl: string | null;
     createdAt: Date;
     updatedAt: Date;
+    sdkId: string;
 }
 
 export async function insertSdkTarget(client: Client, args: InsertSdkTargetArgs): Promise<InsertSdkTargetRow | null> {
     const result = await client.query({
         text: insertSdkTargetQuery,
-        values: [args.id, args.apiId, args.apiVersion, args.language, args.packageName, args.output, args.version, args.status],
+        values: [args.id, args.sdkId, args.apiId, args.apiVersion, args.language, args.packageName, args.output, args.version, args.status],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {
@@ -209,7 +269,8 @@ export async function insertSdkTarget(client: Client, args: InsertSdkTargetArgs)
         lastPublishedAt: row[10],
         registryUrl: row[11],
         createdAt: row[12],
-        updatedAt: row[13]
+        updatedAt: row[13],
+        sdkId: row[14]
     };
 }
 
@@ -247,6 +308,21 @@ export async function markSdkTargetError(client: Client, args: MarkSdkTargetErro
     await client.query({
         text: markSdkTargetErrorQuery,
         values: [args.id, args.errorMessage],
+        rowMode: "array"
+    });
+}
+
+export const deleteSdkTargetQuery = `-- name: DeleteSdkTarget :exec
+DELETE FROM sdk_targets WHERE id = $1`;
+
+export interface DeleteSdkTargetArgs {
+    id: string;
+}
+
+export async function deleteSdkTarget(client: Client, args: DeleteSdkTargetArgs): Promise<void> {
+    await client.query({
+        text: deleteSdkTargetQuery,
+        values: [args.id],
         rowMode: "array"
     });
 }

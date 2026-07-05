@@ -16,7 +16,15 @@ export type BuildStatus = "ready" | "building" | "error" | "draft";
 export type SdkLanguage = "go" | "python" | "node" | "ruby" | "java" | "dotnet";
 export type McpTransport = "http" | "sse" | "stdio";
 export type NotificationSeverity = "info" | "success" | "warning" | "error";
-export type NotificationSource = "sdk" | "docs" | "mcp" | "registry" | "system";
+export type NotificationSource =
+  | "sdk"
+  | "docs"
+  | "mcp"
+  | "registry"
+  | "system"
+  | "git";
+export type GitProviderKind = "github" | "gitlab" | "bitbucket" | "gitea";
+export type RepoTargetKind = "spec" | "sdk";
 export type UsageRange = "24h" | "7d" | "30d" | "90d";
 
 export interface ApiVersion {
@@ -55,8 +63,22 @@ export interface RegistryEntry {
   mcpServerCount: number;
 }
 
+/** A named SDK project tied to one API — groups per-language targets. */
+export interface Sdk {
+  id: string;
+  apiId: string;
+  name: string;
+  description: string;
+  namespace: string;
+  targetCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface SdkTarget {
   id: string;
+  /** The parent SDK this target belongs to. */
+  sdkId: string;
   apiId: string;
   language: SdkLanguage;
   packageName: string;
@@ -131,4 +153,37 @@ export interface Project {
   id: string;
   name: string;
   orgId: string;
+}
+
+/** A connected git-provider account (its token stays server-side). */
+export interface GitProvider {
+  id: string;
+  kind: GitProviderKind;
+  name: string;
+  baseUrl: string;
+  connectedAs: string;
+  createdAt: string;
+}
+
+/** A repo option surfaced by a provider (for the connect picker). */
+export interface GitRepoOption {
+  fullName: string;
+  defaultBranch: string;
+  htmlUrl: string;
+  private: boolean;
+}
+
+/** Links an API spec or SDK target to a repo; syncing pushes it there. */
+export interface RepoConnection {
+  id: string;
+  providerId: string;
+  targetKind: RepoTargetKind;
+  targetId: string;
+  ref?: string;
+  repo: string;
+  branch: string;
+  prefix: string;
+  lastSyncedAt?: string;
+  lastSyncStatus?: BuildStatus;
+  lastSyncError?: string;
 }

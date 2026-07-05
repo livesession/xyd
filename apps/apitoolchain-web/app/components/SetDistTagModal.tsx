@@ -1,5 +1,6 @@
 import {
   Button,
+  Callout,
   Field,
   Input,
   Modal,
@@ -8,6 +9,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useFetcher } from "react-router";
 import type { RegistryEntry, SetDistTagResult } from "~/data";
+import { formatVersion } from "~/version";
 
 export function SetDistTagModal({
   open,
@@ -78,7 +80,7 @@ export function SetDistTagModal({
           label="Tag"
           hint={
             existing
-              ? `Moves @${cleanTag} from v${existing.version}.`
+              ? `Moves @${cleanTag} from ${formatVersion(existing.version)}.`
               : "e.g. latest, canary, beta, stable."
           }
         >
@@ -91,16 +93,12 @@ export function SetDistTagModal({
             onChange={setVersion}
             options={api.versions.map((v) => ({
               value: v.version,
-              label: `v${v.version}${v.current ? " · current" : ""}`,
+              label: `${formatVersion(v.version)}${v.current ? " · current" : ""}`,
             }))}
           />
         </Field>
 
-        {error && (
-          <div className="rounded-control bg-danger-bg px-3 py-2 text-[13px] text-danger">
-            {error}
-          </div>
-        )}
+        {error && <Callout tone="error">{error}</Callout>}
       </div>
     </Modal>
   );

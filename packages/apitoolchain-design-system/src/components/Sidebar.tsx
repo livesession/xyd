@@ -16,8 +16,8 @@ export interface SidebarNavItem {
 export const APITOOLCHAIN_NAV: SidebarNavItem[] = [
   { icon: "home", label: "Home", href: "/" },
   { icon: "registry", label: "Registry", href: "/registry" },
-  { icon: "docs", label: "Docs", href: "/docs" },
   { icon: "sdk", label: "SDKs", href: "/sdks" },
+  { icon: "docs", label: "Docs", href: "/docs" },
   { icon: "mcp", label: "MCP", href: "/mcp" },
   { icon: "bell", label: "Notifications", href: "/notifications" },
   { icon: "usage", label: "Usage", href: "/usage" },
@@ -123,7 +123,7 @@ function DefaultBrand() {
   return (
     <div className="flex min-w-0 items-center gap-2 px-1.5 py-[3px]">
       <span className="inline-flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-control bg-ink text-white">
-        <Icon icon="cube" size={16} />
+        <Icon icon="box" size={16} />
       </span>
       <span className="truncate text-[15px] font-semibold text-ink">
         apitoolchain

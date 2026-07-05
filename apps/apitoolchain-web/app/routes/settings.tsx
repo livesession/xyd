@@ -1,12 +1,5 @@
-import {
-  Button,
-  Field,
-  Input,
-  PageHeader,
-  Select,
-  Tabs,
-} from "@apitoolchain/design-system";
-import { RouterLink } from "~/components/RouterLink";
+import { Button, Field, Input, Select } from "@apitoolchain/design-system";
+import { SettingsHeader } from "~/components/SettingsHeader";
 import { getCurrentContext } from "~/data";
 import type { Route } from "./+types/settings";
 
@@ -17,8 +10,8 @@ export function meta() {
 const TABS = ["general", "organization", "members", "keys", "billing"] as const;
 type Tab = (typeof TABS)[number];
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const t = new URL(request.url).searchParams.get("tab") as Tab | null;
+export async function loader({ params }: Route.LoaderArgs) {
+  const t = params.tab as Tab | undefined;
   const tab: Tab = t && TABS.includes(t) ? t : "general";
   const { org, project } = await getCurrentContext();
   return { tab, org, project };
@@ -29,39 +22,7 @@ export default function SettingsRoute({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <PageHeader
-        title="Settings"
-        description="Manage your organization, project, members and billing."
-        tabs={
-          <Tabs
-            linkComponent={RouterLink}
-            activeKey={tab}
-            items={[
-              {
-                key: "general",
-                label: "General",
-                href: "/settings?tab=general",
-              },
-              {
-                key: "organization",
-                label: "Organization",
-                href: "/settings?tab=organization",
-              },
-              {
-                key: "members",
-                label: "Members",
-                href: "/settings?tab=members",
-              },
-              { key: "keys", label: "API keys", href: "/settings?tab=keys" },
-              {
-                key: "billing",
-                label: "Billing",
-                href: "/settings?tab=billing",
-              },
-            ]}
-          />
-        }
-      />
+      <SettingsHeader active={tab} />
       <div className="flex max-w-[520px] flex-col gap-5">
         {tab === "general" ? (
           <>

@@ -1,5 +1,6 @@
 import {
   Button,
+  Callout,
   Field,
   Input,
   Modal,
@@ -8,24 +9,44 @@ import {
   Textarea,
 } from "@apitoolchain/design-system";
 import { useEffect, useRef, useState } from "react";
-import { useFetcher } from "react-router";
-import type { RegisterApiResult } from "~/data";
+import { Link, useFetcher } from "react-router";
+import { listNamespaces, type RegisterApiResult } from "~/data";
 
 export function RegisterApiModal({
   open,
   onClose,
   kind = "api",
+  namespaces = [],
+  defaultNamespace,
+  newVersion,
 }: {
   open: boolean;
   onClose: () => void;
   /** `api` imports an OpenAPI/GraphQL/AsyncAPI spec; `schema` a JSON Schema. */
   kind?: "api" | "schema";
+  /** Namespaces already present on entries — merged with the managed set so
+   * existing namespaces are always pickable (you pick, not create). */
+  namespaces?: string[];
+  /** Preselect this namespace (e.g. importing a new version of an existing API). */
+  defaultNamespace?: string;
+  /**
+   * Version-only mode: uploading a NEW VERSION of an existing spec. Name,
+   * namespace and format are inherited (locked + hidden) — only the new spec is
+   * asked for. Omit for a fresh import.
+   */
+  newVersion?: { name: string; namespace: string; format?: string };
 }) {
   const isSchema = kind === "schema";
   const noun = isSchema ? "schema" : "API";
+  const versionOnly = Boolean(newVersion);
   const fetcher = useFetcher();
   const [name, setName] = useState("");
   const [ns, setNs] = useState("");
+  // Managed namespaces (client store); read after open. Merged with the entry
+  // namespaces passed in so the picker is never missing an existing one.
+  const [managed, setManaged] = useState<string[]>([]);
+  const nsKey = namespaces.join(",");
+  const nsOptions = [...new Set([...namespaces, ...managed])].sort();
   const [format, setFormat] = useState("openapi");
   const [mode, setMode] = useState("Paste");
   const [specText, setSpecText] = useState("");
@@ -40,10 +61,27 @@ export function RegisterApiModal({
   const [dirty, setDirty] = useState(false);
   const error = dirty && result && !result.ok ? result.message : null;
 
-  // A fresh open clears any stale result from a previous attempt.
+  // A fresh open clears any stale result + (re)loads the namespace picker.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: nsKey is a stable primitive standing in for the `namespaces` array
   useEffect(() => {
-    if (open) setDirty(false);
-  }, [open]);
+    if (!open) return;
+    setDirty(false);
+    // Version-only: identity is inherited from the existing spec.
+    if (newVersion) {
+      setName(newVersion.name);
+      setNs(newVersion.namespace);
+      if (newVersion.format) setFormat(newVersion.format);
+      return;
+    }
+    const ids = listNamespaces().map((n) => n.id);
+    setManaged(ids);
+    const opts = [...new Set([...namespaces, ...ids])].sort();
+    setNs(
+      defaultNamespace && opts.includes(defaultNamespace)
+        ? defaultNamespace
+        : (opts[0] ?? ""),
+    );
+  }, [open, nsKey, defaultNamespace]);
 
   // Close + reset once OUR submission succeeds (RR revalidates the list).
   useEffect(() => {
@@ -59,6 +97,7 @@ export function RegisterApiModal({
 
   const canSubmit =
     name.trim().length > 0 &&
+    ns.length > 0 &&
     (mode === "Paste" ? specText.trim().length > 0 : url.trim().length > 0);
 
   function submit() {
@@ -82,11 +121,13 @@ export function RegisterApiModal({
       open={open}
       onClose={onClose}
       size="lg"
-      title={`Import ${noun}`}
+      title={versionOnly ? "New version" : `Import ${noun}`}
       description={
-        isSchema
-          ? "Import a standalone JSON Schema — versioned and referenceable from the registry."
-          : "Import an OpenAPI, GraphQL, or AsyncAPI spec — then generate SDKs, docs, and an MCP server from it."
+        versionOnly
+          ? `Upload a new version of this ${noun} — namespace, name and format are inherited.`
+          : isSchema
+            ? "Import a standalone JSON Schema — versioned and referenceable from the registry."
+            : "Import an OpenAPI, GraphQL, or AsyncAPI spec — then generate SDKs, docs, and an MCP server from it."
       }
       footer={
         <>
@@ -99,37 +140,76 @@ export function RegisterApiModal({
             onClick={submit}
             disabled={!canSubmit || submitting}
           >
-            {submitting ? "Importing…" : `Import ${noun}`}
+            {versionOnly
+              ? submitting
+                ? "Uploading…"
+                : "Upload version"
+              : submitting
+                ? "Importing…"
+                : `Import ${noun}`}
           </Button>
         </>
       }
     >
       <div className="flex flex-col gap-4">
-        <Field label="Name">
-          <Input value={name} onChange={setName} placeholder="Petstore" />
-        </Field>
-
-        <div className={isSchema ? "" : "grid grid-cols-2 gap-4"}>
-          <Field
-            label="Namespace"
-            hint={isSchema ? "Groups related schemas." : "Groups related APIs."}
-          >
-            <Input value={ns} onChange={setNs} placeholder="acme" />
-          </Field>
-          {!isSchema && (
-            <Field label="Format">
-              <Select
-                value={format}
-                onChange={setFormat}
-                options={[
-                  { value: "openapi", label: "OpenAPI" },
-                  { value: "graphql", label: "GraphQL" },
-                  { value: "asyncapi", label: "AsyncAPI" },
-                ]}
-              />
+        {versionOnly ? (
+          <div className="rounded-control border border-line bg-surface-muted px-3 py-2 text-[13px] text-subtle">
+            New version of <span className="font-medium text-ink">{name}</span>{" "}
+            in <span className="font-mono text-ink">@{ns}</span>
+          </div>
+        ) : (
+          <>
+            <Field label="Name">
+              <Input value={name} onChange={setName} placeholder="Petstore" />
             </Field>
-          )}
-        </div>
+
+            <div className={isSchema ? "" : "grid grid-cols-2 gap-4"}>
+              <Field
+                label="Namespace"
+                hint={
+                  isSchema ? "Groups related schemas." : "Groups related APIs."
+                }
+              >
+                <div className="flex flex-col gap-1.5">
+                  {nsOptions.length > 0 ? (
+                    <Select
+                      value={ns}
+                      onChange={setNs}
+                      options={nsOptions.map((id) => ({
+                        value: id,
+                        label: `@${id}`,
+                      }))}
+                    />
+                  ) : (
+                    <div className="rounded-control border border-line bg-surface-muted px-3 py-2 text-[13px] text-subtle">
+                      No namespaces yet — create one to pick it here.
+                    </div>
+                  )}
+                  <Link
+                    to="/settings/namespaces"
+                    onClick={onClose}
+                    className="self-start text-xs text-muted no-underline hover:text-ink"
+                  >
+                    Manage namespaces →
+                  </Link>
+                </div>
+              </Field>
+              {!isSchema && (
+                <Field label="Format">
+                  <Select
+                    value={format}
+                    onChange={setFormat}
+                    options={[
+                      { value: "openapi", label: "OpenAPI" },
+                      { value: "graphql", label: "GraphQL" },
+                      { value: "asyncapi", label: "AsyncAPI" },
+                    ]}
+                  />
+                </Field>
+              )}
+            </div>
+          </>
+        )}
 
         <Field label={isSchema ? "Schema source" : "Spec source"}>
           <div className="flex flex-col gap-2">
@@ -164,11 +244,7 @@ export function RegisterApiModal({
           </div>
         </Field>
 
-        {error && (
-          <div className="rounded-control bg-danger-bg px-3 py-2 text-[13px] text-danger">
-            {error}
-          </div>
-        )}
+        {error && <Callout tone="error">{error}</Callout>}
       </div>
     </Modal>
   );
