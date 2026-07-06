@@ -1,0 +1,17 @@
+{
+  "name": "@apitoolchain/gitprovider-openapi",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "bun",
+  "scripts": {
+    "build": "tsp compile --config ./tspconfig.yaml main.tsp",
+    "format": "tsp format **/*.tsp"
+  },
+  "dependencies": {
+    "@typespec/compiler": "latest",
+    "@typespec/http": "latest",
+    "@typespec/openapi": "latest",
+    "@typespec/openapi3": "latest"
+  }
+}

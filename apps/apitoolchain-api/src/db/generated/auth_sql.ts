@@ -1,0 +1,303 @@
+import { QueryArrayConfig, QueryArrayResult } from "pg";
+
+interface Client {
+    query: (config: QueryArrayConfig) => Promise<QueryArrayResult>;
+}
+
+export const insertUserQuery = `-- name: InsertUser :one
+INSERT INTO users (id, email, name, password_hash)
+VALUES ($1, $2, $3, $4)
+RETURNING id, email, name, password_hash, created_at`;
+
+export interface InsertUserArgs {
+    id: string;
+    email: string;
+    name: string;
+    passwordHash: string;
+}
+
+export interface InsertUserRow {
+    id: string;
+    email: string;
+    name: string;
+    passwordHash: string;
+    createdAt: Date;
+}
+
+export async function insertUser(client: Client, args: InsertUserArgs): Promise<InsertUserRow | null> {
+    const result = await client.query({
+        text: insertUserQuery,
+        values: [args.id, args.email, args.name, args.passwordHash],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        email: row[1],
+        name: row[2],
+        passwordHash: row[3],
+        createdAt: row[4]
+    };
+}
+
+export const getUserByEmailQuery = `-- name: GetUserByEmail :one
+SELECT id, email, name, password_hash, created_at FROM users WHERE email = $1`;
+
+export interface GetUserByEmailArgs {
+    email: string;
+}
+
+export interface GetUserByEmailRow {
+    id: string;
+    email: string;
+    name: string;
+    passwordHash: string;
+    createdAt: Date;
+}
+
+export async function getUserByEmail(client: Client, args: GetUserByEmailArgs): Promise<GetUserByEmailRow | null> {
+    const result = await client.query({
+        text: getUserByEmailQuery,
+        values: [args.email],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        email: row[1],
+        name: row[2],
+        passwordHash: row[3],
+        createdAt: row[4]
+    };
+}
+
+export const getUserByIdQuery = `-- name: GetUserById :one
+SELECT id, email, name, password_hash, created_at FROM users WHERE id = $1`;
+
+export interface GetUserByIdArgs {
+    id: string;
+}
+
+export interface GetUserByIdRow {
+    id: string;
+    email: string;
+    name: string;
+    passwordHash: string;
+    createdAt: Date;
+}
+
+export async function getUserById(client: Client, args: GetUserByIdArgs): Promise<GetUserByIdRow | null> {
+    const result = await client.query({
+        text: getUserByIdQuery,
+        values: [args.id],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        email: row[1],
+        name: row[2],
+        passwordHash: row[3],
+        createdAt: row[4]
+    };
+}
+
+export const insertSessionQuery = `-- name: InsertSession :exec
+INSERT INTO sessions (token, user_id, expires_at) VALUES ($1, $2, $3)`;
+
+export interface InsertSessionArgs {
+    token: string;
+    userId: string;
+    expiresAt: Date;
+}
+
+export async function insertSession(client: Client, args: InsertSessionArgs): Promise<void> {
+    await client.query({
+        text: insertSessionQuery,
+        values: [args.token, args.userId, args.expiresAt],
+        rowMode: "array"
+    });
+}
+
+export const getSessionQuery = `-- name: GetSession :one
+SELECT s.token, s.user_id, s.expires_at,
+       u.email AS user_email, u.name AS user_name, u.created_at AS user_created_at
+FROM sessions s
+JOIN users u ON u.id = s.user_id
+WHERE s.token = $1`;
+
+export interface GetSessionArgs {
+    token: string;
+}
+
+export interface GetSessionRow {
+    token: string;
+    userId: string;
+    expiresAt: Date;
+    userEmail: string;
+    userName: string;
+    userCreatedAt: Date;
+}
+
+export async function getSession(client: Client, args: GetSessionArgs): Promise<GetSessionRow | null> {
+    const result = await client.query({
+        text: getSessionQuery,
+        values: [args.token],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        token: row[0],
+        userId: row[1],
+        expiresAt: row[2],
+        userEmail: row[3],
+        userName: row[4],
+        userCreatedAt: row[5]
+    };
+}
+
+export const deleteSessionQuery = `-- name: DeleteSession :exec
+DELETE FROM sessions WHERE token = $1`;
+
+export interface DeleteSessionArgs {
+    token: string;
+}
+
+export async function deleteSession(client: Client, args: DeleteSessionArgs): Promise<void> {
+    await client.query({
+        text: deleteSessionQuery,
+        values: [args.token],
+        rowMode: "array"
+    });
+}
+
+export const getUserSettingsQuery = `-- name: GetUserSettings :one
+SELECT user_id, current_org_id, current_project_id FROM user_settings WHERE user_id = $1`;
+
+export interface GetUserSettingsArgs {
+    userId: string;
+}
+
+export interface GetUserSettingsRow {
+    userId: string;
+    currentOrgId: string;
+    currentProjectId: string;
+}
+
+export async function getUserSettings(client: Client, args: GetUserSettingsArgs): Promise<GetUserSettingsRow | null> {
+    const result = await client.query({
+        text: getUserSettingsQuery,
+        values: [args.userId],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        userId: row[0],
+        currentOrgId: row[1],
+        currentProjectId: row[2]
+    };
+}
+
+export const upsertUserSettingsQuery = `-- name: UpsertUserSettings :exec
+INSERT INTO user_settings (user_id, current_org_id, current_project_id)
+VALUES ($1, $2, $3)
+ON CONFLICT (user_id) DO UPDATE
+  SET current_org_id = EXCLUDED.current_org_id,
+      current_project_id = EXCLUDED.current_project_id`;
+
+export interface UpsertUserSettingsArgs {
+    userId: string;
+    currentOrgId: string;
+    currentProjectId: string;
+}
+
+export async function upsertUserSettings(client: Client, args: UpsertUserSettingsArgs): Promise<void> {
+    await client.query({
+        text: upsertUserSettingsQuery,
+        values: [args.userId, args.currentOrgId, args.currentProjectId],
+        rowMode: "array"
+    });
+}
+
+export const setCurrentProjectQuery = `-- name: SetCurrentProject :exec
+UPDATE user_settings SET current_project_id = $2 WHERE user_id = $1`;
+
+export interface SetCurrentProjectArgs {
+    userId: string;
+    currentProjectId: string;
+}
+
+export async function setCurrentProject(client: Client, args: SetCurrentProjectArgs): Promise<void> {
+    await client.query({
+        text: setCurrentProjectQuery,
+        values: [args.userId, args.currentProjectId],
+        rowMode: "array"
+    });
+}
+
+export const insertMembershipQuery = `-- name: InsertMembership :exec
+INSERT INTO memberships (org_id, user_id, role)
+VALUES ($1, $2, $3)
+ON CONFLICT (org_id, user_id) DO NOTHING`;
+
+export interface InsertMembershipArgs {
+    orgId: string;
+    userId: string;
+    role: string;
+}
+
+export async function insertMembership(client: Client, args: InsertMembershipArgs): Promise<void> {
+    await client.query({
+        text: insertMembershipQuery,
+        values: [args.orgId, args.userId, args.role],
+        rowMode: "array"
+    });
+}
+
+export const firstMembershipForUserQuery = `-- name: FirstMembershipForUser :one
+SELECT m.org_id, m.role
+FROM memberships m
+WHERE m.user_id = $1
+ORDER BY m.org_id
+LIMIT 1`;
+
+export interface FirstMembershipForUserArgs {
+    userId: string;
+}
+
+export interface FirstMembershipForUserRow {
+    orgId: string;
+    role: string;
+}
+
+export async function firstMembershipForUser(client: Client, args: FirstMembershipForUserArgs): Promise<FirstMembershipForUserRow | null> {
+    const result = await client.query({
+        text: firstMembershipForUserQuery,
+        values: [args.userId],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        orgId: row[0],
+        role: row[1]
+    };
+}
+

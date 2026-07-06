@@ -143,7 +143,7 @@ func (p *provider) restCreateRepo(
 		Name:          name,
 		DefaultBranch: rr.DefaultBranch,
 		CloneURL:      clone,
-		HTMLURL:       html,
+		HTMLURL:       rebaseURL(p.cfg, html),
 		Private:       rr.Private,
 	}, false, nil
 }

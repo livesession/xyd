@@ -4,9 +4,13 @@ import { Icon } from "../icons";
 import type { ButtonVariant } from "./Button";
 import { AnchorLink, type LinkComponent } from "./routing";
 
+export type ButtonCTASize = "sm" | "md" | "lg";
+
 export interface ButtonCTAProps {
   children: ReactNode;
   variant?: ButtonVariant;
+  /** Overall size. Default `md`. `sm` is a more compact pill. */
+  size?: ButtonCTASize;
   icon?: IconName;
   iconRight?: IconName;
   onClick?: () => void;
@@ -27,6 +31,12 @@ const VARIANT: Record<ButtonVariant, string> = {
   danger: "border-transparent bg-danger text-white hover:opacity-90",
 };
 
+const SIZE: Record<ButtonCTASize, string> = {
+  sm: "px-4 py-2 text-[13px] leading-5",
+  md: "px-5 py-2.5 text-sm leading-6",
+  lg: "px-6 py-3 text-base leading-6",
+};
+
 /**
  * A call-to-action button: like {@link Button}, but rounded-full with more
  * vertical padding / height and centered content — for the one prominent action
@@ -35,6 +45,7 @@ const VARIANT: Record<ButtonVariant, string> = {
 export function ButtonCTA({
   children,
   variant = "primary",
+  size = "md",
   icon,
   iconRight,
   onClick,
@@ -44,7 +55,7 @@ export function ButtonCTA({
   type = "button",
   className,
 }: ButtonCTAProps) {
-  const cls = `inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-pill border px-5 py-2.5 text-sm font-semibold leading-6 no-underline transition-[background-color,transform] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 ${VARIANT[variant]} ${className ?? ""}`;
+  const cls = `inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-pill border font-semibold no-underline transition-[background-color,transform] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 ${SIZE[size]} ${VARIANT[variant]} ${className ?? ""}`;
   const inner = (
     <>
       {icon && <Icon icon={icon} size={18} />}

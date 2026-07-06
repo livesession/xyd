@@ -7,8 +7,8 @@ export type CalloutTone = "info" | "success" | "warning" | "error";
 export interface CalloutProps {
   /** Colour + default icon. Defaults to `error`. */
   tone?: CalloutTone;
-  /** Override the leading icon; pass `null` to hide it. */
-  icon?: IconName | null;
+  /** Override the leading icon; pass `false` (or `null`) to hide it. */
+  icon?: IconName | false | null;
   /** Optional bold heading above the body. */
   title?: ReactNode;
   children: ReactNode;
@@ -30,7 +30,7 @@ export function Callout({
   children,
 }: CalloutProps) {
   const t = TONE[tone];
-  const glyph = icon === null ? null : (icon ?? t.icon);
+  const glyph = icon === false || icon === null ? null : (icon ?? t.icon);
   return (
     <div
       className={`flex gap-2.5 rounded-control px-3 py-2.5 text-[13px] ${t.box}`}

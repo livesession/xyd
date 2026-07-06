@@ -4,9 +4,12 @@ import * as q from "../../db/generated/registry_sql";
 import { pool } from "../../db/pool";
 import { toRegistryEntryCore } from "../../mappers";
 
-/** GET /apis — every registered API (core shape, no platform rollups). */
-export const listApis: Apis["list"] = async () => {
-  const apis = await q.listApis(pool);
+/** GET /apis(?projectId=) — registered APIs (core shape, no platform rollups),
+ * scoped to a project when the gateway passes one. */
+export const listApis: Apis["list"] = async (_ctx, options) => {
+  const apis = options?.projectId
+    ? await q.listApisByProject(pool, { projectId: options.projectId })
+    : await q.listApis(pool);
   const out: RegistryEntryCore[] = [];
   for (const a of apis) {
     const [versions, distTags] = await Promise.all([

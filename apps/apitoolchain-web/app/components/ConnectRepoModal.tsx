@@ -2,18 +2,28 @@ import {
   Badge,
   Button,
   Field,
+  type IconName,
   Input,
   Modal,
   OptionCard,
   Segmented,
   Select,
+  Toggle,
 } from "@apitoolchain/design-system";
 import { useEffect, useRef, useState } from "react";
 import { useFetcher } from "react-router";
-import type { GitProvider, GitRepoOption } from "~/data";
+import type { GitProvider, GitProviderKind, GitRepoOption } from "~/data";
 
 type ConnectResult = { ok: boolean; message?: string };
 type Mode = "existing" | "create" | null;
+
+/** Brand icon per provider kind (design-system icon registry). */
+export const KIND_ICON: Record<GitProviderKind, IconName> = {
+  gitea: "gitea",
+  github: "github",
+  gitlab: "gitlab",
+  bitbucket: "bitbucket",
+};
 
 /**
  * Link the current entity (API spec or SDK target) to a repo.
@@ -26,11 +36,14 @@ export function ConnectRepoModal({
   onClose,
   providers,
   actionPath,
+  targetKind = "sdk",
 }: {
   open: boolean;
   onClose: () => void;
   providers: GitProvider[];
   actionPath: string;
+  /** What's being connected — drives copy (e.g. the new-repo name placeholder). */
+  targetKind?: "spec" | "sdk";
 }) {
   const submit = useFetcher();
   const repos = useFetcher(); // GET /git/repos?providerId=…
@@ -41,6 +54,9 @@ export function ConnectRepoModal({
   const [branch, setBranch] = useState("");
   const [prefix, setPrefix] = useState("");
   const [makePrivate, setMakePrivate] = useState(false);
+  // New connections default to PR-based release mode (auto-release on).
+  const [releaseMode, setReleaseMode] = useState("release");
+  const [autoRelease, setAutoRelease] = useState(true);
 
   const submitting = submit.state !== "idle";
   const submitted = useRef(false);
@@ -56,6 +72,8 @@ export function ConnectRepoModal({
       setBranch("");
       setPrefix("");
       setMakePrivate(false);
+      setReleaseMode("release");
+      setAutoRelease(true);
       setDirty(false);
     }
   }, [open, providers]);
@@ -134,6 +152,8 @@ export function ConnectRepoModal({
         makePrivate: mode === "create" && makePrivate ? "1" : "",
         branch,
         prefix,
+        releaseMode,
+        autoRelease: releaseMode === "release" && autoRelease ? "1" : "",
       },
       { method: "post", action: actionPath },
     );
@@ -151,6 +171,31 @@ export function ConnectRepoModal({
         onChange={setPrefix}
         placeholder="(repo root)"
       />
+    </Field>
+  );
+
+  const releaseModeField = (
+    <Field
+      label="Release mode"
+      labelHint="Direct push commits straight to the branch. Release opens a versioned PR (with a changelog) and tags + cuts a Release when it's merged."
+    >
+      <Segmented
+        options={["Release PRs", "Direct push"]}
+        value={releaseMode === "release" ? "Release PRs" : "Direct push"}
+        onChange={(v) =>
+          setReleaseMode(v === "Release PRs" ? "release" : "push")
+        }
+      />
+      {releaseMode === "release" && (
+        <div className="mt-2 flex items-center gap-2 text-[13px] text-subtle">
+          <Toggle
+            checked={autoRelease}
+            onChange={setAutoRelease}
+            aria-label="Auto-release on new spec version"
+          />
+          Open/refresh a release PR on every new spec version
+        </div>
+      )}
     </Field>
   );
 
@@ -197,6 +242,7 @@ export function ConnectRepoModal({
               id="cr-provider"
               value={providerId}
               onChange={setProviderId}
+              leadingIcon={provider ? KIND_ICON[provider.kind] : undefined}
               options={providers.map((p) => ({
                 value: p.id,
                 label: `${p.name} (${p.connectedAs})`,
@@ -234,7 +280,7 @@ export function ConnectRepoModal({
             </button>
             {provider && (
               <div className="flex h-9 min-w-0 flex-1 items-center gap-2 rounded-control border border-line bg-surface-muted px-3">
-                <Badge tone="neutral" icon="git">
+                <Badge tone="neutral" icon={KIND_ICON[provider.kind]}>
                   {provider.kind}
                 </Badge>
                 <span className="truncate text-sm font-medium text-ink">
@@ -296,6 +342,7 @@ export function ConnectRepoModal({
                     />
                   </Field>
                   {prefixField}
+                  {releaseModeField}
                 </>
               )}
             </>
@@ -312,7 +359,7 @@ export function ConnectRepoModal({
                   id="cr-name"
                   value={repo}
                   onChange={setRepo}
-                  placeholder="my-sdk"
+                  placeholder={targetKind === "spec" ? "my-api-spec" : "my-sdk"}
                 />
               </Field>
               <Field label="Visibility">
@@ -335,6 +382,7 @@ export function ConnectRepoModal({
                 />
               </Field>
               {prefixField}
+              {releaseModeField}
             </>
           )}
 

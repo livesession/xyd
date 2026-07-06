@@ -12,6 +12,7 @@ import {
   StatTile,
   Table,
 } from "@apitoolchain/design-system";
+import { FORMAT } from "~/components/RegistryListPage";
 import { RouterLink } from "~/components/RouterLink";
 import {
   getOverviewStats,
@@ -20,7 +21,6 @@ import {
   type NotificationSeverity,
   type RegistryEntry,
 } from "~/data";
-import { FORMAT } from "~/components/RegistryListPage";
 import type { Route } from "./+types/home";
 
 export function meta() {
@@ -92,11 +92,7 @@ export default function HomeRoute({ loaderData }: Route.ComponentProps) {
 
   return (
     <>
-      <PageHeader
-        title="Home"
-        description="Register an API, then ship SDKs, docs, and an MCP server from one spec."
-        divider={false}
-      />
+      <PageHeader title="Home" divider={false} />
 
       <div className="mb-9">
         <StatGrid columns={4}>
@@ -138,13 +134,25 @@ export default function HomeRoute({ loaderData }: Route.ComponentProps) {
                   icon="registry"
                   label="Register an API"
                   step={1}
+                  done={stats.apis > 0}
                 />
-                <ChecklistItem icon="sdk" label="Generate an SDK" step={2} />
-                <ChecklistItem icon="docs" label="Publish docs" step={3} />
+                <ChecklistItem
+                  icon="sdk"
+                  label="Generate an SDK"
+                  step={2}
+                  done={stats.sdkTargets > 0}
+                />
+                <ChecklistItem
+                  icon="docs"
+                  label="Publish docs"
+                  step={3}
+                  done={stats.docsProjects > 0}
+                />
                 <ChecklistItem
                   icon="mcp"
                   label="Start an MCP server"
                   step={4}
+                  done={stats.mcpServers > 0}
                 />
               </div>
             </Panel>

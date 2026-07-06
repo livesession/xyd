@@ -19,6 +19,12 @@
   --color-nav: #414141;
 
   /* surfaces */
+  --cds-surface-1: #fcfcfb;
+  --color-surface-1: color-mix(
+    in srgb,
+    var(--cds-surface-1) calc(1 * 100%),
+    transparent
+  );
   --color-surface: #ffffff;
   --color-surface-muted: #f9f9f9;
   --color-surface-raised: #f3f3f3;
@@ -36,7 +42,11 @@
 
   /* interactive overlay (hover/active `::before` tint) */
   --color-alpha-base: #0d0d0d;
-  --color-alpha-02: color-mix(in oklab, var(--color-alpha-base) 2%, transparent);
+  --color-alpha-02: color-mix(
+    in oklab,
+    var(--color-alpha-base) 2%,
+    transparent
+  );
 
   /* accents */
   --color-pink: #e0428e;

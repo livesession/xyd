@@ -1,3 +1,4 @@
+import { APIError, Client } from "@apitoolchain/registry-api-node";
 import { config } from "../config";
 
 /** The registry-api `RegistryEntryCore` wire shape (no platform rollups). */
@@ -25,40 +26,47 @@ export interface RegistryCore {
   updatedAt: string;
 }
 
-async function reg<T>(path: string): Promise<T | null> {
-  const r = await fetch(`${config.registryApiUrl}${path}`);
-  if (r.status === 404) return null;
-  if (!r.ok) throw new Error(`registry ${path} -> HTTP ${r.status}`);
-  return (await r.json()) as T;
-}
+const client = new Client({ baseURL: config.registryApiUrl });
 
-/** Server-to-server client for the lower-layer registry-api. */
+const isNotFound = (err: unknown) =>
+  err instanceof APIError && err.status === 404;
+const errMessage = (err: unknown) =>
+  err instanceof Error ? err.message : String(err);
+
+/** Server-to-server client for the lower-layer registry-api. Backed by the
+ * opensdk-generated @apitoolchain/registry-api-node SDK — except `fetchSpecRaw`,
+ * which hits registry-api's raw-bytes route that lives outside the TypeSpec. */
 export const registryClient = {
-  async listApis(): Promise<RegistryCore[]> {
-    return (await reg<RegistryCore[]>("/apis")) ?? [];
+  async listApis(projectId?: string): Promise<RegistryCore[]> {
+    return (await client.apis.list(
+      projectId ? { projectId } : undefined,
+    )) as RegistryCore[];
   },
 
-  getApi(id: string): Promise<RegistryCore | null> {
-    return reg<RegistryCore>(`/apis/${encodeURIComponent(id)}`);
+  async getApi(id: string): Promise<RegistryCore | null> {
+    try {
+      return (await client.apis.retrieve(id)) as RegistryCore;
+    } catch (err) {
+      if (isNotFound(err)) return null;
+      throw err;
+    }
   },
 
   async register(
     body: unknown,
+    projectId?: string,
   ): Promise<
     { ok: true; entry: RegistryCore } | { ok: false; message: string }
   > {
-    const r = await fetch(`${config.registryApiUrl}/apis`, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    const json = (await r.json()) as RegistryCore & { message?: string };
-    if (!r.ok)
-      return {
-        ok: false,
-        message: json.message ?? `registry HTTP ${r.status}`,
-      };
-    return { ok: true, entry: json };
+    try {
+      const entry = (await client.apis.create({
+        ...(body as Record<string, unknown>),
+        ...(projectId ? { projectId } : {}),
+      } as never)) as RegistryCore;
+      return { ok: true, entry };
+    } catch (err) {
+      return { ok: false, message: errMessage(err) };
+    }
   },
 
   async setDistTag(
@@ -67,21 +75,15 @@ export const registryClient = {
   ): Promise<
     { ok: true; entry: RegistryCore } | { ok: false; message: string }
   > {
-    const r = await fetch(
-      `${config.registryApiUrl}/apis/${encodeURIComponent(apiId)}/dist-tags`,
-      {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(body),
-      },
-    );
-    const json = (await r.json()) as RegistryCore & { message?: string };
-    if (!r.ok)
-      return {
-        ok: false,
-        message: json.message ?? `registry HTTP ${r.status}`,
-      };
-    return { ok: true, entry: json };
+    try {
+      const entry = (await client.apis.distTags.create(
+        apiId,
+        body,
+      )) as RegistryCore;
+      return { ok: true, entry };
+    } catch (err) {
+      return { ok: false, message: errMessage(err) };
+    }
   },
 
   async fetchSpecRaw(

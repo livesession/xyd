@@ -1,12 +1,15 @@
 -- name: ListApis :many
 SELECT * FROM apis ORDER BY updated_at DESC;
 
+-- name: ListApisByProject :many
+SELECT * FROM apis WHERE project_id = $1 ORDER BY updated_at DESC;
+
 -- name: GetApi :one
 SELECT * FROM apis WHERE id = $1;
 
 -- name: UpsertApi :one
-INSERT INTO apis (id, name, description, format, namespace, source, kind)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO apis (id, name, description, format, namespace, source, kind, project_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
@@ -15,6 +18,8 @@ ON CONFLICT (id) DO UPDATE SET
   source = EXCLUDED.source,
   kind = EXCLUDED.kind,
   updated_at = now()
+-- project_id is intentionally NOT updated on conflict: a re-register keeps the
+-- API in its original project.
 RETURNING *;
 
 -- name: ListVersions :many

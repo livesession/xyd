@@ -1,6 +1,7 @@
 import { Button, Field, Input, Select } from "@apitoolchain/design-system";
+import { Form, useNavigation } from "react-router";
 import { SettingsHeader } from "~/components/SettingsHeader";
-import { getCurrentContext } from "~/data";
+import { getCurrentContext, updateContext } from "~/data";
 import type { Route } from "./+types/settings";
 
 export function meta() {
@@ -17,20 +18,33 @@ export async function loader({ params }: Route.LoaderArgs) {
   return { tab, org, project };
 }
 
-export default function SettingsRoute({ loaderData }: Route.ComponentProps) {
+export async function action({ request }: Route.ActionArgs) {
+  const form = await request.formData();
+  return updateContext({
+    orgName: String(form.get("orgName") ?? "").trim() || undefined,
+    projectName: String(form.get("projectName") ?? "").trim() || undefined,
+  });
+}
+
+export default function SettingsRoute({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
   const { tab, org, project } = loaderData;
+  const nav = useNavigation();
+  const saving = nav.state !== "idle";
 
   return (
     <>
       <SettingsHeader active={tab} />
       <div className="flex max-w-[520px] flex-col gap-5">
         {tab === "general" ? (
-          <>
+          <Form method="post" className="flex flex-col gap-5">
             <Field label="Organization name" htmlFor="org">
-              <Input id="org" defaultValue={org.name} />
+              <Input id="org" name="orgName" defaultValue={org.name} />
             </Field>
-            <Field label="Default project" htmlFor="prj">
-              <Input id="prj" defaultValue={project.name} />
+            <Field label="Current project" htmlFor="prj">
+              <Input id="prj" name="projectName" defaultValue={project.name} />
             </Field>
             <Field
               label="Region"
@@ -46,10 +60,22 @@ export default function SettingsRoute({ loaderData }: Route.ComponentProps) {
                 ]}
               />
             </Field>
+            {actionData &&
+              (actionData.ok ? (
+                <div className="rounded-control bg-success-bg px-3 py-2 text-[13px] text-success">
+                  Settings saved.
+                </div>
+              ) : (
+                <div className="rounded-control bg-danger-bg px-3 py-2 text-[13px] text-danger">
+                  {actionData.message}
+                </div>
+              ))}
             <div>
-              <Button variant="primary">Save changes</Button>
+              <Button type="submit" variant="primary" disabled={saving}>
+                {saving ? "Saving…" : "Save changes"}
+              </Button>
             </div>
-          </>
+          </Form>
         ) : (
           <div className="py-10 text-sm text-subtle">
             The {tab} settings are coming soon.

@@ -15,6 +15,9 @@
     "format": "bunx biome check --write ."
   },
   "dependencies": {
+    "@apitoolchain/gitprovider-node": "file:../../packages/apitoolchain-gitprovider-node",
+    "@apitoolchain/registry-api-node": "file:../../packages/apitoolchain-registry-api-node",
+    "@apitoolchain/release-man": "file:../../packages/apitoolchain-release-man",
     "@apitoolchain/schemas": "file:../../packages/apitoolchain-schemas",
     "@apitoolchain/xyd-bridge": "file:../../packages/apitoolchain-xyd-bridge",
     "@aws-sdk/client-s3": "^3.700.0",
@@ -32,6 +35,8 @@
     "@typespec/compiler": "latest",
     "@typespec/http": "latest",
     "@typespec/http-server-js": "latest",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "@typespec/openapi": "latest",
+    "@typespec/openapi3": "latest"
   }
 }

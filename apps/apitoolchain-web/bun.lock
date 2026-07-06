@@ -4,6 +4,7 @@
     "": {
       "name": "@apitoolchain/web",
       "dependencies": {
+        "@apitoolchain/auth-design-system": "file:../../packages/apitoolchain-auth-design-system",
         "@apitoolchain/design-system": "file:../../packages/apitoolchain-design-system",
         "@apitoolchain/filters": "file:../../packages/apitoolchain-filters",
         "@react-router/node": "^8.1.0",
@@ -34,6 +35,8 @@
   },
   "packages": {
     "@adobe/css-tools": ["@adobe/css-tools@4.5.0", "", {}, "sha512-6OzddxPio9UiWTCemp4N8cYLV2ZN1ncRnV1cVGtve7dhPOtRkleRyx32GQCYSwDYgaHU3USMm84tNsvKzRCa1Q=="],
+
+    "@apitoolchain/auth-design-system": ["@apitoolchain/auth-design-system@file:../../packages/apitoolchain-auth-design-system", { "dependencies": { "@apitoolchain/design-system": "file:../apitoolchain-design-system" }, "devDependencies": { "@biomejs/biome": "^2.5.2", "@storybook/react": "^8.4.7", "@types/react": "^19.2.17", "@types/react-dom": "^19.2.3", "react": "^19.2.7", "react-dom": "^19.2.7", "typescript": "^6.0.3" }, "peerDependencies": { "react": ">=18", "react-dom": ">=18" } }],
 
     "@apitoolchain/design-system": ["@apitoolchain/design-system@file:../../packages/apitoolchain-design-system", { "devDependencies": { "@biomejs/biome": "^2.5.2", "@storybook/addon-essentials": "^8.4.7", "@storybook/addon-interactions": "^8.4.7", "@storybook/blocks": "^8.4.7", "@storybook/react": "^8.4.7", "@storybook/react-vite": "^8.4.7", "@storybook/test": "^8.4.7", "@types/react": "^19.2.17", "@types/react-dom": "^19.2.3", "react": "^19.2.7", "react-dom": "^19.2.7", "storybook": "^8.4.7", "typescript": "^6.0.3", "vite": "^6.3.6" }, "peerDependencies": { "react": ">=18", "react-dom": ">=18" } }],
 
@@ -1420,6 +1423,8 @@
     "yocto-queue": ["yocto-queue@0.1.0", "", {}, "sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q=="],
 
     "zip-stream": ["zip-stream@6.0.1", "", { "dependencies": { "archiver-utils": "^5.0.0", "compress-commons": "^6.0.2", "readable-stream": "^4.0.0" } }, "sha512-zK7YHHz4ZXpW89AHXUPbQVGKI7uvkd3hzusTdotCg1UxyaVtg0zFJSTfW/Dq5f7OBBVnq6cZIaC8Ti4hb6dtCA=="],
+
+    "@apitoolchain/auth-design-system/@apitoolchain/design-system": ["@apitoolchain/design-system@file:../../packages/apitoolchain-design-system", {}],
 
     "@apitoolchain/design-system/vite": ["vite@6.4.3", "", { "dependencies": { "esbuild": "^0.25.0", "fdir": "^6.4.4", "picomatch": "^4.0.2", "postcss": "^8.5.3", "rollup": "^4.34.9", "tinyglobby": "^0.2.13" }, "optionalDependencies": { "fsevents": "~2.3.3" }, "peerDependencies": { "@types/node": "^18.0.0 || ^20.0.0 || >=22.0.0", "jiti": ">=1.21.0", "less": "*", "lightningcss": "^1.21.0", "sass": "*", "sass-embedded": "*", "stylus": "*", "sugarss": "*", "terser": "^5.16.0", "tsx": "^4.8.1", "yaml": "^2.4.2" }, "optionalPeers": ["@types/node", "jiti", "less", "lightningcss", "sass", "sass-embedded", "stylus", "sugarss", "terser", "tsx", "yaml"], "bin": { "vite": "bin/vite.js" } }, "sha512-NTKlcQjlAK7MlQoyb6LgaqHc8sso/pVyUJYWMws3jg21uTJw/LddqIFPcPqP6PzpgbIcZyKI85sFE4HBrQDA8A=="],
 

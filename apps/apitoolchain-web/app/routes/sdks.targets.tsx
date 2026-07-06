@@ -127,7 +127,6 @@ export default function SdkTargetsRoute({ loaderData }: Route.ComponentProps) {
     <>
       <PageHeader
         title="SDKs"
-        description="Every generated target across all SDKs — one row per language build, so many groups, languages, and versions stay easy to scan."
         actions={
           <Button variant="primary" icon="sdk" onClick={() => setGenOpen(true)}>
             Generate SDKs

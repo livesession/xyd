@@ -9,6 +9,10 @@
  * Scaffolding for now: a client-side (localStorage) store, NOT yet a backend
  * resource. It seeds the OpenAPI-import namespace picker and powers the
  * `/settings/namespaces` management page. SSR-safe (guards `window`).
+ *
+ * Starts EMPTY — namespaces are created by the user, or (in the dev stack)
+ * reseeded per profile by the dev overlay, which writes this exact key/shape on
+ * profile apply. No hardcoded defaults, so "scratch" shows none.
  */
 
 export interface Namespace {
@@ -21,11 +25,9 @@ export interface Namespace {
 
 const KEY = "apitoolchain.namespaces";
 
-/** Seeded so the picker works offline — mirrors the namespaces the fixtures use. */
-const DEFAULTS: Namespace[] = [
-  { id: "livesession", name: "livesession", description: "LiveSession APIs" },
-  { id: "acme", name: "acme", description: "Acme APIs" },
-];
+/** No hardcoded namespaces — the store starts empty and is filled by the user
+ * or reseeded per dev profile (see the file header). */
+const DEFAULTS: Namespace[] = [];
 
 /** Normalize any input into a valid, DNS-ish namespace slug. */
 export function namespaceSlug(s: string): string {

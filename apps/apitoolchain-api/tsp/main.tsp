@@ -107,10 +107,58 @@ interface Usage {
   @get list(@query range: string): UsageSeries[];
 }
 
+/**
+ * Email+password auth. `register`/`login` are public and return an opaque
+ * session token the web stores in an httpOnly cookie + forwards as a bearer;
+ * `me`/`logout` require that bearer.
+ */
+@route("/auth")
+interface Auth {
+  @route("/register") @post register(@body input: RegisterInput): AuthSession | ValidationError;
+  @route("/login") @post login(@body input: LoginInput): AuthSession | ValidationError;
+  @route("/logout") @post logout(): void;
+  @route("/me") @get me(): User;
+}
+
+/** Projects in the caller's current org — the sidebar switcher's data. */
+@route("/projects")
+interface Projects {
+  @get list(): Project[];
+  @post create(@body input: CreateProjectInput): Project | ValidationError;
+
+  @patch
+  update(
+    @path id: string,
+    @body input: UpdateProjectInput,
+  ): Project | NotFoundError | ValidationError;
+
+  @delete remove(@path id: string): void | NotFoundError | ValidationError;
+}
+
 @route("/context")
 interface Context {
   @get read(): CurrentContext;
   @patch update(@body input: UpdateContextInput): CurrentContext;
+
+  /** Switch the caller's current project (persisted per-user). */
+  @route("/select")
+  @post
+  selectProject(@body input: SelectProjectInput): CurrentContext | NotFoundError;
+}
+
+/** Members of the caller's current org. */
+@route("/members")
+interface Members {
+  @get list(): Member[];
+  @post invite(@body input: InviteMemberInput): Member | ValidationError;
+  @delete remove(@path userId: string): void | NotFoundError | ValidationError;
+
+  @route("/{userId}/role")
+  @patch
+  updateRole(
+    @path userId: string,
+    @body input: UpdateMemberRoleInput,
+  ): Member | NotFoundError | ValidationError;
 }
 
 /** Connected git-provider accounts (GitHub/GitLab/Bitbucket/Gitea via gitproviderd). */
@@ -149,4 +197,30 @@ interface RepoConnections {
   @route("/{id}/sync")
   @post
   sync(@path id: string): RepoConnection | NotFoundError | ValidationError;
+
+  /** Switch a connection between direct-push and PR-based release mode. */
+  @route("/{id}/release-config")
+  @post
+  setReleaseConfig(
+    @path id: string,
+    @body input: SetReleaseConfigInput,
+  ): RepoConnection | NotFoundError | ValidationError;
+}
+
+/**
+ * Release pipeline: a rolling, versioned PR per SDK connection. `prepare` opens
+ * or force-updates it; `publish` (or a merge webhook) tags + cuts the Release.
+ */
+@route("/releases")
+interface Releases {
+  @get list(@query connectionId?: string): Release[];
+  @get read(@path id: string): Release | NotFoundError;
+
+  @route("/prepare")
+  @post
+  prepare(@body input: PrepareReleaseInput): Release | NotFoundError | ValidationError;
+
+  @route("/{id}/publish")
+  @post
+  publish(@path id: string): Release | NotFoundError | ValidationError;
 }

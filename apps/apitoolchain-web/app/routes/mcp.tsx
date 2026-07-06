@@ -4,12 +4,12 @@ import {
   Button,
   type Column,
   EmptyState,
-  Menu,
+  LaTable,
   Mono,
   PageHeader,
   StatusPill,
-  Table,
 } from "@apitoolchain/design-system";
+import { useMemo } from "react";
 import { RouterLink } from "~/components/RouterLink";
 import {
   listApis,
@@ -17,18 +17,26 @@ import {
   type McpServer,
   type McpTransport,
 } from "~/data";
+import { mcpFilterSchema } from "~/data/filters";
+import { useUrlFilters } from "~/hooks/useUrlFilters";
 import type { Route } from "./+types/mcp";
 
 export function meta() {
   return [{ title: "MCP — apitoolchain" }];
 }
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const apis = await listApis();
-  const apiId = new URL(request.url).searchParams.get("apiId") ?? apis[0]?.id;
-  const servers = await listMcpServers(apiId);
-  const selected = apis.find((a) => a.id === apiId);
-  return { apis, apiId, selectedName: selected?.name ?? null, servers };
+/** An MCP server flattened with its API name + a search blob. */
+type McpRow = McpServer & { apiName: string; search: string };
+
+export async function loader() {
+  const [servers, apis] = await Promise.all([listMcpServers(), listApis()]);
+  const apiName = Object.fromEntries(apis.map((a) => [a.id, a.name]));
+  const rows: McpRow[] = servers.map((m) => ({
+    ...m,
+    apiName: apiName[m.apiId] ?? m.apiId,
+    search: `${m.name} ${m.sourceSpec} ${apiName[m.apiId] ?? ""}`.toLowerCase(),
+  }));
+  return { rows, apis };
 }
 
 const TRANSPORT: Record<McpTransport, BadgeTone> = {
@@ -38,9 +46,14 @@ const TRANSPORT: Record<McpTransport, BadgeTone> = {
 };
 
 export default function McpRoute({ loaderData }: Route.ComponentProps) {
-  const { apis, apiId, selectedName, servers } = loaderData;
+  const { rows, apis } = loaderData;
 
-  const columns: Column<McpServer>[] = [
+  const apiKey = apis.map((a) => a.id).join(",");
+  // biome-ignore lint/correctness/useExhaustiveDependencies: recompute on the API SET, not array identity
+  const schema = useMemo(() => mcpFilterSchema(apis), [apiKey]);
+  const filter = useUrlFilters(schema);
+
+  const columns: Column<McpRow>[] = [
     {
       key: "name",
       header: "Server",
@@ -48,10 +61,10 @@ export default function McpRoute({ loaderData }: Route.ComponentProps) {
       render: (m) => <Mono>{m.name}</Mono>,
     },
     {
-      key: "sourceSpec",
-      header: "Source spec",
-      width: "auto",
-      render: (m) => <Mono tone="muted">{m.sourceSpec}</Mono>,
+      key: "api",
+      header: "API",
+      width: "md",
+      render: (m) => <span className="text-body">{m.apiName}</span>,
     },
     {
       key: "toolsCount",
@@ -98,36 +111,25 @@ export default function McpRoute({ loaderData }: Route.ComponentProps) {
     <>
       <PageHeader
         title="MCP"
-        description="Expose a registered API as an MCP server so agents can call it as tools."
         actions={
-          <>
-            <Menu
-              variant="select"
-              icon="registry"
-              label={selectedName ?? "Select API"}
-              linkComponent={RouterLink}
-              items={apis.map((a) => ({
-                key: a.id,
-                label: a.name,
-                href: `/mcp?apiId=${a.id}`,
-                active: a.id === apiId,
-              }))}
-            />
-            <Button variant="primary" icon="plus">
-              New MCP server
-            </Button>
-          </>
+          <Button variant="primary" icon="plus">
+            New MCP server
+          </Button>
         }
       />
-      <Table
+      <LaTable
+        filter={filter}
+        data={rows}
         columns={columns}
-        rows={servers}
         getRowKey={(m) => m.id}
+        rowHref={(m) => `/registry/${m.apiId}/mcp`}
+        linkComponent={RouterLink}
+        searchPlaceholder="Search MCP servers…"
         empty={
           <EmptyState
             icon="mcp"
-            title="No MCP servers"
-            description="Generate an MCP server from this API to let agents use it as tools."
+            title="No MCP servers match"
+            description="Generate an MCP server from a registered API — or clear the filters above."
             action={
               <Button variant="primary" icon="plus">
                 New MCP server

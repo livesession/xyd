@@ -11,6 +11,7 @@
     "format": "bunx biome check --write ."
   },
   "dependencies": {
+    "@apitoolchain/auth-design-system": "file:../../packages/apitoolchain-auth-design-system",
     "@apitoolchain/design-system": "file:../../packages/apitoolchain-design-system",
     "@apitoolchain/filters": "file:../../packages/apitoolchain-filters",
     "@react-router/node": "^8.1.0",

@@ -5,7 +5,11 @@ interface Client {
 }
 
 export const listDocsProjectsQuery = `-- name: ListDocsProjects :many
-SELECT id, api_id, name, theme, source_spec, url, status, artifact_ref, error_message, last_built_at, created_at FROM docs_projects ORDER BY created_at DESC`;
+SELECT id, api_id, name, theme, source_spec, url, status, artifact_ref, error_message, last_built_at, created_at, project_id FROM docs_projects WHERE project_id = $1 ORDER BY created_at DESC`;
+
+export interface ListDocsProjectsArgs {
+    projectId: string;
+}
 
 export interface ListDocsProjectsRow {
     id: string;
@@ -19,12 +23,13 @@ export interface ListDocsProjectsRow {
     errorMessage: string | null;
     lastBuiltAt: Date | null;
     createdAt: Date;
+    projectId: string;
 }
 
-export async function listDocsProjects(client: Client): Promise<ListDocsProjectsRow[]> {
+export async function listDocsProjects(client: Client, args: ListDocsProjectsArgs): Promise<ListDocsProjectsRow[]> {
     const result = await client.query({
         text: listDocsProjectsQuery,
-        values: [],
+        values: [args.projectId],
         rowMode: "array"
     });
     return result.rows.map(row => {
@@ -39,13 +44,14 @@ export async function listDocsProjects(client: Client): Promise<ListDocsProjects
             artifactRef: row[7],
             errorMessage: row[8],
             lastBuiltAt: row[9],
-            createdAt: row[10]
+            createdAt: row[10],
+            projectId: row[11]
         };
     });
 }
 
 export const listDocsProjectsByApiQuery = `-- name: ListDocsProjectsByApi :many
-SELECT id, api_id, name, theme, source_spec, url, status, artifact_ref, error_message, last_built_at, created_at FROM docs_projects WHERE api_id = $1 ORDER BY created_at DESC`;
+SELECT id, api_id, name, theme, source_spec, url, status, artifact_ref, error_message, last_built_at, created_at, project_id FROM docs_projects WHERE api_id = $1 ORDER BY created_at DESC`;
 
 export interface ListDocsProjectsByApiArgs {
     apiId: string;
@@ -63,6 +69,7 @@ export interface ListDocsProjectsByApiRow {
     errorMessage: string | null;
     lastBuiltAt: Date | null;
     createdAt: Date;
+    projectId: string;
 }
 
 export async function listDocsProjectsByApi(client: Client, args: ListDocsProjectsByApiArgs): Promise<ListDocsProjectsByApiRow[]> {
@@ -83,15 +90,16 @@ export async function listDocsProjectsByApi(client: Client, args: ListDocsProjec
             artifactRef: row[7],
             errorMessage: row[8],
             lastBuiltAt: row[9],
-            createdAt: row[10]
+            createdAt: row[10],
+            projectId: row[11]
         };
     });
 }
 
 export const insertDocsProjectQuery = `-- name: InsertDocsProject :one
-INSERT INTO docs_projects (id, api_id, name, theme, source_spec, status)
-VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, api_id, name, theme, source_spec, url, status, artifact_ref, error_message, last_built_at, created_at`;
+INSERT INTO docs_projects (id, api_id, name, theme, source_spec, status, project_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING id, api_id, name, theme, source_spec, url, status, artifact_ref, error_message, last_built_at, created_at, project_id`;
 
 export interface InsertDocsProjectArgs {
     id: string;
@@ -100,6 +108,7 @@ export interface InsertDocsProjectArgs {
     theme: string;
     sourceSpec: string;
     status: string;
+    projectId: string;
 }
 
 export interface InsertDocsProjectRow {
@@ -114,12 +123,13 @@ export interface InsertDocsProjectRow {
     errorMessage: string | null;
     lastBuiltAt: Date | null;
     createdAt: Date;
+    projectId: string;
 }
 
 export async function insertDocsProject(client: Client, args: InsertDocsProjectArgs): Promise<InsertDocsProjectRow | null> {
     const result = await client.query({
         text: insertDocsProjectQuery,
-        values: [args.id, args.apiId, args.name, args.theme, args.sourceSpec, args.status],
+        values: [args.id, args.apiId, args.name, args.theme, args.sourceSpec, args.status, args.projectId],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {
@@ -137,12 +147,17 @@ export async function insertDocsProject(client: Client, args: InsertDocsProjectA
         artifactRef: row[7],
         errorMessage: row[8],
         lastBuiltAt: row[9],
-        createdAt: row[10]
+        createdAt: row[10],
+        projectId: row[11]
     };
 }
 
 export const listMcpServersQuery = `-- name: ListMcpServers :many
-SELECT id, api_id, name, source_spec, tools_count, transport, status, url, error_message, created_at FROM mcp_servers ORDER BY created_at DESC`;
+SELECT id, api_id, name, source_spec, tools_count, transport, status, url, error_message, created_at, project_id FROM mcp_servers WHERE project_id = $1 ORDER BY created_at DESC`;
+
+export interface ListMcpServersArgs {
+    projectId: string;
+}
 
 export interface ListMcpServersRow {
     id: string;
@@ -155,12 +170,13 @@ export interface ListMcpServersRow {
     url: string | null;
     errorMessage: string | null;
     createdAt: Date;
+    projectId: string;
 }
 
-export async function listMcpServers(client: Client): Promise<ListMcpServersRow[]> {
+export async function listMcpServers(client: Client, args: ListMcpServersArgs): Promise<ListMcpServersRow[]> {
     const result = await client.query({
         text: listMcpServersQuery,
-        values: [],
+        values: [args.projectId],
         rowMode: "array"
     });
     return result.rows.map(row => {
@@ -174,13 +190,14 @@ export async function listMcpServers(client: Client): Promise<ListMcpServersRow[
             status: row[6],
             url: row[7],
             errorMessage: row[8],
-            createdAt: row[9]
+            createdAt: row[9],
+            projectId: row[10]
         };
     });
 }
 
 export const listMcpServersByApiQuery = `-- name: ListMcpServersByApi :many
-SELECT id, api_id, name, source_spec, tools_count, transport, status, url, error_message, created_at FROM mcp_servers WHERE api_id = $1 ORDER BY created_at DESC`;
+SELECT id, api_id, name, source_spec, tools_count, transport, status, url, error_message, created_at, project_id FROM mcp_servers WHERE api_id = $1 ORDER BY created_at DESC`;
 
 export interface ListMcpServersByApiArgs {
     apiId: string;
@@ -197,6 +214,7 @@ export interface ListMcpServersByApiRow {
     url: string | null;
     errorMessage: string | null;
     createdAt: Date;
+    projectId: string;
 }
 
 export async function listMcpServersByApi(client: Client, args: ListMcpServersByApiArgs): Promise<ListMcpServersByApiRow[]> {
@@ -216,15 +234,16 @@ export async function listMcpServersByApi(client: Client, args: ListMcpServersBy
             status: row[6],
             url: row[7],
             errorMessage: row[8],
-            createdAt: row[9]
+            createdAt: row[9],
+            projectId: row[10]
         };
     });
 }
 
 export const insertMcpServerQuery = `-- name: InsertMcpServer :one
-INSERT INTO mcp_servers (id, api_id, name, source_spec, tools_count, transport, status, url)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-RETURNING id, api_id, name, source_spec, tools_count, transport, status, url, error_message, created_at`;
+INSERT INTO mcp_servers (id, api_id, name, source_spec, tools_count, transport, status, url, project_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+RETURNING id, api_id, name, source_spec, tools_count, transport, status, url, error_message, created_at, project_id`;
 
 export interface InsertMcpServerArgs {
     id: string;
@@ -235,6 +254,7 @@ export interface InsertMcpServerArgs {
     transport: string;
     status: string;
     url: string | null;
+    projectId: string;
 }
 
 export interface InsertMcpServerRow {
@@ -248,12 +268,13 @@ export interface InsertMcpServerRow {
     url: string | null;
     errorMessage: string | null;
     createdAt: Date;
+    projectId: string;
 }
 
 export async function insertMcpServer(client: Client, args: InsertMcpServerArgs): Promise<InsertMcpServerRow | null> {
     const result = await client.query({
         text: insertMcpServerQuery,
-        values: [args.id, args.apiId, args.name, args.sourceSpec, args.toolsCount, args.transport, args.status, args.url],
+        values: [args.id, args.apiId, args.name, args.sourceSpec, args.toolsCount, args.transport, args.status, args.url, args.projectId],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {
@@ -270,7 +291,8 @@ export async function insertMcpServer(client: Client, args: InsertMcpServerArgs)
         status: row[6],
         url: row[7],
         errorMessage: row[8],
-        createdAt: row[9]
+        createdAt: row[9],
+        projectId: row[10]
     };
 }
 

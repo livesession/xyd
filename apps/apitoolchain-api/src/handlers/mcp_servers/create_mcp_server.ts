@@ -1,5 +1,6 @@
 import { mcpUrlToReferences } from "@apitoolchain/xyd-bridge";
 import type { McpServers } from "../../../generated/src/generated/models/all/platform-api";
+import { requireAuth } from "../../auth";
 import { registryClient } from "../../clients/registry";
 import * as jobQ from "../../db/generated/jobs_sql";
 import * as outQ from "../../db/generated/outputs_sql";
@@ -13,7 +14,8 @@ import { notFound } from "../errors";
  * wired now via `mcpUrlToReferences` when a reachable URL is given; spawning a
  * long-lived MCP process is deferred.
  */
-export const createMcpServer: McpServers["create"] = async (_ctx, input) => {
+export const createMcpServer: McpServers["create"] = async (ctx, input) => {
+  const auth = await requireAuth(ctx);
   const core = await registryClient.getApi(input.apiId);
   if (!core) return notFound(`api ${input.apiId} not found`);
 
@@ -38,6 +40,7 @@ export const createMcpServer: McpServers["create"] = async (_ctx, input) => {
     transport: input.transport ?? "http",
     status,
     url: input.url ?? null,
+    projectId: auth.projectId,
   });
   await jobQ.insertJob(pool, {
     id: randomId("job"),

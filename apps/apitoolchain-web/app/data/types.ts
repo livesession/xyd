@@ -89,6 +89,17 @@ export interface SdkTarget {
   registryUrl?: string;
 }
 
+/** One generated build of a single SDK target (its version history). */
+export interface TargetVersion {
+  id: string;
+  targetId: string;
+  version: string;
+  status: BuildStatus;
+  createdAt: string;
+  publishedAt?: string;
+  registryUrl?: string;
+}
+
 export interface DocsProject {
   id: string;
   apiId: string;
@@ -155,6 +166,20 @@ export interface Project {
   orgId: string;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: string;
+}
+
+export interface Member {
+  userId: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
 /** A connected git-provider account (its token stays server-side). */
 export interface GitProvider {
   id: string;
@@ -186,4 +211,40 @@ export interface RepoConnection {
   lastSyncedAt?: string;
   lastSyncStatus?: BuildStatus;
   lastSyncError?: string;
+  releaseMode?: string;
+  autoRelease?: boolean;
+  baseBranch?: string;
+  prerelease?: boolean;
+  lastReleasedVersion?: string;
+}
+
+export type ReleaseState =
+  | "preparing"
+  | "pr_open"
+  | "merging"
+  | "released"
+  | "failed"
+  | "superseded";
+
+export interface Release {
+  id: string;
+  connectionId: string;
+  state: ReleaseState;
+  baseSpecVersion: string;
+  headSpecVersion: string;
+  bumpType: string;
+  fromVersion: string;
+  toVersion: string;
+  changelog: string;
+  changeCount: number;
+  breakingCount: number;
+  headBranch: string;
+  baseBranch: string;
+  prNumber: number;
+  prUrl: string;
+  tag: string;
+  releaseUrl: string;
+  error: string;
+  createdAt: string;
+  updatedAt: string;
 }

@@ -71,6 +71,7 @@ export const registerApi: Apis["register"] = async (_ctx, input) => {
     namespace,
     source,
     kind,
+    projectId: input.projectId ?? "prj_default",
   });
 
   const key =

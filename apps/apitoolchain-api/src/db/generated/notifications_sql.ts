@@ -5,7 +5,11 @@ interface Client {
 }
 
 export const listNotificationsQuery = `-- name: ListNotifications :many
-SELECT id, severity, title, body, source, api_id, read, created_at FROM notifications ORDER BY created_at DESC`;
+SELECT id, severity, title, body, source, api_id, read, created_at, project_id FROM notifications WHERE project_id = $1 ORDER BY created_at DESC`;
+
+export interface ListNotificationsArgs {
+    projectId: string;
+}
 
 export interface ListNotificationsRow {
     id: string;
@@ -16,12 +20,13 @@ export interface ListNotificationsRow {
     apiId: string | null;
     read: boolean;
     createdAt: Date;
+    projectId: string;
 }
 
-export async function listNotifications(client: Client): Promise<ListNotificationsRow[]> {
+export async function listNotifications(client: Client, args: ListNotificationsArgs): Promise<ListNotificationsRow[]> {
     const result = await client.query({
         text: listNotificationsQuery,
-        values: [],
+        values: [args.projectId],
         rowMode: "array"
     });
     return result.rows.map(row => {
@@ -33,15 +38,16 @@ export async function listNotifications(client: Client): Promise<ListNotificatio
             source: row[4],
             apiId: row[5],
             read: row[6],
-            createdAt: row[7]
+            createdAt: row[7],
+            projectId: row[8]
         };
     });
 }
 
 export const insertNotificationQuery = `-- name: InsertNotification :one
-INSERT INTO notifications (id, severity, title, body, source, api_id)
-VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, severity, title, body, source, api_id, read, created_at`;
+INSERT INTO notifications (id, severity, title, body, source, api_id, project_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7)
+RETURNING id, severity, title, body, source, api_id, read, created_at, project_id`;
 
 export interface InsertNotificationArgs {
     id: string;
@@ -50,6 +56,7 @@ export interface InsertNotificationArgs {
     body: string;
     source: string;
     apiId: string | null;
+    projectId: string;
 }
 
 export interface InsertNotificationRow {
@@ -61,12 +68,13 @@ export interface InsertNotificationRow {
     apiId: string | null;
     read: boolean;
     createdAt: Date;
+    projectId: string;
 }
 
 export async function insertNotification(client: Client, args: InsertNotificationArgs): Promise<InsertNotificationRow | null> {
     const result = await client.query({
         text: insertNotificationQuery,
-        values: [args.id, args.severity, args.title, args.body, args.source, args.apiId],
+        values: [args.id, args.severity, args.title, args.body, args.source, args.apiId, args.projectId],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {
@@ -81,21 +89,28 @@ export async function insertNotification(client: Client, args: InsertNotificatio
         source: row[4],
         apiId: row[5],
         read: row[6],
-        createdAt: row[7]
+        createdAt: row[7],
+        projectId: row[8]
     };
 }
 
 export const markAllNotificationsReadQuery = `-- name: MarkAllNotificationsRead :many
-UPDATE notifications SET read = true WHERE read = false RETURNING id`;
+UPDATE notifications SET read = true
+WHERE read = false AND project_id = $1
+RETURNING id`;
+
+export interface MarkAllNotificationsReadArgs {
+    projectid: string;
+}
 
 export interface MarkAllNotificationsReadRow {
     id: string;
 }
 
-export async function markAllNotificationsRead(client: Client): Promise<MarkAllNotificationsReadRow[]> {
+export async function markAllNotificationsRead(client: Client, args: MarkAllNotificationsReadArgs): Promise<MarkAllNotificationsReadRow[]> {
     const result = await client.query({
         text: markAllNotificationsReadQuery,
-        values: [],
+        values: [args.projectid],
         rowMode: "array"
     });
     return result.rows.map(row => {
@@ -106,10 +121,13 @@ export async function markAllNotificationsRead(client: Client): Promise<MarkAllN
 }
 
 export const markNotificationsReadByIdsQuery = `-- name: MarkNotificationsReadByIds :many
-UPDATE notifications SET read = true WHERE id = ANY($1::text[]) AND read = false RETURNING id`;
+UPDATE notifications SET read = true
+WHERE id = ANY($1::text[]) AND project_id = $2 AND read = false
+RETURNING id`;
 
 export interface MarkNotificationsReadByIdsArgs {
     ids: string[];
+    projectid: string;
 }
 
 export interface MarkNotificationsReadByIdsRow {
@@ -119,7 +137,7 @@ export interface MarkNotificationsReadByIdsRow {
 export async function markNotificationsReadByIds(client: Client, args: MarkNotificationsReadByIdsArgs): Promise<MarkNotificationsReadByIdsRow[]> {
     const result = await client.query({
         text: markNotificationsReadByIdsQuery,
-        values: [args.ids],
+        values: [args.ids, args.projectid],
         rowMode: "array"
     });
     return result.rows.map(row => {

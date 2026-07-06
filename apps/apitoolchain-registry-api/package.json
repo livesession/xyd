@@ -30,6 +30,8 @@
     "@typespec/compiler": "latest",
     "@typespec/http": "latest",
     "@typespec/http-server-js": "latest",
+    "@typespec/openapi": "latest",
+    "@typespec/openapi3": "latest",
     "typescript": "^5.6.2"
   }
 }

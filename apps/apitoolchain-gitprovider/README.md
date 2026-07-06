@@ -7,9 +7,31 @@ plus a thin HTTP service that the apitoolchain TypeScript gateway calls.
   client for provider/repo API ops (identity, list repos) and `go-git` for the
   actual push (`Sync`: clone → write files under a prefix → **one** commit →
   push). One tidy commit per sync, uniform across every provider.
-- **`cmd/gitproviderd/`** — a **stateless** JSON HTTP wrapper. Credentials
-  (`kind`, `baseUrl`, `token`, `login`) are passed **per request**, so the
-  service holds no secrets and no state.
+- **`openapi/`** — the wire contract in **TypeSpec** → emits
+  `__generated__/openapi.yaml` (`@typespec/openapi3`).
+- **`api/openapi/`** — the **oapi-codegen** strict + std-http server generated
+  from that spec (`openapi.gen.go`, checked in).
+- **`api/v1/`** — the hand-written handlers implementing
+  `openapi.StrictServerInterface` over the `gitprovider` library (they only map
+  wire↔library types and pick the status code); `NewHandler()` returns the wired
+  `http.Handler`.
+- **`cmd/gitproviderd/`** — a **stateless** JSON HTTP service (strict handler +
+  std `net/http`). Credentials (`kind`, `baseUrl`, `token`, `login`) are passed
+  **per request**, so the service holds no secrets and no state.
+
+## Codegen
+
+The API is spec-first: edit `openapi/main.tsp`, then regenerate the OpenAPI + the
+Go strict server:
+
+```bash
+mise run gen:apitoolchain-gitprovider
+# = cd openapi && bun install && bun run build       # tsp compile → openapi.yaml
+#   && cd .. && go generate ./api/openapi/...         # go tool oapi-codegen → openapi.gen.go
+```
+
+Both `openapi/__generated__/openapi.yaml` and `api/openapi/openapi.gen.go` are
+committed so the service builds/runs without a codegen step.
 
 ## Provider auth
 
@@ -20,12 +42,17 @@ calls use the per-provider token header (`token …`, `Bearer …`, or
 
 ## Service endpoints
 
-| Method | Path | Body | Returns |
+All bodies inline the credentials `{kind,baseUrl,token,login}`; errors are
+`{"error": …}` (400 bad config/body, 405 wrong method, 502 upstream failure).
+
+| Method | Path | Body (+ creds) | Returns |
 |--------|------|------|---------|
-| GET | `/healthz` | — | `ok` |
-| POST | `/whoami` | `{kind,baseUrl,token,login}` | `{login,name,email}` |
-| POST | `/repos` | `{kind,baseUrl,token,login}` | `[{fullName,defaultBranch,htmlUrl,private}]` |
-| POST | `/sync` | `+ {repo,branch,prefix,message,author,files:[{path,contentBase64}]}` | `{commit,branch,htmlUrl,noChanges}` |
+| GET | `/healthz` | — | `ok` (text/plain) |
+| POST | `/whoami` | — | `{login,name,email}` |
+| POST | `/repos` | — | `[{fullName,namespace,name,defaultBranch,cloneUrl,htmlUrl,private}]` |
+| POST | `/branches` | `{repo}` | `[branchName]` |
+| POST | `/repos/create` | `{name,private,defaultBranch}` | `{…repo…}` |
+| POST | `/sync` | `{repo,branch,prefix,message,author,files:[{path,contentBase64}]}` | `{commit,branch,htmlUrl,noChanges}` |
 
 ## Run
 

@@ -20,3 +20,7 @@ export interface ListOptions {
   targetKind?: string;
   targetId?: string;
 }
+
+export interface ListOptions {
+  connectionId?: string;
+}

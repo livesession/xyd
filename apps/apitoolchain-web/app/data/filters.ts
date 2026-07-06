@@ -103,6 +103,69 @@ export function sdkTargetFilterSchema(
   });
 }
 
+/** Targets of a single SDK — no namespace facet (they all share one). */
+export function sdkTargetDetailFilterSchema(languages: string[]): FilterSchema {
+  return defineFilterSchema({
+    table: "sdk_targets",
+    fields: [
+      {
+        key: "language",
+        label: "Language",
+        column: "language",
+        type: "enum",
+        icon: "sdk",
+        values: languages.map((l) => ({ value: l, label: l })),
+      },
+      {
+        // Searches a combined string on each row (package + language).
+        key: "search",
+        label: "Name",
+        column: "search",
+        type: "text",
+        icon: "search",
+        freeText: true,
+      },
+    ],
+  });
+}
+
+/** Every version of every target for one SDK — faceted by language + version. */
+export function sdkVersionsFilterSchema(
+  languages: string[],
+  versions: string[],
+): FilterSchema {
+  return defineFilterSchema({
+    table: "sdk_targets",
+    fields: [
+      {
+        key: "language",
+        label: "Language",
+        column: "language",
+        type: "enum",
+        icon: "sdk",
+        values: languages.map((l) => ({ value: l, label: l })),
+      },
+      {
+        key: "version",
+        label: "Version",
+        column: "version",
+        type: "enum",
+        icon: "tags-outline",
+        values: versions.map((v) => ({ value: v, label: v })),
+      },
+      {
+        // Searches a combined string on each row (package + language + version).
+        key: "search",
+        label: "Name",
+        column: "search",
+        type: "text",
+        icon: "search",
+        freeText: true,
+      },
+    ],
+  });
+}
+
 export function docsFilterSchema(themes: string[]): FilterSchema {
   return defineFilterSchema({
     table: "docs",
@@ -131,6 +194,56 @@ export function docsFilterSchema(themes: string[]): FilterSchema {
         key: "name",
         label: "Name",
         column: "name",
+        type: "text",
+        icon: "search",
+        freeText: true,
+      },
+    ],
+  });
+}
+
+export function mcpFilterSchema(
+  apis: { id: string; name: string }[],
+): FilterSchema {
+  return defineFilterSchema({
+    table: "mcp_servers",
+    fields: [
+      {
+        key: "apiId",
+        label: "API",
+        column: "api_id",
+        type: "enum",
+        icon: "registry",
+        values: apis.map((a) => ({ value: a.id, label: a.name })),
+      },
+      {
+        key: "transport",
+        label: "Transport",
+        column: "transport",
+        type: "enum",
+        icon: "mcp",
+        values: [
+          { value: "http", label: "HTTP" },
+          { value: "sse", label: "SSE" },
+          { value: "stdio", label: "stdio" },
+        ],
+      },
+      {
+        key: "status",
+        label: "Status",
+        column: "status",
+        type: "enum",
+        icon: "check",
+        values: [
+          { value: "ready", label: "Ready" },
+          { value: "building", label: "Building" },
+          { value: "error", label: "Error" },
+        ],
+      },
+      {
+        key: "search",
+        label: "Name",
+        column: "search",
         type: "text",
         icon: "search",
         freeText: true,

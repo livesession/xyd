@@ -2,13 +2,20 @@ import {
   type ActivityItem,
   ActivityList,
   Badge,
+  Button,
   EmptyState,
   type IconName,
+  Link,
   PageHeader,
   Tabs,
 } from "@apitoolchain/design-system";
+import { useFetcher } from "react-router";
 import { RouterLink } from "~/components/RouterLink";
-import { listNotifications, type NotificationSeverity } from "~/data";
+import {
+  listNotifications,
+  markNotificationsRead,
+  type NotificationSeverity,
+} from "~/data";
 import type { Route } from "./+types/notifications";
 
 export function meta() {
@@ -31,6 +38,12 @@ export async function loader({ params }: Route.LoaderArgs) {
   };
 }
 
+export async function action({ request }: Route.ActionArgs) {
+  const form = await request.formData();
+  const id = form.get("id");
+  return markNotificationsRead(id ? { ids: [String(id)] } : { all: true });
+}
+
 const SEV_ICON: Record<NotificationSeverity, IconName> = {
   info: "bolt",
   success: "check",
@@ -48,6 +61,10 @@ export default function NotificationsRoute({
   loaderData,
 }: Route.ComponentProps) {
   const { filter, items, unread, total } = loaderData;
+  const fetcher = useFetcher();
+  const busy = fetcher.state !== "idle";
+  const markRead = (id?: string) =>
+    fetcher.submit(id ? { id } : {}, { method: "post" });
 
   const activity: ActivityItem[] = items.map((n) => ({
     id: n.id,
@@ -58,9 +75,12 @@ export default function NotificationsRoute({
       <span className="inline-flex items-center gap-2">
         {n.title}
         {!n.read && (
-          <Badge tone="info" dot>
-            new
-          </Badge>
+          <>
+            <Badge tone="info" dot>
+              new
+            </Badge>
+            <Link onClick={() => markRead(n.id)}>Mark read</Link>
+          </>
         )}
       </span>
     ),
@@ -71,7 +91,16 @@ export default function NotificationsRoute({
     <>
       <PageHeader
         title="Notifications"
-        description="Events across your APIs — publishes, builds, MCP servers, and registry changes."
+        actions={
+          <Button
+            variant="secondary"
+            icon="check"
+            disabled={unread === 0 || busy}
+            onClick={() => markRead()}
+          >
+            {busy ? "Marking…" : "Mark all as read"}
+          </Button>
+        }
         tabs={
           <Tabs
             linkComponent={RouterLink}

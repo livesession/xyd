@@ -6,15 +6,19 @@ import type {
   Organization,
   Project,
   RegistryEntry,
+  Release,
   RepoConnection,
   Sdk,
   SdkTarget,
+  TargetVersion,
+  User,
 } from "./types";
 
 // Git providers/connections need the live gateway (a Go service + real repo);
 // with no backend the UI shows the "connect a provider" empty state.
 export const GIT_PROVIDERS: GitProvider[] = [];
 export const REPO_CONNECTIONS: RepoConnection[] = [];
+export const RELEASES: Release[] = [];
 
 /**
  * Mock data for the front-end pass. Timestamps are friendly relative strings
@@ -32,6 +36,15 @@ export const PROJECT: Project = {
   id: "prj_default",
   name: "Default project",
   orgId: "org_acme",
+};
+
+// The signed-in account shown when no backend is configured (auth is a no-op in
+// fixtures mode — the app is usable offline).
+export const USER: User = {
+  id: "usr_dev",
+  email: "you@apitoolchain.dev",
+  name: "Dev User",
+  createdAt: "2024-01-01T00:00:00.000Z",
 };
 
 export const APIS: RegistryEntry[] = [
@@ -374,6 +387,38 @@ export const SDK_TARGETS: SdkTarget[] = [
     version: "1.0.0",
     status: "ready",
     lastPublishedAt: "5 days ago",
+  },
+];
+
+/** Per-target build history (mock). Targets with no explicit history fall back
+ * to a single row synthesised from their current version. */
+export const TARGET_VERSIONS: TargetVersion[] = [
+  {
+    id: "tv_petstore_go_210",
+    targetId: "sdk_petstore_go",
+    version: "2.1.0",
+    status: "ready",
+    createdAt: "2 hours ago",
+    publishedAt: "2 hours ago",
+    registryUrl: "pkg.go.dev/github.com/acme/petstore-go@v2.1.0",
+  },
+  {
+    id: "tv_petstore_go_200",
+    targetId: "sdk_petstore_go",
+    version: "2.0.0",
+    status: "ready",
+    createdAt: "3 days ago",
+    publishedAt: "3 days ago",
+    registryUrl: "pkg.go.dev/github.com/acme/petstore-go@v2.0.0",
+  },
+  {
+    id: "tv_petstore_go_150",
+    targetId: "sdk_petstore_go",
+    version: "1.5.0",
+    status: "ready",
+    createdAt: "2 weeks ago",
+    publishedAt: "2 weeks ago",
+    registryUrl: "pkg.go.dev/github.com/acme/petstore-go@v1.5.0",
   },
 ];
 

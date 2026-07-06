@@ -7,20 +7,62 @@ import type {
   GitProviderKind,
   McpServer,
   McpTransport,
+  Member,
   Notification,
   NotificationSeverity,
   NotificationSource,
+  Project,
   RegistryEntry,
+  Release,
+  ReleaseState,
   RepoConnection,
   RepoTargetKind,
   Sdk,
   SdkLanguage,
   SdkTarget,
+  User,
 } from "../generated/src/generated/models/all/apitoolchain";
 import type { RegistryCore } from "./clients/registry";
 
 const iso = (d: Date | null | undefined): string | undefined =>
   d ? d.toISOString() : undefined;
+
+/** wire row → User (never carries the password hash). */
+export function toUser(row: {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: Date;
+}): User {
+  return {
+    id: row.id,
+    email: row.email,
+    name: row.name,
+    createdAt: row.createdAt.toISOString(),
+  };
+}
+
+export function toProject(row: {
+  id: string;
+  orgId: string;
+  name: string;
+}): Project {
+  return { id: row.id, name: row.name, orgId: row.orgId };
+}
+
+export function toMember(row: {
+  userId: string;
+  role: string;
+  email: string;
+  name: string;
+}): Member {
+  return {
+    userId: row.userId,
+    email: row.email,
+    name: row.name,
+    role: row.role,
+  };
+}
 
 // Structural row shapes (decoupled from specific sqlc row type names, which are
 // distinct-but-identical per query).
@@ -163,6 +205,34 @@ type RepoConnectionRow = {
   lastSyncedAt: Date | null;
   lastSyncStatus: string;
   lastSyncError: string;
+  releaseMode: string;
+  autoRelease: boolean;
+  baseBranch: string;
+  prerelease: boolean;
+  lastReleasedVersion: string;
+};
+
+type ReleaseRow = {
+  id: string;
+  connectionId: string;
+  state: string;
+  baseSpecVersion: string;
+  headSpecVersion: string;
+  bumpType: string;
+  fromVersion: string;
+  toVersion: string;
+  changelog: string;
+  changeCount: number;
+  breakingCount: number;
+  headBranch: string;
+  baseBranch: string;
+  prNumber: number;
+  prUrl: string;
+  tag: string;
+  releaseUrl: string;
+  error: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 // The token column is deliberately NOT part of GitProviderRow — it never leaves
@@ -193,6 +263,36 @@ export function toRepoConnection(r: RepoConnectionRow): RepoConnection {
       ? (r.lastSyncStatus as BuildStatus)
       : undefined,
     lastSyncError: r.lastSyncError || undefined,
+    releaseMode: r.releaseMode || undefined,
+    autoRelease: r.autoRelease,
+    baseBranch: r.baseBranch || undefined,
+    prerelease: r.prerelease,
+    lastReleasedVersion: r.lastReleasedVersion || undefined,
+  };
+}
+
+export function toRelease(r: ReleaseRow): Release {
+  return {
+    id: r.id,
+    connectionId: r.connectionId,
+    state: r.state as ReleaseState,
+    baseSpecVersion: r.baseSpecVersion,
+    headSpecVersion: r.headSpecVersion,
+    bumpType: r.bumpType,
+    fromVersion: r.fromVersion,
+    toVersion: r.toVersion,
+    changelog: r.changelog,
+    changeCount: r.changeCount,
+    breakingCount: r.breakingCount,
+    headBranch: r.headBranch,
+    baseBranch: r.baseBranch,
+    prNumber: r.prNumber,
+    prUrl: r.prUrl,
+    tag: r.tag,
+    releaseUrl: r.releaseUrl,
+    error: r.error,
+    createdAt: r.createdAt.toISOString(),
+    updatedAt: r.updatedAt.toISOString(),
   };
 }
 

@@ -1,8 +1,11 @@
 import type { RepoConnections } from "../../../generated/src/generated/models/all/platform-api";
+import { requireAuth } from "../../auth";
 import { gitProviderClient } from "../../clients/gitprovider";
 import * as gitQ from "../../db/generated/git_sql";
 import { pool } from "../../db/pool";
+import { prepareReleaseForConnection } from "../../gen/release";
 import { toRepoConnection } from "../../mappers";
+import { applyReleaseConfig } from "../../release_config";
 import { randomId } from "../../util";
 import { invalid, notFound } from "../errors";
 
@@ -11,7 +14,8 @@ import { invalid, notFound } from "../errors";
  * existing "owner/name" or, when `createRepo` is set, a new repo name that we
  * create under the account first (idempotent) and store by its full name.
  */
-export const create: RepoConnections["create"] = async (_ctx, input) => {
+export const create: RepoConnections["create"] = async (ctx, input) => {
+  const auth = await requireAuth(ctx);
   const provider = await gitQ.getGitProvider(pool, { id: input.providerId });
   if (!provider) return notFound(`git provider ${input.providerId} not found`);
   let repo = (input.repo ?? "").trim();
@@ -51,5 +55,26 @@ export const create: RepoConnections["create"] = async (_ctx, input) => {
     branch,
     prefix,
   });
-  return toRepoConnection(row as NonNullable<typeof row>);
+  const created = row as NonNullable<typeof row>;
+
+  // Optional default release mode picked in the connect modal (defaults to the
+  // legacy direct-push mode). Applying `release` also registers the webhook.
+  if (input.releaseMode) {
+    const updated = await applyReleaseConfig(created.id, provider, {
+      releaseMode: input.releaseMode,
+      autoRelease: input.autoRelease ?? false,
+      baseBranch: input.baseBranch,
+    });
+    // Auto-release → open the initial PR from the current spec right away.
+    if (input.releaseMode === "release" && input.autoRelease) {
+      void prepareReleaseForConnection({
+        connectionId: created.id,
+        projectId: auth.projectId,
+      });
+    }
+    return toRepoConnection(
+      (updated ?? created) as NonNullable<typeof updated>,
+    );
+  }
+  return toRepoConnection(created);
 };

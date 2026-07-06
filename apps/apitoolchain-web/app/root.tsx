@@ -9,9 +9,25 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { DevWidget } from "@apitoolchain/dev/widget";
+import { runWithToken } from "./data/request-context.server";
+import { getSessionToken } from "./sessions.server";
 
 export const links: Route.LinksFunction = () => [
   { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+];
+
+/**
+ * Bind the request's session token (from the httpOnly cookie) into the
+ * request-scoped store for the whole loader/action chain, so the data layer can
+ * forward it to the platform-api as a bearer. Server-only (stripped from the
+ * client build along with its imports).
+ */
+export const middleware: Route.MiddlewareFunction[] = [
+  async ({ request }, next) => {
+    const token = await getSessionToken(request);
+    return runWithToken(token, () => next());
+  },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -22,11 +38,35 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        {/* Dev-only: hide the app before it paints until a data profile is
+            picked, so nothing loads "under the hood" before the picker. The
+            @apitoolchain/dev plugin's overlay clears the gate once you pick. */}
+        {import.meta.env.DEV && (
+          <>
+            <style
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: static dev-only gate CSS.
+              dangerouslySetInnerHTML={{
+                __html: "html[data-atc-gate] body{visibility:hidden!important}",
+              }}
+            />
+            <script
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: static dev-only pre-paint gate.
+              dangerouslySetInnerHTML={{
+                __html:
+                  "try{if(!sessionStorage.getItem('atc-dev-profile-picked'))document.documentElement.setAttribute('data-atc-gate','')}catch(e){}",
+              }}
+            />
+          </>
+        )}
       </head>
       <body>
         {children}
         <ScrollRestoration />
         <Scripts />
+        {/* Dev-only: the data-profile picker + tools (talks to the
+            @apitoolchain/dev vite plugin's /__atc-dev/* endpoints). Gated to
+            dev so it's tree-shaken out of prod builds. */}
+        {import.meta.env.DEV && <DevWidget />}
       </body>
     </html>
   );

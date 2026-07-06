@@ -10,6 +10,7 @@ import {
   Tabs,
 } from "@apitoolchain/design-system";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router";
 import { RegisterApiModal } from "~/components/RegisterApiModal";
 import { RouterLink } from "~/components/RouterLink";
 import type { ApiFormat, EntryKind, RegistryEntry } from "~/data";
@@ -117,6 +118,7 @@ export function RegistryListPage({
   all: RegistryEntry[];
 }) {
   const [importOpen, setImportOpen] = useState(false);
+  const navigate = useNavigate();
 
   // Namespaces present on entries — feeds the filter values + import picker.
   const entryNamespaces = [...new Set(all.map((a) => a.namespace))].sort();
@@ -170,7 +172,6 @@ export function RegistryListPage({
     <>
       <PageHeader
         title="Registry"
-        description="Every API spec and schema you've registered — versioned, tagged, and ready to ship SDKs, docs, and MCP servers from."
         actions={registerButton}
         tabs={
           <Tabs
@@ -217,6 +218,7 @@ export function RegistryListPage({
       <RegisterApiModal
         open={importOpen}
         onClose={() => setImportOpen(false)}
+        onImported={(api) => navigate(`/registry/${api.id}`)}
         kind={kind}
         namespaces={entryNamespaces}
         defaultNamespace={defaultNamespace}

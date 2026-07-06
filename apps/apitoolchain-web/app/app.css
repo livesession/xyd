@@ -4,3 +4,7 @@
 /* The design system ships raw TS source under node_modules (file: link), so
    Tailwind's auto content-detection skips it — scan it explicitly for classes. */
 @source "../../../packages/apitoolchain-design-system/src";
+/* Auth building blocks live in their own linked source package. */
+@source "../../../packages/apitoolchain-auth-design-system/src";
+/* Same for the dev widget (@apitoolchain/dev/widget) — a linked source pkg. */
+@source "../../../packages/apitoolchain-dev/src";

@@ -8,6 +8,11 @@ export interface ToggleTileProps {
   /** Optional leading node (icon/logo). */
   leading?: ReactNode;
   disabled?: boolean;
+  /**
+   * Replaces the trailing {@link Toggle} switch — e.g. a "Soon" badge for a
+   * non-selectable / coming-soon tile (usually paired with `disabled`).
+   */
+  trailing?: ReactNode;
 }
 
 /** A selectable row: leading icon + label + a trailing {@link Toggle} switch. */
@@ -17,6 +22,7 @@ export function ToggleTile({
   label,
   leading,
   disabled,
+  trailing,
 }: ToggleTileProps) {
   return (
     <button
@@ -29,7 +35,7 @@ export function ToggleTile({
     >
       {leading}
       <span className="min-w-0 flex-1 truncate text-sm text-ink">{label}</span>
-      <Toggle checked={checked} />
+      {trailing ?? <Toggle checked={checked} />}
     </button>
   );
 }

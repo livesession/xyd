@@ -2,28 +2,49 @@ import {
   Breadcrumb,
   Button,
   Callout,
+  type Column,
   DescriptionList,
   EmptyState,
+  LaTable,
+  Mono,
   PageHeader,
-  Section,
+  RightPanel,
+  RightPanelSection,
+  StatusPill,
+  Tabs,
 } from "@apitoolchain/design-system";
 import { toQuery } from "@apitoolchain/filters";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { redirect, useFetcher } from "react-router";
 import { AddTargetModal } from "~/components/AddTargetModal";
 import { RouterLink } from "~/components/RouterLink";
 import { SDK_LANG_LABEL, SdkLangIcon } from "~/components/SdkLangIcon";
 import {
   addSdkTarget,
+  type BuildStatus,
   deleteSdk,
+  deriveTargetVersions,
   getApi,
   getSdk,
   listSdkTargetsBySdk,
   type SdkLanguage,
-  type SdkTarget,
 } from "~/data";
-import { sdkFilterSchema } from "~/data/filters";
+import { sdkFilterSchema, sdkVersionsFilterSchema } from "~/data/filters";
+import { useUrlFilters } from "~/hooks/useUrlFilters";
+import { formatVersion } from "~/version";
 import type { Route } from "./+types/sdks.detail";
+
+/** One (target × version) row with a search blob for the free-text filter. */
+type TargetVersionRow = {
+  id: string;
+  targetId: string;
+  language: SdkLanguage;
+  packageName: string;
+  version: string;
+  status: BuildStatus;
+  publishedAt: string;
+  search: string;
+};
 
 export function meta() {
   return [{ title: "SDK — apitoolchain" }];
@@ -36,7 +57,22 @@ export async function loader({ params }: Route.LoaderArgs) {
     getApi(sdk.apiId),
     listSdkTargetsBySdk(sdk.id),
   ]);
-  return { sdk, apiName: api?.name ?? sdk.apiId, targets };
+  // Expand every target into its full version history so the table lists every
+  // version. Each row links back to its general target (which holds all versions).
+  const apiVersions = api?.versions ?? [];
+  const rows: TargetVersionRow[] = targets.flatMap((t) =>
+    deriveTargetVersions(t, apiVersions).map((v) => ({
+      id: v.id,
+      targetId: t.id,
+      language: t.language,
+      packageName: t.packageName,
+      version: v.version,
+      status: v.status,
+      publishedAt: v.publishedAt ?? "",
+      search: `${t.packageName} ${t.language} ${v.version}`.toLowerCase(),
+    })),
+  );
+  return { sdk, apiName: api?.name ?? sdk.apiId, targets, rows };
 }
 
 export async function action({ params, request }: Route.ActionArgs) {
@@ -62,36 +98,10 @@ export async function action({ params, request }: Route.ActionArgs) {
   return { ok: false as const, message: "Unknown action" };
 }
 
-const STATUS_DOT: Record<string, string> = {
-  ready: "bg-success",
-  building: "bg-info",
-  error: "bg-danger",
-  draft: "bg-muted",
-  published: "bg-success",
-};
-
-function TargetCard({ sdkId, t }: { sdkId: string; t: SdkTarget }) {
-  return (
-    <RouterLink
-      href={`/sdks/${sdkId}/targets/${t.id}`}
-      className="flex items-center justify-between gap-2 rounded-control border border-line px-3 py-2 no-underline transition-colors hover:bg-hover"
-    >
-      <span className="flex min-w-0 items-center gap-2">
-        <SdkLangIcon language={t.language} />
-        <span className="truncate text-sm font-medium text-ink">
-          {SDK_LANG_LABEL[t.language]}
-        </span>
-      </span>
-      <span
-        className={`size-2 shrink-0 rounded-full ${STATUS_DOT[t.status] ?? "bg-muted"}`}
-        title={t.status}
-      />
-    </RouterLink>
-  );
-}
+type SdkTab = "overview" | "targets" | "settings";
 
 export default function SdkDetailRoute({ loaderData }: Route.ComponentProps) {
-  const { sdk, apiName, targets } = loaderData;
+  const { sdk, apiName, targets, rows } = loaderData;
   // Namespace breadcrumb → the SDK list filtered by `?q=<SQL>`.
   const nsHref = `/sdks?q=${encodeURIComponent(
     toQuery(sdkFilterSchema([sdk.namespace]), {
@@ -99,10 +109,65 @@ export default function SdkDetailRoute({ loaderData }: Route.ComponentProps) {
       rules: [{ key: "namespace", values: [sdk.namespace] }],
     }),
   )}`;
+  const [tab, setTab] = useState<SdkTab>("overview");
   const [addOpen, setAddOpen] = useState(false);
   const del = useFetcher();
   const deleting = del.state !== "idle";
   const delError = (del.data as { message?: string } | undefined)?.message;
+
+  // Filterable table listing every version of every target (Targets tab).
+  const languages = [...new Set(rows.map((r) => r.language))].sort();
+  const versions = [...new Set(rows.map((r) => r.version))];
+  const facetKey = `${languages.join(",")}|${versions.join(",")}`;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: recompute on the facet SETs, not array identity
+  const schema = useMemo(
+    () => sdkVersionsFilterSchema(languages, versions),
+    [facetKey],
+  );
+  const filter = useUrlFilters(schema);
+
+  const targetCols: Column<TargetVersionRow>[] = [
+    {
+      key: "language",
+      header: "Language",
+      width: "md",
+      render: (r) => (
+        <span className="flex items-center gap-2">
+          <SdkLangIcon language={r.language} />
+          <span className="text-body">{SDK_LANG_LABEL[r.language]}</span>
+        </span>
+      ),
+    },
+    {
+      key: "package",
+      header: "Package",
+      width: "wide",
+      render: (r) => <Mono>{r.packageName || "—"}</Mono>,
+    },
+    {
+      key: "version",
+      header: "Version",
+      width: "sm",
+      render: (r) => (
+        <span className="text-body">{formatVersion(r.version)}</span>
+      ),
+    },
+    {
+      key: "published",
+      header: "Published",
+      width: "sm",
+      render: (r) => (
+        <span className="text-subtle">{r.publishedAt || "—"}</span>
+      ),
+    },
+    {
+      key: "status",
+      header: "Status",
+      width: "sm",
+      align: "right",
+      render: (r) => <StatusPill status={r.status} />,
+    },
+  ];
 
   function onDelete() {
     if (
@@ -135,82 +200,117 @@ export default function SdkDetailRoute({ loaderData }: Route.ComponentProps) {
         description={
           sdk.description || `Client libraries generated from ${apiName}.`
         }
-        actions={
-          <Button
-            variant="secondary"
-            icon="registry"
-            href={`/registry/${sdk.apiId}`}
-            linkComponent={RouterLink}
-          >
-            View API
-          </Button>
+        tabs={
+          <Tabs
+            activeKey={tab}
+            onChange={(k) => setTab(k as SdkTab)}
+            items={[
+              { key: "overview", label: "Overview" },
+              { key: "targets", label: "Targets", count: targets.length },
+              { key: "settings", label: "Settings" },
+            ]}
+          />
         }
       />
 
-      <div className="flex max-w-[760px] flex-col gap-10">
-        <Section title="Overview">
-          <DescriptionList
-            items={[
-              { label: "Name", value: sdk.name },
-              {
-                label: "API",
-                value: (
-                  <RouterLink
-                    href={`/registry/${sdk.apiId}`}
-                    className="text-blue no-underline hover:underline"
-                  >
-                    {apiName}
-                  </RouterLink>
-                ),
-              },
-              { label: "Namespace", value: sdk.namespace },
-              { label: "Targets", value: String(sdk.targetCount) },
-              { label: "Created", value: sdk.createdAt },
-            ]}
-          />
-        </Section>
+      {/* Fill the viewport: -mt-6 meets the PageHeader's bottom border, -mb-16
+          cancels the content padding so the panel border reaches the bottom. */}
+      <div className="-mt-6 -mb-16 flex flex-1">
+        <div className="min-w-0 flex-1 pt-6 pr-8 pb-16">
+          {tab === "overview" && (
+            <DescriptionList
+              items={[
+                {
+                  label: "API",
+                  value: (
+                    <RouterLink
+                      href={`/registry/${sdk.apiId}`}
+                      className="text-blue no-underline hover:underline"
+                    >
+                      {apiName}
+                    </RouterLink>
+                  ),
+                },
+                { label: "Namespace", value: sdk.namespace },
+                { label: "Targets", value: String(sdk.targetCount) },
+                { label: "Created", value: sdk.createdAt },
+              ]}
+            />
+          )}
 
-        <Section
-          title="Targets"
-          action={
+          {tab === "targets" &&
+            (targets.length === 0 ? (
+              <EmptyState
+                icon="sdk"
+                title="No targets yet"
+                description="Add a language target to generate a client library."
+                action={
+                  <Button
+                    variant="secondary"
+                    icon="plus"
+                    onClick={() => setAddOpen(true)}
+                  >
+                    Add target
+                  </Button>
+                }
+              />
+            ) : (
+              <LaTable
+                filter={filter}
+                data={rows}
+                columns={targetCols}
+                getRowKey={(r) => r.id}
+                rowHref={(r) => `/sdks/${sdk.id}/targets/${r.targetId}`}
+                linkComponent={RouterLink}
+                searchPlaceholder="Search versions…"
+                empty={
+                  <EmptyState
+                    icon="sdk"
+                    title="No versions match"
+                    description="Clear the filters above."
+                  />
+                }
+              />
+            ))}
+
+          {tab === "settings" && (
+            <div className="flex max-w-[640px] flex-col gap-3">
+              <div className="text-sm font-semibold text-ink">Danger zone</div>
+              <div className="flex items-center gap-3 rounded-control border border-line px-4 py-3">
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-medium text-ink">Delete SDK</div>
+                  <div className="text-xs text-subtle">
+                    Permanently remove this SDK and every generated target.
+                  </div>
+                </div>
+                <Button variant="danger" onClick={onDelete} disabled={deleting}>
+                  {deleting ? "Deleting…" : "Delete"}
+                </Button>
+              </div>
+              {delError && <Callout tone="error">{delError}</Callout>}
+            </div>
+          )}
+        </div>
+
+        <RightPanel placement="content-right">
+          <RightPanelSection title="Actions">
             <Button
-              variant="ghost"
+              variant="secondary"
               icon="plus"
               onClick={() => setAddOpen(true)}
             >
               Add target
             </Button>
-          }
-        >
-          {targets.length === 0 ? (
-            <EmptyState
-              icon="sdk"
-              title="No targets yet"
-              description="Add a language target to generate a client library."
-            />
-          ) : (
-            <div className="grid gap-2 sm:grid-cols-2">
-              {targets.map((t) => (
-                <TargetCard key={t.id} sdkId={sdk.id} t={t} />
-              ))}
-            </div>
-          )}
-        </Section>
-
-        <Section title="Danger zone">
-          <div className="flex items-center gap-3 rounded-control border border-line px-4 py-3">
-            <div className="min-w-0 flex-1">
-              <div className="text-sm font-medium text-ink">Delete SDK</div>
-              <div className="text-xs text-subtle">
-                Permanently remove this SDK and every generated target.
-              </div>
-            </div>
-            <Button variant="danger" onClick={onDelete} disabled={deleting}>
-              {deleting ? "Deleting…" : "Delete"}
+            <Button
+              variant="secondary"
+              icon="registry"
+              href={`/registry/${sdk.apiId}`}
+              linkComponent={RouterLink}
+            >
+              View API
             </Button>
-          </div>
-          {delError && <Callout tone="error">{delError}</Callout>}
-        </Section>
+          </RightPanelSection>
+        </RightPanel>
       </div>
 
       <AddTargetModal

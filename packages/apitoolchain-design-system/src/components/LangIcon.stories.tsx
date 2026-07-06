@@ -8,6 +8,13 @@ const NAMES: LangIconName[] = [
   "ruby",
   "java",
   "csharp",
+  "scala",
+  "kotlin",
+  "rust",
+  "php",
+  "swift",
+  "cpp",
+  "dart",
 ];
 
 const meta: Meta<typeof LangIcon> = {

@@ -114,7 +114,6 @@ export default function SdksRoute({ loaderData }: Route.ComponentProps) {
     <>
       <PageHeader
         title="SDKs"
-        description="Named client libraries generated from a registered API — each SDK ships a target per language."
         actions={generateButton}
         tabs={
           <SdksTabs

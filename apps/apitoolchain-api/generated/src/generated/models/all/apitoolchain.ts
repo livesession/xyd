@@ -106,6 +106,12 @@ export interface RegisterApiInput {
    * Explicit version label; defaults to the spec's info.version.
    */
   version?: string;
+
+  /**
+   * The project the API belongs to. Set server-side by the platform gateway
+   * from the caller's current project; defaults to the seeded project.
+   */
+  projectId?: string;
 }
 
 /**
@@ -338,18 +344,40 @@ export interface UsagePoint {
   value: number;
 }
 
-export interface CurrentContext {
-  org: Organization;
+export interface RegisterInput {
+  email: string;
 
-  project: Project;
+  password: string;
+
+  name?: string;
 }
 
-export interface Organization {
+/**
+ * Login/register response — the opaque session token + the user it belongs to.
+ */
+export interface AuthSession {
+  token: string;
+
+  user: User;
+}
+
+/**
+ * An authenticated account. The password hash never leaves the server.
+ */
+export interface User {
   id: string;
+
+  email: string;
 
   name: string;
 
-  plan: string;
+  createdAt: string;
+}
+
+export interface LoginInput {
+  email: string;
+
+  password: string;
 }
 
 export interface Project {
@@ -360,10 +388,72 @@ export interface Project {
   orgId: string;
 }
 
+export interface CreateProjectInput {
+  name: string;
+}
+
+export interface UpdateProjectInput {
+  name: string;
+}
+
+export interface CurrentContext {
+  /**
+   * The signed-in account.
+   */
+  user: User;
+
+  org: Organization;
+
+  /**
+   * The caller's current project.
+   */
+  project: Project;
+
+  /**
+   * Every project in the current org (for the switcher).
+   */
+  projects: Project[];
+}
+
+export interface Organization {
+  id: string;
+
+  name: string;
+
+  plan: string;
+}
+
 export interface UpdateContextInput {
   orgName?: string;
 
   projectName?: string;
+}
+
+export interface SelectProjectInput {
+  projectId: string;
+}
+
+/**
+ * A user's membership in the current org.
+ */
+export interface Member {
+  userId: string;
+
+  email: string;
+
+  name: string;
+
+  role: string;
+}
+
+export interface InviteMemberInput {
+  email: string;
+
+  role?: string;
+}
+
+export interface UpdateMemberRoleInput {
+  role: string;
 }
 
 /**
@@ -462,6 +552,28 @@ export interface RepoConnection {
   lastSyncStatus?: BuildStatus;
 
   lastSyncError?: string;
+
+  /**
+   * `push` = legacy direct-push sync; `release` = PR-based release pipeline.
+   */
+  releaseMode?: string;
+
+  /**
+   * Open/force-update a release PR on every new spec version.
+   */
+  autoRelease?: boolean;
+
+  /**
+   * PR target branch for release mode (distinct from `branch`).
+   */
+  baseBranch?: string;
+
+  prerelease?: boolean;
+
+  /**
+   * SDK semver of the last merged release.
+   */
+  lastReleasedVersion?: string;
 }
 
 /**
@@ -502,6 +614,82 @@ export interface CreateRepoConnectionInput {
   branch?: string;
 
   prefix?: string;
+
+  releaseMode?: string;
+
+  autoRelease?: boolean;
+
+  baseBranch?: string;
+}
+
+export interface SetReleaseConfigInput {
+  releaseMode: string;
+
+  autoRelease: boolean;
+
+  baseBranch?: string;
+
+  prerelease?: boolean;
+}
+
+export interface Release {
+  id: string;
+
+  connectionId: string;
+
+  state: ReleaseState;
+
+  baseSpecVersion: string;
+
+  headSpecVersion: string;
+
+  bumpType: string;
+
+  fromVersion: string;
+
+  toVersion: string;
+
+  changelog: string;
+
+  changeCount: number;
+
+  breakingCount: number;
+
+  headBranch: string;
+
+  baseBranch: string;
+
+  prNumber: number;
+
+  prUrl: string;
+
+  tag: string;
+
+  releaseUrl: string;
+
+  error: string;
+
+  createdAt: string;
+
+  updatedAt: string;
+}
+
+/**
+ * A versioned release cycle for an SDK connection (the rolling PR + its state).
+ */
+export enum ReleaseState {
+  Preparing = "preparing",
+  Pr_Open = "pr_open",
+  Merging = "merging",
+  Released = "released",
+  Failed = "failed",
+  Superseded = "superseded",
+}
+
+export interface PrepareReleaseInput {
+  connectionId: string;
+
+  versionOverride?: string;
 }
 
 export const GitRepoOption = {

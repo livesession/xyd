@@ -32,6 +32,11 @@ export function Icon({
     dangerouslySetInnerHTML: { __html: entry.body },
   };
 
+  // Brand marks carry their own fills — render as-is (ignore `currentColor`).
+  if (entry.brand) {
+    return <svg {...common} />;
+  }
+
   if (entry.stroke) {
     return (
       <svg

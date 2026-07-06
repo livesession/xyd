@@ -115,6 +115,29 @@ export const SDK_OUTPUT: Record<string, string> = {
 };
 
 /**
+ * RAW spec doc → OpenSDK IR → per-language file map + the package identity and
+ * version. The single spec→SDK code path, shared by `runSdkGeneration` (zips it)
+ * and `runRelease` (commits it into a PR).
+ */
+export function generateSdkFileMap(o: {
+  doc: Record<string, unknown>;
+  language: string;
+  namespace: string;
+  title?: string;
+}): { files: Record<string, string>; packageName: string; version: string } {
+  ensureEmitters();
+  const ir = openapi2opensdk(o.doc);
+  const emitter = getEmitter(o.language);
+  const { packageName, options } = sdkPackageIdentity(
+    o.language,
+    o.namespace,
+    o.title ?? ir.info.title ?? "sdk",
+  );
+  const files = generate(ir, emitter, options);
+  return { files, packageName, version: ir.info.version ?? "0.1.0" };
+}
+
+/**
  * Wired SDK generation: RAW spec → OpenSDK IR → per-language file map (bridge) →
  * zip in object storage → mark the target ready + notify. Runs off the request
  * path (fire-and-forget); the `jobs` row is the queue-ready seam.
@@ -126,8 +149,10 @@ export async function runSdkGeneration(opts: {
   version: string;
   language: string;
   namespace: string;
+  projectId: string;
 }): Promise<void> {
-  const { targetId, jobId, apiId, version, language, namespace } = opts;
+  const { targetId, jobId, apiId, version, language, namespace, projectId } =
+    opts;
   try {
     const spec = await registryClient.fetchSpecRaw(apiId, version || "current");
     if (!spec) throw new Error("spec not found in registry");
@@ -135,17 +160,17 @@ export async function runSdkGeneration(opts: {
       ? JSON.parse(spec.text)
       : (yamlLoad(spec.text) as Record<string, unknown>);
 
-    ensureEmitters();
-    const ir = openapi2opensdk(doc);
-    const emitter = getEmitter(language);
     // One source of truth: the package identity drives BOTH the emitter (so the
     // generated manifest + README use this name) and what we store below.
-    const { packageName, options } = sdkPackageIdentity(
+    const {
+      files,
+      packageName,
+      version: ver,
+    } = generateSdkFileMap({
+      doc,
       language,
       namespace,
-      ir.info.title ?? "sdk",
-    );
-    const files = generate(ir, emitter, options);
+    });
 
     const zip = new JSZip();
     for (const [path, content] of Object.entries(files))
@@ -154,8 +179,6 @@ export async function runSdkGeneration(opts: {
 
     const key = `artifacts/sdk/${targetId}/sdk.zip`;
     await storage.write(key, buf, { mimeType: "application/zip" });
-
-    const ver = ir.info.version ?? "0.1.0";
 
     await sdkQ.markSdkTargetReady(pool, {
       id: targetId,
@@ -175,6 +198,7 @@ export async function runSdkGeneration(opts: {
       body: `${packageName}@${ver}`,
       source: "sdk",
       apiId,
+      projectId,
     });
   } catch (e) {
     const message = (e as Error).message;
@@ -194,6 +218,7 @@ export async function runSdkGeneration(opts: {
       body: message,
       source: "sdk",
       apiId,
+      projectId,
     });
   }
 }

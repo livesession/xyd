@@ -10,11 +10,16 @@ import {
 } from "@apitoolchain/design-system";
 import { useEffect, useRef, useState } from "react";
 import { Link, useFetcher } from "react-router";
-import { listNamespaces, type RegisterApiResult } from "~/data";
+import {
+  listNamespaces,
+  type RegisterApiResult,
+  type RegistryEntry,
+} from "~/data";
 
 export function RegisterApiModal({
   open,
   onClose,
+  onImported,
   kind = "api",
   namespaces = [],
   defaultNamespace,
@@ -22,6 +27,9 @@ export function RegisterApiModal({
 }: {
   open: boolean;
   onClose: () => void;
+  /** Fired with the created entry on a successful import (before close) — lets a
+   * host flow (e.g. Generate SDKs) resume with the freshly-imported API. */
+  onImported?: (api: RegistryEntry) => void;
   /** `api` imports an OpenAPI/GraphQL/AsyncAPI spec; `schema` a JSON Schema. */
   kind?: "api" | "schema";
   /** Namespaces already present on entries — merged with the managed set so
@@ -87,13 +95,14 @@ export function RegisterApiModal({
   useEffect(() => {
     if (submitted.current && fetcher.state === "idle" && result?.ok) {
       submitted.current = false;
+      onImported?.(result.api);
       onClose();
       setName("");
       setNs("");
       setSpecText("");
       setUrl("");
     }
-  }, [fetcher.state, result, onClose]);
+  }, [fetcher.state, result, onClose, onImported]);
 
   const canSubmit =
     name.trim().length > 0 &&

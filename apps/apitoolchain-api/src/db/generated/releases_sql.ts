@@ -1,0 +1,823 @@
+import { QueryArrayConfig, QueryArrayResult } from "pg";
+
+interface Client {
+    query: (config: QueryArrayConfig) => Promise<QueryArrayResult>;
+}
+
+export const insertReleaseQuery = `-- name: InsertRelease :one
+INSERT INTO releases
+  (id, project_id, connection_id, state, base_spec_version, head_spec_version,
+   from_version, base_branch, head_branch)
+VALUES ($1, $2, $3, 'preparing', $4, $5, $6, $7, $8)
+RETURNING id, project_id, connection_id, state, base_spec_version, head_spec_version, bump_type, from_version, to_version, version_override, changelog, change_count, breaking_count, head_branch, base_branch, pr_number, pr_url, tag, release_url, error, created_at, updated_at`;
+
+export interface InsertReleaseArgs {
+    id: string;
+    projectId: string;
+    connectionId: string;
+    baseSpecVersion: string;
+    headSpecVersion: string;
+    fromVersion: string;
+    baseBranch: string;
+    headBranch: string;
+}
+
+export interface InsertReleaseRow {
+    id: string;
+    projectId: string;
+    connectionId: string;
+    state: string;
+    baseSpecVersion: string;
+    headSpecVersion: string;
+    bumpType: string;
+    fromVersion: string;
+    toVersion: string;
+    versionOverride: string;
+    changelog: string;
+    changeCount: number;
+    breakingCount: number;
+    headBranch: string;
+    baseBranch: string;
+    prNumber: number;
+    prUrl: string;
+    tag: string;
+    releaseUrl: string;
+    error: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export async function insertRelease(client: Client, args: InsertReleaseArgs): Promise<InsertReleaseRow | null> {
+    const result = await client.query({
+        text: insertReleaseQuery,
+        values: [args.id, args.projectId, args.connectionId, args.baseSpecVersion, args.headSpecVersion, args.fromVersion, args.baseBranch, args.headBranch],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        projectId: row[1],
+        connectionId: row[2],
+        state: row[3],
+        baseSpecVersion: row[4],
+        headSpecVersion: row[5],
+        bumpType: row[6],
+        fromVersion: row[7],
+        toVersion: row[8],
+        versionOverride: row[9],
+        changelog: row[10],
+        changeCount: row[11],
+        breakingCount: row[12],
+        headBranch: row[13],
+        baseBranch: row[14],
+        prNumber: row[15],
+        prUrl: row[16],
+        tag: row[17],
+        releaseUrl: row[18],
+        error: row[19],
+        createdAt: row[20],
+        updatedAt: row[21]
+    };
+}
+
+export const getReleaseQuery = `-- name: GetRelease :one
+SELECT id, project_id, connection_id, state, base_spec_version, head_spec_version, bump_type, from_version, to_version, version_override, changelog, change_count, breaking_count, head_branch, base_branch, pr_number, pr_url, tag, release_url, error, created_at, updated_at FROM releases WHERE id = $1`;
+
+export interface GetReleaseArgs {
+    id: string;
+}
+
+export interface GetReleaseRow {
+    id: string;
+    projectId: string;
+    connectionId: string;
+    state: string;
+    baseSpecVersion: string;
+    headSpecVersion: string;
+    bumpType: string;
+    fromVersion: string;
+    toVersion: string;
+    versionOverride: string;
+    changelog: string;
+    changeCount: number;
+    breakingCount: number;
+    headBranch: string;
+    baseBranch: string;
+    prNumber: number;
+    prUrl: string;
+    tag: string;
+    releaseUrl: string;
+    error: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export async function getRelease(client: Client, args: GetReleaseArgs): Promise<GetReleaseRow | null> {
+    const result = await client.query({
+        text: getReleaseQuery,
+        values: [args.id],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        projectId: row[1],
+        connectionId: row[2],
+        state: row[3],
+        baseSpecVersion: row[4],
+        headSpecVersion: row[5],
+        bumpType: row[6],
+        fromVersion: row[7],
+        toVersion: row[8],
+        versionOverride: row[9],
+        changelog: row[10],
+        changeCount: row[11],
+        breakingCount: row[12],
+        headBranch: row[13],
+        baseBranch: row[14],
+        prNumber: row[15],
+        prUrl: row[16],
+        tag: row[17],
+        releaseUrl: row[18],
+        error: row[19],
+        createdAt: row[20],
+        updatedAt: row[21]
+    };
+}
+
+export const getActiveReleaseByConnectionQuery = `-- name: GetActiveReleaseByConnection :one
+SELECT id, project_id, connection_id, state, base_spec_version, head_spec_version, bump_type, from_version, to_version, version_override, changelog, change_count, breaking_count, head_branch, base_branch, pr_number, pr_url, tag, release_url, error, created_at, updated_at FROM releases
+WHERE connection_id = $1 AND state IN ('preparing', 'pr_open', 'merging')
+ORDER BY created_at DESC
+LIMIT 1`;
+
+export interface GetActiveReleaseByConnectionArgs {
+    connectionId: string;
+}
+
+export interface GetActiveReleaseByConnectionRow {
+    id: string;
+    projectId: string;
+    connectionId: string;
+    state: string;
+    baseSpecVersion: string;
+    headSpecVersion: string;
+    bumpType: string;
+    fromVersion: string;
+    toVersion: string;
+    versionOverride: string;
+    changelog: string;
+    changeCount: number;
+    breakingCount: number;
+    headBranch: string;
+    baseBranch: string;
+    prNumber: number;
+    prUrl: string;
+    tag: string;
+    releaseUrl: string;
+    error: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export async function getActiveReleaseByConnection(client: Client, args: GetActiveReleaseByConnectionArgs): Promise<GetActiveReleaseByConnectionRow | null> {
+    const result = await client.query({
+        text: getActiveReleaseByConnectionQuery,
+        values: [args.connectionId],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        projectId: row[1],
+        connectionId: row[2],
+        state: row[3],
+        baseSpecVersion: row[4],
+        headSpecVersion: row[5],
+        bumpType: row[6],
+        fromVersion: row[7],
+        toVersion: row[8],
+        versionOverride: row[9],
+        changelog: row[10],
+        changeCount: row[11],
+        breakingCount: row[12],
+        headBranch: row[13],
+        baseBranch: row[14],
+        prNumber: row[15],
+        prUrl: row[16],
+        tag: row[17],
+        releaseUrl: row[18],
+        error: row[19],
+        createdAt: row[20],
+        updatedAt: row[21]
+    };
+}
+
+export const listReleasesQuery = `-- name: ListReleases :many
+SELECT id, project_id, connection_id, state, base_spec_version, head_spec_version, bump_type, from_version, to_version, version_override, changelog, change_count, breaking_count, head_branch, base_branch, pr_number, pr_url, tag, release_url, error, created_at, updated_at FROM releases ORDER BY created_at DESC`;
+
+export interface ListReleasesRow {
+    id: string;
+    projectId: string;
+    connectionId: string;
+    state: string;
+    baseSpecVersion: string;
+    headSpecVersion: string;
+    bumpType: string;
+    fromVersion: string;
+    toVersion: string;
+    versionOverride: string;
+    changelog: string;
+    changeCount: number;
+    breakingCount: number;
+    headBranch: string;
+    baseBranch: string;
+    prNumber: number;
+    prUrl: string;
+    tag: string;
+    releaseUrl: string;
+    error: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export async function listReleases(client: Client): Promise<ListReleasesRow[]> {
+    const result = await client.query({
+        text: listReleasesQuery,
+        values: [],
+        rowMode: "array"
+    });
+    return result.rows.map(row => {
+        return {
+            id: row[0],
+            projectId: row[1],
+            connectionId: row[2],
+            state: row[3],
+            baseSpecVersion: row[4],
+            headSpecVersion: row[5],
+            bumpType: row[6],
+            fromVersion: row[7],
+            toVersion: row[8],
+            versionOverride: row[9],
+            changelog: row[10],
+            changeCount: row[11],
+            breakingCount: row[12],
+            headBranch: row[13],
+            baseBranch: row[14],
+            prNumber: row[15],
+            prUrl: row[16],
+            tag: row[17],
+            releaseUrl: row[18],
+            error: row[19],
+            createdAt: row[20],
+            updatedAt: row[21]
+        };
+    });
+}
+
+export const listReleasesByConnectionQuery = `-- name: ListReleasesByConnection :many
+SELECT id, project_id, connection_id, state, base_spec_version, head_spec_version, bump_type, from_version, to_version, version_override, changelog, change_count, breaking_count, head_branch, base_branch, pr_number, pr_url, tag, release_url, error, created_at, updated_at FROM releases WHERE connection_id = $1 ORDER BY created_at DESC`;
+
+export interface ListReleasesByConnectionArgs {
+    connectionId: string;
+}
+
+export interface ListReleasesByConnectionRow {
+    id: string;
+    projectId: string;
+    connectionId: string;
+    state: string;
+    baseSpecVersion: string;
+    headSpecVersion: string;
+    bumpType: string;
+    fromVersion: string;
+    toVersion: string;
+    versionOverride: string;
+    changelog: string;
+    changeCount: number;
+    breakingCount: number;
+    headBranch: string;
+    baseBranch: string;
+    prNumber: number;
+    prUrl: string;
+    tag: string;
+    releaseUrl: string;
+    error: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export async function listReleasesByConnection(client: Client, args: ListReleasesByConnectionArgs): Promise<ListReleasesByConnectionRow[]> {
+    const result = await client.query({
+        text: listReleasesByConnectionQuery,
+        values: [args.connectionId],
+        rowMode: "array"
+    });
+    return result.rows.map(row => {
+        return {
+            id: row[0],
+            projectId: row[1],
+            connectionId: row[2],
+            state: row[3],
+            baseSpecVersion: row[4],
+            headSpecVersion: row[5],
+            bumpType: row[6],
+            fromVersion: row[7],
+            toVersion: row[8],
+            versionOverride: row[9],
+            changelog: row[10],
+            changeCount: row[11],
+            breakingCount: row[12],
+            headBranch: row[13],
+            baseBranch: row[14],
+            prNumber: row[15],
+            prUrl: row[16],
+            tag: row[17],
+            releaseUrl: row[18],
+            error: row[19],
+            createdAt: row[20],
+            updatedAt: row[21]
+        };
+    });
+}
+
+export const updateReleasePrOpenQuery = `-- name: UpdateReleasePrOpen :one
+UPDATE releases SET
+  state = 'pr_open',
+  bump_type = $2,
+  from_version = $3,
+  to_version = $4,
+  changelog = $5,
+  change_count = $6,
+  breaking_count = $7,
+  pr_number = $8,
+  pr_url = $9,
+  head_branch = $10,
+  base_branch = $11,
+  error = '',
+  updated_at = now()
+WHERE id = $1
+RETURNING id, project_id, connection_id, state, base_spec_version, head_spec_version, bump_type, from_version, to_version, version_override, changelog, change_count, breaking_count, head_branch, base_branch, pr_number, pr_url, tag, release_url, error, created_at, updated_at`;
+
+export interface UpdateReleasePrOpenArgs {
+    id: string;
+    bumpType: string;
+    fromVersion: string;
+    toVersion: string;
+    changelog: string;
+    changeCount: number;
+    breakingCount: number;
+    prNumber: number;
+    prUrl: string;
+    headBranch: string;
+    baseBranch: string;
+}
+
+export interface UpdateReleasePrOpenRow {
+    id: string;
+    projectId: string;
+    connectionId: string;
+    state: string;
+    baseSpecVersion: string;
+    headSpecVersion: string;
+    bumpType: string;
+    fromVersion: string;
+    toVersion: string;
+    versionOverride: string;
+    changelog: string;
+    changeCount: number;
+    breakingCount: number;
+    headBranch: string;
+    baseBranch: string;
+    prNumber: number;
+    prUrl: string;
+    tag: string;
+    releaseUrl: string;
+    error: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export async function updateReleasePrOpen(client: Client, args: UpdateReleasePrOpenArgs): Promise<UpdateReleasePrOpenRow | null> {
+    const result = await client.query({
+        text: updateReleasePrOpenQuery,
+        values: [args.id, args.bumpType, args.fromVersion, args.toVersion, args.changelog, args.changeCount, args.breakingCount, args.prNumber, args.prUrl, args.headBranch, args.baseBranch],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        projectId: row[1],
+        connectionId: row[2],
+        state: row[3],
+        baseSpecVersion: row[4],
+        headSpecVersion: row[5],
+        bumpType: row[6],
+        fromVersion: row[7],
+        toVersion: row[8],
+        versionOverride: row[9],
+        changelog: row[10],
+        changeCount: row[11],
+        breakingCount: row[12],
+        headBranch: row[13],
+        baseBranch: row[14],
+        prNumber: row[15],
+        prUrl: row[16],
+        tag: row[17],
+        releaseUrl: row[18],
+        error: row[19],
+        createdAt: row[20],
+        updatedAt: row[21]
+    };
+}
+
+export const markReleaseMergingQuery = `-- name: MarkReleaseMerging :one
+UPDATE releases SET state = 'merging', updated_at = now()
+WHERE id = $1
+RETURNING id, project_id, connection_id, state, base_spec_version, head_spec_version, bump_type, from_version, to_version, version_override, changelog, change_count, breaking_count, head_branch, base_branch, pr_number, pr_url, tag, release_url, error, created_at, updated_at`;
+
+export interface MarkReleaseMergingArgs {
+    id: string;
+}
+
+export interface MarkReleaseMergingRow {
+    id: string;
+    projectId: string;
+    connectionId: string;
+    state: string;
+    baseSpecVersion: string;
+    headSpecVersion: string;
+    bumpType: string;
+    fromVersion: string;
+    toVersion: string;
+    versionOverride: string;
+    changelog: string;
+    changeCount: number;
+    breakingCount: number;
+    headBranch: string;
+    baseBranch: string;
+    prNumber: number;
+    prUrl: string;
+    tag: string;
+    releaseUrl: string;
+    error: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export async function markReleaseMerging(client: Client, args: MarkReleaseMergingArgs): Promise<MarkReleaseMergingRow | null> {
+    const result = await client.query({
+        text: markReleaseMergingQuery,
+        values: [args.id],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        projectId: row[1],
+        connectionId: row[2],
+        state: row[3],
+        baseSpecVersion: row[4],
+        headSpecVersion: row[5],
+        bumpType: row[6],
+        fromVersion: row[7],
+        toVersion: row[8],
+        versionOverride: row[9],
+        changelog: row[10],
+        changeCount: row[11],
+        breakingCount: row[12],
+        headBranch: row[13],
+        baseBranch: row[14],
+        prNumber: row[15],
+        prUrl: row[16],
+        tag: row[17],
+        releaseUrl: row[18],
+        error: row[19],
+        createdAt: row[20],
+        updatedAt: row[21]
+    };
+}
+
+export const markReleasedQuery = `-- name: MarkReleased :one
+UPDATE releases SET
+  state = 'released', tag = $2, release_url = $3, error = '', updated_at = now()
+WHERE id = $1
+RETURNING id, project_id, connection_id, state, base_spec_version, head_spec_version, bump_type, from_version, to_version, version_override, changelog, change_count, breaking_count, head_branch, base_branch, pr_number, pr_url, tag, release_url, error, created_at, updated_at`;
+
+export interface MarkReleasedArgs {
+    id: string;
+    tag: string;
+    releaseUrl: string;
+}
+
+export interface MarkReleasedRow {
+    id: string;
+    projectId: string;
+    connectionId: string;
+    state: string;
+    baseSpecVersion: string;
+    headSpecVersion: string;
+    bumpType: string;
+    fromVersion: string;
+    toVersion: string;
+    versionOverride: string;
+    changelog: string;
+    changeCount: number;
+    breakingCount: number;
+    headBranch: string;
+    baseBranch: string;
+    prNumber: number;
+    prUrl: string;
+    tag: string;
+    releaseUrl: string;
+    error: string;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export async function markReleased(client: Client, args: MarkReleasedArgs): Promise<MarkReleasedRow | null> {
+    const result = await client.query({
+        text: markReleasedQuery,
+        values: [args.id, args.tag, args.releaseUrl],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        projectId: row[1],
+        connectionId: row[2],
+        state: row[3],
+        baseSpecVersion: row[4],
+        headSpecVersion: row[5],
+        bumpType: row[6],
+        fromVersion: row[7],
+        toVersion: row[8],
+        versionOverride: row[9],
+        changelog: row[10],
+        changeCount: row[11],
+        breakingCount: row[12],
+        headBranch: row[13],
+        baseBranch: row[14],
+        prNumber: row[15],
+        prUrl: row[16],
+        tag: row[17],
+        releaseUrl: row[18],
+        error: row[19],
+        createdAt: row[20],
+        updatedAt: row[21]
+    };
+}
+
+export const markReleaseFailedQuery = `-- name: MarkReleaseFailed :exec
+UPDATE releases SET state = 'failed', error = $2, updated_at = now()
+WHERE id = $1`;
+
+export interface MarkReleaseFailedArgs {
+    id: string;
+    error: string;
+}
+
+export async function markReleaseFailed(client: Client, args: MarkReleaseFailedArgs): Promise<void> {
+    await client.query({
+        text: markReleaseFailedQuery,
+        values: [args.id, args.error],
+        rowMode: "array"
+    });
+}
+
+export const markReleaseSupersededQuery = `-- name: MarkReleaseSuperseded :exec
+UPDATE releases SET state = 'superseded', updated_at = now()
+WHERE id = $1`;
+
+export interface MarkReleaseSupersededArgs {
+    id: string;
+}
+
+export async function markReleaseSuperseded(client: Client, args: MarkReleaseSupersededArgs): Promise<void> {
+    await client.query({
+        text: markReleaseSupersededQuery,
+        values: [args.id],
+        rowMode: "array"
+    });
+}
+
+export const setReleaseVersionOverrideQuery = `-- name: SetReleaseVersionOverride :exec
+UPDATE releases SET version_override = $2, updated_at = now()
+WHERE id = $1`;
+
+export interface SetReleaseVersionOverrideArgs {
+    id: string;
+    versionOverride: string;
+}
+
+export async function setReleaseVersionOverride(client: Client, args: SetReleaseVersionOverrideArgs): Promise<void> {
+    await client.query({
+        text: setReleaseVersionOverrideQuery,
+        values: [args.id, args.versionOverride],
+        rowMode: "array"
+    });
+}
+
+export const setConnectionReleaseConfigQuery = `-- name: SetConnectionReleaseConfig :one
+UPDATE repo_connections SET
+  release_mode = $2,
+  auto_release = $3,
+  base_branch = $4,
+  prerelease = $5
+WHERE id = $1
+RETURNING id, provider_id, target_kind, target_id, ref, repo, branch, prefix, last_synced_at, last_sync_status, last_sync_error, created_at, release_mode, auto_release, base_branch, prerelease, last_released_version, last_released_spec_version, webhook_id, webhook_secret`;
+
+export interface SetConnectionReleaseConfigArgs {
+    id: string;
+    releaseMode: string;
+    autoRelease: boolean;
+    baseBranch: string;
+    prerelease: boolean;
+}
+
+export interface SetConnectionReleaseConfigRow {
+    id: string;
+    providerId: string;
+    targetKind: string;
+    targetId: string;
+    ref: string;
+    repo: string;
+    branch: string;
+    prefix: string;
+    lastSyncedAt: Date | null;
+    lastSyncStatus: string;
+    lastSyncError: string;
+    createdAt: Date;
+    releaseMode: string;
+    autoRelease: boolean;
+    baseBranch: string;
+    prerelease: boolean;
+    lastReleasedVersion: string;
+    lastReleasedSpecVersion: string;
+    webhookId: string;
+    webhookSecret: string;
+}
+
+export async function setConnectionReleaseConfig(client: Client, args: SetConnectionReleaseConfigArgs): Promise<SetConnectionReleaseConfigRow | null> {
+    const result = await client.query({
+        text: setConnectionReleaseConfigQuery,
+        values: [args.id, args.releaseMode, args.autoRelease, args.baseBranch, args.prerelease],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        providerId: row[1],
+        targetKind: row[2],
+        targetId: row[3],
+        ref: row[4],
+        repo: row[5],
+        branch: row[6],
+        prefix: row[7],
+        lastSyncedAt: row[8],
+        lastSyncStatus: row[9],
+        lastSyncError: row[10],
+        createdAt: row[11],
+        releaseMode: row[12],
+        autoRelease: row[13],
+        baseBranch: row[14],
+        prerelease: row[15],
+        lastReleasedVersion: row[16],
+        lastReleasedSpecVersion: row[17],
+        webhookId: row[18],
+        webhookSecret: row[19]
+    };
+}
+
+export const setConnectionWebhookQuery = `-- name: SetConnectionWebhook :exec
+UPDATE repo_connections SET webhook_id = $2, webhook_secret = $3
+WHERE id = $1`;
+
+export interface SetConnectionWebhookArgs {
+    id: string;
+    webhookId: string;
+    webhookSecret: string;
+}
+
+export async function setConnectionWebhook(client: Client, args: SetConnectionWebhookArgs): Promise<void> {
+    await client.query({
+        text: setConnectionWebhookQuery,
+        values: [args.id, args.webhookId, args.webhookSecret],
+        rowMode: "array"
+    });
+}
+
+export const markConnectionReleasedQuery = `-- name: MarkConnectionReleased :exec
+UPDATE repo_connections SET
+  last_released_version = $2,
+  last_released_spec_version = $3
+WHERE id = $1`;
+
+export interface MarkConnectionReleasedArgs {
+    id: string;
+    lastReleasedVersion: string;
+    lastReleasedSpecVersion: string;
+}
+
+export async function markConnectionReleased(client: Client, args: MarkConnectionReleasedArgs): Promise<void> {
+    await client.query({
+        text: markConnectionReleasedQuery,
+        values: [args.id, args.lastReleasedVersion, args.lastReleasedSpecVersion],
+        rowMode: "array"
+    });
+}
+
+export const listReleaseConnectionsForApiQuery = `-- name: ListReleaseConnectionsForApi :many
+SELECT rc.id, rc.provider_id, rc.target_kind, rc.target_id, rc.ref, rc.repo, rc.branch, rc.prefix, rc.last_synced_at, rc.last_sync_status, rc.last_sync_error, rc.created_at, rc.release_mode, rc.auto_release, rc.base_branch, rc.prerelease, rc.last_released_version, rc.last_released_spec_version, rc.webhook_id, rc.webhook_secret FROM repo_connections rc
+JOIN sdk_targets st ON st.id = rc.target_id
+WHERE rc.target_kind = 'sdk'
+  AND rc.release_mode = 'release'
+  AND rc.auto_release = true
+  AND st.api_id = $1
+UNION
+SELECT rc.id, rc.provider_id, rc.target_kind, rc.target_id, rc.ref, rc.repo, rc.branch, rc.prefix, rc.last_synced_at, rc.last_sync_status, rc.last_sync_error, rc.created_at, rc.release_mode, rc.auto_release, rc.base_branch, rc.prerelease, rc.last_released_version, rc.last_released_spec_version, rc.webhook_id, rc.webhook_secret FROM repo_connections rc
+WHERE rc.target_kind = 'spec'
+  AND rc.release_mode = 'release'
+  AND rc.auto_release = true
+  AND rc.target_id = $1`;
+
+export interface ListReleaseConnectionsForApiArgs {
+    apiId: string;
+}
+
+export interface ListReleaseConnectionsForApiRow {
+    id: string;
+    providerId: string;
+    targetKind: string;
+    targetId: string;
+    ref: string;
+    repo: string;
+    branch: string;
+    prefix: string;
+    lastSyncedAt: Date | null;
+    lastSyncStatus: string;
+    lastSyncError: string;
+    createdAt: Date;
+    releaseMode: string;
+    autoRelease: boolean;
+    baseBranch: string;
+    prerelease: boolean;
+    lastReleasedVersion: string;
+    lastReleasedSpecVersion: string;
+    webhookId: string;
+    webhookSecret: string;
+}
+
+export async function listReleaseConnectionsForApi(client: Client, args: ListReleaseConnectionsForApiArgs): Promise<ListReleaseConnectionsForApiRow[]> {
+    const result = await client.query({
+        text: listReleaseConnectionsForApiQuery,
+        values: [args.apiId],
+        rowMode: "array"
+    });
+    return result.rows.map(row => {
+        return {
+            id: row[0],
+            providerId: row[1],
+            targetKind: row[2],
+            targetId: row[3],
+            ref: row[4],
+            repo: row[5],
+            branch: row[6],
+            prefix: row[7],
+            lastSyncedAt: row[8],
+            lastSyncStatus: row[9],
+            lastSyncError: row[10],
+            createdAt: row[11],
+            releaseMode: row[12],
+            autoRelease: row[13],
+            baseBranch: row[14],
+            prerelease: row[15],
+            lastReleasedVersion: row[16],
+            lastReleasedSpecVersion: row[17],
+            webhookId: row[18],
+            webhookSecret: row[19]
+        };
+    });
+}
+

@@ -99,7 +99,6 @@ export default function DocsRoute({ loaderData }: Route.ComponentProps) {
     <>
       <PageHeader
         title="Docs"
-        description="Publish beautiful API reference and guides from a registered spec."
         actions={
           <>
             <Menu

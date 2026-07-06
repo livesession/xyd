@@ -1,4 +1,5 @@
 import type { RepoConnections } from "../../../generated/src/generated/models/all/platform-api";
+import { requireAuth } from "../../auth";
 import * as gitQ from "../../db/generated/git_sql";
 import * as jobQ from "../../db/generated/jobs_sql";
 import { pool } from "../../db/pool";
@@ -12,7 +13,8 @@ import { notFound } from "../errors";
  * `git.sync` job + marks the connection syncing, kicks the (off-request) push,
  * and returns the connection in its `building` state.
  */
-export const sync: RepoConnections["sync"] = async (_ctx, id) => {
+export const sync: RepoConnections["sync"] = async (ctx, id) => {
+  const auth = await requireAuth(ctx);
   const conn = await gitQ.getRepoConnection(pool, { id });
   if (!conn) return notFound(`connection ${id} not found`);
   const job = await jobQ.insertJob(pool, {
@@ -27,7 +29,11 @@ export const sync: RepoConnections["sync"] = async (_ctx, id) => {
     },
   });
   await gitQ.markRepoConnectionSyncing(pool, { id });
-  void runGitSync({ connectionId: id, jobId: job?.id ?? "" });
+  void runGitSync({
+    connectionId: id,
+    jobId: job?.id ?? "",
+    projectId: auth.projectId,
+  });
   const fresh = await gitQ.getRepoConnection(pool, { id });
   return toRepoConnection(fresh as NonNullable<typeof fresh>);
 };

@@ -29,7 +29,7 @@ model ValidationError {
  */
 @route("/apis")
 interface Apis {
-  @get list(): RegistryEntryCore[];
+  @get list(@query projectId?: string): RegistryEntryCore[];
   @get read(@path apiId: string): RegistryEntryCore | NotFoundError;
   @post register(@body input: RegisterApiInput): RegistryEntryCore | ValidationError;
 

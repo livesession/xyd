@@ -30,5 +30,9 @@ export {
   generateFileMap,
 } from "@xyd-js/opensdk-framework";
 
+// ── OpenSDK IR ⇄ IR breaking-change diff (drives release version + changelog) ──
+export { diffIR } from "@xyd-js/opensdk-core";
+
 // ── Types ──
 export type { OpensdkSpecJson } from "@xyd-js/opensdk-core";
+export type { IrChange, IrDiff, IrSeverity } from "@xyd-js/opensdk-core";

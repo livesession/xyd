@@ -6,13 +6,15 @@ import { AnchorLink, type LinkComponent } from "./routing";
 
 export interface DropdownMenuItem {
   key: string;
-  label: ReactNode;
+  label?: ReactNode;
   icon?: IconName;
   /** Renders the row as a router link instead of a button. */
   href?: string;
   onSelect?: () => void;
   /** Marks the row as selected (bold + trailing check). */
   active?: boolean;
+  /** `separator` = a divider; `header` = a non-interactive section label. */
+  kind?: "item" | "separator" | "header";
 }
 
 export interface DropdownMenuProps {
@@ -24,6 +26,10 @@ export interface DropdownMenuProps {
   trigger: ReactNode;
   items: DropdownMenuItem[];
   align?: "left" | "right";
+  /** Which way the panel opens. Default `bottom`; use `top` for a footer menu. */
+  side?: "top" | "bottom";
+  /** Full-width trigger + root (e.g. a sidebar row). */
+  block?: boolean;
   linkComponent?: LinkComponent;
   /** Keep the panel open after selecting an item (for multi-select). Default true. */
   closeOnSelect?: boolean;
@@ -38,6 +44,8 @@ export function DropdownMenu({
   trigger,
   items,
   align = "left",
+  side = "bottom",
+  block = false,
   linkComponent,
   closeOnSelect = true,
 }: DropdownMenuProps) {
@@ -62,29 +70,52 @@ export function DropdownMenu({
     };
   }, [open]);
 
+  const sideCls =
+    side === "top" ? "bottom-[calc(100%+6px)]" : "top-[calc(100%+6px)]";
   return (
-    <div ref={ref} className="relative inline-flex">
+    <div
+      ref={ref}
+      className={`relative ${block ? "flex w-full" : "inline-flex"}`}
+    >
       {/* Capture the trigger's click by bubbling (not prop injection) so ANY
           element works as a trigger — incl. non-interactive ones (Badge, text)
           that don't forward onClick. An interactive trigger inside (a Button)
           still gets keyboard support: Enter/Space fires a click that bubbles. */}
       {/* biome-ignore lint/a11y: the interactive trigger owns keyboard/focus; a non-interactive trigger is the caller's choice. */}
-      <div className="inline-flex" onClick={() => setOpen((o) => !o)}>
+      <div
+        className={block ? "flex w-full" : "inline-flex"}
+        onClick={() => setOpen((o) => !o)}
+      >
         {trigger}
       </div>
       {open && (
         <div
-          className={`absolute top-[calc(100%+6px)] z-40 min-w-[220px] rounded-tile border border-line bg-surface p-1.5 shadow-card-hover ${align === "right" ? "right-0" : "left-0"}`}
+          className={`absolute z-40 min-w-[220px] rounded-tile border border-line bg-surface p-1.5 shadow-card-hover ${sideCls} ${align === "right" ? "right-0" : "left-0"}`}
         >
-          {items.map((it) => (
-            <DropdownMenuRow
-              key={it.key}
-              item={it}
-              Link={Link}
-              onClose={() => setOpen(false)}
-              closeOnSelect={closeOnSelect}
-            />
-          ))}
+          {items.map((it) =>
+            it.kind === "separator" ? (
+              <div
+                key={it.key}
+                role="separator"
+                className="my-1 h-px bg-line-soft"
+              />
+            ) : it.kind === "header" ? (
+              <div
+                key={it.key}
+                className="truncate px-2.5 py-1.5 text-xs font-medium text-subtle"
+              >
+                {it.label}
+              </div>
+            ) : (
+              <DropdownMenuRow
+                key={it.key}
+                item={it}
+                Link={Link}
+                onClose={() => setOpen(false)}
+                closeOnSelect={closeOnSelect}
+              />
+            ),
+          )}
         </div>
       )}
     </div>

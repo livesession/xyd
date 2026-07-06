@@ -1,0 +1,22 @@
+{
+  "name": "Versioned API + SDKs",
+  "description": "An API registered at several spec versions (1.0.0 → 2.0.0) with a generated SDK. Use it to exercise the version picker on the SDK and target pages.",
+  "order": 7,
+  "apis": [
+    {
+      "name": "LiveSession API",
+      "ns": "livesession",
+      "spec": "livesession",
+      "source": "github.com/livesession/livesession-openapi",
+      "versions": ["1.0.0", "1.1.0", "2.0.0"]
+    }
+  ],
+  "sdks": [
+    {
+      "api": "LiveSession API",
+      "name": "LiveSession SDK",
+      "languages": ["node", "go", "python"]
+    }
+  ],
+  "connect": false
+}

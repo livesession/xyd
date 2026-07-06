@@ -17,6 +17,9 @@ import {
   Wait,
 } from "testcontainers";
 import type { Plugin } from "vite";
+import { DEV_EMAIL, DEV_PASSWORD } from "./apply-profile";
+import { loadProfiles, profileSummary } from "./profiles";
+import { applyOrRestore, clearSnapshots } from "./snapshot";
 
 type Env = Record<string, string>;
 
@@ -243,6 +246,18 @@ export function apitoolchainViteDev(
   let platform: ChildProcess | undefined;
   let gitprovider: ChildProcess | undefined;
   let started = false;
+  // Set once the stack is up — the dev profile picker (middleware + overlay)
+  // needs the gateway URL + the Postgres container id to reset/seed data, and
+  // the service URLs for the "active services" menu.
+  let stack: {
+    platUrl: string;
+    pgId: string;
+    apps: string;
+    services: { name: string; url: string }[];
+    /** Re-run registry + platform migrations (forward-only, idempotent) — used
+     * to heal schema drift after a snapshot restore loads an older dump. */
+    migrate: () => Promise<void>;
+  } | null = null;
 
   async function boot(
     apps: string,
@@ -299,6 +314,11 @@ export function apitoolchainViteDev(
               GITEA__security__INSTALL_LOCK: "true",
               GITEA__log__LEVEL: "warn",
             })
+            // So Gitea (in-container) can POST release-PR merge webhooks back to
+            // the host-port gateway at http://host.docker.internal:<platPort>.
+            .withExtraHosts([
+              { host: "host.docker.internal", ipAddress: "host-gateway" },
+            ])
             .withLabels(DEV_LABELS)
             .withWaitStrategy(
               Wait.forHttp("/api/v1/version", 3000).forStatusCode(200),
@@ -344,12 +364,17 @@ export function apitoolchainViteDev(
       STORAGE_BUCKET_ARTIFACTS: "apitoolchain-artifacts",
       REGISTRY_API_URL: regUrl,
       PORT: String(platPort),
+      // The origin git providers POST release-PR webhooks to. In-container Gitea
+      // reaches the host-port gateway via host.docker.internal (mapped above).
+      PLATFORM_PUBLIC_URL: `http://host.docker.internal:${platPort}`,
     };
 
     // 4b. git provider service (Go) + Gitea seed — optional. The platform seed
     // reads GITEA_* to register a local provider; the gateway calls gitproviderd
     // at GITPROVIDER_API_URL. Started before the platform migrate/seed/boot so
     // those env vars are in scope.
+    let giteaWebUrl: string | undefined;
+    let gpWebUrl: string | undefined;
     if (gitEnabled && gitea) {
       log("gitea: seeding admin + token + demo repo…");
       const seed = await seedGitea(gitea);
@@ -366,6 +391,8 @@ export function apitoolchainViteDev(
         GITEA_USER: seed.user,
         GITEA_REPO: seed.repo,
       });
+      giteaWebUrl = seed.url;
+      gpWebUrl = gpUrl;
       log(`git provider ready → ${gpUrl} (gitea ${seed.url})`);
     }
 
@@ -376,6 +403,25 @@ export function apitoolchainViteDev(
     platform = spawnService("platform-api", platDir, platEnv);
     await waitHealthz(`${platUrl}/healthz`, 20000);
 
+    const services: { name: string; url: string }[] = [
+      { name: "platform-api", url: platUrl },
+      { name: "registry-api", url: regUrl },
+      { name: "minio (S3)", url: storage.S3_ENDPOINT_URL },
+      { name: "postgres", url: pg.getConnectionUri() },
+    ];
+    if (giteaWebUrl) services.push({ name: "gitea", url: giteaWebUrl });
+    if (gpWebUrl) services.push({ name: "gitproviderd", url: gpWebUrl });
+
+    // Re-runnable migrate for both services (the runner is a forward-only
+    // ledger, so re-running only applies what's missing). A snapshot restore
+    // reloads an OLD dump (schema + ledger); running this afterwards upgrades it
+    // to the current schema so restored profiles never 500 on new columns.
+    const migrate = async (): Promise<void> => {
+      await run("bun", ["db/migrate.ts"], regDir, regEnv);
+      await run("bun", ["db/migrate.ts"], platDir, platEnv);
+    };
+
+    stack = { platUrl, pgId: pg.getId(), apps, services, migrate };
     return platUrl;
   }
 
@@ -414,6 +460,121 @@ export function apitoolchainViteDev(
       const xydRoot = options.xydRoot ?? resolve(server.config.root, "../..");
       const apps = resolve(xydRoot, "apps");
       const pkgs = resolve(xydRoot, "packages");
+      const profiles = loadProfiles(
+        resolve(pkgs, "apitoolchain-dev", "profiles"),
+      );
+      const snapshotsDir = resolve(pkgs, "apitoolchain-dev", ".snapshots");
+      logger.info(`${tag} ${profiles.length} dev profile(s) available`);
+
+      // Dev profile picker API. Registered before boot so the picker can list
+      // profiles immediately; applying waits until the stack is up.
+      server.middlewares.use((req, res, next) => {
+        const url = req.url ?? "";
+        if (!url.startsWith("/__atc-dev/")) return next();
+        if (req.method === "GET" && url.startsWith("/__atc-dev/info")) {
+          res.setHeader("content-type", "application/json");
+          res.setHeader("cache-control", "no-store");
+          res.end(JSON.stringify({ services: stack?.services ?? [] }));
+          return;
+        }
+        if (
+          req.method === "POST" &&
+          url.startsWith("/__atc-dev/profiles/apply")
+        ) {
+          let raw = "";
+          req.on("data", (c) => {
+            raw += c;
+          });
+          req.on("end", async () => {
+            res.setHeader("content-type", "application/json");
+            try {
+              const body = JSON.parse(raw || "{}") as {
+                id?: string;
+                rebuild?: boolean;
+              };
+              const profile = profiles.find((p) => p.id === body.id);
+              if (!profile) {
+                res.statusCode = 404;
+                res.end(JSON.stringify({ error: "unknown profile" }));
+                return;
+              }
+              if (!stack) {
+                res.statusCode = 503;
+                res.end(
+                  JSON.stringify({ error: "stack still booting — try again" }),
+                );
+                return;
+              }
+              const log = (m: string) => logger.info(`${tag} ${m}`);
+              await applyOrRestore(
+                profile,
+                {
+                  platUrl: stack.platUrl,
+                  pgId: stack.pgId,
+                  apps: stack.apps,
+                  log,
+                },
+                {
+                  pgId: stack.pgId,
+                  minioId: minio?.getId() ?? "",
+                  dir: snapshotsDir,
+                  log,
+                  restartMinio: async () => {
+                    if (minio) await minio.restart();
+                  },
+                  migrate: stack.migrate,
+                },
+                body.rebuild === true,
+              );
+              // Hand the overlay the dev owner creds so it can establish the
+              // browser session (apply only seeds data server-side).
+              res.end(
+                JSON.stringify({
+                  ok: true,
+                  login: { email: DEV_EMAIL, password: DEV_PASSWORD },
+                  // The overlay reseeds the web app's client-side namespace
+                  // store from this, so each profile owns its namespaces.
+                  namespaces: profile.namespaces,
+                }),
+              );
+            } catch (e) {
+              res.statusCode = 500;
+              res.end(JSON.stringify({ error: (e as Error).message }));
+            }
+          });
+          return;
+        }
+        if (
+          req.method === "POST" &&
+          url.startsWith("/__atc-dev/snapshots/clear")
+        ) {
+          res.setHeader("content-type", "application/json");
+          try {
+            clearSnapshots(snapshotsDir);
+            res.end(JSON.stringify({ ok: true }));
+          } catch (e) {
+            res.statusCode = 500;
+            res.end(JSON.stringify({ error: (e as Error).message }));
+          }
+          return;
+        }
+        if (req.method === "GET" && url.startsWith("/__atc-dev/profiles")) {
+          res.setHeader("content-type", "application/json");
+          res.end(
+            JSON.stringify(
+              profiles.map((p) => ({
+                id: p.id,
+                name: p.name,
+                description: p.description,
+                summary: profileSummary(p),
+                namespaces: p.namespaces,
+              })),
+            ),
+          );
+          return;
+        }
+        next();
+      });
 
       try {
         const platUrl = await boot(apps, pkgs, (m) =>

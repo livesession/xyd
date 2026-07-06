@@ -219,7 +219,7 @@ export async function deleteGitProvider(client: Client, args: DeleteGitProviderA
 }
 
 export const listRepoConnectionsQuery = `-- name: ListRepoConnections :many
-SELECT id, provider_id, target_kind, target_id, ref, repo, branch, prefix, last_synced_at, last_sync_status, last_sync_error, created_at FROM repo_connections ORDER BY created_at DESC`;
+SELECT id, provider_id, target_kind, target_id, ref, repo, branch, prefix, last_synced_at, last_sync_status, last_sync_error, created_at, release_mode, auto_release, base_branch, prerelease, last_released_version, last_released_spec_version, webhook_id, webhook_secret FROM repo_connections ORDER BY created_at DESC`;
 
 export interface ListRepoConnectionsRow {
     id: string;
@@ -234,6 +234,14 @@ export interface ListRepoConnectionsRow {
     lastSyncStatus: string;
     lastSyncError: string;
     createdAt: Date;
+    releaseMode: string;
+    autoRelease: boolean;
+    baseBranch: string;
+    prerelease: boolean;
+    lastReleasedVersion: string;
+    lastReleasedSpecVersion: string;
+    webhookId: string;
+    webhookSecret: string;
 }
 
 export async function listRepoConnections(client: Client): Promise<ListRepoConnectionsRow[]> {
@@ -255,13 +263,21 @@ export async function listRepoConnections(client: Client): Promise<ListRepoConne
             lastSyncedAt: row[8],
             lastSyncStatus: row[9],
             lastSyncError: row[10],
-            createdAt: row[11]
+            createdAt: row[11],
+            releaseMode: row[12],
+            autoRelease: row[13],
+            baseBranch: row[14],
+            prerelease: row[15],
+            lastReleasedVersion: row[16],
+            lastReleasedSpecVersion: row[17],
+            webhookId: row[18],
+            webhookSecret: row[19]
         };
     });
 }
 
 export const listRepoConnectionsByTargetQuery = `-- name: ListRepoConnectionsByTarget :many
-SELECT id, provider_id, target_kind, target_id, ref, repo, branch, prefix, last_synced_at, last_sync_status, last_sync_error, created_at FROM repo_connections
+SELECT id, provider_id, target_kind, target_id, ref, repo, branch, prefix, last_synced_at, last_sync_status, last_sync_error, created_at, release_mode, auto_release, base_branch, prerelease, last_released_version, last_released_spec_version, webhook_id, webhook_secret FROM repo_connections
 WHERE target_kind = $1 AND target_id = $2
 ORDER BY created_at DESC`;
 
@@ -283,6 +299,14 @@ export interface ListRepoConnectionsByTargetRow {
     lastSyncStatus: string;
     lastSyncError: string;
     createdAt: Date;
+    releaseMode: string;
+    autoRelease: boolean;
+    baseBranch: string;
+    prerelease: boolean;
+    lastReleasedVersion: string;
+    lastReleasedSpecVersion: string;
+    webhookId: string;
+    webhookSecret: string;
 }
 
 export async function listRepoConnectionsByTarget(client: Client, args: ListRepoConnectionsByTargetArgs): Promise<ListRepoConnectionsByTargetRow[]> {
@@ -304,13 +328,21 @@ export async function listRepoConnectionsByTarget(client: Client, args: ListRepo
             lastSyncedAt: row[8],
             lastSyncStatus: row[9],
             lastSyncError: row[10],
-            createdAt: row[11]
+            createdAt: row[11],
+            releaseMode: row[12],
+            autoRelease: row[13],
+            baseBranch: row[14],
+            prerelease: row[15],
+            lastReleasedVersion: row[16],
+            lastReleasedSpecVersion: row[17],
+            webhookId: row[18],
+            webhookSecret: row[19]
         };
     });
 }
 
 export const getRepoConnectionQuery = `-- name: GetRepoConnection :one
-SELECT id, provider_id, target_kind, target_id, ref, repo, branch, prefix, last_synced_at, last_sync_status, last_sync_error, created_at FROM repo_connections WHERE id = $1`;
+SELECT id, provider_id, target_kind, target_id, ref, repo, branch, prefix, last_synced_at, last_sync_status, last_sync_error, created_at, release_mode, auto_release, base_branch, prerelease, last_released_version, last_released_spec_version, webhook_id, webhook_secret FROM repo_connections WHERE id = $1`;
 
 export interface GetRepoConnectionArgs {
     id: string;
@@ -329,6 +361,14 @@ export interface GetRepoConnectionRow {
     lastSyncStatus: string;
     lastSyncError: string;
     createdAt: Date;
+    releaseMode: string;
+    autoRelease: boolean;
+    baseBranch: string;
+    prerelease: boolean;
+    lastReleasedVersion: string;
+    lastReleasedSpecVersion: string;
+    webhookId: string;
+    webhookSecret: string;
 }
 
 export async function getRepoConnection(client: Client, args: GetRepoConnectionArgs): Promise<GetRepoConnectionRow | null> {
@@ -353,7 +393,15 @@ export async function getRepoConnection(client: Client, args: GetRepoConnectionA
         lastSyncedAt: row[8],
         lastSyncStatus: row[9],
         lastSyncError: row[10],
-        createdAt: row[11]
+        createdAt: row[11],
+        releaseMode: row[12],
+        autoRelease: row[13],
+        baseBranch: row[14],
+        prerelease: row[15],
+        lastReleasedVersion: row[16],
+        lastReleasedSpecVersion: row[17],
+        webhookId: row[18],
+        webhookSecret: row[19]
     };
 }
 
@@ -361,7 +409,7 @@ export const insertRepoConnectionQuery = `-- name: InsertRepoConnection :one
 INSERT INTO repo_connections
   (id, provider_id, target_kind, target_id, ref, repo, branch, prefix)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-RETURNING id, provider_id, target_kind, target_id, ref, repo, branch, prefix, last_synced_at, last_sync_status, last_sync_error, created_at`;
+RETURNING id, provider_id, target_kind, target_id, ref, repo, branch, prefix, last_synced_at, last_sync_status, last_sync_error, created_at, release_mode, auto_release, base_branch, prerelease, last_released_version, last_released_spec_version, webhook_id, webhook_secret`;
 
 export interface InsertRepoConnectionArgs {
     id: string;
@@ -387,6 +435,14 @@ export interface InsertRepoConnectionRow {
     lastSyncStatus: string;
     lastSyncError: string;
     createdAt: Date;
+    releaseMode: string;
+    autoRelease: boolean;
+    baseBranch: string;
+    prerelease: boolean;
+    lastReleasedVersion: string;
+    lastReleasedSpecVersion: string;
+    webhookId: string;
+    webhookSecret: string;
 }
 
 export async function insertRepoConnection(client: Client, args: InsertRepoConnectionArgs): Promise<InsertRepoConnectionRow | null> {
@@ -411,7 +467,15 @@ export async function insertRepoConnection(client: Client, args: InsertRepoConne
         lastSyncedAt: row[8],
         lastSyncStatus: row[9],
         lastSyncError: row[10],
-        createdAt: row[11]
+        createdAt: row[11],
+        releaseMode: row[12],
+        autoRelease: row[13],
+        baseBranch: row[14],
+        prerelease: row[15],
+        lastReleasedVersion: row[16],
+        lastReleasedSpecVersion: row[17],
+        webhookId: row[18],
+        webhookSecret: row[19]
     };
 }
 

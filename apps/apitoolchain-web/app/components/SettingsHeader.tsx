@@ -21,7 +21,6 @@ export function SettingsHeader({ active }: { active: string }) {
   return (
     <PageHeader
       title="Settings"
-      description="Manage your organization, project, namespaces, connections and billing."
       tabs={
         <Tabs linkComponent={RouterLink} activeKey={active} items={ITEMS} />
       }

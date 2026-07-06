@@ -40,3 +40,14 @@ export function SdkLangIcon({
 }) {
   return <LangIcon name={LANG_ICON[language]} className={className} />;
 }
+
+/** Targets the pipeline can't generate yet — shown as disabled "coming soon" tiles. */
+export const COMING_SOON_LANGS: { label: string; icon: LangIconName }[] = [
+  { label: "Scala", icon: "scala" },
+  { label: "Kotlin", icon: "kotlin" },
+  { label: "Rust", icon: "rust" },
+  { label: "PHP", icon: "php" },
+  { label: "Swift", icon: "swift" },
+  { label: "C++", icon: "cpp" },
+  { label: "Dart", icon: "dart" },
+];

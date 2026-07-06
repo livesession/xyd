@@ -68,3 +68,20 @@ export function generateFileMap(
   emitter: Emitter,
   emitterOptions?: Record<string, unknown>,
 ): Record<string, GeneratedFileEntry>;
+
+// ── IR ⇄ IR breaking-change diff ──
+/** Impact of a single change on a generated SDK's consumers. */
+export type IrSeverity = "breaking" | "risky" | "safe";
+export interface IrChange {
+  severity: IrSeverity;
+  /** Machine-friendly change class, e.g. `method-removed`, `param-type-changed`. */
+  kind: string;
+  /** Human-readable location, e.g. `pets.list.queryParams.limit`. */
+  path: string;
+  detail: string;
+}
+export interface IrDiff {
+  changes: IrChange[];
+}
+/** Diff two OpenSDK IRs (base = published/old, head = new). */
+export function diffIR(base: OpensdkSpecJson, head: OpensdkSpecJson): IrDiff;

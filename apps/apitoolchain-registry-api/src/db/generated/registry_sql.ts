@@ -5,7 +5,7 @@ interface Client {
 }
 
 export const listApisQuery = `-- name: ListApis :many
-SELECT id, name, description, format, namespace, source, created_at, updated_at, kind FROM apis ORDER BY updated_at DESC`;
+SELECT id, name, description, format, namespace, source, created_at, updated_at, kind, project_id FROM apis ORDER BY updated_at DESC`;
 
 export interface ListApisRow {
     id: string;
@@ -17,6 +17,7 @@ export interface ListApisRow {
     createdAt: Date;
     updatedAt: Date;
     kind: string;
+    projectId: string;
 }
 
 export async function listApis(client: Client): Promise<ListApisRow[]> {
@@ -35,13 +36,56 @@ export async function listApis(client: Client): Promise<ListApisRow[]> {
             source: row[5],
             createdAt: row[6],
             updatedAt: row[7],
-            kind: row[8]
+            kind: row[8],
+            projectId: row[9]
+        };
+    });
+}
+
+export const listApisByProjectQuery = `-- name: ListApisByProject :many
+SELECT id, name, description, format, namespace, source, created_at, updated_at, kind, project_id FROM apis WHERE project_id = $1 ORDER BY updated_at DESC`;
+
+export interface ListApisByProjectArgs {
+    projectId: string;
+}
+
+export interface ListApisByProjectRow {
+    id: string;
+    name: string;
+    description: string;
+    format: string;
+    namespace: string;
+    source: string;
+    createdAt: Date;
+    updatedAt: Date;
+    kind: string;
+    projectId: string;
+}
+
+export async function listApisByProject(client: Client, args: ListApisByProjectArgs): Promise<ListApisByProjectRow[]> {
+    const result = await client.query({
+        text: listApisByProjectQuery,
+        values: [args.projectId],
+        rowMode: "array"
+    });
+    return result.rows.map(row => {
+        return {
+            id: row[0],
+            name: row[1],
+            description: row[2],
+            format: row[3],
+            namespace: row[4],
+            source: row[5],
+            createdAt: row[6],
+            updatedAt: row[7],
+            kind: row[8],
+            projectId: row[9]
         };
     });
 }
 
 export const getApiQuery = `-- name: GetApi :one
-SELECT id, name, description, format, namespace, source, created_at, updated_at, kind FROM apis WHERE id = $1`;
+SELECT id, name, description, format, namespace, source, created_at, updated_at, kind, project_id FROM apis WHERE id = $1`;
 
 export interface GetApiArgs {
     id: string;
@@ -57,6 +101,7 @@ export interface GetApiRow {
     createdAt: Date;
     updatedAt: Date;
     kind: string;
+    projectId: string;
 }
 
 export async function getApi(client: Client, args: GetApiArgs): Promise<GetApiRow | null> {
@@ -78,13 +123,14 @@ export async function getApi(client: Client, args: GetApiArgs): Promise<GetApiRo
         source: row[5],
         createdAt: row[6],
         updatedAt: row[7],
-        kind: row[8]
+        kind: row[8],
+        projectId: row[9]
     };
 }
 
 export const upsertApiQuery = `-- name: UpsertApi :one
-INSERT INTO apis (id, name, description, format, namespace, source, kind)
-VALUES ($1, $2, $3, $4, $5, $6, $7)
+INSERT INTO apis (id, name, description, format, namespace, source, kind, project_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description,
@@ -93,7 +139,7 @@ ON CONFLICT (id) DO UPDATE SET
   source = EXCLUDED.source,
   kind = EXCLUDED.kind,
   updated_at = now()
-RETURNING id, name, description, format, namespace, source, created_at, updated_at, kind`;
+RETURNING id, name, description, format, namespace, source, created_at, updated_at, kind, project_id`;
 
 export interface UpsertApiArgs {
     id: string;
@@ -103,6 +149,7 @@ export interface UpsertApiArgs {
     namespace: string;
     source: string;
     kind: string;
+    projectId: string;
 }
 
 export interface UpsertApiRow {
@@ -115,12 +162,13 @@ export interface UpsertApiRow {
     createdAt: Date;
     updatedAt: Date;
     kind: string;
+    projectId: string;
 }
 
 export async function upsertApi(client: Client, args: UpsertApiArgs): Promise<UpsertApiRow | null> {
     const result = await client.query({
         text: upsertApiQuery,
-        values: [args.id, args.name, args.description, args.format, args.namespace, args.source, args.kind],
+        values: [args.id, args.name, args.description, args.format, args.namespace, args.source, args.kind, args.projectId],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {
@@ -136,7 +184,8 @@ export async function upsertApi(client: Client, args: UpsertApiArgs): Promise<Up
         source: row[5],
         createdAt: row[6],
         updatedAt: row[7],
-        kind: row[8]
+        kind: row[8],
+        projectId: row[9]
     };
 }
 

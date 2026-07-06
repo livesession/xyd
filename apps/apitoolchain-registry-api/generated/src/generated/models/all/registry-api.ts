@@ -6,6 +6,8 @@ import {
   SetDistTagInput,
 } from "./apitoolchain.js";
 
+import { ListOptions } from "../synthetic.js";
+
 export interface NotFoundError {
   statusCode: 404;
 
@@ -28,7 +30,7 @@ export interface ValidationError {
  * hand-written route in server.ts (binary, outside the generated JSON router).
  */
 export interface Apis<Context = unknown> {
-  list(ctx: Context): Promise<RegistryEntryCore[]>;
+  list(ctx: Context, options?: ListOptions): Promise<RegistryEntryCore[]>;
 
   read(ctx: Context, apiId: string): Promise<RegistryEntryCore | NotFoundError>;
 

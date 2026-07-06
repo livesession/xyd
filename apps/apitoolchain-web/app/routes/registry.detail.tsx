@@ -2,8 +2,12 @@ import {
   Badge,
   Breadcrumb,
   Button,
+  ButtonGroup,
   type Column,
   DescriptionList,
+  DropdownMenu,
+  type DropdownMenuItem,
+  EmptyState,
   Menu,
   Mono,
   PageHeader,
@@ -15,11 +19,14 @@ import {
 } from "@apitoolchain/design-system";
 import { toQuery } from "@apitoolchain/filters";
 import { useState } from "react";
-import { useFetcher } from "react-router";
-import { ConnectRepoModal } from "~/components/ConnectRepoModal";
+import { ConnectRepoModal, KIND_ICON } from "~/components/ConnectRepoModal";
 import { GenerateSdkModal } from "~/components/GenerateSdkModal";
 import { RegisterApiModal } from "~/components/RegisterApiModal";
 import { FORMAT } from "~/components/RegistryListPage";
+import {
+  RepositoryReleases,
+  RepositorySettings,
+} from "~/components/RepositoryModal";
 import { RouterLink } from "~/components/RouterLink";
 import { SetDistTagModal } from "~/components/SetDistTagModal";
 import {
@@ -27,21 +34,25 @@ import {
   createRepoConnection,
   type DocsProject,
   type GitProvider,
-  type GitProviderKind,
   getApi,
   listDocsProjects,
   listGitProviders,
   listMcpServers,
   listRepoConnections,
   listSdkTargets,
+  loadReleasesByConn,
   type McpServer,
+  prepareRelease,
+  publishRelease,
   type RepoConnection,
   removeRepoConnection,
   type SdkTarget,
   setDistTag,
+  setReleaseConfig,
   syncRepoConnection,
 } from "~/data";
 import { registryFilterSchema } from "~/data/filters";
+import { repoWebUrl } from "~/lib/repoUrl";
 import { formatVersion } from "~/version";
 import type { Route } from "./+types/registry.detail";
 
@@ -49,33 +60,25 @@ export function meta() {
   return [{ title: "API — apitoolchain" }];
 }
 
-const TABS = ["overview", "versions", "sdks", "docs", "mcp"] as const;
+const TABS = [
+  "overview",
+  "versions",
+  "sdks",
+  "docs",
+  "mcp",
+  "releases",
+  "repository",
+] as const;
 type Tab = (typeof TABS)[number];
-
-const REPO_HOST: Record<GitProviderKind, string> = {
-  github: "https://github.com",
-  gitlab: "https://gitlab.com",
-  bitbucket: "https://bitbucket.org",
-  gitea: "",
-};
-
-/** Web URL for a connected repo, from the provider's base URL (or default host). */
-function repoWebUrl(
-  provider: GitProvider | undefined,
-  repo: string,
-): string | undefined {
-  const base = (provider?.baseUrl || (provider ? REPO_HOST[provider.kind] : ""))
-    .trim()
-    .replace(/\/+$/, "");
-  return base ? `${base}/${repo}` : undefined;
-}
 
 export async function loader({ params }: Route.LoaderArgs) {
   const api = await getApi(params.apiId);
   if (!api) throw new Response("Not Found", { status: 404 });
   // Schemas don't drive SDKs/docs/MCP — only overview + versions apply.
   const allowed: Tab[] =
-    api.kind === "schema" ? ["overview", "versions"] : [...TABS];
+    api.kind === "schema"
+      ? ["overview", "versions", "releases", "repository"]
+      : [...TABS];
   const requested = params.tab as Tab | undefined;
   const tab: Tab =
     requested && allowed.includes(requested) ? requested : "overview";
@@ -86,7 +89,8 @@ export async function loader({ params }: Route.LoaderArgs) {
     listGitProviders(),
     listRepoConnections("spec", api.id),
   ]);
-  return { api, tab, sdks, docs, mcp, providers, connections };
+  const releasesByConn = await loadReleasesByConn(connections);
+  return { api, tab, sdks, docs, mcp, providers, connections, releasesByConn };
 }
 
 export async function action({ params, request }: Route.ActionArgs) {
@@ -109,7 +113,23 @@ export async function action({ params, request }: Route.ActionArgs) {
       makePrivate: form.get("makePrivate") === "1",
       branch: String(form.get("branch") ?? "") || undefined,
       prefix: String(form.get("prefix") ?? ""),
+      releaseMode: String(form.get("releaseMode") ?? "") || undefined,
+      autoRelease: form.get("autoRelease") === "1",
     });
+  }
+  if (intent === "release-config") {
+    return setReleaseConfig(String(form.get("id") ?? ""), {
+      releaseMode: String(form.get("releaseMode") ?? "push"),
+      autoRelease: form.get("autoRelease") === "1",
+      baseBranch: String(form.get("baseBranch") ?? "") || undefined,
+      prerelease: form.get("prerelease") === "1",
+    });
+  }
+  if (intent === "prepare-release") {
+    return prepareRelease({ connectionId: String(form.get("id") ?? "") });
+  }
+  if (intent === "publish-release") {
+    return publishRelease(String(form.get("id") ?? ""));
   }
   if (intent === "sync-repo") {
     return syncRepoConnection(String(form.get("id") ?? ""));
@@ -137,7 +157,14 @@ function TagBadges({ tags }: { tags: string[] }) {
 export default function RegistryDetailRoute({
   loaderData,
 }: Route.ComponentProps) {
-  const { api, tab, sdks, docs, mcp, providers, connections } = loaderData;
+  const { api, tab, sdks, docs, mcp, providers, connections, releasesByConn } =
+    loaderData;
+  const providerById = new Map(providers.map((p) => [p.id, p]));
+  // Total releases across every connection — drives the Releases tab count.
+  const releaseCount = connections.reduce(
+    (n, c) => n + (releasesByConn[c.id]?.length ?? 0),
+    0,
+  );
   const base = `/registry/${api.id}`;
   const isSchema = api.kind === "schema";
   const registryHref = isSchema ? "/registry/schemas" : "/registry";
@@ -158,7 +185,30 @@ export default function RegistryDetailRoute({
   const [genOpen, setGenOpen] = useState(false);
   const [connectOpen, setConnectOpen] = useState(false);
 
-  const providerById = new Map(providers.map((p) => [p.id, p]));
+  // Utility actions live behind the Actions section's hover "more" menu, so the
+  // panel body keeps only the primary create actions.
+  const moreActionItems: DropdownMenuItem[] = [
+    {
+      key: "dist-tags",
+      label: "Manage dist-tags",
+      icon: "tags-outline",
+      onSelect: () => setTagOpen(true),
+    },
+    {
+      key: "spec",
+      label: isSchema ? "View schema" : "Download spec",
+      icon: isSchema ? "externalLink" : "download",
+      href: api.registryUrl,
+    },
+  ];
+  if (connections.length > 0) {
+    moreActionItems.push({
+      key: "connect",
+      label: "Connect another repo",
+      icon: "git",
+      onSelect: () => setConnectOpen(true),
+    });
+  }
 
   // version -> the dist-tags pointing at it
   const tagsByVersion = new Map<string, string[]>();
@@ -296,13 +346,26 @@ export default function RegistryDetailRoute({
         title={api.name}
         description={api.description}
         actions={
-          <Button
-            variant="secondary"
-            icon="git"
-            onClick={() => setConnectOpen(true)}
-          >
-            {connections.length ? "Connect another repo" : "Connect a repo"}
-          </Button>
+          connections.length > 0 ? (
+            <div className="flex flex-wrap items-center gap-2">
+              {connections.map((c) => (
+                <RepoButton
+                  key={c.id}
+                  conn={c}
+                  provider={providerById.get(c.providerId)}
+                  base={base}
+                />
+              ))}
+            </div>
+          ) : (
+            <Button
+              variant="secondary"
+              icon="git"
+              onClick={() => setConnectOpen(true)}
+            >
+              Connect a repo
+            </Button>
+          )
         }
         tabs={
           <Tabs
@@ -342,6 +405,18 @@ export default function RegistryDetailRoute({
                       count: mcp.length,
                     },
                   ]),
+              {
+                key: "releases",
+                label: "Releases",
+                href: `${base}/releases`,
+                count: releaseCount,
+              },
+              {
+                key: "repository",
+                label: "Repository",
+                href: `${base}/repository`,
+                count: connections.length,
+              },
             ]}
           />
         }
@@ -436,10 +511,90 @@ export default function RegistryDetailRoute({
           {tab === "mcp" && (
             <Table columns={mcpCols} rows={mcp} getRowKey={(m) => m.id} />
           )}
+          {tab === "releases" &&
+            (connections.length === 0 ? (
+              <EmptyState
+                icon="bolt"
+                title="No releases yet"
+                description="Connect a git repo on release mode to open versioned release PRs."
+                action={
+                  <Button
+                    variant="secondary"
+                    icon="git"
+                    onClick={() => setConnectOpen(true)}
+                  >
+                    Connect repo
+                  </Button>
+                }
+              />
+            ) : (
+              <div className="flex flex-col gap-6">
+                {connections.map((c) => (
+                  <RepositoryReleases
+                    key={c.id}
+                    connection={c}
+                    releases={releasesByConn[c.id] ?? []}
+                    actionPath={base}
+                  />
+                ))}
+              </div>
+            ))}
+          {tab === "repository" &&
+            (connections.length === 0 ? (
+              <EmptyState
+                icon="git"
+                title="No repositories connected"
+                description="Connect a git repo to sync this spec or open release PRs."
+                action={
+                  <Button
+                    variant="secondary"
+                    icon="git"
+                    onClick={() => setConnectOpen(true)}
+                  >
+                    Connect repo
+                  </Button>
+                }
+              />
+            ) : (
+              <div className="flex flex-col gap-6">
+                {connections.map((c) => (
+                  <RepositorySettings
+                    key={c.id}
+                    connection={c}
+                    actionPath={base}
+                  />
+                ))}
+                <div>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon="git"
+                    onClick={() => setConnectOpen(true)}
+                  >
+                    Connect another repo
+                  </Button>
+                </div>
+              </div>
+            ))}
         </div>
 
         <RightPanel placement="content-right">
-          <RightPanelSection title="Actions">
+          {/* Primary create actions stay in the body; utility actions (dist-tags,
+              download, connect-another) live in the title's hover "more" menu. */}
+          <RightPanelSection
+            title="Actions"
+            action={
+              <DropdownMenu
+                align="right"
+                items={moreActionItems}
+                trigger={
+                  <Button variant="ghost" size="sm" icon="more">
+                    <span className="sr-only">More actions</span>
+                  </Button>
+                }
+              />
+            }
+          >
             <Button
               variant="secondary"
               icon="plus"
@@ -456,36 +611,6 @@ export default function RegistryDetailRoute({
               >
                 Generate SDKs
               </Button>
-            )}
-            <Button
-              variant="secondary"
-              icon="tags-outline"
-              onClick={() => setTagOpen(true)}
-            >
-              Manage dist-tags
-            </Button>
-            <Button
-              variant="secondary"
-              icon={isSchema ? "externalLink" : "download"}
-              href={api.registryUrl}
-            >
-              {isSchema ? "View schema" : "Download spec"}
-            </Button>
-          </RightPanelSection>
-
-          <RightPanelSection title="Repository">
-            {connections.length ? (
-              connections.map((c) => (
-                <RepoConnectionRow
-                  key={c.id}
-                  conn={c}
-                  href={repoWebUrl(providerById.get(c.providerId), c.repo)}
-                />
-              ))
-            ) : (
-              <p className="text-[13px] text-subtle">
-                No repositories connected. Use “Connect a repo” above.
-              </p>
             )}
           </RightPanelSection>
 
@@ -546,62 +671,55 @@ export default function RegistryDetailRoute({
         onClose={() => setConnectOpen(false)}
         providers={providers}
         actionPath={base}
+        targetKind="spec"
       />
     </>
   );
 }
 
-/** One repo connection in the RightPanel: repo + sync status + Sync/Remove. */
-function RepoConnectionRow({
+/** A per-connection card — repo name + release/sync status, then its content. */
+/**
+ * The connected repo as a page-header split button: the repo (with its git
+ * provider's brand icon) opens the repo on the provider; the caret drops down to
+ * the Releases / Settings tabs.
+ */
+function RepoButton({
   conn,
-  href,
+  provider,
+  base,
 }: {
   conn: RepoConnection;
-  href?: string;
+  provider?: GitProvider;
+  base: string;
 }) {
-  const fetcher = useFetcher();
-  const busy = fetcher.state !== "idle";
-  const status = busy ? "building" : (conn.lastSyncStatus ?? "draft");
+  const url = provider ? repoWebUrl(provider, conn.repo) : undefined;
   return (
-    <div className="flex flex-col gap-2 rounded-control border border-line bg-surface p-3">
-      <div className="flex items-center justify-between gap-2">
-        {href ? (
-          <a
-            href={href}
-            target="_blank"
-            rel="noreferrer"
-            className="min-w-0 truncate font-mono text-[13px] text-blue no-underline hover:underline"
-          >
-            {conn.repo}
-          </a>
-        ) : (
-          <Mono tone="muted">{conn.repo}</Mono>
-        )}
-        <StatusPill status={status} />
-      </div>
-      <div className="flex items-center gap-1.5">
-        <fetcher.Form method="post" className="contents">
-          <input type="hidden" name="intent" value="sync-repo" />
-          <input type="hidden" name="id" value={conn.id} />
-          <Button
-            variant="secondary"
-            size="sm"
-            icon="git"
-            type="submit"
-            disabled={busy}
-          >
-            {busy ? "Syncing…" : "Sync"}
-          </Button>
-        </fetcher.Form>
-        <fetcher.Form method="post" className="contents">
-          <input type="hidden" name="intent" value="disconnect-repo" />
-          <input type="hidden" name="id" value={conn.id} />
-          <Button variant="ghost" size="sm" type="submit" disabled={busy}>
-            Remove
-          </Button>
-        </fetcher.Form>
-      </div>
-    </div>
+    <ButtonGroup
+      variant="secondary"
+      icon={provider ? KIND_ICON[provider.kind] : "git"}
+      label={conn.repo}
+      title={url ? `Open ${conn.repo}` : conn.repo}
+      onClick={
+        url
+          ? () => window.open(url, "_blank", "noopener,noreferrer")
+          : undefined
+      }
+      linkComponent={RouterLink}
+      items={[
+        {
+          key: "releases",
+          label: "Releases",
+          icon: "bolt",
+          href: `${base}/releases`,
+        },
+        {
+          key: "settings",
+          label: "Settings",
+          icon: "settings",
+          href: `${base}/repository`,
+        },
+      ]}
+    />
   );
 }
 

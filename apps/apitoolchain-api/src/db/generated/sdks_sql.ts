@@ -5,7 +5,11 @@ interface Client {
 }
 
 export const listSdksQuery = `-- name: ListSdks :many
-SELECT id, api_id, name, description, namespace, created_at, updated_at FROM sdks ORDER BY created_at DESC`;
+SELECT id, api_id, name, description, namespace, created_at, updated_at, project_id FROM sdks WHERE project_id = $1 ORDER BY created_at DESC`;
+
+export interface ListSdksArgs {
+    projectId: string;
+}
 
 export interface ListSdksRow {
     id: string;
@@ -15,12 +19,13 @@ export interface ListSdksRow {
     namespace: string;
     createdAt: Date;
     updatedAt: Date;
+    projectId: string;
 }
 
-export async function listSdks(client: Client): Promise<ListSdksRow[]> {
+export async function listSdks(client: Client, args: ListSdksArgs): Promise<ListSdksRow[]> {
     const result = await client.query({
         text: listSdksQuery,
-        values: [],
+        values: [args.projectId],
         rowMode: "array"
     });
     return result.rows.map(row => {
@@ -31,13 +36,14 @@ export async function listSdks(client: Client): Promise<ListSdksRow[]> {
             description: row[3],
             namespace: row[4],
             createdAt: row[5],
-            updatedAt: row[6]
+            updatedAt: row[6],
+            projectId: row[7]
         };
     });
 }
 
 export const listSdksByApiQuery = `-- name: ListSdksByApi :many
-SELECT id, api_id, name, description, namespace, created_at, updated_at FROM sdks WHERE api_id = $1 ORDER BY created_at DESC`;
+SELECT id, api_id, name, description, namespace, created_at, updated_at, project_id FROM sdks WHERE api_id = $1 ORDER BY created_at DESC`;
 
 export interface ListSdksByApiArgs {
     apiId: string;
@@ -51,6 +57,7 @@ export interface ListSdksByApiRow {
     namespace: string;
     createdAt: Date;
     updatedAt: Date;
+    projectId: string;
 }
 
 export async function listSdksByApi(client: Client, args: ListSdksByApiArgs): Promise<ListSdksByApiRow[]> {
@@ -67,13 +74,14 @@ export async function listSdksByApi(client: Client, args: ListSdksByApiArgs): Pr
             description: row[3],
             namespace: row[4],
             createdAt: row[5],
-            updatedAt: row[6]
+            updatedAt: row[6],
+            projectId: row[7]
         };
     });
 }
 
 export const getSdkQuery = `-- name: GetSdk :one
-SELECT id, api_id, name, description, namespace, created_at, updated_at FROM sdks WHERE id = $1`;
+SELECT id, api_id, name, description, namespace, created_at, updated_at, project_id FROM sdks WHERE id = $1`;
 
 export interface GetSdkArgs {
     id: string;
@@ -87,6 +95,7 @@ export interface GetSdkRow {
     namespace: string;
     createdAt: Date;
     updatedAt: Date;
+    projectId: string;
 }
 
 export async function getSdk(client: Client, args: GetSdkArgs): Promise<GetSdkRow | null> {
@@ -106,14 +115,15 @@ export async function getSdk(client: Client, args: GetSdkArgs): Promise<GetSdkRo
         description: row[3],
         namespace: row[4],
         createdAt: row[5],
-        updatedAt: row[6]
+        updatedAt: row[6],
+        projectId: row[7]
     };
 }
 
 export const insertSdkQuery = `-- name: InsertSdk :one
-INSERT INTO sdks (id, api_id, name, description, namespace)
-VALUES ($1, $2, $3, $4, $5)
-RETURNING id, api_id, name, description, namespace, created_at, updated_at`;
+INSERT INTO sdks (id, api_id, name, description, namespace, project_id)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, api_id, name, description, namespace, created_at, updated_at, project_id`;
 
 export interface InsertSdkArgs {
     id: string;
@@ -121,6 +131,7 @@ export interface InsertSdkArgs {
     name: string;
     description: string;
     namespace: string;
+    projectId: string;
 }
 
 export interface InsertSdkRow {
@@ -131,12 +142,13 @@ export interface InsertSdkRow {
     namespace: string;
     createdAt: Date;
     updatedAt: Date;
+    projectId: string;
 }
 
 export async function insertSdk(client: Client, args: InsertSdkArgs): Promise<InsertSdkRow | null> {
     const result = await client.query({
         text: insertSdkQuery,
-        values: [args.id, args.apiId, args.name, args.description, args.namespace],
+        values: [args.id, args.apiId, args.name, args.description, args.namespace, args.projectId],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {
@@ -150,7 +162,8 @@ export async function insertSdk(client: Client, args: InsertSdkArgs): Promise<In
         description: row[3],
         namespace: row[4],
         createdAt: row[5],
-        updatedAt: row[6]
+        updatedAt: row[6],
+        projectId: row[7]
     };
 }
 

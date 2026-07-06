@@ -4,6 +4,7 @@ import {
   EmptyState,
   Field,
   Icon,
+  type IconName,
   Input,
   Mono,
   Select,
@@ -36,6 +37,13 @@ const KIND_LABEL: Record<GitProviderKind, string> = {
   github: "GitHub",
   gitlab: "GitLab",
   bitbucket: "Bitbucket",
+};
+/** Brand mark for each provider (design-system icon registry). */
+const KIND_ICON: Record<GitProviderKind, IconName> = {
+  gitea: "gitea",
+  github: "github",
+  gitlab: "gitlab",
+  bitbucket: "bitbucket",
 };
 /** GitHub & GitLab connect via OAuth; the rest use a token. */
 const isOAuthKind = (k: GitProviderKind): k is "github" | "gitlab" =>
@@ -113,6 +121,7 @@ function ConnectProviderForm({
           value={kind}
           onChange={(v) => setKind(v as GitProviderKind)}
           options={KIND_OPTIONS}
+          leadingIcon={KIND_ICON[kind]}
         />
       </Field>
       {isOAuthKind(kind) ? (
@@ -270,14 +279,14 @@ function ProvidersList({ providers }: { providers: GitProvider[] }) {
 }
 
 function ProviderRow({ provider: p }: { provider: GitProvider }) {
-  const remove = useFetcher();
+  // No Remove here — disconnecting lives on the provider detail page.
   return (
-    <div className="flex items-center justify-between gap-3 px-4 py-3">
-      <Link
-        to={`/settings/connections/${p.id}`}
-        className="flex min-w-0 flex-1 items-center gap-2.5 no-underline"
-      >
-        <Badge tone="neutral" icon="git">
+    <Link
+      to={`/settings/connections/${p.id}`}
+      className="flex items-center justify-between gap-3 px-4 py-3 no-underline"
+    >
+      <div className="flex min-w-0 flex-1 items-center gap-2.5">
+        <Badge tone="neutral" icon={KIND_ICON[p.kind]}>
           {KIND_LABEL[p.kind]}
         </Badge>
         <div className="min-w-0">
@@ -287,23 +296,13 @@ function ProviderRow({ provider: p }: { provider: GitProvider }) {
             {p.baseUrl ? ` · ${p.baseUrl}` : ""}
           </Mono>
         </div>
-      </Link>
-      <div className="flex shrink-0 items-center gap-1">
-        <remove.Form method="post">
-          <input type="hidden" name="intent" value="remove" />
-          <input type="hidden" name="id" value={p.id} />
-          <Button variant="ghost" size="sm" type="submit">
-            Remove
-          </Button>
-        </remove.Form>
-        <Link
-          to={`/settings/connections/${p.id}`}
-          aria-label={`View ${p.name} repositories`}
-          className="flex items-center text-muted hover:text-ink"
-        >
-          <Icon icon="chevronRight" size={16} />
-        </Link>
       </div>
-    </div>
+      <Icon
+        icon="chevronRight"
+        size={16}
+        className="shrink-0 text-muted"
+        aria-hidden={true}
+      />
+    </Link>
   );
 }

@@ -6,9 +6,12 @@ import {
   NOTIFICATIONS,
   ORGANIZATION,
   PROJECT,
+  RELEASES,
   REPO_CONNECTIONS,
   SDK_TARGETS,
   SDKS,
+  TARGET_VERSIONS,
+  USER,
 } from "./fixtures";
 import type {
   DocsProject,
@@ -16,18 +19,22 @@ import type {
   GitProviderKind,
   GitRepoOption,
   McpServer,
+  Member,
   Notification,
   Organization,
   OverviewStats,
   Project,
   RegistryEntry,
+  Release,
   RepoConnection,
   RepoTargetKind,
   Sdk,
   SdkLanguage,
   SdkTarget,
+  TargetVersion,
   UsageRange,
   UsageSeries,
+  User,
 } from "./types";
 
 /**
@@ -47,8 +54,35 @@ function apiBase(): string | undefined {
 
 const ok = <T>(value: T): Promise<T> => Promise.resolve(value);
 
+/**
+ * The request's platform-api session token, read from the server-only bridge
+ * registered by `request-context.server`. A `globalThis` hop (not a static
+ * import) keeps this file client-bundle-safe — it's re-exported through the
+ * `~/data` barrel, which the client build includes.
+ */
+function currentToken(): string | undefined {
+  return (
+    globalThis as typeof globalThis & {
+      __atcCurrentToken?: () => string | undefined;
+    }
+  ).__atcCurrentToken?.();
+}
+
+/**
+ * `fetch` against the platform-api with the current request's session token
+ * attached as a bearer (set by the root middleware). Every accessor goes
+ * through this so auth is forwarded without per-call plumbing.
+ */
+function apiFetch(path: string, init?: RequestInit): Promise<Response> {
+  const token = currentToken();
+  const headers = new Headers(init?.headers);
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+  const base = apiBase() ?? "";
+  return fetch(base + path, { ...init, headers });
+}
+
 async function get<T>(path: string): Promise<T> {
-  const res = await fetch(`${apiBase()}${path}`);
+  const res = await apiFetch(path);
   if (!res.ok) throw new Response(res.statusText, { status: res.status });
   return (await res.json()) as T;
 }
@@ -135,7 +169,7 @@ export async function listApis(): Promise<RegistryEntry[]> {
 
 export async function getApi(id: string): Promise<RegistryEntry | undefined> {
   if (!apiBase()) return APIS.find((a) => a.id === id);
-  const res = await fetch(`${apiBase()}/apis/${encodeURIComponent(id)}`);
+  const res = await apiFetch(`/apis/${encodeURIComponent(id)}`);
   if (res.status === 404) return undefined;
   if (!res.ok) throw new Response(res.statusText, { status: res.status });
   return mapEntry(await res.json());
@@ -164,7 +198,7 @@ export async function registerApi(
       message: "Backend not configured — set APITOOLCHAIN_API_URL.",
     };
   }
-  const res = await fetch(`${apiBase()}/apis`, {
+  const res = await apiFetch(`/apis`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(input),
@@ -201,14 +235,11 @@ export async function setDistTag(
       message: "Backend not configured — set APITOOLCHAIN_API_URL.",
     };
   }
-  const res = await fetch(
-    `${apiBase()}/apis/${encodeURIComponent(apiId)}/dist-tags`,
-    {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ tag, version }),
-    },
-  );
+  const res = await apiFetch(`/apis/${encodeURIComponent(apiId)}/dist-tags`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ tag, version }),
+  });
   const body = (await res.json()) as WireEntry & {
     message?: string;
     statusCode?: number;
@@ -232,18 +263,38 @@ export async function listSdkTargets(apiId?: string): Promise<SdkTarget[]> {
 
 export async function getSdkTarget(id: string): Promise<SdkTarget | undefined> {
   if (!apiBase()) return SDK_TARGETS.find((t) => t.id === id);
-  const res = await fetch(`${apiBase()}/sdk-targets/${encodeURIComponent(id)}`);
+  const res = await apiFetch(`/sdk-targets/${encodeURIComponent(id)}`);
   if (res.status === 404) return undefined;
   if (!res.ok) throw new Response(res.statusText, { status: res.status });
   return mapSdk(await res.json());
 }
 
+/**
+ * Version/build history of a single SDK target. The backend endpoint is
+ * optional — when it's absent (404) or unset, callers fall back to a single row
+ * synthesised from the target's current version.
+ */
+export async function listTargetVersions(
+  targetId: string,
+): Promise<TargetVersion[]> {
+  if (!apiBase()) {
+    return TARGET_VERSIONS.filter((v) => v.targetId === targetId);
+  }
+  const res = await apiFetch(
+    `/sdk-targets/${encodeURIComponent(targetId)}/versions`,
+  );
+  if (!res.ok) return [];
+  return ((await res.json()) as TargetVersion[]).map((v) => ({
+    ...v,
+    createdAt: ts(v.createdAt),
+    publishedAt: v.publishedAt ? ts(v.publishedAt) : undefined,
+  }));
+}
+
 /** Proxy the generated SDK zip from the gateway (server-side; for a download route). */
 export async function fetchSdkArtifact(id: string): Promise<Response | null> {
   if (!apiBase()) return null;
-  const res = await fetch(
-    `${apiBase()}/sdk-targets/${encodeURIComponent(id)}/artifact`,
-  );
+  const res = await apiFetch(`/sdk-targets/${encodeURIComponent(id)}/artifact`);
   if (!res.ok) return null;
   return res;
 }
@@ -253,10 +304,9 @@ export async function deleteSdkTarget(
   id: string,
 ): Promise<{ ok: boolean; message?: string }> {
   if (!apiBase()) return { ok: false, message: "Backend not configured." };
-  const res = await fetch(
-    `${apiBase()}/sdk-targets/${encodeURIComponent(id)}`,
-    { method: "DELETE" },
-  );
+  const res = await apiFetch(`/sdk-targets/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
   if (res.ok) return { ok: true };
   const body = (await res.json().catch(() => ({}))) as { message?: string };
   return {
@@ -293,7 +343,7 @@ export async function listSdks(apiId?: string): Promise<Sdk[]> {
 
 export async function getSdk(id: string): Promise<Sdk | undefined> {
   if (!apiBase()) return SDKS.find((s) => s.id === id);
-  const res = await fetch(`${apiBase()}/sdks/${encodeURIComponent(id)}`);
+  const res = await apiFetch(`/sdks/${encodeURIComponent(id)}`);
   if (res.status === 404) return undefined;
   if (!res.ok) throw new Response(res.statusText, { status: res.status });
   return mapSdkEntity(await res.json());
@@ -317,7 +367,7 @@ export async function createSdk(input: {
   description?: string;
 }): Promise<CreateSdkResult> {
   if (!apiBase()) return { ok: false, message: "Backend not configured." };
-  const res = await fetch(`${apiBase()}/sdks`, {
+  const res = await apiFetch(`/sdks`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(input),
@@ -341,14 +391,11 @@ export async function addSdkTarget(
   language: SdkLanguage,
 ): Promise<{ ok: true; target: SdkTarget } | { ok: false; message: string }> {
   if (!apiBase()) return { ok: false, message: "Backend not configured." };
-  const res = await fetch(
-    `${apiBase()}/sdks/${encodeURIComponent(sdkId)}/targets`,
-    {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ language }),
-    },
-  );
+  const res = await apiFetch(`/sdks/${encodeURIComponent(sdkId)}/targets`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ language }),
+  });
   const body = (await res.json()) as SdkTarget & {
     message?: string;
     statusCode?: number;
@@ -366,7 +413,7 @@ export async function deleteSdk(
   id: string,
 ): Promise<{ ok: boolean; message?: string }> {
   if (!apiBase()) return { ok: false, message: "Backend not configured." };
-  const res = await fetch(`${apiBase()}/sdks/${encodeURIComponent(id)}`, {
+  const res = await apiFetch(`/sdks/${encodeURIComponent(id)}`, {
     method: "DELETE",
   });
   if (res.ok) return { ok: true };
@@ -400,6 +447,21 @@ export async function listNotifications(): Promise<Notification[]> {
   return (await get<Notification[]>("/notifications")).map(mapNotification);
 }
 
+/** Mark notifications read — a set of ids, or all in the current project. */
+export async function markNotificationsRead(input: {
+  ids?: string[];
+  all?: boolean;
+}): Promise<{ updated: number }> {
+  if (!apiBase()) return { updated: 0 };
+  const res = await apiFetch("/notifications/read", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) return { updated: 0 };
+  return (await res.json()) as { updated: number };
+}
+
 export async function getOverviewStats(): Promise<OverviewStats> {
   if (!apiBase()) {
     return {
@@ -412,12 +474,247 @@ export async function getOverviewStats(): Promise<OverviewStats> {
   return get<OverviewStats>("/overview/stats");
 }
 
-export async function getCurrentContext(): Promise<{
+export interface CurrentContext {
+  user: User;
   org: Organization;
   project: Project;
-}> {
-  if (!apiBase()) return { org: ORGANIZATION, project: PROJECT };
-  return get<{ org: Organization; project: Project }>("/context");
+  projects: Project[];
+}
+
+export async function getCurrentContext(): Promise<CurrentContext> {
+  if (!apiBase())
+    return {
+      user: USER,
+      org: ORGANIZATION,
+      project: PROJECT,
+      projects: [PROJECT],
+    };
+  return get<CurrentContext>("/context");
+}
+
+/** Rename the current org and/or project (PATCH /context). */
+export async function updateContext(input: {
+  orgName?: string;
+  projectName?: string;
+}): Promise<{ ok: boolean; message?: string }> {
+  if (!apiBase()) return { ok: true };
+  const res = await apiFetch("/context", {
+    method: "PATCH",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  if (res.ok) return { ok: true };
+  const body = (await res.json().catch(() => ({}))) as { message?: string };
+  return { ok: false, message: body.message ?? `Failed (HTTP ${res.status})` };
+}
+
+// ── projects ─────────────────────────────────────────────────────────────────
+export type ProjectResult =
+  | { ok: true; project: Project }
+  | { ok: false; message: string };
+
+const backendRequired = {
+  ok: false as const,
+  message: "Backend not configured.",
+};
+
+export async function listProjects(): Promise<Project[]> {
+  if (!apiBase()) return [PROJECT];
+  return get<Project[]>("/projects");
+}
+
+export async function createProject(name: string): Promise<ProjectResult> {
+  if (!apiBase()) return backendRequired;
+  const res = await apiFetch("/projects", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ name }),
+  });
+  const body = (await res.json()) as Project & {
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number") {
+    return {
+      ok: false,
+      message: body.message ?? `Failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, project: body };
+}
+
+export async function renameProject(
+  id: string,
+  name: string,
+): Promise<ProjectResult> {
+  if (!apiBase()) return backendRequired;
+  const res = await apiFetch(`/projects/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ name }),
+  });
+  const body = (await res.json()) as Project & {
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number") {
+    return {
+      ok: false,
+      message: body.message ?? `Failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, project: body };
+}
+
+export async function deleteProject(
+  id: string,
+): Promise<{ ok: boolean; message?: string }> {
+  if (!apiBase()) return backendRequired;
+  const res = await apiFetch(`/projects/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+  if (res.ok) return { ok: true };
+  const body = (await res.json().catch(() => ({}))) as { message?: string };
+  return { ok: false, message: body.message ?? `Failed (HTTP ${res.status})` };
+}
+
+/** Switch the caller's current project (persisted server-side per-user). */
+export async function selectProject(
+  projectId: string,
+): Promise<{ ok: boolean; message?: string }> {
+  if (!apiBase()) return { ok: true };
+  const res = await apiFetch("/context/select", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ projectId }),
+  });
+  if (res.ok) return { ok: true };
+  const body = (await res.json().catch(() => ({}))) as { message?: string };
+  return { ok: false, message: body.message ?? `Failed (HTTP ${res.status})` };
+}
+
+// ── auth ─────────────────────────────────────────────────────────────────────
+export type AuthResult =
+  | { ok: true; token: string; user: User }
+  | { ok: false; message: string };
+
+async function auth(
+  path: "/auth/login" | "/auth/register",
+  input: Record<string, unknown>,
+): Promise<AuthResult> {
+  // No backend → auth is a no-op; hand back the fixture session so the app is
+  // usable offline (the token is never actually sent anywhere).
+  if (!apiBase()) return { ok: true, token: "fixture", user: USER };
+  const res = await apiFetch(path, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  const body = (await res.json()) as {
+    token?: string;
+    user?: User;
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number" || !body.token) {
+    return {
+      ok: false,
+      message: body.message ?? `Authentication failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, token: body.token, user: body.user as User };
+}
+
+export function login(email: string, password: string): Promise<AuthResult> {
+  return auth("/auth/login", { email, password });
+}
+
+export function registerUser(
+  email: string,
+  password: string,
+  name?: string,
+): Promise<AuthResult> {
+  return auth("/auth/register", { email, password, name });
+}
+
+/** Revoke the current session server-side (the cookie is cleared by the caller). */
+export async function logout(): Promise<void> {
+  if (!apiBase()) return;
+  await apiFetch("/auth/logout", { method: "POST" });
+}
+
+/** The authenticated account, or null if the bearer is missing/invalid. */
+export async function getMe(): Promise<User | null> {
+  if (!apiBase()) return USER;
+  const res = await apiFetch("/auth/me");
+  if (!res.ok) return null;
+  return (await res.json()) as User;
+}
+
+// ── members ──────────────────────────────────────────────────────────────────
+export type MemberResult =
+  | { ok: true; member: Member }
+  | { ok: false; message: string };
+
+export async function listMembers(): Promise<Member[]> {
+  if (!apiBase())
+    return [
+      { userId: USER.id, email: USER.email, name: USER.name, role: "owner" },
+    ];
+  return get<Member[]>("/members");
+}
+
+async function memberMutation(
+  path: string,
+  init: RequestInit,
+): Promise<MemberResult> {
+  if (!apiBase()) return backendRequired;
+  const res = await apiFetch(path, init);
+  const body = (await res.json().catch(() => ({}))) as Member & {
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number") {
+    return {
+      ok: false,
+      message: body.message ?? `Failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, member: body };
+}
+
+export function inviteMember(
+  email: string,
+  role?: string,
+): Promise<MemberResult> {
+  return memberMutation("/members", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ email, role }),
+  });
+}
+
+export function updateMemberRole(
+  userId: string,
+  role: string,
+): Promise<MemberResult> {
+  return memberMutation(`/members/${encodeURIComponent(userId)}/role`, {
+    method: "PATCH",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ role }),
+  });
+}
+
+export async function removeMember(
+  userId: string,
+): Promise<{ ok: boolean; message?: string }> {
+  if (!apiBase()) return backendRequired;
+  const res = await apiFetch(`/members/${encodeURIComponent(userId)}`, {
+    method: "DELETE",
+  });
+  if (res.ok) return { ok: true };
+  const body = (await res.json().catch(() => ({}))) as { message?: string };
+  return { ok: false, message: body.message ?? `Failed (HTTP ${res.status})` };
 }
 
 // ── git providers + repo connections + sync ─────────────────────────────────
@@ -444,7 +741,7 @@ export async function connectGitProvider(input: {
   { ok: true; provider: GitProvider } | { ok: false; message: string }
 > {
   if (!apiBase()) return { ok: false, message: "Backend not configured." };
-  const res = await fetch(`${apiBase()}/git-providers`, {
+  const res = await apiFetch(`/git-providers`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(input),
@@ -466,12 +763,9 @@ export async function removeGitProvider(
   id: string,
 ): Promise<{ ok: boolean; message?: string }> {
   if (!apiBase()) return { ok: false, message: "Backend not configured." };
-  const res = await fetch(
-    `${apiBase()}/git-providers/${encodeURIComponent(id)}`,
-    {
-      method: "DELETE",
-    },
-  );
+  const res = await apiFetch(`/git-providers/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
   if (res.ok) return { ok: true };
   const body = (await res.json().catch(() => ({}))) as { message?: string };
   return {
@@ -485,8 +779,8 @@ export async function listProviderRepos(
 ): Promise<GitRepoOption[]> {
   if (!apiBase()) return [];
   // `no-store`: always hit the provider live so a just-created repo shows up.
-  const res = await fetch(
-    `${apiBase()}/git-providers/${encodeURIComponent(providerId)}/repos`,
+  const res = await apiFetch(
+    `/git-providers/${encodeURIComponent(providerId)}/repos`,
     { cache: "no-store" },
   );
   if (!res.ok) return [];
@@ -498,8 +792,8 @@ export async function listProviderBranches(
   repo: string,
 ): Promise<string[]> {
   if (!apiBase()) return [];
-  const res = await fetch(
-    `${apiBase()}/git-providers/${encodeURIComponent(providerId)}/branches?repo=${encodeURIComponent(repo)}`,
+  const res = await apiFetch(
+    `/git-providers/${encodeURIComponent(providerId)}/branches?repo=${encodeURIComponent(repo)}`,
     { cache: "no-store" },
   );
   if (!res.ok) return [];
@@ -535,11 +829,15 @@ export async function createRepoConnection(input: {
   ref?: string;
   branch?: string;
   prefix?: string;
+  /** Default release mode for the new connection: "push" (direct) | "release". */
+  releaseMode?: string;
+  autoRelease?: boolean;
+  baseBranch?: string;
 }): Promise<
   { ok: true; connection: RepoConnection } | { ok: false; message: string }
 > {
   if (!apiBase()) return { ok: false, message: "Backend not configured." };
-  const res = await fetch(`${apiBase()}/repo-connections`, {
+  const res = await apiFetch(`/repo-connections`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(input),
@@ -561,10 +859,9 @@ export async function removeRepoConnection(
   id: string,
 ): Promise<{ ok: boolean; message?: string }> {
   if (!apiBase()) return { ok: false, message: "Backend not configured." };
-  const res = await fetch(
-    `${apiBase()}/repo-connections/${encodeURIComponent(id)}`,
-    { method: "DELETE" },
-  );
+  const res = await apiFetch(`/repo-connections/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
   if (res.ok) return { ok: true };
   const body = (await res.json().catch(() => ({}))) as { message?: string };
   return {
@@ -580,8 +877,8 @@ export async function syncRepoConnection(
   { ok: true; connection: RepoConnection } | { ok: false; message: string }
 > {
   if (!apiBase()) return { ok: false, message: "Backend not configured." };
-  const res = await fetch(
-    `${apiBase()}/repo-connections/${encodeURIComponent(id)}/sync`,
+  const res = await apiFetch(
+    `/repo-connections/${encodeURIComponent(id)}/sync`,
     { method: "POST" },
   );
   const body = (await res.json()) as RepoConnection & {
@@ -640,4 +937,116 @@ export async function getUsageSeries(
     series("mcp_calls", "MCP tool calls", "calls", range, 90, 40, 2.4),
     series("docs_views", "Docs page views", "views", range, 640, 160, 0.7),
   ]);
+}
+
+// ── releases (PR-based SDK release pipeline) ──
+const mapRelease = (w: Release): Release => ({
+  ...w,
+  createdAt: ts(w.createdAt),
+  updatedAt: ts(w.updatedAt),
+});
+
+export async function listReleases(connectionId?: string): Promise<Release[]> {
+  if (!apiBase()) return RELEASES;
+  const qs = connectionId
+    ? `?connectionId=${encodeURIComponent(connectionId)}`
+    : "";
+  return (await get<Release[]>(`/releases${qs}`)).map(mapRelease);
+}
+
+/** Releases keyed by connection id, for the release-mode connections of a
+ * resource page (SDK target / API spec) — the inline Releases modal's data. */
+export async function loadReleasesByConn(
+  connections: RepoConnection[],
+): Promise<Record<string, Release[]>> {
+  const out: Record<string, Release[]> = {};
+  await Promise.all(
+    connections
+      .filter((c) => c.releaseMode === "release")
+      .map(async (c) => {
+        out[c.id] = await listReleases(c.id);
+      }),
+  );
+  return out;
+}
+
+export async function getRelease(id: string): Promise<Release | undefined> {
+  if (!apiBase()) return RELEASES.find((r) => r.id === id);
+  const res = await apiFetch(`/releases/${encodeURIComponent(id)}`);
+  if (res.status === 404) return undefined;
+  return mapRelease((await res.json()) as Release);
+}
+
+async function releaseMutation(
+  path: string,
+  init: RequestInit,
+): Promise<{ ok: true; release: Release } | { ok: false; message: string }> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await apiFetch(path, init);
+  const body = (await res.json()) as Release & {
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number") {
+    return {
+      ok: false,
+      message: body.message ?? `Request failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, release: mapRelease(body) };
+}
+
+/** Open or force-update the rolling release PR for an SDK connection. */
+export async function prepareRelease(input: {
+  connectionId: string;
+  versionOverride?: string;
+}): Promise<{ ok: true; release: Release } | { ok: false; message: string }> {
+  return releaseMutation(`/releases/prepare`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input),
+  });
+}
+
+/** Tag + cut the Release (manual fallback when a merge webhook can't reach us). */
+export async function publishRelease(
+  id: string,
+): Promise<{ ok: true; release: Release } | { ok: false; message: string }> {
+  return releaseMutation(`/releases/${encodeURIComponent(id)}/publish`, {
+    method: "POST",
+  });
+}
+
+/** Switch a connection between direct-push and PR-based release mode. */
+export async function setReleaseConfig(
+  connectionId: string,
+  input: {
+    releaseMode: string;
+    autoRelease: boolean;
+    baseBranch?: string;
+    prerelease?: boolean;
+  },
+): Promise<
+  { ok: true; connection: RepoConnection } | { ok: false; message: string }
+> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await apiFetch(
+    `/repo-connections/${encodeURIComponent(connectionId)}/release-config`,
+    {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(input),
+    },
+  );
+  const body = (await res.json()) as RepoConnection & {
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number") {
+    return {
+      ok: false,
+      message: body.message ?? `Request failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, connection: mapConn(body) };
 }

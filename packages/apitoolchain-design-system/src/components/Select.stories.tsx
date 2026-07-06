@@ -39,3 +39,17 @@ export const Disabled: Story = {
 export const Controlled: Story = {
   args: { value: "o1", defaultValue: undefined },
 };
+
+/** A leading brand icon inside the control — e.g. a git-provider picker. */
+export const WithLeadingIcon: Story = {
+  args: {
+    leadingIcon: "github",
+    defaultValue: "github",
+    options: [
+      { value: "github", label: "GitHub" },
+      { value: "gitlab", label: "GitLab" },
+      { value: "gitea", label: "Gitea" },
+      { value: "bitbucket", label: "Bitbucket" },
+    ],
+  },
+};

@@ -31,7 +31,6 @@ export default function UsageRoute({ loaderData }: Route.ComponentProps) {
     <>
       <PageHeader
         title="Usage"
-        description="Requests, SDK downloads, MCP calls and docs views across your APIs."
         actions={
           <Segmented
             value={range}

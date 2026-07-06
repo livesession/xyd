@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/drone/go-scm/scm"
 	"github.com/drone/go-scm/scm/driver/bitbucket"
@@ -84,7 +85,29 @@ func (t *headerTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	return t.base.RoundTrip(r2)
 }
 
-func toRepo(r *scm.Repository) Repo {
+// rebaseURL rewrites a provider-returned URL's origin (scheme+host+port) to the
+// configured BaseURL. A self-hosted provider (e.g. the dev Gitea) builds its
+// HTML links from an internal ROOT_URL (localhost:3000) that isn't the reachable
+// mapped host:port, so PR/release/repo links come back unclickable. For hosted
+// providers BaseURL is empty and the link is returned unchanged.
+func rebaseURL(cfg Config, link string) string {
+	if cfg.BaseURL == "" || link == "" {
+		return link
+	}
+	base, err := url.Parse(cfg.BaseURL)
+	if err != nil || base.Host == "" {
+		return link
+	}
+	u, err := url.Parse(link)
+	if err != nil {
+		return link
+	}
+	u.Scheme = base.Scheme
+	u.Host = base.Host
+	return u.String()
+}
+
+func (p *provider) toRepo(r *scm.Repository) Repo {
 	full := r.Name
 	if r.Namespace != "" {
 		full = r.Namespace + "/" + r.Name
@@ -95,7 +118,7 @@ func toRepo(r *scm.Repository) Repo {
 		Name:          r.Name,
 		DefaultBranch: r.Branch,
 		CloneURL:      r.Clone,
-		HTMLURL:       r.Link,
+		HTMLURL:       rebaseURL(p.cfg, r.Link),
 		Private:       r.Private,
 	}
 }
@@ -120,7 +143,7 @@ func (p *provider) ListRepos(ctx context.Context) ([]Repo, error) {
 			return nil, fmt.Errorf("list repos: %w", err)
 		}
 		for _, r := range list {
-			out = append(out, toRepo(r))
+			out = append(out, p.toRepo(r))
 		}
 		if res == nil || res.Page.Next == 0 {
 			break
@@ -135,7 +158,7 @@ func (p *provider) GetRepo(ctx context.Context, fullName string) (Repo, error) {
 	if err != nil {
 		return Repo{}, fmt.Errorf("get repo %s: %w", fullName, err)
 	}
-	return toRepo(r), nil
+	return p.toRepo(r), nil
 }
 
 func (p *provider) ListBranches(ctx context.Context, fullName string) ([]string, error) {

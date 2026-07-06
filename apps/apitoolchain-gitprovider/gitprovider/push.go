@@ -35,30 +35,13 @@ func (p *provider) Sync(ctx context.Context, req SyncRequest) (SyncResult, error
 	if branch == "" {
 		branch = "main"
 	}
-	// git push basic-auth: username = the account login (token as fallback),
-	// password = the token. This form works across GitHub/GitLab/Gitea/Bitbucket.
-	user := p.cfg.Login
-	if user == "" {
-		user = p.cfg.Token
-	}
-	auth := &githttp.BasicAuth{Username: user, Password: p.cfg.Token}
-	// For self-hosted providers the API-reported clone URL can carry a
-	// misconfigured host/port (e.g. a Gitea ROOT_URL that doesn't match a
-	// random dev port). When we know the base URL, reconstruct the clone URL
-	// from it so the push targets the reachable host.
-	cloneURL := repo.Clone
-	if p.cfg.BaseURL != "" {
-		full := repo.Name
-		if repo.Namespace != "" {
-			full = repo.Namespace + "/" + repo.Name
-		}
-		cloneURL = strings.TrimRight(p.cfg.BaseURL, "/") + "/" + full + ".git"
-	}
+	auth := gitAuth(p.cfg)
+	cloneURL := cloneURLFor(p.cfg, repo.Namespace, repo.Name, repo.Clone)
 	res, err := pushFiles(ctx, cloneURL, auth, branch, req)
 	if err != nil {
 		return SyncResult{}, err
 	}
-	res.HTMLURL = repo.Link
+	res.HTMLURL = rebaseURL(p.cfg, repo.Link)
 	return res, nil
 }
 
@@ -245,4 +228,30 @@ func commitMsg(req SyncRequest) string {
 		return "apitoolchain: sync"
 	}
 	return req.Message
+}
+
+// gitAuth builds git push basic-auth from the provider config: username = the
+// account login (token as fallback), password = the token. This form works
+// across GitHub/GitLab/Gitea/Bitbucket.
+func gitAuth(cfg Config) *githttp.BasicAuth {
+	user := cfg.Login
+	if user == "" {
+		user = cfg.Token
+	}
+	return &githttp.BasicAuth{Username: user, Password: cfg.Token}
+}
+
+// cloneURLFor returns the git clone/push URL for a repo. For self-hosted
+// providers the API-reported clone URL can carry a misconfigured host/port
+// (e.g. a Gitea ROOT_URL that doesn't match a random dev port); when we know the
+// base URL, reconstruct the clone URL from it so the push targets a reachable host.
+func cloneURLFor(cfg Config, namespace, name, apiClone string) string {
+	if cfg.BaseURL == "" {
+		return apiClone
+	}
+	full := name
+	if namespace != "" {
+		full = namespace + "/" + name
+	}
+	return strings.TrimRight(cfg.BaseURL, "/") + "/" + full + ".git"
 }

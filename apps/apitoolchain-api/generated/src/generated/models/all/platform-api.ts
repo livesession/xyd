@@ -16,13 +16,27 @@ import {
   MarkReadInput,
   OverviewStats,
   UsageSeries,
+  AuthSession,
+  RegisterInput,
+  LoginInput,
+  User,
+  Project,
+  CreateProjectInput,
+  UpdateProjectInput,
   CurrentContext,
   UpdateContextInput,
+  SelectProjectInput,
+  Member,
+  InviteMemberInput,
+  UpdateMemberRoleInput,
   GitProvider,
   ConnectGitProviderInput,
   GitRepoOption,
   RepoConnection,
   CreateRepoConnectionInput,
+  SetReleaseConfigInput,
+  Release,
+  PrepareReleaseInput,
 } from "./apitoolchain.js";
 
 import { ListOptions } from "../synthetic.js";
@@ -136,10 +150,85 @@ export interface Usage<Context = unknown> {
   list(ctx: Context, range: string): Promise<UsageSeries[]>;
 }
 
+/**
+ * Email+password auth. `register`/`login` are public and return an opaque
+ * session token the web stores in an httpOnly cookie + forwards as a bearer;
+ * `me`/`logout` require that bearer.
+ */
+export interface Auth<Context = unknown> {
+  register(
+    ctx: Context,
+    input: RegisterInput,
+  ): Promise<AuthSession | ValidationError>;
+
+  login(
+    ctx: Context,
+    input: LoginInput,
+  ): Promise<AuthSession | ValidationError>;
+
+  logout(ctx: Context): Promise<void>;
+
+  me(ctx: Context): Promise<User>;
+}
+
+/**
+ * Projects in the caller's current org — the sidebar switcher's data.
+ */
+export interface Projects<Context = unknown> {
+  list(ctx: Context): Promise<Project[]>;
+
+  create(
+    ctx: Context,
+    input: CreateProjectInput,
+  ): Promise<Project | ValidationError>;
+
+  update(
+    ctx: Context,
+    id: string,
+    input: UpdateProjectInput,
+  ): Promise<Project | NotFoundError | ValidationError>;
+
+  remove(
+    ctx: Context,
+    id: string,
+  ): Promise<void | NotFoundError | ValidationError>;
+}
+
 export interface Context<Context = unknown> {
   read(ctx: Context): Promise<CurrentContext>;
 
   update(ctx: Context, input: UpdateContextInput): Promise<CurrentContext>;
+
+  /**
+   * Switch the caller's current project (persisted per-user).
+   */
+  selectProject(
+    ctx: Context,
+    input: SelectProjectInput,
+  ): Promise<CurrentContext | NotFoundError>;
+}
+
+/**
+ * Members of the caller's current org.
+ */
+export interface Members<Context = unknown> {
+  list(ctx: Context): Promise<Member[]>;
+
+  invite(
+    ctx: Context,
+    input: InviteMemberInput,
+  ): Promise<Member | ValidationError>;
+
+  remove(
+    ctx: Context,
+    userId: string,
+  ): Promise<void | NotFoundError | ValidationError>;
+
+  updateRole(
+    ctx: Context,
+    userId: string,
+    input: UpdateMemberRoleInput,
+  ): Promise<Member | NotFoundError | ValidationError>;
 }
 
 /**
@@ -190,4 +279,33 @@ export interface RepoConnections<Context = unknown> {
     ctx: Context,
     id: string,
   ): Promise<RepoConnection | NotFoundError | ValidationError>;
+
+  /**
+   * Switch a connection between direct-push and PR-based release mode.
+   */
+  setReleaseConfig(
+    ctx: Context,
+    id: string,
+    input: SetReleaseConfigInput,
+  ): Promise<RepoConnection | NotFoundError | ValidationError>;
+}
+
+/**
+ * Release pipeline: a rolling, versioned PR per SDK connection. `prepare` opens
+ * or force-updates it; `publish` (or a merge webhook) tags + cuts the Release.
+ */
+export interface Releases<Context = unknown> {
+  list(ctx: Context, options?: ListOptions): Promise<Release[]>;
+
+  read(ctx: Context, id: string): Promise<Release | NotFoundError>;
+
+  prepare(
+    ctx: Context,
+    input: PrepareReleaseInput,
+  ): Promise<Release | NotFoundError | ValidationError>;
+
+  publish(
+    ctx: Context,
+    id: string,
+  ): Promise<Release | NotFoundError | ValidationError>;
 }

@@ -1,4 +1,5 @@
 import type { Sdks } from "../../../generated/src/generated/models/all/platform-api";
+import { requireAuth } from "../../auth";
 import { registryClient } from "../../clients/registry";
 import * as jobQ from "../../db/generated/jobs_sql";
 import * as sdkQ from "../../db/generated/sdk_targets_sql";
@@ -14,7 +15,8 @@ import { invalid, notFound } from "../errors";
  * `building` row + job and kick the (off-request) opensdk generation for the
  * SDK's API. OpenAPI-only.
  */
-export const addTarget: Sdks["addTarget"] = async (_ctx, sdkId, input) => {
+export const addTarget: Sdks["addTarget"] = async (ctx, sdkId, input) => {
+  const auth = await requireAuth(ctx);
   const sdk = await sdksQ.getSdk(pool, { id: sdkId });
   if (!sdk) return notFound(`sdk ${sdkId} not found`);
   const core = await registryClient.getApi(sdk.apiId);
@@ -34,6 +36,7 @@ export const addTarget: Sdks["addTarget"] = async (_ctx, sdkId, input) => {
     output: SDK_OUTPUT[input.language] ?? `./sdk/${input.language}`,
     version: "",
     status: "building",
+    projectId: auth.projectId,
   });
   const job = await jobQ.insertJob(pool, {
     id: randomId("job"),
@@ -49,6 +52,7 @@ export const addTarget: Sdks["addTarget"] = async (_ctx, sdkId, input) => {
     version,
     language: input.language,
     namespace: sdk.namespace,
+    projectId: auth.projectId,
   });
   return toSdkTarget(row as NonNullable<typeof row>);
 };

@@ -1,0 +1,137 @@
+import { QueryArrayConfig, QueryArrayResult } from "pg";
+
+interface Client {
+    query: (config: QueryArrayConfig) => Promise<QueryArrayResult>;
+}
+
+export const listMembersQuery = `-- name: ListMembers :many
+SELECT m.user_id, m.role, u.email, u.name
+FROM memberships m
+JOIN users u ON u.id = m.user_id
+WHERE m.org_id = $1
+ORDER BY u.email`;
+
+export interface ListMembersArgs {
+    orgId: string;
+}
+
+export interface ListMembersRow {
+    userId: string;
+    role: string;
+    email: string;
+    name: string;
+}
+
+export async function listMembers(client: Client, args: ListMembersArgs): Promise<ListMembersRow[]> {
+    const result = await client.query({
+        text: listMembersQuery,
+        values: [args.orgId],
+        rowMode: "array"
+    });
+    return result.rows.map(row => {
+        return {
+            userId: row[0],
+            role: row[1],
+            email: row[2],
+            name: row[3]
+        };
+    });
+}
+
+export const getMemberQuery = `-- name: GetMember :one
+SELECT m.user_id, m.role, u.email, u.name
+FROM memberships m
+JOIN users u ON u.id = m.user_id
+WHERE m.org_id = $1 AND m.user_id = $2`;
+
+export interface GetMemberArgs {
+    orgId: string;
+    userId: string;
+}
+
+export interface GetMemberRow {
+    userId: string;
+    role: string;
+    email: string;
+    name: string;
+}
+
+export async function getMember(client: Client, args: GetMemberArgs): Promise<GetMemberRow | null> {
+    const result = await client.query({
+        text: getMemberQuery,
+        values: [args.orgId, args.userId],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        userId: row[0],
+        role: row[1],
+        email: row[2],
+        name: row[3]
+    };
+}
+
+export const updateMemberRoleQuery = `-- name: UpdateMemberRole :exec
+UPDATE memberships SET role = $3 WHERE org_id = $1 AND user_id = $2`;
+
+export interface UpdateMemberRoleArgs {
+    orgId: string;
+    userId: string;
+    role: string;
+}
+
+export async function updateMemberRole(client: Client, args: UpdateMemberRoleArgs): Promise<void> {
+    await client.query({
+        text: updateMemberRoleQuery,
+        values: [args.orgId, args.userId, args.role],
+        rowMode: "array"
+    });
+}
+
+export const deleteMembershipQuery = `-- name: DeleteMembership :exec
+DELETE FROM memberships WHERE org_id = $1 AND user_id = $2`;
+
+export interface DeleteMembershipArgs {
+    orgId: string;
+    userId: string;
+}
+
+export async function deleteMembership(client: Client, args: DeleteMembershipArgs): Promise<void> {
+    await client.query({
+        text: deleteMembershipQuery,
+        values: [args.orgId, args.userId],
+        rowMode: "array"
+    });
+}
+
+export const countOwnersQuery = `-- name: CountOwners :one
+SELECT count(*)::int AS n
+FROM memberships
+WHERE org_id = $1 AND role = 'owner'`;
+
+export interface CountOwnersArgs {
+    orgId: string;
+}
+
+export interface CountOwnersRow {
+    n: number;
+}
+
+export async function countOwners(client: Client, args: CountOwnersArgs): Promise<CountOwnersRow | null> {
+    const result = await client.query({
+        text: countOwnersQuery,
+        values: [args.orgId],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        n: row[0]
+    };
+}
+

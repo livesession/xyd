@@ -100,6 +100,12 @@ export interface RegisterApiInput {
    * Explicit version label; defaults to the spec's info.version.
    */
   version?: string;
+
+  /**
+   * The project the API belongs to. Set server-side by the platform gateway
+   * from the caller's current project; defaults to the seeded project.
+   */
+  projectId?: string;
 }
 
 /**

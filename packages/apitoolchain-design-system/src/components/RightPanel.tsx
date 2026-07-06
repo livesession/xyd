@@ -42,15 +42,32 @@ export function RightPanel({
 
 export interface RightPanelSectionProps {
   title: string;
+  /**
+   * An optional control pinned to the right edge of the title. It stays hidden
+   * until the section is hovered (or something inside it is focused) — a quiet
+   * home for overflow / "more" actions that shouldn't clutter the heading.
+   */
+  action?: ReactNode;
   children: ReactNode;
 }
 
 /** A labelled group inside a {@link RightPanel} (small uppercase heading). */
-export function RightPanelSection({ title, children }: RightPanelSectionProps) {
+export function RightPanelSection({
+  title,
+  action,
+  children,
+}: RightPanelSectionProps) {
   return (
-    <div className="flex flex-col gap-2">
-      <div className="text-xs font-semibold uppercase tracking-wide text-subtle">
-        {title}
+    <div className="group/panel-section flex flex-col gap-2">
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-xs font-semibold uppercase tracking-wide text-subtle">
+          {title}
+        </div>
+        {action && (
+          <div className="-my-1 opacity-0 transition-opacity focus-within:opacity-100 group-hover/panel-section:opacity-100">
+            {action}
+          </div>
+        )}
       </div>
       {children}
     </div>

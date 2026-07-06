@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
 import { Icon } from "../icons";
+import { Badge } from "./Badge";
 import { ToggleTile } from "./ToggleTile";
 
 const meta: Meta<typeof ToggleTile> = {
@@ -17,6 +18,20 @@ export const Default: Story = {
   render: (args) => (
     <div className="w-64">
       <ToggleTile {...args} leading={<Icon icon="sdk" size={16} />} />
+    </div>
+  ),
+};
+
+/** `trailing` swaps the toggle for any node — e.g. a "Soon" badge on a disabled tile. */
+export const ComingSoon: Story = {
+  render: () => (
+    <div className="w-64">
+      <ToggleTile
+        disabled
+        label="Rust"
+        leading={<Icon icon="sdk" size={16} />}
+        trailing={<Badge tone="neutral">Soon</Badge>}
+      />
     </div>
   ),
 };

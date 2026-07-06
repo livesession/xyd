@@ -1,8 +1,10 @@
 import {
+  Badge,
   Button,
   Callout,
   Field,
   Input,
+  LangIcon,
   Modal,
   OptionCard,
   RadioButtonCard,
@@ -12,7 +14,8 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useFetcher, useNavigate } from "react-router";
 import type { RegistryEntry, SdkLanguage } from "~/data";
-import { SDK_LANGS, SdkLangIcon } from "./SdkLangIcon";
+import { RegisterApiModal } from "./RegisterApiModal";
+import { COMING_SOON_LANGS, SDK_LANGS, SdkLangIcon } from "./SdkLangIcon";
 
 type GenerateResult =
   | { ok: true; sdkId: string }
@@ -78,7 +81,16 @@ export function GenerateSdkModal({
 }) {
   const fetcher = useFetcher();
   const navigate = useNavigate();
-  const openapi = apis.filter((a) => a.format === "openapi");
+  // Freshly-imported APIs (from the nested import flow) are merged in so they're
+  // selectable immediately, before the parent loader revalidates.
+  const [imported, setImported] = useState<RegistryEntry[]>([]);
+  const [importOpen, setImportOpen] = useState(false);
+  const openapi = [
+    ...imported.filter(
+      (e) => e.format === "openapi" && !apis.some((a) => a.id === e.id),
+    ),
+    ...apis.filter((a) => a.format === "openapi"),
+  ];
   const locked = lockedApiId
     ? openapi.find((a) => a.id === lockedApiId)
     : undefined;
@@ -106,6 +118,8 @@ export function GenerateSdkModal({
       setNameTouched(false);
       setLangs(new Set());
       setDirty(false);
+      setImportOpen(false);
+      setImported([]);
     }
   }, [open, locked]);
 
@@ -190,130 +204,163 @@ export function GenerateSdkModal({
     );
 
   return (
-    <Modal
-      open={open}
-      onClose={onClose}
-      size="sm"
-      title="Generate SDKs"
-      footer={footer}
-    >
-      {step === 1 && (
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-ink">Select an API</span>
-            <div className="ml-auto flex items-center gap-1.5">
-              <Search
-                value={search}
-                onChange={setSearch}
-                placeholder="Search…"
-                className="w-40"
-              />
-              <Button
-                variant="ghost"
-                icon="registry"
-                onClick={() => {
-                  onClose();
-                  navigate("/registry");
-                }}
-              >
-                Import API
-              </Button>
+    <>
+      <Modal
+        open={open}
+        onClose={onClose}
+        size="sm"
+        title="Generate SDKs"
+        footer={footer}
+      >
+        {step === 1 && (
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium text-ink">
+                Select an API
+              </span>
+              <div className="ml-auto flex items-center gap-1.5">
+                <Search
+                  value={search}
+                  onChange={setSearch}
+                  placeholder="Search…"
+                  className="w-40"
+                />
+                <Button
+                  variant="ghost"
+                  icon="registry"
+                  onClick={() => setImportOpen(true)}
+                >
+                  Import API
+                </Button>
+              </div>
+            </div>
+            <div className="flex max-h-72 flex-col gap-2 overflow-y-auto">
+              {filtered.length === 0 ? (
+                <div className="rounded-control border border-line px-3 py-8 text-center text-sm text-subtle">
+                  No OpenAPI specs found. Import one to generate SDKs.
+                </div>
+              ) : (
+                filtered.map((a) => (
+                  <RadioButtonCard
+                    key={a.id}
+                    selected={a.id === apiId}
+                    onSelect={() => setApiId(a.id)}
+                    title={a.name}
+                    description={`${a.namespace}/${a.id}`}
+                  />
+                ))
+              )}
             </div>
           </div>
-          <div className="flex max-h-72 flex-col gap-2 overflow-y-auto">
-            {filtered.length === 0 ? (
-              <div className="rounded-control border border-line px-3 py-8 text-center text-sm text-subtle">
-                No OpenAPI specs found. Import one to generate SDKs.
-              </div>
-            ) : (
-              filtered.map((a) => (
-                <RadioButtonCard
-                  key={a.id}
-                  selected={a.id === apiId}
-                  onSelect={() => setApiId(a.id)}
-                  title={a.name}
-                  description={`${a.namespace}/${a.id}`}
+        )}
+
+        {step === 2 && selected && (
+          <div className="flex flex-col">
+            <ApiChip
+              api={selected}
+              onChange={locked ? undefined : () => setStep(1)}
+            />
+            <div className="flex flex-col gap-2">
+              <span className="text-sm font-medium text-ink">
+                How do you want to start?
+              </span>
+              <div className="grid grid-cols-2 gap-2">
+                <OptionCard
+                  title="Start fresh"
+                  description="Pick the languages to generate."
+                  media={
+                    <>
+                      <SdkLangIcon language="node" />
+                      <SdkLangIcon language="python" />
+                      <SdkLangIcon language="go" />
+                    </>
+                  }
+                  onClick={() => setStep(3)}
                 />
-              ))
+                <OptionCard
+                  title="Import config"
+                  description="Bring an SDK config. Coming soon."
+                  media={<LockGlyph />}
+                  disabled
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 3 && selected && (
+          <div className="flex flex-col">
+            <ApiChip
+              api={selected}
+              onChange={locked ? undefined : () => setStep(1)}
+            />
+            <Field label="SDK name">
+              <Input
+                value={sdkName}
+                onChange={(v) => {
+                  setNameTouched(true);
+                  setName(v);
+                }}
+                placeholder={`${selected.name} SDK`}
+              />
+            </Field>
+            <div className="mt-4 flex flex-col gap-2">
+              <span className="text-sm font-medium text-ink">
+                Select SDK languages
+              </span>
+              <div className="grid grid-cols-2 gap-2">
+                {SDK_LANGS.map((l) => (
+                  <ToggleTile
+                    key={l.value}
+                    checked={langs.has(l.value)}
+                    onChange={() => toggleLang(l.value)}
+                    leading={<SdkLangIcon language={l.value} />}
+                    label={l.label}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="mt-4 flex flex-col gap-2">
+              <span className="text-sm font-medium text-ink">Coming soon</span>
+              <div className="grid grid-cols-2 gap-2">
+                {COMING_SOON_LANGS.map((l) => (
+                  <ToggleTile
+                    key={l.icon}
+                    disabled
+                    leading={
+                      <LangIcon name={l.icon} className="size-5 shrink-0" />
+                    }
+                    label={l.label}
+                    trailing={<Badge tone="neutral">Soon</Badge>}
+                  />
+                ))}
+              </div>
+            </div>
+            {error && (
+              <div className="mt-4">
+                <Callout tone="error">{error}</Callout>
+              </div>
             )}
           </div>
-        </div>
-      )}
+        )}
+      </Modal>
 
-      {step === 2 && selected && (
-        <div className="flex flex-col">
-          <ApiChip
-            api={selected}
-            onChange={locked ? undefined : () => setStep(1)}
-          />
-          <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium text-ink">
-              How do you want to start?
-            </span>
-            <div className="grid grid-cols-2 gap-2">
-              <OptionCard
-                title="Start fresh"
-                description="Pick the languages to generate."
-                media={
-                  <>
-                    <SdkLangIcon language="node" />
-                    <SdkLangIcon language="python" />
-                    <SdkLangIcon language="go" />
-                  </>
-                }
-                onClick={() => setStep(3)}
-              />
-              <OptionCard
-                title="Import config"
-                description="Bring an SDK config. Coming soon."
-                media={<LockGlyph />}
-                disabled
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {step === 3 && selected && (
-        <div className="flex flex-col">
-          <ApiChip
-            api={selected}
-            onChange={locked ? undefined : () => setStep(1)}
-          />
-          <Field label="SDK name">
-            <Input
-              value={sdkName}
-              onChange={(v) => {
-                setNameTouched(true);
-                setName(v);
-              }}
-              placeholder={`${selected.name} SDK`}
-            />
-          </Field>
-          <div className="mt-4 flex flex-col gap-2">
-            <span className="text-sm font-medium text-ink">
-              Select SDK languages
-            </span>
-            <div className="grid grid-cols-2 gap-2">
-              {SDK_LANGS.map((l) => (
-                <ToggleTile
-                  key={l.value}
-                  checked={langs.has(l.value)}
-                  onChange={() => toggleLang(l.value)}
-                  leading={<SdkLangIcon language={l.value} />}
-                  label={l.label}
-                />
-              ))}
-            </div>
-          </div>
-          {error && (
-            <div className="mt-4">
-              <Callout tone="error">{error}</Callout>
-            </div>
-          )}
-        </div>
-      )}
-    </Modal>
+      {/* Nested import flow: import an API, then resume here with it selected. */}
+      <RegisterApiModal
+        open={importOpen}
+        onClose={() => setImportOpen(false)}
+        namespaces={[...new Set(apis.map((a) => a.namespace))]}
+        onImported={(api) => {
+          setImportOpen(false);
+          setImported((prev) => [api, ...prev]);
+          // Imported an OpenAPI spec → choose it and move to the next step.
+          if (api.format === "openapi") {
+            setApiId(api.id);
+            setStep(2);
+          }
+        }}
+      />
+    </>
   );
 }
 

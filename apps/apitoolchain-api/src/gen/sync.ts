@@ -51,8 +51,9 @@ async function collectSdkFiles(targetId: string): Promise<GpFile[]> {
 export async function runGitSync(opts: {
   connectionId: string;
   jobId: string;
+  projectId: string;
 }): Promise<void> {
-  const { connectionId, jobId } = opts;
+  const { connectionId, jobId, projectId } = opts;
   try {
     const conn = await gitQ.getRepoConnection(pool, { id: connectionId });
     if (!conn) throw new Error("connection not found");
@@ -92,6 +93,7 @@ export async function runGitSync(opts: {
         : `${res.commit.slice(0, 7)} on ${res.branch}`,
       source: "git",
       apiId: conn.targetKind === "spec" ? conn.targetId : null,
+      projectId,
     });
   } catch (e) {
     const message = (e as Error).message;
@@ -111,6 +113,7 @@ export async function runGitSync(opts: {
       body: message,
       source: "git",
       apiId: null,
+      projectId,
     });
   }
 }

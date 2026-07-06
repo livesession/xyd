@@ -1,0 +1,35 @@
+{
+  "name": "@apitoolchain/storybook-federation",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Single Storybook that federates the apitoolchain design systems (aggregates their co-located stories into one build).",
+  "scripts": {
+    "dev": "storybook dev -p 6006",
+    "build": "storybook build",
+    "typecheck": "tsc --noEmit",
+    "format": "bunx biome check --write ."
+  },
+  "dependencies": {
+    "@apitoolchain/auth-design-system": "file:../../packages/apitoolchain-auth-design-system",
+    "@apitoolchain/design-system": "file:../../packages/apitoolchain-design-system"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.2",
+    "@storybook/addon-essentials": "^8.4.7",
+    "@storybook/addon-interactions": "^8.4.7",
+    "@storybook/blocks": "^8.4.7",
+    "@storybook/react": "^8.4.7",
+    "@storybook/react-vite": "^8.4.7",
+    "@storybook/test": "^8.4.7",
+    "@tailwindcss/vite": "^4.3.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "storybook": "^8.4.7",
+    "tailwindcss": "^4.3.2",
+    "typescript": "^6.0.3",
+    "vite": "^6.3.6"
+  }
+}

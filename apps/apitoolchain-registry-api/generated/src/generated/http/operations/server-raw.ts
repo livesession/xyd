@@ -25,10 +25,17 @@ export async function apis_list(
   __ctx_2: HttpContext,
   __operations_4: Apis,
 ): Promise<void> {
+  const __queryParams_5 = new URLSearchParams(
+    __ctx_2.request.url!.split("?", 2)[1] ?? "",
+  );
+
+  const projectId = __queryParams_5.get("projectId") ?? undefined;
   let __result_3: RegistryEntryCore[];
 
   try {
-    __result_3 = await __operations_4.list(__ctx_2);
+    __result_3 = await __operations_4.list(__ctx_2, {
+      projectId: projectId === undefined ? undefined : projectId,
+    });
   } catch (e) {
     if (__isHttpResponder_0(e)) {
       return e[__httpResponderSymbol_1](__ctx_2);

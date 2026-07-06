@@ -7,6 +7,9 @@ export const config = {
   registryApiUrl: process.env.REGISTRY_API_URL ?? "http://localhost:8787",
   gitProviderApiUrl: process.env.GITPROVIDER_API_URL ?? "http://localhost:8790",
   artifactUrlTtlSeconds: Number(process.env.ARTIFACT_URL_TTL_SECONDS ?? 900),
+  /** Public origin git providers POST release-PR webhooks to (empty → manual
+   * "Publish" only). The dev plugin sets it to a host.docker.internal URL. */
+  platformPublicUrl: process.env.PLATFORM_PUBLIC_URL ?? "",
   /** Local Gitea provider to auto-register at seed time (set by the dev plugin). */
   gitea: {
     url: process.env.GITEA_URL ?? "",

@@ -15,9 +15,13 @@ import {
   Notifications,
   Overview,
   Usage,
+  Auth,
+  Projects,
   Context,
+  Members,
   GitProviders,
   RepoConnections,
+  Releases,
 } from "../models/all/platform-api.js";
 
 import {
@@ -48,9 +52,13 @@ export function createPlatformApiRouter(
   notifications: Notifications,
   overview: Overview,
   usage: Usage,
+  auth: Auth,
+  projects: Projects,
   context: Context,
+  members: Members,
   gitProviders: GitProviders,
   repoConnections: RepoConnections,
+  releases: Releases,
   options: RouterOptions<{
     apis: Apis<HttpContext>;
     sdks: Sdks<HttpContext>;
@@ -60,12 +68,16 @@ export function createPlatformApiRouter(
     notifications: Notifications<HttpContext>;
     overview: Overview<HttpContext>;
     usage: Usage<HttpContext>;
+    auth: Auth<HttpContext>;
+    projects: Projects<HttpContext>;
     context: Context<HttpContext>;
+    members: Members<HttpContext>;
     gitProviders: GitProviders<HttpContext>;
     repoConnections: RepoConnections<HttpContext>;
+    releases: Releases<HttpContext>;
   }> = {},
 ): PlatformApiRouter {
-  const __onRequestNotFound_150 =
+  const __onRequestNotFound_240 =
     options.onRequestNotFound ??
     ((ctx) => {
       ctx.response.statusCode = 404;
@@ -73,7 +85,7 @@ export function createPlatformApiRouter(
       ctx.response.end("Not Found");
     });
 
-  const __onInvalidRequest_151 =
+  const __onInvalidRequest_241 =
     options.onInvalidRequest ??
     ((ctx, route, error) => {
       ctx.response.statusCode = 400;
@@ -81,7 +93,7 @@ export function createPlatformApiRouter(
       ctx.response.end(JSON.stringify({ error }));
     });
 
-  const __onInternalError_152 =
+  const __onInternalError_242 =
     options.onInternalError ??
     ((ctx, error) => {
       ctx.response.statusCode = 500;
@@ -89,232 +101,358 @@ export function createPlatformApiRouter(
       ctx.response.end("Internal server error.");
     });
 
-  const __routePolicies_153 = options.routePolicies ?? {};
+  const __routePolicies_243 = options.routePolicies ?? {};
 
-  const __routeHandlers_154 = {
+  const __routeHandlers_244 = {
     apis_list: createPolicyChainForRoute(
       "apisListDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "apis",
       "list",
       serverRaw.apis_list,
     ),
     apis_read: createPolicyChainForRoute(
       "apisReadDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "apis",
       "read",
       serverRaw.apis_read,
     ),
     apis_register: createPolicyChainForRoute(
       "apisRegisterDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "apis",
       "register",
       serverRaw.apis_register,
     ),
     apis_set_dist_tag: createPolicyChainForRoute(
       "apisSetDistTagDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "apis",
       "setDistTag",
       serverRaw.apis_set_dist_tag,
     ),
     sdks_list: createPolicyChainForRoute(
       "sdksListDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "sdks",
       "list",
       serverRaw.sdks_list,
     ),
     sdks_read: createPolicyChainForRoute(
       "sdksReadDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "sdks",
       "read",
       serverRaw.sdks_read,
     ),
     sdks_create: createPolicyChainForRoute(
       "sdksCreateDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "sdks",
       "create",
       serverRaw.sdks_create,
     ),
     sdks_remove: createPolicyChainForRoute(
       "sdksRemoveDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "sdks",
       "remove",
       serverRaw.sdks_remove,
     ),
     sdks_list_targets: createPolicyChainForRoute(
       "sdksListTargetsDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "sdks",
       "listTargets",
       serverRaw.sdks_list_targets,
     ),
     sdks_add_target: createPolicyChainForRoute(
       "sdksAddTargetDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "sdks",
       "addTarget",
       serverRaw.sdks_add_target,
     ),
     sdk_targets_list: createPolicyChainForRoute(
       "sdkTargetsListDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "sdkTargets",
       "list",
       serverRaw.sdk_targets_list,
     ),
     sdk_targets_read: createPolicyChainForRoute(
       "sdkTargetsReadDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "sdkTargets",
       "read",
       serverRaw.sdk_targets_read,
     ),
     sdk_targets_remove: createPolicyChainForRoute(
       "sdkTargetsRemoveDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "sdkTargets",
       "remove",
       serverRaw.sdk_targets_remove,
     ),
     docs_projects_list: createPolicyChainForRoute(
       "docsProjectsListDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "docsProjects",
       "list",
       serverRaw.docs_projects_list,
     ),
     docs_projects_create: createPolicyChainForRoute(
       "docsProjectsCreateDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "docsProjects",
       "create",
       serverRaw.docs_projects_create,
     ),
     mcp_servers_list: createPolicyChainForRoute(
       "mcpServersListDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "mcpServers",
       "list",
       serverRaw.mcp_servers_list,
     ),
     mcp_servers_create: createPolicyChainForRoute(
       "mcpServersCreateDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "mcpServers",
       "create",
       serverRaw.mcp_servers_create,
     ),
     notifications_list: createPolicyChainForRoute(
       "notificationsListDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "notifications",
       "list",
       serverRaw.notifications_list,
     ),
     notifications_mark_read: createPolicyChainForRoute(
       "notificationsMarkReadDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "notifications",
       "markRead",
       serverRaw.notifications_mark_read,
     ),
     overview_stats: createPolicyChainForRoute(
       "overviewStatsDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "overview",
       "stats",
       serverRaw.overview_stats,
     ),
     usage_list: createPolicyChainForRoute(
       "usageListDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "usage",
       "list",
       serverRaw.usage_list,
     ),
+    auth_register: createPolicyChainForRoute(
+      "authRegisterDispatch",
+      __routePolicies_243,
+      "auth",
+      "register",
+      serverRaw.auth_register,
+    ),
+    auth_login: createPolicyChainForRoute(
+      "authLoginDispatch",
+      __routePolicies_243,
+      "auth",
+      "login",
+      serverRaw.auth_login,
+    ),
+    auth_logout: createPolicyChainForRoute(
+      "authLogoutDispatch",
+      __routePolicies_243,
+      "auth",
+      "logout",
+      serverRaw.auth_logout,
+    ),
+    auth_me: createPolicyChainForRoute(
+      "authMeDispatch",
+      __routePolicies_243,
+      "auth",
+      "me",
+      serverRaw.auth_me,
+    ),
+    projects_list: createPolicyChainForRoute(
+      "projectsListDispatch",
+      __routePolicies_243,
+      "projects",
+      "list",
+      serverRaw.projects_list,
+    ),
+    projects_create: createPolicyChainForRoute(
+      "projectsCreateDispatch",
+      __routePolicies_243,
+      "projects",
+      "create",
+      serverRaw.projects_create,
+    ),
+    projects_update: createPolicyChainForRoute(
+      "projectsUpdateDispatch",
+      __routePolicies_243,
+      "projects",
+      "update",
+      serverRaw.projects_update,
+    ),
+    projects_remove: createPolicyChainForRoute(
+      "projectsRemoveDispatch",
+      __routePolicies_243,
+      "projects",
+      "remove",
+      serverRaw.projects_remove,
+    ),
     context_read: createPolicyChainForRoute(
       "contextReadDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "context",
       "read",
       serverRaw.context_read,
     ),
     context_update: createPolicyChainForRoute(
       "contextUpdateDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "context",
       "update",
       serverRaw.context_update,
     ),
+    context_select_project: createPolicyChainForRoute(
+      "contextSelectProjectDispatch",
+      __routePolicies_243,
+      "context",
+      "selectProject",
+      serverRaw.context_select_project,
+    ),
+    members_list: createPolicyChainForRoute(
+      "membersListDispatch",
+      __routePolicies_243,
+      "members",
+      "list",
+      serverRaw.members_list,
+    ),
+    members_invite: createPolicyChainForRoute(
+      "membersInviteDispatch",
+      __routePolicies_243,
+      "members",
+      "invite",
+      serverRaw.members_invite,
+    ),
+    members_remove: createPolicyChainForRoute(
+      "membersRemoveDispatch",
+      __routePolicies_243,
+      "members",
+      "remove",
+      serverRaw.members_remove,
+    ),
+    members_update_role: createPolicyChainForRoute(
+      "membersUpdateRoleDispatch",
+      __routePolicies_243,
+      "members",
+      "updateRole",
+      serverRaw.members_update_role,
+    ),
     git_providers_list: createPolicyChainForRoute(
       "gitProvidersListDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "gitProviders",
       "list",
       serverRaw.git_providers_list,
     ),
     git_providers_create: createPolicyChainForRoute(
       "gitProvidersCreateDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "gitProviders",
       "create",
       serverRaw.git_providers_create,
     ),
     git_providers_remove: createPolicyChainForRoute(
       "gitProvidersRemoveDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "gitProviders",
       "remove",
       serverRaw.git_providers_remove,
     ),
     git_providers_list_repos: createPolicyChainForRoute(
       "gitProvidersListReposDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "gitProviders",
       "listRepos",
       serverRaw.git_providers_list_repos,
     ),
     git_providers_list_branches: createPolicyChainForRoute(
       "gitProvidersListBranchesDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "gitProviders",
       "listBranches",
       serverRaw.git_providers_list_branches,
     ),
     repo_connections_list: createPolicyChainForRoute(
       "repoConnectionsListDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "repoConnections",
       "list",
       serverRaw.repo_connections_list,
     ),
     repo_connections_create: createPolicyChainForRoute(
       "repoConnectionsCreateDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "repoConnections",
       "create",
       serverRaw.repo_connections_create,
     ),
     repo_connections_remove: createPolicyChainForRoute(
       "repoConnectionsRemoveDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "repoConnections",
       "remove",
       serverRaw.repo_connections_remove,
     ),
     repo_connections_sync: createPolicyChainForRoute(
       "repoConnectionsSyncDispatch",
-      __routePolicies_153,
+      __routePolicies_243,
       "repoConnections",
       "sync",
       serverRaw.repo_connections_sync,
+    ),
+    repo_connections_set_release_config: createPolicyChainForRoute(
+      "repoConnectionsSetReleaseConfigDispatch",
+      __routePolicies_243,
+      "repoConnections",
+      "setReleaseConfig",
+      serverRaw.repo_connections_set_release_config,
+    ),
+    releases_list: createPolicyChainForRoute(
+      "releasesListDispatch",
+      __routePolicies_243,
+      "releases",
+      "list",
+      serverRaw.releases_list,
+    ),
+    releases_read: createPolicyChainForRoute(
+      "releasesReadDispatch",
+      __routePolicies_243,
+      "releases",
+      "read",
+      serverRaw.releases_read,
+    ),
+    releases_prepare: createPolicyChainForRoute(
+      "releasesPrepareDispatch",
+      __routePolicies_243,
+      "releases",
+      "prepare",
+      serverRaw.releases_prepare,
+    ),
+    releases_publish: createPolicyChainForRoute(
+      "releasesPublishDispatch",
+      __routePolicies_243,
+      "releases",
+      "publish",
+      serverRaw.releases_publish,
     ),
   } as const;
 
@@ -331,52 +469,6 @@ export function createPlatformApiRouter(
         path = path.slice(1);
         if (path.length === 0) {
           return ctx.errorHandlers.onRequestNotFound(ctx);
-        } else if (path.startsWith("apis")) {
-          path = path.slice(4);
-          if (path.length === 0) {
-            switch (request.method) {
-              case "GET":
-                return __routeHandlers_154.apis_list(ctx, apis);
-              case "POST":
-                return __routeHandlers_154.apis_register(ctx, apis);
-              default:
-                return ctx.errorHandlers.onRequestNotFound(ctx);
-            }
-          } else if (path.startsWith("/")) {
-            path = path.slice(1);
-            if (path.length === 0) {
-              return ctx.errorHandlers.onRequestNotFound(ctx);
-            } else {
-              let __api_id_idx = path.indexOf("/");
-              __api_id_idx = __api_id_idx === -1 ? path.length : __api_id_idx;
-              const apiId = path.slice(0, __api_id_idx);
-              path = path.slice(__api_id_idx);
-              if (path.length === 0) {
-                switch (request.method) {
-                  case "GET":
-                    return __routeHandlers_154.apis_read(ctx, apis, apiId);
-                  default:
-                    return ctx.errorHandlers.onRequestNotFound(ctx);
-                }
-              } else if (path.startsWith("/dist-tags")) {
-                path = path.slice(10);
-                if (path.length === 0) {
-                  switch (request.method) {
-                    case "POST":
-                      return __routeHandlers_154.apis_set_dist_tag(
-                        ctx,
-                        apis,
-                        apiId,
-                      );
-                    default:
-                      return ctx.errorHandlers.onRequestNotFound(ctx);
-                  }
-                } else {
-                  return ctx.errorHandlers.onRequestNotFound(ctx);
-                }
-              }
-            }
-          }
         } else if (path.startsWith("sdk")) {
           path = path.slice(3);
           if (path.length === 0) {
@@ -386,9 +478,9 @@ export function createPlatformApiRouter(
             if (path.length === 0) {
               switch (request.method) {
                 case "GET":
-                  return __routeHandlers_154.sdks_list(ctx, sdks);
+                  return __routeHandlers_244.sdks_list(ctx, sdks);
                 case "POST":
-                  return __routeHandlers_154.sdks_create(ctx, sdks);
+                  return __routeHandlers_244.sdks_create(ctx, sdks);
                 default:
                   return ctx.errorHandlers.onRequestNotFound(ctx);
               }
@@ -406,9 +498,9 @@ export function createPlatformApiRouter(
                 if (path.length === 0) {
                   switch (request.method) {
                     case "GET":
-                      return __routeHandlers_154.sdks_read(ctx, sdks, id);
+                      return __routeHandlers_244.sdks_read(ctx, sdks, id);
                     case "DELETE":
-                      return __routeHandlers_154.sdks_remove(ctx, sdks, id);
+                      return __routeHandlers_244.sdks_remove(ctx, sdks, id);
                     default:
                       return ctx.errorHandlers.onRequestNotFound(ctx);
                   }
@@ -417,13 +509,13 @@ export function createPlatformApiRouter(
                   if (path.length === 0) {
                     switch (request.method) {
                       case "GET":
-                        return __routeHandlers_154.sdks_list_targets(
+                        return __routeHandlers_244.sdks_list_targets(
                           ctx,
                           sdks,
                           sdkId,
                         );
                       case "POST":
-                        return __routeHandlers_154.sdks_add_target(
+                        return __routeHandlers_244.sdks_add_target(
                           ctx,
                           sdks,
                           sdkId,
@@ -442,7 +534,7 @@ export function createPlatformApiRouter(
             if (path.length === 0) {
               switch (request.method) {
                 case "GET":
-                  return __routeHandlers_154.sdk_targets_list(ctx, sdkTargets);
+                  return __routeHandlers_244.sdk_targets_list(ctx, sdkTargets);
                 default:
                   return ctx.errorHandlers.onRequestNotFound(ctx);
               }
@@ -458,13 +550,13 @@ export function createPlatformApiRouter(
                 if (path.length === 0) {
                   switch (request.method) {
                     case "GET":
-                      return __routeHandlers_154.sdk_targets_read(
+                      return __routeHandlers_244.sdk_targets_read(
                         ctx,
                         sdkTargets,
                         id,
                       );
                     case "DELETE":
-                      return __routeHandlers_154.sdk_targets_remove(
+                      return __routeHandlers_244.sdk_targets_remove(
                         ctx,
                         sdkTargets,
                         id,
@@ -483,29 +575,15 @@ export function createPlatformApiRouter(
           if (path.length === 0) {
             switch (request.method) {
               case "GET":
-                return __routeHandlers_154.docs_projects_list(
+                return __routeHandlers_244.docs_projects_list(
                   ctx,
                   docsProjects,
                 );
               case "POST":
-                return __routeHandlers_154.docs_projects_create(
+                return __routeHandlers_244.docs_projects_create(
                   ctx,
                   docsProjects,
                 );
-              default:
-                return ctx.errorHandlers.onRequestNotFound(ctx);
-            }
-          } else {
-            return ctx.errorHandlers.onRequestNotFound(ctx);
-          }
-        } else if (path.startsWith("mcp-servers")) {
-          path = path.slice(11);
-          if (path.length === 0) {
-            switch (request.method) {
-              case "GET":
-                return __routeHandlers_154.mcp_servers_list(ctx, mcpServers);
-              case "POST":
-                return __routeHandlers_154.mcp_servers_create(ctx, mcpServers);
               default:
                 return ctx.errorHandlers.onRequestNotFound(ctx);
             }
@@ -517,7 +595,7 @@ export function createPlatformApiRouter(
           if (path.length === 0) {
             switch (request.method) {
               case "GET":
-                return __routeHandlers_154.notifications_list(
+                return __routeHandlers_244.notifications_list(
                   ctx,
                   notifications,
                 );
@@ -529,7 +607,7 @@ export function createPlatformApiRouter(
             if (path.length === 0) {
               switch (request.method) {
                 case "POST":
-                  return __routeHandlers_154.notifications_mark_read(
+                  return __routeHandlers_244.notifications_mark_read(
                     ctx,
                     notifications,
                   );
@@ -545,7 +623,7 @@ export function createPlatformApiRouter(
           if (path.length === 0) {
             switch (request.method) {
               case "GET":
-                return __routeHandlers_154.overview_stats(ctx, overview);
+                return __routeHandlers_244.overview_stats(ctx, overview);
               default:
                 return ctx.errorHandlers.onRequestNotFound(ctx);
             }
@@ -557,38 +635,275 @@ export function createPlatformApiRouter(
           if (path.length === 0) {
             switch (request.method) {
               case "GET":
-                return __routeHandlers_154.usage_list(ctx, usage);
+                return __routeHandlers_244.usage_list(ctx, usage);
               default:
                 return ctx.errorHandlers.onRequestNotFound(ctx);
             }
           } else {
             return ctx.errorHandlers.onRequestNotFound(ctx);
+          }
+        } else if (path.startsWith("a")) {
+          path = path.slice(1);
+          if (path.length === 0) {
+            return ctx.errorHandlers.onRequestNotFound(ctx);
+          } else if (path.startsWith("pis")) {
+            path = path.slice(3);
+            if (path.length === 0) {
+              switch (request.method) {
+                case "GET":
+                  return __routeHandlers_244.apis_list(ctx, apis);
+                case "POST":
+                  return __routeHandlers_244.apis_register(ctx, apis);
+                default:
+                  return ctx.errorHandlers.onRequestNotFound(ctx);
+              }
+            } else if (path.startsWith("/")) {
+              path = path.slice(1);
+              if (path.length === 0) {
+                return ctx.errorHandlers.onRequestNotFound(ctx);
+              } else {
+                let __api_id_idx = path.indexOf("/");
+                __api_id_idx = __api_id_idx === -1 ? path.length : __api_id_idx;
+                const apiId = path.slice(0, __api_id_idx);
+                path = path.slice(__api_id_idx);
+                if (path.length === 0) {
+                  switch (request.method) {
+                    case "GET":
+                      return __routeHandlers_244.apis_read(ctx, apis, apiId);
+                    default:
+                      return ctx.errorHandlers.onRequestNotFound(ctx);
+                  }
+                } else if (path.startsWith("/dist-tags")) {
+                  path = path.slice(10);
+                  if (path.length === 0) {
+                    switch (request.method) {
+                      case "POST":
+                        return __routeHandlers_244.apis_set_dist_tag(
+                          ctx,
+                          apis,
+                          apiId,
+                        );
+                      default:
+                        return ctx.errorHandlers.onRequestNotFound(ctx);
+                    }
+                  } else {
+                    return ctx.errorHandlers.onRequestNotFound(ctx);
+                  }
+                }
+              }
+            }
+          } else if (path.startsWith("uth/")) {
+            path = path.slice(4);
+            if (path.length === 0) {
+              return ctx.errorHandlers.onRequestNotFound(ctx);
+            } else if (path.startsWith("register")) {
+              path = path.slice(8);
+              if (path.length === 0) {
+                switch (request.method) {
+                  case "POST":
+                    return __routeHandlers_244.auth_register(ctx, auth);
+                  default:
+                    return ctx.errorHandlers.onRequestNotFound(ctx);
+                }
+              } else {
+                return ctx.errorHandlers.onRequestNotFound(ctx);
+              }
+            } else if (path.startsWith("log")) {
+              path = path.slice(3);
+              if (path.length === 0) {
+                return ctx.errorHandlers.onRequestNotFound(ctx);
+              } else if (path.startsWith("in")) {
+                path = path.slice(2);
+                if (path.length === 0) {
+                  switch (request.method) {
+                    case "POST":
+                      return __routeHandlers_244.auth_login(ctx, auth);
+                    default:
+                      return ctx.errorHandlers.onRequestNotFound(ctx);
+                  }
+                } else {
+                  return ctx.errorHandlers.onRequestNotFound(ctx);
+                }
+              } else if (path.startsWith("out")) {
+                path = path.slice(3);
+                if (path.length === 0) {
+                  switch (request.method) {
+                    case "POST":
+                      return __routeHandlers_244.auth_logout(ctx, auth);
+                    default:
+                      return ctx.errorHandlers.onRequestNotFound(ctx);
+                  }
+                } else {
+                  return ctx.errorHandlers.onRequestNotFound(ctx);
+                }
+              }
+            } else if (path.startsWith("me")) {
+              path = path.slice(2);
+              if (path.length === 0) {
+                switch (request.method) {
+                  case "GET":
+                    return __routeHandlers_244.auth_me(ctx, auth);
+                  default:
+                    return ctx.errorHandlers.onRequestNotFound(ctx);
+                }
+              } else {
+                return ctx.errorHandlers.onRequestNotFound(ctx);
+              }
+            }
+          }
+        } else if (path.startsWith("projects")) {
+          path = path.slice(8);
+          if (path.length === 0) {
+            switch (request.method) {
+              case "GET":
+                return __routeHandlers_244.projects_list(ctx, projects);
+              case "POST":
+                return __routeHandlers_244.projects_create(ctx, projects);
+              default:
+                return ctx.errorHandlers.onRequestNotFound(ctx);
+            }
+          } else if (path.startsWith("/")) {
+            path = path.slice(1);
+            if (path.length === 0) {
+              return ctx.errorHandlers.onRequestNotFound(ctx);
+            } else {
+              let __id_idx = path.indexOf("/");
+              __id_idx = __id_idx === -1 ? path.length : __id_idx;
+              const id = path.slice(0, __id_idx);
+              path = path.slice(__id_idx);
+              if (path.length === 0) {
+                switch (request.method) {
+                  case "PATCH":
+                    return __routeHandlers_244.projects_update(
+                      ctx,
+                      projects,
+                      id,
+                    );
+                  case "DELETE":
+                    return __routeHandlers_244.projects_remove(
+                      ctx,
+                      projects,
+                      id,
+                    );
+                  default:
+                    return ctx.errorHandlers.onRequestNotFound(ctx);
+                }
+              } else {
+                return ctx.errorHandlers.onRequestNotFound(ctx);
+              }
+            }
           }
         } else if (path.startsWith("context")) {
           path = path.slice(7);
           if (path.length === 0) {
             switch (request.method) {
               case "GET":
-                return __routeHandlers_154.context_read(ctx, context);
+                return __routeHandlers_244.context_read(ctx, context);
               case "PATCH":
-                return __routeHandlers_154.context_update(ctx, context);
+                return __routeHandlers_244.context_update(ctx, context);
               default:
                 return ctx.errorHandlers.onRequestNotFound(ctx);
             }
-          } else {
+          } else if (path.startsWith("/select")) {
+            path = path.slice(7);
+            if (path.length === 0) {
+              switch (request.method) {
+                case "POST":
+                  return __routeHandlers_244.context_select_project(
+                    ctx,
+                    context,
+                  );
+                default:
+                  return ctx.errorHandlers.onRequestNotFound(ctx);
+              }
+            } else {
+              return ctx.errorHandlers.onRequestNotFound(ctx);
+            }
+          }
+        } else if (path.startsWith("m")) {
+          path = path.slice(1);
+          if (path.length === 0) {
             return ctx.errorHandlers.onRequestNotFound(ctx);
+          } else if (path.startsWith("cp-servers")) {
+            path = path.slice(10);
+            if (path.length === 0) {
+              switch (request.method) {
+                case "GET":
+                  return __routeHandlers_244.mcp_servers_list(ctx, mcpServers);
+                case "POST":
+                  return __routeHandlers_244.mcp_servers_create(
+                    ctx,
+                    mcpServers,
+                  );
+                default:
+                  return ctx.errorHandlers.onRequestNotFound(ctx);
+              }
+            } else {
+              return ctx.errorHandlers.onRequestNotFound(ctx);
+            }
+          } else if (path.startsWith("embers")) {
+            path = path.slice(6);
+            if (path.length === 0) {
+              switch (request.method) {
+                case "GET":
+                  return __routeHandlers_244.members_list(ctx, members);
+                case "POST":
+                  return __routeHandlers_244.members_invite(ctx, members);
+                default:
+                  return ctx.errorHandlers.onRequestNotFound(ctx);
+              }
+            } else if (path.startsWith("/")) {
+              path = path.slice(1);
+              if (path.length === 0) {
+                return ctx.errorHandlers.onRequestNotFound(ctx);
+              } else {
+                let __user_id_idx = path.indexOf("/");
+                __user_id_idx =
+                  __user_id_idx === -1 ? path.length : __user_id_idx;
+                const userId = path.slice(0, __user_id_idx);
+                path = path.slice(__user_id_idx);
+                if (path.length === 0) {
+                  switch (request.method) {
+                    case "DELETE":
+                      return __routeHandlers_244.members_remove(
+                        ctx,
+                        members,
+                        userId,
+                      );
+                    default:
+                      return ctx.errorHandlers.onRequestNotFound(ctx);
+                  }
+                } else if (path.startsWith("/role")) {
+                  path = path.slice(5);
+                  if (path.length === 0) {
+                    switch (request.method) {
+                      case "PATCH":
+                        return __routeHandlers_244.members_update_role(
+                          ctx,
+                          members,
+                          userId,
+                        );
+                      default:
+                        return ctx.errorHandlers.onRequestNotFound(ctx);
+                    }
+                  } else {
+                    return ctx.errorHandlers.onRequestNotFound(ctx);
+                  }
+                }
+              }
+            }
           }
         } else if (path.startsWith("git-providers")) {
           path = path.slice(13);
           if (path.length === 0) {
             switch (request.method) {
               case "GET":
-                return __routeHandlers_154.git_providers_list(
+                return __routeHandlers_244.git_providers_list(
                   ctx,
                   gitProviders,
                 );
               case "POST":
-                return __routeHandlers_154.git_providers_create(
+                return __routeHandlers_244.git_providers_create(
                   ctx,
                   gitProviders,
                 );
@@ -607,7 +922,7 @@ export function createPlatformApiRouter(
               if (path.length === 0) {
                 switch (request.method) {
                   case "DELETE":
-                    return __routeHandlers_154.git_providers_remove(
+                    return __routeHandlers_244.git_providers_remove(
                       ctx,
                       gitProviders,
                       id,
@@ -624,7 +939,7 @@ export function createPlatformApiRouter(
                   if (path.length === 0) {
                     switch (request.method) {
                       case "GET":
-                        return __routeHandlers_154.git_providers_list_repos(
+                        return __routeHandlers_244.git_providers_list_repos(
                           ctx,
                           gitProviders,
                           id,
@@ -640,7 +955,7 @@ export function createPlatformApiRouter(
                   if (path.length === 0) {
                     switch (request.method) {
                       case "GET":
-                        return __routeHandlers_154.git_providers_list_branches(
+                        return __routeHandlers_244.git_providers_list_branches(
                           ctx,
                           gitProviders,
                           id,
@@ -655,49 +970,40 @@ export function createPlatformApiRouter(
               }
             }
           }
-        } else if (path.startsWith("repo-connections")) {
-          path = path.slice(16);
+        } else if (path.startsWith("re")) {
+          path = path.slice(2);
           if (path.length === 0) {
-            switch (request.method) {
-              case "GET":
-                return __routeHandlers_154.repo_connections_list(
-                  ctx,
-                  repoConnections,
-                );
-              case "POST":
-                return __routeHandlers_154.repo_connections_create(
-                  ctx,
-                  repoConnections,
-                );
-              default:
-                return ctx.errorHandlers.onRequestNotFound(ctx);
-            }
-          } else if (path.startsWith("/")) {
-            path = path.slice(1);
+            return ctx.errorHandlers.onRequestNotFound(ctx);
+          } else if (path.startsWith("po-connections")) {
+            path = path.slice(14);
             if (path.length === 0) {
-              return ctx.errorHandlers.onRequestNotFound(ctx);
-            } else {
-              let __id_idx = path.indexOf("/");
-              __id_idx = __id_idx === -1 ? path.length : __id_idx;
-              const id = path.slice(0, __id_idx);
-              path = path.slice(__id_idx);
+              switch (request.method) {
+                case "GET":
+                  return __routeHandlers_244.repo_connections_list(
+                    ctx,
+                    repoConnections,
+                  );
+                case "POST":
+                  return __routeHandlers_244.repo_connections_create(
+                    ctx,
+                    repoConnections,
+                  );
+                default:
+                  return ctx.errorHandlers.onRequestNotFound(ctx);
+              }
+            } else if (path.startsWith("/")) {
+              path = path.slice(1);
               if (path.length === 0) {
-                switch (request.method) {
-                  case "DELETE":
-                    return __routeHandlers_154.repo_connections_remove(
-                      ctx,
-                      repoConnections,
-                      id,
-                    );
-                  default:
-                    return ctx.errorHandlers.onRequestNotFound(ctx);
-                }
-              } else if (path.startsWith("/sync")) {
-                path = path.slice(5);
+                return ctx.errorHandlers.onRequestNotFound(ctx);
+              } else {
+                let __id_idx = path.indexOf("/");
+                __id_idx = __id_idx === -1 ? path.length : __id_idx;
+                const id = path.slice(0, __id_idx);
+                path = path.slice(__id_idx);
                 if (path.length === 0) {
                   switch (request.method) {
-                    case "POST":
-                      return __routeHandlers_154.repo_connections_sync(
+                    case "DELETE":
+                      return __routeHandlers_244.repo_connections_remove(
                         ctx,
                         repoConnections,
                         id,
@@ -705,8 +1011,106 @@ export function createPlatformApiRouter(
                     default:
                       return ctx.errorHandlers.onRequestNotFound(ctx);
                   }
+                } else if (path.startsWith("/")) {
+                  path = path.slice(1);
+                  if (path.length === 0) {
+                    return ctx.errorHandlers.onRequestNotFound(ctx);
+                  } else if (path.startsWith("sync")) {
+                    path = path.slice(4);
+                    if (path.length === 0) {
+                      switch (request.method) {
+                        case "POST":
+                          return __routeHandlers_244.repo_connections_sync(
+                            ctx,
+                            repoConnections,
+                            id,
+                          );
+                        default:
+                          return ctx.errorHandlers.onRequestNotFound(ctx);
+                      }
+                    } else {
+                      return ctx.errorHandlers.onRequestNotFound(ctx);
+                    }
+                  } else if (path.startsWith("release-config")) {
+                    path = path.slice(14);
+                    if (path.length === 0) {
+                      switch (request.method) {
+                        case "POST":
+                          return __routeHandlers_244.repo_connections_set_release_config(
+                            ctx,
+                            repoConnections,
+                            id,
+                          );
+                        default:
+                          return ctx.errorHandlers.onRequestNotFound(ctx);
+                      }
+                    } else {
+                      return ctx.errorHandlers.onRequestNotFound(ctx);
+                    }
+                  }
+                }
+              }
+            }
+          } else if (path.startsWith("leases")) {
+            path = path.slice(6);
+            if (path.length === 0) {
+              switch (request.method) {
+                case "GET":
+                  return __routeHandlers_244.releases_list(ctx, releases);
+                default:
+                  return ctx.errorHandlers.onRequestNotFound(ctx);
+              }
+            } else if (path.startsWith("/")) {
+              path = path.slice(1);
+              if (path.length === 0) {
+                return ctx.errorHandlers.onRequestNotFound(ctx);
+              } else if (path.startsWith("prepare")) {
+                path = path.slice(7);
+                if (path.length === 0) {
+                  switch (request.method) {
+                    case "POST":
+                      return __routeHandlers_244.releases_prepare(
+                        ctx,
+                        releases,
+                      );
+                    default:
+                      return ctx.errorHandlers.onRequestNotFound(ctx);
+                  }
                 } else {
                   return ctx.errorHandlers.onRequestNotFound(ctx);
+                }
+              } else {
+                let __id_idx = path.indexOf("/");
+                __id_idx = __id_idx === -1 ? path.length : __id_idx;
+                const id = path.slice(0, __id_idx);
+                path = path.slice(__id_idx);
+                if (path.length === 0) {
+                  switch (request.method) {
+                    case "GET":
+                      return __routeHandlers_244.releases_read(
+                        ctx,
+                        releases,
+                        id,
+                      );
+                    default:
+                      return ctx.errorHandlers.onRequestNotFound(ctx);
+                  }
+                } else if (path.startsWith("/publish")) {
+                  path = path.slice(8);
+                  if (path.length === 0) {
+                    switch (request.method) {
+                      case "POST":
+                        return __routeHandlers_244.releases_publish(
+                          ctx,
+                          releases,
+                          id,
+                        );
+                      default:
+                        return ctx.errorHandlers.onRequestNotFound(ctx);
+                    }
+                  } else {
+                    return ctx.errorHandlers.onRequestNotFound(ctx);
+                  }
                 }
               }
             }
@@ -718,16 +1122,16 @@ export function createPlatformApiRouter(
     },
   );
 
-  const __errorHandlers_155 = {
-    onRequestNotFound: __onRequestNotFound_150,
-    onInvalidRequest: __onInvalidRequest_151,
-    onInternalError: __onInternalError_152,
+  const __errorHandlers_245 = {
+    onRequestNotFound: __onRequestNotFound_240,
+    onInvalidRequest: __onInvalidRequest_241,
+    onInternalError: __onInternalError_242,
   };
   return {
     dispatch(request, response) {
-      const ctx = { request, response, errorHandlers: __errorHandlers_155 };
+      const ctx = { request, response, errorHandlers: __errorHandlers_245 };
       return dispatch(ctx, request, response).catch((e) =>
-        __onInternalError_152(ctx, e),
+        __onInternalError_242(ctx, e),
       );
     },
   };

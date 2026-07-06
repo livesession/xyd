@@ -71,16 +71,20 @@ export async function mcpCountsByApi(client: Client): Promise<McpCountsByApiRow[
 }
 
 export const countSdkTargetsQuery = `-- name: CountSdkTargets :one
-SELECT count(*)::int AS n FROM sdk_targets`;
+SELECT count(*)::int AS n FROM sdk_targets WHERE project_id = $1`;
+
+export interface CountSdkTargetsArgs {
+    projectId: string;
+}
 
 export interface CountSdkTargetsRow {
     n: number;
 }
 
-export async function countSdkTargets(client: Client): Promise<CountSdkTargetsRow | null> {
+export async function countSdkTargets(client: Client, args: CountSdkTargetsArgs): Promise<CountSdkTargetsRow | null> {
     const result = await client.query({
         text: countSdkTargetsQuery,
-        values: [],
+        values: [args.projectId],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {
@@ -93,16 +97,20 @@ export async function countSdkTargets(client: Client): Promise<CountSdkTargetsRo
 }
 
 export const countDocsProjectsQuery = `-- name: CountDocsProjects :one
-SELECT count(*)::int AS n FROM docs_projects`;
+SELECT count(*)::int AS n FROM docs_projects WHERE project_id = $1`;
+
+export interface CountDocsProjectsArgs {
+    projectId: string;
+}
 
 export interface CountDocsProjectsRow {
     n: number;
 }
 
-export async function countDocsProjects(client: Client): Promise<CountDocsProjectsRow | null> {
+export async function countDocsProjects(client: Client, args: CountDocsProjectsArgs): Promise<CountDocsProjectsRow | null> {
     const result = await client.query({
         text: countDocsProjectsQuery,
-        values: [],
+        values: [args.projectId],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {
@@ -115,16 +123,20 @@ export async function countDocsProjects(client: Client): Promise<CountDocsProjec
 }
 
 export const countMcpServersQuery = `-- name: CountMcpServers :one
-SELECT count(*)::int AS n FROM mcp_servers`;
+SELECT count(*)::int AS n FROM mcp_servers WHERE project_id = $1`;
+
+export interface CountMcpServersArgs {
+    projectId: string;
+}
 
 export interface CountMcpServersRow {
     n: number;
 }
 
-export async function countMcpServers(client: Client): Promise<CountMcpServersRow | null> {
+export async function countMcpServers(client: Client, args: CountMcpServersArgs): Promise<CountMcpServersRow | null> {
     const result = await client.query({
         text: countMcpServersQuery,
-        values: [],
+        values: [args.projectId],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {

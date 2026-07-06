@@ -1,0 +1,10 @@
+/**
+ * The federated Storybook stylesheet — the same Tailwind pipeline the app uses,
+ * so every package's stories render with the design-system utilities. It imports
+ * the shared theme tokens once and `@source`-scans each federated package's src
+ * (their component sources live outside this file's dir) for class names.
+ */
+@import "tailwindcss";
+@import "@apitoolchain/design-system/theme.css";
+@source "../../../packages/apitoolchain-design-system/src";
+@source "../../../packages/apitoolchain-auth-design-system/src";

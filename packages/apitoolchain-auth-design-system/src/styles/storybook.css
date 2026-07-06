@@ -1,0 +1,8 @@
+/**
+ * Storybook's stylesheet for the auth design system — the same Tailwind pipeline
+ * the app uses. It pulls the shared theme tokens from the base design system and
+ * `@source`-scans this package's component sources for class names.
+ */
+@import "tailwindcss";
+@import "@apitoolchain/design-system/theme.css";
+@source "../";

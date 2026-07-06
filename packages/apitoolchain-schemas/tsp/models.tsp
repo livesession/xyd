@@ -233,8 +233,38 @@ model Project {
 }
 
 model CurrentContext {
+  /** The signed-in account. */
+  user: User;
+
   org: Organization;
+
+  /** The caller's current project. */
   project: Project;
+
+  /** Every project in the current org (for the switcher). */
+  projects: Project[];
+}
+
+/** An authenticated account. The password hash never leaves the server. */
+model User {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: string;
+}
+
+/** Login/register response — the opaque session token + the user it belongs to. */
+model AuthSession {
+  token: string;
+  user: User;
+}
+
+/** A user's membership in the current org. */
+model Member {
+  userId: string;
+  email: string;
+  name: string;
+  role: string;
 }
 
 /** A connected git-provider account (the token lives server-side only). */
@@ -281,6 +311,53 @@ model RepoConnection {
   lastSyncedAt?: string;
   lastSyncStatus?: BuildStatus;
   lastSyncError?: string;
+
+  /** `push` = legacy direct-push sync; `release` = PR-based release pipeline. */
+  releaseMode?: string;
+
+  /** Open/force-update a release PR on every new spec version. */
+  autoRelease?: boolean;
+
+  /** PR target branch for release mode (distinct from `branch`). */
+  baseBranch?: string;
+
+  prerelease?: boolean;
+
+  /** SDK semver of the last merged release. */
+  lastReleasedVersion?: string;
+}
+
+/** A versioned release cycle for an SDK connection (the rolling PR + its state). */
+enum ReleaseState {
+  preparing,
+  pr_open,
+  merging,
+  released,
+  failed,
+  superseded,
+}
+
+model Release {
+  id: string;
+  connectionId: string;
+  state: ReleaseState;
+  baseSpecVersion: string;
+  headSpecVersion: string;
+  bumpType: string;
+  fromVersion: string;
+  toVersion: string;
+  changelog: string;
+  changeCount: int32;
+  breakingCount: int32;
+  headBranch: string;
+  baseBranch: string;
+  prNumber: int32;
+  prUrl: string;
+  tag: string;
+  releaseUrl: string;
+  error: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 // ── inputs (request bodies) ──
@@ -302,6 +379,10 @@ model RegisterApiInput {
 
   /** Explicit version label; defaults to the spec's info.version. */
   version?: string;
+
+  /** The project the API belongs to. Set server-side by the platform gateway
+   * from the caller's current project; defaults to the seeded project. */
+  projectId?: string;
 }
 
 /** Set (create or move) a dist-tag to point at an existing version. */
@@ -347,6 +428,38 @@ model UpdateContextInput {
   projectName?: string;
 }
 
+model RegisterInput {
+  email: string;
+  password: string;
+  name?: string;
+}
+
+model LoginInput {
+  email: string;
+  password: string;
+}
+
+model CreateProjectInput {
+  name: string;
+}
+
+model UpdateProjectInput {
+  name: string;
+}
+
+model SelectProjectInput {
+  projectId: string;
+}
+
+model InviteMemberInput {
+  email: string;
+  role?: string;
+}
+
+model UpdateMemberRoleInput {
+  role: string;
+}
+
 /** Connect a git provider (validated via the provider's whoami). */
 model ConnectGitProviderInput {
   kind: GitProviderKind;
@@ -376,4 +489,20 @@ model CreateRepoConnectionInput {
 
   branch?: string;
   prefix?: string;
+
+  releaseMode?: string;
+  autoRelease?: boolean;
+  baseBranch?: string;
+}
+
+model PrepareReleaseInput {
+  connectionId: string;
+  versionOverride?: string;
+}
+
+model SetReleaseConfigInput {
+  releaseMode: string;
+  autoRelease: boolean;
+  baseBranch?: string;
+  prerelease?: boolean;
 }
