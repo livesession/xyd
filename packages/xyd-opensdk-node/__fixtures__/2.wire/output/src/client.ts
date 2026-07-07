@@ -6,7 +6,7 @@ import { Files } from './resources/files';
 import { Tokens } from './resources/tokens';
 
 /** The Wire Kitchen API client. */
-export class Client extends APIClient {
+export class WireKitchen extends APIClient {
   readonly files: Files;
   readonly tokens: Tokens;
 

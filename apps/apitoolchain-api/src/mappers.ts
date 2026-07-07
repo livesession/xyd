@@ -11,7 +11,10 @@ import type {
   Notification,
   NotificationSeverity,
   NotificationSource,
+  PackageRegistry,
+  PackageRegistryKind,
   Project,
+  RegistryConnection,
   RegistryEntry,
   Release,
   ReleaseState,
@@ -268,6 +271,59 @@ export function toRepoConnection(r: RepoConnectionRow): RepoConnection {
     baseBranch: r.baseBranch || undefined,
     prerelease: r.prerelease,
     lastReleasedVersion: r.lastReleasedVersion || undefined,
+  };
+}
+
+type PackageRegistryRow = {
+  id: string;
+  kind: string;
+  name: string;
+  url: string;
+  connectedAs: string;
+  createdAt: Date;
+};
+type RegistryConnectionRow = {
+  id: string;
+  registryId: string;
+  targetId: string;
+  language: string;
+  packageName: string;
+  autoPublish: boolean;
+  lastPublishedVersion: string;
+  lastPublishedAt: Date | null;
+  lastPublishStatus: string;
+  lastPublishError: string;
+};
+
+// The token column is deliberately NOT part of PackageRegistryRow — it never
+// leaves the server.
+export function toPackageRegistry(r: PackageRegistryRow): PackageRegistry {
+  return {
+    id: r.id,
+    kind: r.kind as PackageRegistryKind,
+    name: r.name,
+    url: r.url,
+    connectedAs: r.connectedAs,
+    createdAt: r.createdAt.toISOString(),
+  };
+}
+
+export function toRegistryConnection(
+  r: RegistryConnectionRow,
+): RegistryConnection {
+  return {
+    id: r.id,
+    registryId: r.registryId,
+    targetId: r.targetId,
+    language: r.language,
+    packageName: r.packageName,
+    autoPublish: r.autoPublish,
+    lastPublishedVersion: r.lastPublishedVersion || undefined,
+    lastPublishedAt: iso(r.lastPublishedAt),
+    lastPublishStatus: r.lastPublishStatus
+      ? (r.lastPublishStatus as BuildStatus)
+      : undefined,
+    lastPublishError: r.lastPublishError || undefined,
   };
 }
 

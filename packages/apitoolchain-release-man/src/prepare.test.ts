@@ -41,6 +41,23 @@ describe("prepareRelease", () => {
     expect(r.breakingCount).toBe(1);
   });
 
+  it("treats an initial release as no-bump — publishes fromVersion as-is + lists the surface", () => {
+    const r = prepareRelease({
+      ...base,
+      fromVersion: "2.3.0",
+      // First release: the caller passes the additive surface (all new).
+      changes: [CHANGES[1]],
+      initial: true,
+    });
+    expect(r.bump).toBe("none");
+    expect(r.toVersion).toBe("2.3.0");
+    expect(r.breakingCount).toBe(0);
+    // The surface still renders — NOT "No API changes".
+    expect(r.changelogEntry).toContain("## 2.3.0");
+    expect(r.changelogEntry).toContain("added pets.list");
+    expect(r.changelogEntry).not.toContain("No API changes");
+  });
+
   it("honors a version override (edited PR title)", () => {
     const r = prepareRelease({
       ...base,

@@ -251,6 +251,11 @@ export const openApiDocument = {
         required: ["name"],
         properties: {
           name: { type: "string" },
+          id: {
+            type: "string",
+            description:
+              "Explicit id/slug for the entry. Slugified server-side; defaults to a slug\nof `name`. Lets the display title (`name`) be decoupled from the stable id.",
+          },
           format: { $ref: "#/components/schemas/Apitoolchain.ApiFormat" },
           kind: {
             allOf: [{ $ref: "#/components/schemas/Apitoolchain.EntryKind" }],

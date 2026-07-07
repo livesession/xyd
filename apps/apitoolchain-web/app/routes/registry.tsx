@@ -21,6 +21,7 @@ export async function action({ request }: { request: Request }) {
   if (!name) return { ok: false as const, message: "Name is required." };
   const input: RegisterApiInput = {
     name,
+    id: str("id") || undefined,
     ns: str("ns") || undefined,
     kind: str("kind") === "schema" ? "schema" : "api",
     format: (str("format") || undefined) as RegisterApiInput["format"],

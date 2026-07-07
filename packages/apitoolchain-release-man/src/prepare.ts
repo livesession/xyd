@@ -20,8 +20,11 @@ export function prepareRelease(i: {
   date: string;
   /** Free-form override source (e.g. an edited PR title). */
   versionOverride?: string;
+  /** First release for the target: publish `fromVersion` as-is (no bump) — every
+   * change is a fresh addition, so there's nothing to bump against. */
+  initial?: boolean;
 }): PreparedRelease {
-  const bump = bumpTypeFromChanges(i.changes);
+  const bump = i.initial ? "none" : bumpTypeFromChanges(i.changes);
   const auto = nextVersion(i.fromVersion, bump);
   const override = i.versionOverride
     ? parseVersionOverride(i.versionOverride)

@@ -1,0 +1,488 @@
+import { QueryArrayConfig, QueryArrayResult } from "pg";
+
+interface Client {
+    query: (config: QueryArrayConfig) => Promise<QueryArrayResult>;
+}
+
+export const listPackageRegistriesQuery = `-- name: ListPackageRegistries :many
+SELECT id, kind, name, url, token, connected_as, created_at FROM package_registries ORDER BY created_at DESC`;
+
+export interface ListPackageRegistriesRow {
+    id: string;
+    kind: string;
+    name: string;
+    url: string;
+    token: string;
+    connectedAs: string;
+    createdAt: Date;
+}
+
+export async function listPackageRegistries(client: Client): Promise<ListPackageRegistriesRow[]> {
+    const result = await client.query({
+        text: listPackageRegistriesQuery,
+        values: [],
+        rowMode: "array"
+    });
+    return result.rows.map(row => {
+        return {
+            id: row[0],
+            kind: row[1],
+            name: row[2],
+            url: row[3],
+            token: row[4],
+            connectedAs: row[5],
+            createdAt: row[6]
+        };
+    });
+}
+
+export const getPackageRegistryQuery = `-- name: GetPackageRegistry :one
+SELECT id, kind, name, url, token, connected_as, created_at FROM package_registries WHERE id = $1`;
+
+export interface GetPackageRegistryArgs {
+    id: string;
+}
+
+export interface GetPackageRegistryRow {
+    id: string;
+    kind: string;
+    name: string;
+    url: string;
+    token: string;
+    connectedAs: string;
+    createdAt: Date;
+}
+
+export async function getPackageRegistry(client: Client, args: GetPackageRegistryArgs): Promise<GetPackageRegistryRow | null> {
+    const result = await client.query({
+        text: getPackageRegistryQuery,
+        values: [args.id],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        kind: row[1],
+        name: row[2],
+        url: row[3],
+        token: row[4],
+        connectedAs: row[5],
+        createdAt: row[6]
+    };
+}
+
+export const insertPackageRegistryQuery = `-- name: InsertPackageRegistry :one
+INSERT INTO package_registries (id, kind, name, url, token, connected_as)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, kind, name, url, token, connected_as, created_at`;
+
+export interface InsertPackageRegistryArgs {
+    id: string;
+    kind: string;
+    name: string;
+    url: string;
+    token: string;
+    connectedAs: string;
+}
+
+export interface InsertPackageRegistryRow {
+    id: string;
+    kind: string;
+    name: string;
+    url: string;
+    token: string;
+    connectedAs: string;
+    createdAt: Date;
+}
+
+export async function insertPackageRegistry(client: Client, args: InsertPackageRegistryArgs): Promise<InsertPackageRegistryRow | null> {
+    const result = await client.query({
+        text: insertPackageRegistryQuery,
+        values: [args.id, args.kind, args.name, args.url, args.token, args.connectedAs],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        kind: row[1],
+        name: row[2],
+        url: row[3],
+        token: row[4],
+        connectedAs: row[5],
+        createdAt: row[6]
+    };
+}
+
+export const findPackageRegistryByUrlQuery = `-- name: FindPackageRegistryByUrl :one
+SELECT id, kind, name, url, token, connected_as, created_at FROM package_registries
+WHERE kind = $1 AND url = $2
+ORDER BY created_at ASC
+LIMIT 1`;
+
+export interface FindPackageRegistryByUrlArgs {
+    kind: string;
+    url: string;
+}
+
+export interface FindPackageRegistryByUrlRow {
+    id: string;
+    kind: string;
+    name: string;
+    url: string;
+    token: string;
+    connectedAs: string;
+    createdAt: Date;
+}
+
+export async function findPackageRegistryByUrl(client: Client, args: FindPackageRegistryByUrlArgs): Promise<FindPackageRegistryByUrlRow | null> {
+    const result = await client.query({
+        text: findPackageRegistryByUrlQuery,
+        values: [args.kind, args.url],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        kind: row[1],
+        name: row[2],
+        url: row[3],
+        token: row[4],
+        connectedAs: row[5],
+        createdAt: row[6]
+    };
+}
+
+export const updatePackageRegistryTokenQuery = `-- name: UpdatePackageRegistryToken :one
+UPDATE package_registries SET token = $2, name = $3 WHERE id = $1
+RETURNING id, kind, name, url, token, connected_as, created_at`;
+
+export interface UpdatePackageRegistryTokenArgs {
+    id: string;
+    token: string;
+    name: string;
+}
+
+export interface UpdatePackageRegistryTokenRow {
+    id: string;
+    kind: string;
+    name: string;
+    url: string;
+    token: string;
+    connectedAs: string;
+    createdAt: Date;
+}
+
+export async function updatePackageRegistryToken(client: Client, args: UpdatePackageRegistryTokenArgs): Promise<UpdatePackageRegistryTokenRow | null> {
+    const result = await client.query({
+        text: updatePackageRegistryTokenQuery,
+        values: [args.id, args.token, args.name],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        kind: row[1],
+        name: row[2],
+        url: row[3],
+        token: row[4],
+        connectedAs: row[5],
+        createdAt: row[6]
+    };
+}
+
+export const deletePackageRegistryQuery = `-- name: DeletePackageRegistry :exec
+DELETE FROM package_registries WHERE id = $1`;
+
+export interface DeletePackageRegistryArgs {
+    id: string;
+}
+
+export async function deletePackageRegistry(client: Client, args: DeletePackageRegistryArgs): Promise<void> {
+    await client.query({
+        text: deletePackageRegistryQuery,
+        values: [args.id],
+        rowMode: "array"
+    });
+}
+
+export const listRegistryConnectionsQuery = `-- name: ListRegistryConnections :many
+SELECT id, registry_id, target_id, language, package_name, auto_publish, last_published_version, last_published_at, last_publish_status, last_publish_error, created_at FROM registry_connections ORDER BY created_at DESC`;
+
+export interface ListRegistryConnectionsRow {
+    id: string;
+    registryId: string;
+    targetId: string;
+    language: string;
+    packageName: string;
+    autoPublish: boolean;
+    lastPublishedVersion: string;
+    lastPublishedAt: Date | null;
+    lastPublishStatus: string;
+    lastPublishError: string;
+    createdAt: Date;
+}
+
+export async function listRegistryConnections(client: Client): Promise<ListRegistryConnectionsRow[]> {
+    const result = await client.query({
+        text: listRegistryConnectionsQuery,
+        values: [],
+        rowMode: "array"
+    });
+    return result.rows.map(row => {
+        return {
+            id: row[0],
+            registryId: row[1],
+            targetId: row[2],
+            language: row[3],
+            packageName: row[4],
+            autoPublish: row[5],
+            lastPublishedVersion: row[6],
+            lastPublishedAt: row[7],
+            lastPublishStatus: row[8],
+            lastPublishError: row[9],
+            createdAt: row[10]
+        };
+    });
+}
+
+export const listRegistryConnectionsByTargetQuery = `-- name: ListRegistryConnectionsByTarget :many
+SELECT id, registry_id, target_id, language, package_name, auto_publish, last_published_version, last_published_at, last_publish_status, last_publish_error, created_at FROM registry_connections
+WHERE target_id = $1
+ORDER BY created_at DESC`;
+
+export interface ListRegistryConnectionsByTargetArgs {
+    targetId: string;
+}
+
+export interface ListRegistryConnectionsByTargetRow {
+    id: string;
+    registryId: string;
+    targetId: string;
+    language: string;
+    packageName: string;
+    autoPublish: boolean;
+    lastPublishedVersion: string;
+    lastPublishedAt: Date | null;
+    lastPublishStatus: string;
+    lastPublishError: string;
+    createdAt: Date;
+}
+
+export async function listRegistryConnectionsByTarget(client: Client, args: ListRegistryConnectionsByTargetArgs): Promise<ListRegistryConnectionsByTargetRow[]> {
+    const result = await client.query({
+        text: listRegistryConnectionsByTargetQuery,
+        values: [args.targetId],
+        rowMode: "array"
+    });
+    return result.rows.map(row => {
+        return {
+            id: row[0],
+            registryId: row[1],
+            targetId: row[2],
+            language: row[3],
+            packageName: row[4],
+            autoPublish: row[5],
+            lastPublishedVersion: row[6],
+            lastPublishedAt: row[7],
+            lastPublishStatus: row[8],
+            lastPublishError: row[9],
+            createdAt: row[10]
+        };
+    });
+}
+
+export const getRegistryConnectionQuery = `-- name: GetRegistryConnection :one
+SELECT id, registry_id, target_id, language, package_name, auto_publish, last_published_version, last_published_at, last_publish_status, last_publish_error, created_at FROM registry_connections WHERE id = $1`;
+
+export interface GetRegistryConnectionArgs {
+    id: string;
+}
+
+export interface GetRegistryConnectionRow {
+    id: string;
+    registryId: string;
+    targetId: string;
+    language: string;
+    packageName: string;
+    autoPublish: boolean;
+    lastPublishedVersion: string;
+    lastPublishedAt: Date | null;
+    lastPublishStatus: string;
+    lastPublishError: string;
+    createdAt: Date;
+}
+
+export async function getRegistryConnection(client: Client, args: GetRegistryConnectionArgs): Promise<GetRegistryConnectionRow | null> {
+    const result = await client.query({
+        text: getRegistryConnectionQuery,
+        values: [args.id],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        registryId: row[1],
+        targetId: row[2],
+        language: row[3],
+        packageName: row[4],
+        autoPublish: row[5],
+        lastPublishedVersion: row[6],
+        lastPublishedAt: row[7],
+        lastPublishStatus: row[8],
+        lastPublishError: row[9],
+        createdAt: row[10]
+    };
+}
+
+export const insertRegistryConnectionQuery = `-- name: InsertRegistryConnection :one
+INSERT INTO registry_connections
+  (id, registry_id, target_id, language, package_name, auto_publish)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, registry_id, target_id, language, package_name, auto_publish, last_published_version, last_published_at, last_publish_status, last_publish_error, created_at`;
+
+export interface InsertRegistryConnectionArgs {
+    id: string;
+    registryId: string;
+    targetId: string;
+    language: string;
+    packageName: string;
+    autoPublish: boolean;
+}
+
+export interface InsertRegistryConnectionRow {
+    id: string;
+    registryId: string;
+    targetId: string;
+    language: string;
+    packageName: string;
+    autoPublish: boolean;
+    lastPublishedVersion: string;
+    lastPublishedAt: Date | null;
+    lastPublishStatus: string;
+    lastPublishError: string;
+    createdAt: Date;
+}
+
+export async function insertRegistryConnection(client: Client, args: InsertRegistryConnectionArgs): Promise<InsertRegistryConnectionRow | null> {
+    const result = await client.query({
+        text: insertRegistryConnectionQuery,
+        values: [args.id, args.registryId, args.targetId, args.language, args.packageName, args.autoPublish],
+        rowMode: "array"
+    });
+    if (result.rows.length !== 1) {
+        return null;
+    }
+    const row = result.rows[0];
+    return {
+        id: row[0],
+        registryId: row[1],
+        targetId: row[2],
+        language: row[3],
+        packageName: row[4],
+        autoPublish: row[5],
+        lastPublishedVersion: row[6],
+        lastPublishedAt: row[7],
+        lastPublishStatus: row[8],
+        lastPublishError: row[9],
+        createdAt: row[10]
+    };
+}
+
+export const deleteRegistryConnectionQuery = `-- name: DeleteRegistryConnection :exec
+DELETE FROM registry_connections WHERE id = $1`;
+
+export interface DeleteRegistryConnectionArgs {
+    id: string;
+}
+
+export async function deleteRegistryConnection(client: Client, args: DeleteRegistryConnectionArgs): Promise<void> {
+    await client.query({
+        text: deleteRegistryConnectionQuery,
+        values: [args.id],
+        rowMode: "array"
+    });
+}
+
+export const markRegistryConnectionPublishingQuery = `-- name: MarkRegistryConnectionPublishing :exec
+UPDATE registry_connections
+SET last_publish_status = 'building', last_publish_error = ''
+WHERE id = $1`;
+
+export interface MarkRegistryConnectionPublishingArgs {
+    id: string;
+}
+
+export async function markRegistryConnectionPublishing(client: Client, args: MarkRegistryConnectionPublishingArgs): Promise<void> {
+    await client.query({
+        text: markRegistryConnectionPublishingQuery,
+        values: [args.id],
+        rowMode: "array"
+    });
+}
+
+export const markRegistryConnectionPublishedQuery = `-- name: MarkRegistryConnectionPublished :exec
+UPDATE registry_connections
+SET last_publish_status = 'ready', last_publish_error = '',
+    last_published_at = now(), last_published_version = $2
+WHERE id = $1`;
+
+export interface MarkRegistryConnectionPublishedArgs {
+    id: string;
+    lastPublishedVersion: string;
+}
+
+export async function markRegistryConnectionPublished(client: Client, args: MarkRegistryConnectionPublishedArgs): Promise<void> {
+    await client.query({
+        text: markRegistryConnectionPublishedQuery,
+        values: [args.id, args.lastPublishedVersion],
+        rowMode: "array"
+    });
+}
+
+export const markRegistryConnectionErrorQuery = `-- name: MarkRegistryConnectionError :exec
+UPDATE registry_connections
+SET last_publish_status = 'error', last_publish_error = $2
+WHERE id = $1`;
+
+export interface MarkRegistryConnectionErrorArgs {
+    id: string;
+    lastPublishError: string;
+}
+
+export async function markRegistryConnectionError(client: Client, args: MarkRegistryConnectionErrorArgs): Promise<void> {
+    await client.query({
+        text: markRegistryConnectionErrorQuery,
+        values: [args.id, args.lastPublishError],
+        rowMode: "array"
+    });
+}
+
+export const failInterruptedPublishesQuery = `-- name: FailInterruptedPublishes :exec
+UPDATE registry_connections
+SET last_publish_status = 'error',
+    last_publish_error = 'interrupted — the service restarted mid-publish; publish again'
+WHERE last_publish_status = 'building'`;
+
+export async function failInterruptedPublishes(client: Client): Promise<void> {
+    await client.query({
+        text: failInterruptedPublishesQuery,
+        values: [],
+        rowMode: "array"
+    });
+}
+

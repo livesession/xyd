@@ -55,10 +55,15 @@ declare module 'node:assert' {
 }
 
 /** tests/setup.ts — the shared client (pointed at the mock base URL) + a server probe + a structural check. */
-export function testSetupFile(): string {
+export function testSetupFile(clientName: string, defaultExport: boolean): string {
+  // Bind the client to a local `Client` so the rest of the suite is export-shape
+  // agnostic (default import, or a named import aliased).
+  const importLine = defaultExport
+    ? `import Client from '../src/index';`
+    : `import { ${clientName} as Client } from '../src/index';`;
   return `import assert from 'node:assert';
 
-import { Client } from '../src/index';
+${importLine}
 
 /** The spec-shaped mock base URL the generated suite runs against (openai-node's TEST_API_BASE_URL). */
 const baseURL = readEnv('TEST_API_BASE_URL') ?? 'http://127.0.0.1:4010';

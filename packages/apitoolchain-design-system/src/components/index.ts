@@ -20,6 +20,8 @@ export type { CardProps } from "./Card";
 export { Card } from "./Card";
 export type { ChecklistItemProps } from "./ChecklistItem";
 export { ChecklistItem } from "./ChecklistItem";
+export type { CollapseProps } from "./Collapse";
+export { Collapse } from "./Collapse";
 export type { DescriptionItem, DescriptionListProps } from "./DescriptionList";
 export { DescriptionList } from "./DescriptionList";
 export type { DropdownMenuItem, DropdownMenuProps } from "./DropdownMenu";
@@ -56,6 +58,11 @@ export type {
   ModalAnnounceStep,
 } from "./ModalAnnounce";
 export { ModalAnnounce } from "./ModalAnnounce";
+export type {
+  ModalSafeConfirmProps,
+  ModalSafeConfirmTone,
+} from "./ModalSafeConfirm";
+export { ModalSafeConfirm } from "./ModalSafeConfirm";
 export type { MonoProps } from "./Mono";
 export { Mono } from "./Mono";
 export type { NavItemProps } from "./NavItem";

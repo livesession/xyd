@@ -75,6 +75,8 @@ export interface ProfileManifest {
   projects?: ProfileProject[];
   members?: ProfileMember[];
   connect?: boolean;
+  /** Publish every generated SDK target to the matching local dev registry. */
+  publish?: boolean;
 }
 
 /** A loaded profile (manifest + its folder id/path). */
@@ -92,6 +94,7 @@ export interface DevProfile {
   projects: ProfileProject[];
   members: ProfileMember[];
   connect: boolean;
+  publish: boolean;
 }
 
 /** Normalize any input into a valid, DNS-ish namespace slug (mirrors the web
@@ -160,10 +163,12 @@ export function loadProfiles(profilesDir: string): DevProfile[] {
       order: m.order ?? 999,
       apis: m.apis ?? [],
       sdks: m.sdks ?? [],
+      // (publish/connect normalized below)
       namespaces: resolveProfileNamespaces(m),
       projects: m.projects ?? [],
       members: m.members ?? [],
       connect: m.connect ?? false,
+      publish: m.publish ?? false,
     });
   }
   out.sort((a, b) => a.order - b.order || a.id.localeCompare(b.id));

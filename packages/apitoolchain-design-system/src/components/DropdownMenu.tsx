@@ -33,6 +33,12 @@ export interface DropdownMenuProps {
   linkComponent?: LinkComponent;
   /** Keep the panel open after selecting an item (for multi-select). Default true. */
   closeOnSelect?: boolean;
+  /**
+   * Start open on mount (uncontrolled). Read once at mount, so it opens a
+   * freshly-mounted menu — e.g. a just-added filter's value picker — without
+   * re-opening on later re-renders.
+   */
+  defaultOpen?: boolean;
 }
 
 /**
@@ -48,8 +54,9 @@ export function DropdownMenu({
   block = false,
   linkComponent,
   closeOnSelect = true,
+  defaultOpen = false,
 }: DropdownMenuProps) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const ref = useRef<HTMLDivElement | null>(null);
   const Link = linkComponent ?? AnchorLink;
 

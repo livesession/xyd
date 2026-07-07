@@ -25,6 +25,9 @@ export interface ButtonProps {
   /** Render as a link (uses `linkComponent` when provided, else a plain <a>). */
   href?: string;
   linkComponent?: LinkComponent;
+  /** Open `href` in a new tab — forces a plain anchor with a safe `rel`. Pair
+   * with `iconRight="externalLink"` to signal it leaves the current tab. */
+  newTab?: boolean;
   disabled?: boolean;
   type?: "button" | "submit";
 }
@@ -54,6 +57,7 @@ export function Button({
   onClick,
   href,
   linkComponent,
+  newTab,
   disabled,
   type = "button",
 }: ButtonProps) {
@@ -68,9 +72,14 @@ export function Button({
   );
 
   if (href && !disabled) {
-    const Link = linkComponent ?? AnchorLink;
+    // A new-tab link is a fresh document load, so SPA navigation doesn't apply —
+    // always use a plain anchor with the safe rel.
+    const Link = newTab ? AnchorLink : (linkComponent ?? AnchorLink);
+    const linkProps = newTab
+      ? { target: "_blank", rel: "noopener noreferrer" }
+      : {};
     return (
-      <Link href={href} className={cls} onClick={onClick}>
+      <Link href={href} className={cls} onClick={onClick} {...linkProps}>
         {inner}
       </Link>
     );

@@ -5,7 +5,7 @@ import * as jobQ from "../../db/generated/jobs_sql";
 import * as sdkQ from "../../db/generated/sdk_targets_sql";
 import * as sdksQ from "../../db/generated/sdks_sql";
 import { pool } from "../../db/pool";
-import { runSdkGeneration, SDK_OUTPUT } from "../../gen/sdk";
+import { runSdkGeneration } from "../../gen/sdk";
 import { toSdkTarget } from "../../mappers";
 import { currentVersion, randomId } from "../../util";
 import { invalid, notFound } from "../errors";
@@ -24,7 +24,12 @@ export const addTarget: Sdks["addTarget"] = async (ctx, sdkId, input) => {
   if (core.format !== "openapi") {
     return invalid("SDK generation is only supported for OpenAPI specs");
   }
-  const version = currentVersion(core);
+  // Generate from the requested version if it's a known one, else the current.
+  const known = (core.versions ?? []).map((v) => v.version);
+  const version =
+    input.version && known.includes(input.version)
+      ? input.version
+      : currentVersion(core);
   const id = randomId("sdkt");
   const row = await sdkQ.insertSdkTarget(pool, {
     id,
@@ -33,7 +38,9 @@ export const addTarget: Sdks["addTarget"] = async (ctx, sdkId, input) => {
     apiVersion: version,
     language: input.language,
     packageName: input.packageName ?? "",
-    output: SDK_OUTPUT[input.language] ?? `./sdk/${input.language}`,
+    // Default to the repo root — a target typically maps to a dedicated,
+    // single-language SDK repo, so the SDK IS the repo, not a subfolder.
+    output: ".",
     version: "",
     status: "building",
     projectId: auth.projectId,

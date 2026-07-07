@@ -75,6 +75,12 @@ export interface DistTag {
 export interface RegisterApiInput {
   name: string;
 
+  /**
+   * Explicit id/slug for the entry. Slugified server-side; defaults to a slug
+   * of `name`. Lets the display title (`name`) be decoupled from the stable id.
+   */
+  id?: string;
+
   format?: ApiFormat;
 
   /**

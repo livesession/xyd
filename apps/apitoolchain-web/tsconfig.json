@@ -15,7 +15,27 @@
     "jsx": "react-jsx",
     "rootDirs": [".", "./.react-router/types"],
     "paths": {
-      "~/*": ["./app/*"]
+      "~/*": ["./app/*"],
+      "@xyd-js/atlas": ["../../packages/xyd-atlas/dist/index.d.ts"],
+      "@xyd-js/uniform": ["../../packages/xyd-uniform/dist/index.d.ts"],
+      "@xyd-js/framework": ["../../packages/xyd-framework/dist/index.d.ts"],
+      "@xyd-js/framework/react": [
+        "../../packages/xyd-framework/dist/react.d.ts"
+      ],
+      "@xyd-js/framework/hydration": [
+        "../../packages/xyd-framework/dist/hydration.d.ts"
+      ],
+      "@xyd-js/openapi": ["../../packages/xyd-openapi/dist/index.d.ts"],
+      "@xyd-js/components": ["../../packages/xyd-components/dist/index.d.ts"],
+      "@xyd-js/components/content": [
+        "../../packages/xyd-components/dist/content.d.ts"
+      ],
+      "@xyd-js/components/writer": [
+        "../../packages/xyd-components/dist/writer.d.ts"
+      ],
+      "@xyd-js/theme-opener": [
+        "../../packages/xyd-theme-opener/dist/index.d.ts"
+      ]
     },
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,

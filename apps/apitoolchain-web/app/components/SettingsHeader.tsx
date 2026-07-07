@@ -14,6 +14,7 @@ const ITEMS = [
   { key: "keys", label: "API keys", href: "/settings/keys" },
   { key: "namespaces", label: "Namespaces", href: "/settings/namespaces" },
   { key: "connections", label: "Connections", href: "/settings/connections" },
+  { key: "publishing", label: "Publishing", href: "/settings/publishing" },
   { key: "billing", label: "Billing", href: "/settings/billing" },
 ];
 

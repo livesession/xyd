@@ -16,6 +16,77 @@ import {
   type RegistryEntry,
 } from "~/data";
 
+/** URL/id-safe slug (mirrors the registry-api `slugify`). */
+function slugify(s: string): string {
+  return (
+    s
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 48) || "api"
+  );
+}
+
+const ADJECTIVES = [
+  "helical",
+  "amber",
+  "lucid",
+  "nimble",
+  "cobalt",
+  "crisp",
+  "vivid",
+  "quiet",
+  "swift",
+  "gentle",
+  "bold",
+  "cosmic",
+  "brave",
+  "solar",
+  "arctic",
+  "ember",
+];
+const NOUNS = [
+  "client",
+  "harbor",
+  "meadow",
+  "cipher",
+  "atlas",
+  "quartz",
+  "delta",
+  "willow",
+  "summit",
+  "orbit",
+  "beacon",
+  "pixel",
+  "canyon",
+  "vertex",
+  "lagoon",
+  "comet",
+];
+
+function pick<T>(arr: readonly T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/**
+ * A GCP-style identity: a friendly two-word display name plus a random suffix
+ * for the id. The suffix keeps the id stable + unique so the title (name) can
+ * be renamed freely without changing the id — e.g. name "Helical Client",
+ * suffix "501700-h5" → id "helical-client-501700-h5".
+ */
+function generateApiIdentity(): { name: string; suffix: string } {
+  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+  const num = 100000 + Math.floor(Math.random() * 900000);
+  const tail =
+    "abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 26)] +
+    Math.floor(Math.random() * 10);
+  return {
+    name: `${cap(pick(ADJECTIVES))} ${cap(pick(NOUNS))}`,
+    suffix: `${num}-${tail}`,
+  };
+}
+
 export function RegisterApiModal({
   open,
   onClose,
@@ -42,7 +113,14 @@ export function RegisterApiModal({
    * namespace and format are inherited (locked + hidden) — only the new spec is
    * asked for. Omit for a fresh import.
    */
-  newVersion?: { name: string; namespace: string; format?: string };
+  newVersion?: {
+    name: string;
+    namespace: string;
+    format?: string;
+    /** The existing entry's id — sent as-is so a new version targets it (the id
+     * may be decoupled from the name, so it can't be re-derived from `name`). */
+    id?: string;
+  };
 }) {
   const isSchema = kind === "schema";
   const noun = isSchema ? "schema" : "API";
@@ -50,6 +128,14 @@ export function RegisterApiModal({
   const fetcher = useFetcher();
   const [name, setName] = useState("");
   const [ns, setNs] = useState("");
+  // Project id — decoupled from the display name. `idSuffix` is the random tail
+  // that decorates the AUTO-GENERATED name only; once the user types their own
+  // name (`nameTouched`), the id becomes exactly slugify(name). Revealing +
+  // editing the id field (`idEditing`) makes `customId` win outright.
+  const [idSuffix, setIdSuffix] = useState("");
+  const [customId, setCustomId] = useState("");
+  const [idEditing, setIdEditing] = useState(false);
+  const [nameTouched, setNameTouched] = useState(false);
   // Managed namespaces (client store); read after open. Merged with the entry
   // namespaces passed in so the picker is never missing an existing one.
   const [managed, setManaged] = useState<string[]>([]);
@@ -81,6 +167,13 @@ export function RegisterApiModal({
       if (newVersion.format) setFormat(newVersion.format);
       return;
     }
+    // Fresh import: auto-generate a name + a stable id suffix (both editable).
+    const identity = generateApiIdentity();
+    setName(identity.name);
+    setIdSuffix(identity.suffix);
+    setCustomId("");
+    setIdEditing(false);
+    setNameTouched(false);
     const ids = listNamespaces().map((n) => n.id);
     setManaged(ids);
     const opts = [...new Set([...namespaces, ...ids])].sort();
@@ -101,8 +194,19 @@ export function RegisterApiModal({
       setNs("");
       setSpecText("");
       setUrl("");
+      setCustomId("");
+      setIdEditing(false);
     }
   }, [fetcher.state, result, onClose, onImported]);
+
+  // The auto-generated placeholder name carries a random suffix
+  // (helical-client-501700-h5); the moment the user types their own name the id
+  // becomes exactly slugify(name) — no random tail. Editing the id field wins
+  // over both. Either way it's slugified so the preview matches what's stored.
+  const derivedId = nameTouched
+    ? slugify(name)
+    : `${slugify(name)}-${idSuffix}`;
+  const projectId = slugify(idEditing ? customId : derivedId);
 
   const canSubmit =
     name.trim().length > 0 &&
@@ -116,6 +220,13 @@ export function RegisterApiModal({
     fetcher.submit(
       {
         name,
+        // Version-only re-targets the existing entry by its id; a fresh import
+        // sends the (decoupled) project id.
+        ...(versionOnly
+          ? newVersion?.id
+            ? { id: newVersion.id }
+            : {}
+          : { id: projectId }),
         ns,
         kind,
         format: isSchema ? "jsonschema" : format,
@@ -168,9 +279,45 @@ export function RegisterApiModal({
           </div>
         ) : (
           <>
-            <Field label="Name">
-              <Input value={name} onChange={setName} placeholder="Petstore" />
-            </Field>
+            <div className="flex flex-col gap-2">
+              <Field label="Name">
+                <Input
+                  value={name}
+                  onChange={(v) => {
+                    setName(v);
+                    setNameTouched(true);
+                  }}
+                  placeholder="Petstore"
+                />
+              </Field>
+              {/* Project ID — decoupled from the title. Collapsed, it auto-
+                  derives from the name; clicking Edit opens a normal field where
+                  the id is set explicitly (and no longer follows the name). */}
+              {idEditing ? (
+                <Field label="Project ID">
+                  <Input
+                    value={customId}
+                    onChange={setCustomId}
+                    placeholder={derivedId}
+                  />
+                </Field>
+              ) : (
+                <div className="flex items-center gap-2 text-[13px]">
+                  <span className="text-subtle">Project ID:</span>
+                  <span className="font-mono text-ink">{projectId}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setCustomId(projectId);
+                      setIdEditing(true);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                </div>
+              )}
+            </div>
 
             <div className={isSchema ? "" : "grid grid-cols-2 gap-4"}>
               <Field

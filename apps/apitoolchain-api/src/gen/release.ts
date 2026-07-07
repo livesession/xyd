@@ -22,6 +22,7 @@ import * as sdksQ from "../db/generated/sdks_sql";
 import { pool } from "../db/pool";
 import { storage } from "../storage";
 import { currentVersion, randomId } from "../util";
+import { enqueuePublishForTarget } from "./publish";
 import { generateSdkFileMap } from "./sdk";
 
 const BOT = { name: "apitoolchain", email: "bot@apitoolchain.dev" };
@@ -108,9 +109,20 @@ export async function runRelease(o: {
     const headDoc = parseSpec(headSpec.text, headSpec.contentType);
     const headIr = openapi2opensdk(headDoc);
 
+    // The first release for a connection has no prior version to diff against —
+    // it's the INITIAL release at the spec's own version, not an upgrade. Every
+    // operation is a fresh addition (nothing can be "breaking"), so keep only the
+    // additions — dropping empty-base diff artifacts — and mark them safe. The
+    // changelog then lists the API surface with no spurious bump/breaking.
+    const isInitial = !conn.lastReleasedVersion;
     const baseIr = await loadBaseIr(connectionId, apiId, baseSpecVersion);
-    const changes = diffIR(baseIr, headIr)
+    const rawChanges = diffIR(baseIr, headIr)
       .changes as unknown as ReleaseChange[];
+    const changes: ReleaseChange[] = isInitial
+      ? rawChanges
+          .filter((c) => c.kind.endsWith("-added"))
+          .map((c) => ({ ...c, severity: "safe" as const }))
+      : rawChanges;
 
     const apiName = headIr.info.title ?? sdk?.name ?? core.name ?? "API";
     const fromVersion =
@@ -125,6 +137,7 @@ export async function runRelease(o: {
       baseSpecVersion,
       date,
       versionOverride: release.versionOverride || undefined,
+      initial: isInitial,
     });
 
     // The committed file set: regenerated SDK code, or the versioned spec doc.
@@ -200,7 +213,7 @@ export async function runRelease(o: {
     await releaseQ.updateReleasePrOpen(pool, {
       id: releaseId,
       bumpType: prepared.bump,
-      fromVersion,
+      fromVersion: isInitial ? "" : fromVersion,
       toVersion: prepared.toVersion,
       changelog: prepared.changelogEntry,
       changeCount: changes.length,
@@ -313,6 +326,17 @@ export async function runPublishRelease(o: {
       lastReleasedVersion: release.toVersion,
       lastReleasedSpecVersion: release.headSpecVersion,
     });
+
+    // Phase 2: after the git tag/Release, publish the package to every
+    // auto-publish registry connection of this SDK target (event-driven).
+    if (target) {
+      await enqueuePublishForTarget({
+        targetId: target.id,
+        projectId,
+        version: release.toVersion,
+        tag: "latest",
+      });
+    }
 
     // Snapshot the released spec as the next diff base (defends against a
     // registry version label being overwritten).

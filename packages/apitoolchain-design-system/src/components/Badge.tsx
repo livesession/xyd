@@ -54,6 +54,7 @@ export function Badge({ children, tone = "neutral", icon, dot }: BadgeProps) {
 const STATUS: Record<string, { tone: BadgeTone; label: string }> = {
   ready: { tone: "success", label: "Ready" },
   building: { tone: "info", label: "Building" },
+  built: { tone: "neutral", label: "Built" },
   error: { tone: "error", label: "Error" },
   draft: { tone: "neutral", label: "Draft" },
   published: { tone: "success", label: "Published" },

@@ -40,20 +40,20 @@ export const nodeEmitter: Emitter = {
   },
 
   generateProject(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[] {
-    const { pkg } = resolve(spec, ctx);
+    const { pkg, clientName, defaultExport } = resolve(spec, ctx);
     return [
       // package.json is a mergeable manifest; the tsconfig / README are user-owned scaffold.
       { path: 'package.json', content: packageJson(pkg, spec), writeMode: 'mergeJson' },
       { path: 'tsconfig.json', content: tsconfigJson(), writeMode: 'skipIfExists' },
-      { path: 'README.md', content: readme(pkg, spec), writeMode: 'skipIfExists' },
+      { path: 'README.md', content: readme(pkg, spec, clientName, defaultExport), writeMode: 'skipIfExists' },
     ];
   },
 
   generateClient(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[] {
-    const { envVar } = resolve(spec, ctx);
+    const { envVar, clientName, defaultExport } = resolve(spec, ctx);
     return [
-      { path: 'src/index.ts', content: renderRootIndexFile(spec, errorClassNames(spec)) },
-      { path: 'src/client.ts', content: renderClientFile(spec, envVar) },
+      { path: 'src/index.ts', content: renderRootIndexFile(spec, errorClassNames(spec), clientName, defaultExport) },
+      { path: 'src/client.ts', content: renderClientFile(spec, envVar, clientName) },
     ];
   },
 
@@ -92,10 +92,11 @@ export const nodeEmitter: Emitter = {
     const resources = spec.resources || [];
     if (resources.length === 0) return [];
     const gctx = nodeCtx(ctx);
+    const { clientName, defaultExport } = resolve(spec, ctx);
     const files: GeneratedFile[] = [
       { path: 'tsconfig.test.json', content: testTsconfig() },
       { path: 'tests/_shims.d.ts', content: tsNodeShims() },
-      { path: 'tests/setup.ts', content: testSetupFile() },
+      { path: 'tests/setup.ts', content: testSetupFile(clientName, defaultExport) },
     ];
     for (const r of resources) {
       files.push({ path: `tests/${slug(r.name)}.test.ts`, content: renderResourceTestFile(r, gctx) });

@@ -166,10 +166,21 @@ export function sdkVersionsFilterSchema(
   });
 }
 
-export function docsFilterSchema(themes: string[]): FilterSchema {
+export function docsFilterSchema(
+  apis: { id: string; name: string }[],
+  themes: string[],
+): FilterSchema {
   return defineFilterSchema({
     table: "docs",
     fields: [
+      {
+        key: "apiId",
+        label: "API",
+        column: "api_id",
+        type: "enum",
+        icon: "registry",
+        values: apis.map((a) => ({ value: a.id, label: a.name })),
+      },
       {
         key: "theme",
         label: "Theme",
@@ -191,9 +202,10 @@ export function docsFilterSchema(themes: string[]): FilterSchema {
         ],
       },
       {
-        key: "name",
+        // Searches a combined string on each row (name + API + source spec).
+        key: "search",
         label: "Name",
-        column: "name",
+        column: "search",
         type: "text",
         icon: "search",
         freeText: true,

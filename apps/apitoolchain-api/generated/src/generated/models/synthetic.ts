@@ -24,3 +24,7 @@ export interface ListOptions {
 export interface ListOptions {
   connectionId?: string;
 }
+
+export interface ListOptions {
+  targetId?: string;
+}

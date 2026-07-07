@@ -153,9 +153,13 @@ export async function applyOrRestore(
   snapCtx: SnapshotCtx,
   rebuild: boolean,
 ): Promise<void> {
-  // Trivial profiles (scratch) are already fast — no snapshot needed.
+  // Trivial profiles (scratch) are already fast — no snapshot needed. Publish
+  // profiles also skip snapshotting: verdaccio's storage is NOT part of the
+  // snapshot, so a restore would show a "published" SDK that isn't actually in
+  // the (ephemeral) registry — and a snapshot taken mid-publish freezes
+  // `building` forever. Always re-apply so the publish really happens.
   const trivial = profile.apis.length === 0 && profile.sdks.length === 0;
-  if (trivial) {
+  if (trivial || profile.publish) {
     await applyProfile(profile, applyCtx);
     return;
   }

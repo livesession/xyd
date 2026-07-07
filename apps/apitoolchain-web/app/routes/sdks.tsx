@@ -1,6 +1,6 @@
 import {
   Badge,
-  Button,
+  ButtonCTA,
   type Column,
   EmptyState,
   LaTable,
@@ -42,12 +42,15 @@ export async function action({ request }: Route.ActionArgs) {
   if (form.get("intent") === "generate-sdk") {
     const apiId = String(form.get("apiId") ?? "");
     const name = String(form.get("name") ?? "").trim() || undefined;
+    const version = String(form.get("version") ?? "").trim() || undefined;
     const langs = String(form.get("langs") ?? "")
       .split(",")
       .filter(Boolean) as SdkLanguage[];
     const created = await createSdk({ apiId, name });
     if (!created.ok) return { ok: false as const, message: created.message };
-    await Promise.all(langs.map((l) => addSdkTarget(created.sdk.id, l)));
+    await Promise.all(
+      langs.map((l) => addSdkTarget(created.sdk.id, l, version)),
+    );
     return { ok: true as const, sdkId: created.sdk.id };
   }
   return { ok: false as const, message: "Unknown action" };
@@ -64,9 +67,9 @@ export default function SdksRoute({ loaderData }: Route.ComponentProps) {
   const filter = useUrlFilters(schema);
 
   const generateButton = (
-    <Button variant="primary" icon="sdk" onClick={() => setGenOpen(true)}>
+    <ButtonCTA variant="primary" icon="sdk" onClick={() => setGenOpen(true)}>
       Generate SDKs
-    </Button>
+    </ButtonCTA>
   );
 
   const columns: Column<Sdk>[] = [

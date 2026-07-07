@@ -47,7 +47,9 @@ export const registerApi: Apis["register"] = async (_ctx, input) => {
     );
   }
 
-  const id = slugify(input.name);
+  // The id may be set explicitly (decoupled from the display name), else derived
+  // from the name. Either way it's slugified so it's URL/package-safe.
+  const id = slugify(input.id || input.name);
   // Namespaces are required and never empty — an empty namespace would cascade
   // to any SDK/schema derived from this entry.
   const namespace = (input.ns ?? "").trim();

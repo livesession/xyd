@@ -81,6 +81,12 @@ export interface DistTag {
 export interface RegisterApiInput {
   name: string;
 
+  /**
+   * Explicit id/slug for the entry. Slugified server-side; defaults to a slug
+   * of `name`. Lets the display title (`name`) be decoupled from the stable id.
+   */
+  id?: string;
+
   format?: ApiFormat;
 
   /**
@@ -205,6 +211,11 @@ export interface AddSdkTargetInput {
   language: SdkLanguage;
 
   packageName?: string;
+
+  /**
+   * API version to generate from; defaults to the API's current version.
+   */
+  version?: string;
 }
 
 export interface DocsProject {
@@ -690,6 +701,113 @@ export interface PrepareReleaseInput {
   connectionId: string;
 
   versionOverride?: string;
+}
+
+/**
+ * A connected package registry account (token is server-side only).
+ */
+export interface PackageRegistry {
+  id: string;
+
+  kind: PackageRegistryKind;
+
+  name: string;
+
+  /**
+   * Registry URL, or a local file-feed path (maven/nuget/go).
+   */
+  url: string;
+
+  /**
+   * Account/scope the token publishes as (informational).
+   */
+  connectedAs: string;
+
+  createdAt: string;
+}
+
+/**
+ * Package registry flavour — the language ecosystem an SDK publishes into.
+ */
+export enum PackageRegistryKind {
+  Npm = "npm",
+  Pypi = "pypi",
+  Gems = "gems",
+  Maven = "maven",
+  Nuget = "nuget",
+  Goproxy = "goproxy",
+}
+
+/**
+ * Connect a package registry account.
+ */
+export interface ConnectRegistryInput {
+  kind: PackageRegistryKind;
+
+  name?: string;
+
+  /**
+   * Registry URL, or a local file-feed path.
+   */
+  url: string;
+
+  /**
+   * Auth token; may be empty for an anonymous/local registry.
+   */
+  token?: string;
+}
+
+/**
+ * Links ONE SDK target (a language) to a package registry it publishes into.
+ */
+export interface RegistryConnection {
+  id: string;
+
+  registryId: string;
+
+  /**
+   * The SDK target id this connection publishes.
+   */
+  targetId: string;
+
+  /**
+   * The target's language (must match the registry kind's ecosystem).
+   */
+  language: string;
+
+  /**
+   * Package name as published (defaults to the SDK's own package name).
+   */
+  packageName: string;
+
+  /**
+   * Publish automatically when a release for this target is merged.
+   */
+  autoPublish: boolean;
+
+  lastPublishedVersion?: string;
+
+  lastPublishedAt?: string;
+
+  lastPublishStatus?: BuildStatus;
+
+  lastPublishError?: string;
+}
+
+/**
+ * Link an SDK target to a package registry.
+ */
+export interface CreateRegistryConnectionInput {
+  registryId: string;
+
+  targetId: string;
+
+  /**
+   * Override the published package name (defaults to the SDK's own name).
+   */
+  packageName?: string;
+
+  autoPublish?: boolean;
 }
 
 export const GitRepoOption = {

@@ -2,6 +2,7 @@ import {
   Badge,
   type BadgeTone,
   Button,
+  ButtonCTA,
   ButtonGroup,
   type Column,
   EmptyState,
@@ -11,6 +12,7 @@ import {
 } from "@apitoolchain/design-system";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
+import { NewApiModal } from "~/components/NewApiModal";
 import { RegisterApiModal } from "~/components/RegisterApiModal";
 import { RouterLink } from "~/components/RouterLink";
 import type { ApiFormat, EntryKind, RegistryEntry } from "~/data";
@@ -118,6 +120,7 @@ export function RegistryListPage({
   all: RegistryEntry[];
 }) {
   const [importOpen, setImportOpen] = useState(false);
+  const [choiceOpen, setChoiceOpen] = useState(false);
   const navigate = useNavigate();
 
   // Namespaces present on entries — feeds the filter values + import picker.
@@ -167,12 +170,25 @@ export function RegistryListPage({
       {importLabel}
     </Button>
   );
+  // Onboarding CTA (empty registry) → the "how to create" chooser.
+  const newApiButton = (
+    <ButtonCTA
+      variant="primary"
+      icon="plus"
+      onClick={() => setChoiceOpen(true)}
+    >
+      New {isSchema ? "schema" : "API"}
+    </ButtonCTA>
+  );
 
   return (
     <>
       <PageHeader
         title="Registry"
-        actions={registerButton}
+        // Empty registry → surface the working "New {API}" CTA in the header (the
+        // "Register API" onboarding group is disabled, so it's no help yet). Once
+        // entries exist, the onboarding group takes the header slot.
+        actions={base.length === 0 ? newApiButton : registerButton}
         tabs={
           <Tabs
             linkComponent={RouterLink}
@@ -203,17 +219,37 @@ export function RegistryListPage({
         linkComponent={RouterLink}
         searchPlaceholder={isSchema ? "Search schemas…" : "Search APIs…"}
         empty={
-          <EmptyState
-            icon="registry"
-            title={isSchema ? "No schemas match" : "No APIs match"}
-            description={
-              isSchema
-                ? "Import a standalone JSON Schema, or clear the filters above."
-                : "Import your first OpenAPI, GraphQL, or AsyncAPI spec — or clear the filters above."
-            }
-            action={importButton}
-          />
+          base.length === 0 ? (
+            // Nothing registered yet → onboarding CTA (+ New API/schema).
+            <EmptyState
+              icon="registry"
+              title={isSchema ? "No schemas yet" : "No APIs yet"}
+              description={
+                isSchema
+                  ? "Import your first JSON Schema to get started."
+                  : "Import your first OpenAPI, GraphQL, or AsyncAPI spec to get started."
+              }
+              action={newApiButton}
+            />
+          ) : (
+            // Entries exist but the filters match none.
+            <EmptyState
+              icon="registry"
+              title={isSchema ? "No schemas match" : "No APIs match"}
+              description="Clear the filters above."
+              action={importButton}
+            />
+          )
         }
+      />
+      <NewApiModal
+        open={choiceOpen}
+        onClose={() => setChoiceOpen(false)}
+        onImport={() => {
+          setChoiceOpen(false);
+          setImportOpen(true);
+        }}
+        kind={kind}
       />
       <RegisterApiModal
         open={importOpen}

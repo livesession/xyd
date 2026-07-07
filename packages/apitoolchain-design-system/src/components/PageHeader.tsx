@@ -3,6 +3,11 @@ import type { ReactNode } from "react";
 export interface PageHeaderProps {
   title: string;
   description?: string;
+  /**
+   * Rendered inline, right after the title — for a compact status chip/pill
+   * (e.g. a repo-sync indicator) that belongs with the title, not the actions.
+   */
+  leadingActions?: ReactNode;
   /** Rendered above the title (e.g. <Breadcrumb/>). */
   breadcrumb?: ReactNode;
   /** Right-aligned actions (buttons, menus). */
@@ -20,6 +25,7 @@ export interface PageHeaderProps {
 export function PageHeader({
   title,
   description,
+  leadingActions,
   breadcrumb,
   actions,
   tabs,
@@ -32,9 +38,16 @@ export function PageHeader({
       {breadcrumb}
       <div className="flex items-start justify-between gap-6">
         <div className="min-w-0">
-          <h1 className="m-0 text-page font-semibold tracking-[-0.02em] text-ink">
-            {title}
-          </h1>
+          <div className="flex items-center gap-2.5">
+            <h1 className="m-0 min-w-0 text-page font-semibold tracking-[-0.02em] text-ink">
+              {title}
+            </h1>
+            {leadingActions && (
+              <div className="flex shrink-0 items-center gap-2">
+                {leadingActions}
+              </div>
+            )}
+          </div>
           {description && (
             <p className="mt-2 mb-0 max-w-[640px] text-sm leading-5 text-muted">
               {description}

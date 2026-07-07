@@ -71,7 +71,7 @@ interface CodeSampleItemProps {
 function CodeSampleItem(props: CodeSampleItemProps) {
   const { currentExample, examples, name, description, singleExampleTab, onExampleChange } =
     props;
-  const { markdownFormat } = useContext(AtlasContext);
+  const { markdownFormat, codeSample } = useContext(AtlasContext);
   const syntaxHighlight = useSyntaxHighlight();
 
   const shouldRenderAllExamples = markdownFormat;
@@ -99,6 +99,9 @@ function CodeSampleItem(props: CodeSampleItemProps) {
         codeblocks={createCodeblocks(currentExample)}
         theme={syntaxHighlight || undefined}
         markdownFormat={markdownFormat}
+        languageSwitcher={codeSample?.languageSwitcher}
+        languageIcons={codeSample?.languageIcons}
+        renderLanguage={codeSample?.renderLanguage}
       />
     </UXNode>
   );
@@ -111,6 +114,9 @@ function CodeSampleItem(props: CodeSampleItemProps) {
         codeblocks={createCodeblocks(example)}
         theme={syntaxHighlight || undefined}
         markdownFormat={markdownFormat}
+        languageSwitcher={codeSample?.languageSwitcher}
+        languageIcons={codeSample?.languageIcons}
+        renderLanguage={codeSample?.renderLanguage}
       />
     </UXNode>
   ));

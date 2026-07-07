@@ -327,6 +327,60 @@ model RepoConnection {
   lastReleasedVersion?: string;
 }
 
+/** Package registry flavour — the language ecosystem an SDK publishes into. */
+enum PackageRegistryKind {
+  /** npm registry (node). */
+  npm,
+  /** PyPI (python). */
+  pypi,
+  /** RubyGems (ruby). */
+  gems,
+  /** Maven repository (java). */
+  maven,
+  /** NuGet feed (dotnet). */
+  nuget,
+  /** Go module proxy (go). */
+  goproxy,
+}
+
+/** A connected package registry account (token is server-side only). */
+model PackageRegistry {
+  id: string;
+  kind: PackageRegistryKind;
+  name: string;
+
+  /** Registry URL, or a local file-feed path (maven/nuget/go). */
+  url: string;
+
+  /** Account/scope the token publishes as (informational). */
+  connectedAs: string;
+
+  createdAt: string;
+}
+
+/** Links ONE SDK target (a language) to a package registry it publishes into. */
+model RegistryConnection {
+  id: string;
+  registryId: string;
+
+  /** The SDK target id this connection publishes. */
+  targetId: string;
+
+  /** The target's language (must match the registry kind's ecosystem). */
+  language: string;
+
+  /** Package name as published (defaults to the SDK's own package name). */
+  packageName: string;
+
+  /** Publish automatically when a release for this target is merged. */
+  autoPublish: boolean;
+
+  lastPublishedVersion?: string;
+  lastPublishedAt?: string;
+  lastPublishStatus?: BuildStatus;
+  lastPublishError?: string;
+}
+
 /** A versioned release cycle for an SDK connection (the rolling PR + its state). */
 enum ReleaseState {
   preparing,
@@ -363,6 +417,11 @@ model Release {
 // ── inputs (request bodies) ──
 model RegisterApiInput {
   name: string;
+
+  /** Explicit id/slug for the entry. Slugified server-side; defaults to a slug
+   * of `name`. Lets the display title (`name`) be decoupled from the stable id. */
+  id?: string;
+
   format?: ApiFormat;
 
   /** `api` (default) or `schema` — classifies the uploaded document. */
@@ -403,6 +462,9 @@ model CreateSdkInput {
 model AddSdkTargetInput {
   language: SdkLanguage;
   packageName?: string;
+
+  /** API version to generate from; defaults to the API's current version. */
+  version?: string;
 }
 
 model CreateDocsProjectInput {
@@ -493,6 +555,29 @@ model CreateRepoConnectionInput {
   releaseMode?: string;
   autoRelease?: boolean;
   baseBranch?: string;
+}
+
+/** Connect a package registry account. */
+model ConnectRegistryInput {
+  kind: PackageRegistryKind;
+  name?: string;
+
+  /** Registry URL, or a local file-feed path. */
+  url: string;
+
+  /** Auth token; may be empty for an anonymous/local registry. */
+  token?: string;
+}
+
+/** Link an SDK target to a package registry. */
+model CreateRegistryConnectionInput {
+  registryId: string;
+  targetId: string;
+
+  /** Override the published package name (defaults to the SDK's own name). */
+  packageName?: string;
+
+  autoPublish?: boolean;
 }
 
 model PrepareReleaseInput {

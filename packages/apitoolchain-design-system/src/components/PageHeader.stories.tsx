@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { Badge } from "./Badge";
 import { Breadcrumb } from "./Breadcrumb";
 import { Button } from "./Button";
 import { PageHeader } from "./PageHeader";
@@ -11,6 +12,7 @@ const meta: Meta<typeof PageHeader> = {
   argTypes: {
     title: { control: "text" },
     description: { control: "text" },
+    leadingActions: { control: false },
     breadcrumb: { control: false },
     actions: { control: false },
     tabs: { control: false },
@@ -63,6 +65,40 @@ export const WithActions: Story = {
           New spec
         </Button>
       </>
+    ),
+  },
+};
+
+/**
+ * A compact status chip rendered inline, right after the title (via
+ * `leadingActions`) — here a repo-sync indicator waiting on open PRs. Use for
+ * at-a-glance status that belongs with the title, distinct from `actions`.
+ */
+export const WithLeadingActions: Story = {
+  args: {
+    title: "livesession-openapi",
+    description: "OpenAPI spec connected to a git repo.",
+    leadingActions: (
+      <Badge tone="warning" icon="git">
+        3 PRs to merge
+      </Badge>
+    ),
+    actions: (
+      <Button variant="secondary" icon="git">
+        Connect a repo
+      </Button>
+    ),
+  },
+};
+
+/** The synced state — the chip flips to a success tone. */
+export const InSync: Story = {
+  args: {
+    title: "livesession-openapi",
+    leadingActions: (
+      <Badge tone="success" icon="git">
+        In sync
+      </Badge>
     ),
   },
 };

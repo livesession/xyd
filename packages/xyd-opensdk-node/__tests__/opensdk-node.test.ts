@@ -53,7 +53,9 @@ describe('opensdk-node emitter shape', () => {
     const pkg = JSON.parse(files['package.json']);
     expect(pkg.name).toBe('petstore');
     expect(pkg.dependencies).toEqual({});
-    expect(files['src/client.ts']).toContain('export class Client extends APIClient');
+    expect(files['src/client.ts']).toContain('export class Petstore extends APIClient');
+    // Default export style: consumers name it themselves (`import Petstore from 'petstore'`).
+    expect(files['src/index.ts']).toContain("export { Petstore as default } from './client';");
     expect(files['src/resources/pets.ts']).toContain('export class Pets extends APIResource');
     expect(files['src/models.ts']).toContain('export type PetStatus = "available" | "pending" | "sold";');
     expect(files['src/core/request.ts']).toContain('response = await this.fetchImpl(');
@@ -85,5 +87,51 @@ describe('opensdk-node emitter shape', () => {
     expect(unions['src/resources/events.ts']).toContain('CursorPage<Event>');
     expect(unions['src/resources/logs.ts']).toContain('OffsetPage<Log>');
     expect(unions['src/core/pagination.ts']).toContain('export class CursorPage<T>');
+  });
+});
+
+describe('opensdk-node client export styles', () => {
+  const ir = JSON.parse(
+    fs.readFileSync(path.join(__dirname, '../__fixtures__/1.basic/input.json'), 'utf8'),
+  );
+
+  it('default (no option) → a default export; consumer names it (import OpenAI from …)', () => {
+    const files = opensdkNode(ir, { packageName: 'openai' });
+    expect(files['src/client.ts']).toContain('export class Openai extends APIClient');
+    expect(files['src/index.ts']).toContain("export { Openai as default } from './client';");
+    // No fixed named symbol — the returned object isn't a specific export.
+    expect(files['src/index.ts']).not.toContain("export { Openai } from './client';");
+    expect(files['README.md']).toContain("import Openai from 'openai';");
+  });
+
+  it('named (derived) → a PascalCase symbol from the package name (@cloudinary/analysis → CloudinaryAnalysis)', () => {
+    const files = opensdkNode(ir, {
+      packageName: '@cloudinary/analysis',
+      exportName: 'package',
+    });
+    expect(files['src/client.ts']).toContain('export class CloudinaryAnalysis extends APIClient');
+    expect(files['src/index.ts']).toContain("export { CloudinaryAnalysis } from './client';");
+    expect(files['src/index.ts']).not.toContain('as default');
+    expect(files['README.md']).toContain("import { CloudinaryAnalysis } from '@cloudinary/analysis';");
+  });
+
+  it('named (explicit) → a custom symbol when no pattern fits (import { Leonardo } from @leonardo-ai/sdk)', () => {
+    const files = opensdkNode(ir, {
+      packageName: '@leonardo-ai/sdk',
+      exportName: 'Leonardo',
+    });
+    expect(files['src/client.ts']).toContain('export class Leonardo extends APIClient');
+    expect(files['src/index.ts']).toContain("export { Leonardo } from './client';");
+    expect(files['README.md']).toContain("import { Leonardo } from '@leonardo-ai/sdk';");
+  });
+
+  it('the generated test setup binds the client to a local `Client` for any export style', () => {
+    const def = opensdkNode(ir, { packageName: 'openai' });
+    expect(def['tests/setup.ts']).toContain("import Client from '../src/index';");
+    const named = opensdkNode(ir, {
+      packageName: '@leonardo-ai/sdk',
+      exportName: 'Leonardo',
+    });
+    expect(named['tests/setup.ts']).toContain("import { Leonardo as Client } from '../src/index';");
   });
 });

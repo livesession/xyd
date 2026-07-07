@@ -2,8 +2,8 @@ import {
   Badge,
   type BadgeTone,
   Button,
+  Collapse,
   Modal,
-  Mono,
 } from "@apitoolchain/design-system";
 import { useFetcher } from "react-router";
 import type { Release, ReleaseState, RepoConnection } from "~/data";
@@ -92,29 +92,47 @@ export function ReleasesPanel({
       {history.length > 0 && (
         <div className="flex flex-col gap-2">
           <div className="text-sm font-semibold text-ink">Released</div>
-          <div className="flex flex-col divide-y divide-line-soft rounded-control border border-line">
+          <div className="flex flex-col gap-2">
             {history.map((r) => (
-              <div
+              <Collapse
                 key={r.id}
-                className="flex items-center justify-between gap-3 px-3 py-2"
+                icon="git"
+                title={r.tag || `v${r.toVersion}`}
+                description={`${
+                  r.bumpType && r.bumpType !== "none" ? `${r.bumpType} · ` : ""
+                }${r.updatedAt}`}
+                trailing={
+                  r.breakingCount > 0 ? (
+                    <Badge tone="error">{r.breakingCount} breaking</Badge>
+                  ) : null
+                }
+                footer={
+                  <div className="flex items-center justify-between gap-3">
+                    <span>
+                      spec {r.baseSpecVersion || "∅"} → {r.headSpecVersion} ·{" "}
+                      {r.changeCount} change(s)
+                    </span>
+                    {r.releaseUrl && (
+                      <a
+                        href={r.releaseUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue no-underline hover:underline"
+                      >
+                        View release ↗
+                      </a>
+                    )}
+                  </div>
+                }
               >
-                <div className="flex items-center gap-2.5">
-                  <Badge tone="success">{r.tag || `v${r.toVersion}`}</Badge>
-                  <Mono tone="muted">
-                    {r.bumpType} · {r.updatedAt}
-                  </Mono>
-                </div>
-                {r.releaseUrl && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    href={r.releaseUrl}
-                    icon="externalLink"
-                  >
-                    Release
-                  </Button>
+                {r.changelog ? (
+                  <pre className="max-h-[320px] overflow-auto whitespace-pre-wrap text-[12px] text-ink">
+                    {r.changelog}
+                  </pre>
+                ) : (
+                  <span className="text-subtle">No changelog recorded.</span>
                 )}
-              </div>
+              </Collapse>
             ))}
           </div>
         </div>
@@ -173,67 +191,81 @@ function ActiveRelease({
   const publishResult = publish.data as
     | { ok?: boolean; message?: string }
     | undefined;
+  const versionLabel = release.fromVersion
+    ? `v${release.fromVersion} → v${release.toVersion}`
+    : `Initial · v${release.toVersion}`;
   return (
-    <div className="flex flex-col gap-4 rounded-control border border-line bg-surface p-4">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex flex-wrap items-center gap-2.5">
+    <Collapse
+      icon="git"
+      title={versionLabel}
+      description={`spec ${release.baseSpecVersion || "∅"} → ${
+        release.headSpecVersion
+      } · ${release.changeCount} change(s)`}
+      defaultOpen
+      trailing={
+        <span className="flex items-center gap-1.5">
           <Badge tone={STATE_TONE[release.state]}>
             {STATE_LABEL[release.state]}
           </Badge>
-          <span className="text-sm font-semibold text-ink">
-            v{release.fromVersion || "0.0.0"} → v{release.toVersion}
-          </span>
-          {release.bumpType && <Badge tone="neutral">{release.bumpType}</Badge>}
+          {release.bumpType && release.bumpType !== "none" && (
+            <Badge tone="neutral">{release.bumpType}</Badge>
+          )}
           {release.breakingCount > 0 && (
             <Badge tone="error">{release.breakingCount} breaking</Badge>
           )}
-        </div>
-        <div className="flex items-center gap-2">
-          {release.prUrl && (
-            <Button
-              variant="ghost"
-              size="sm"
-              href={release.prUrl}
-              icon="externalLink"
-            >
-              PR #{release.prNumber}
-            </Button>
-          )}
-          {release.state === "pr_open" && (
-            <publish.Form method="post" action={actionPath}>
-              <input type="hidden" name="intent" value="publish-release" />
-              <input type="hidden" name="id" value={release.id} />
-              <Button
-                type="submit"
-                variant="secondary"
-                size="sm"
-                disabled={publishing}
+        </span>
+      }
+      footer={
+        <div className="flex items-center justify-between gap-3">
+          <span>
+            {release.prNumber ? `PR #${release.prNumber}` : "No PR yet"}
+          </span>
+          <div className="flex items-center gap-2">
+            {release.prUrl && (
+              <a
+                href={release.prUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue no-underline hover:underline"
               >
-                {publishing ? "Publishing…" : "Publish"}
-              </Button>
-            </publish.Form>
-          )}
+                Open PR ↗
+              </a>
+            )}
+            {release.state === "pr_open" && (
+              <publish.Form method="post" action={actionPath}>
+                <input type="hidden" name="intent" value="publish-release" />
+                <input type="hidden" name="id" value={release.id} />
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  size="sm"
+                  disabled={publishing}
+                >
+                  {publishing ? "Publishing…" : "Publish"}
+                </Button>
+              </publish.Form>
+            )}
+          </div>
         </div>
-      </div>
-      <Mono tone="muted">
-        spec {release.baseSpecVersion || "∅"} → {release.headSpecVersion} ·{" "}
-        {release.changeCount} change(s)
-      </Mono>
+      }
+    >
       {publishResult && publishResult.ok === false && (
-        <div className="rounded-control bg-danger-bg px-3 py-2 text-[13px] text-danger">
+        <div className="mb-3 rounded-control bg-danger-bg px-3 py-2 text-[13px] text-danger">
           {publishResult.message}
         </div>
       )}
       {release.error && (
-        <div className="rounded-control bg-danger-bg px-3 py-2 text-[13px] text-danger">
+        <div className="mb-3 rounded-control bg-danger-bg px-3 py-2 text-[13px] text-danger">
           {release.error}
         </div>
       )}
-      {release.changelog && (
-        <pre className="max-h-[300px] overflow-auto whitespace-pre-wrap rounded-control bg-surface-muted p-3 text-[12px] text-ink">
+      {release.changelog ? (
+        <pre className="max-h-[320px] overflow-auto whitespace-pre-wrap text-[12px] text-ink">
           {release.changelog}
         </pre>
+      ) : (
+        <span className="text-subtle">No changelog yet.</span>
       )}
-    </div>
+    </Collapse>
   );
 }

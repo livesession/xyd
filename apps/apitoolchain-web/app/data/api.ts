@@ -5,7 +5,9 @@ import {
   MCP_SERVERS,
   NOTIFICATIONS,
   ORGANIZATION,
+  PACKAGE_REGISTRIES,
   PROJECT,
+  REGISTRY_CONNECTIONS,
   RELEASES,
   REPO_CONNECTIONS,
   SDK_TARGETS,
@@ -13,6 +15,7 @@ import {
   TARGET_VERSIONS,
   USER,
 } from "./fixtures";
+import { SAMPLE_OPENAPI } from "./sample-openapi";
 import type {
   DocsProject,
   GitProvider,
@@ -23,7 +26,10 @@ import type {
   Notification,
   Organization,
   OverviewStats,
+  PackageRegistry,
+  PackageRegistryKind,
   Project,
+  RegistryConnection,
   RegistryEntry,
   Release,
   RepoConnection,
@@ -175,8 +181,35 @@ export async function getApi(id: string): Promise<RegistryEntry | undefined> {
   return mapEntry(await res.json());
 }
 
+/**
+ * Raw spec text for an api + version — powers the OpenAPI editor's Monaco pane.
+ * Hits the gateway's owned `/apis/:id/versions/:version/spec` route (which
+ * proxies registry-api's raw bytes); with no backend it serves a bundled sample
+ * so the editor works offline. A backend error throws (honest "load real specs"
+ * behaviour) rather than silently masking it with the sample.
+ */
+export async function fetchSpecRaw(
+  apiId: string,
+  version: string,
+): Promise<{ text: string; contentType: string }> {
+  if (!apiBase()) {
+    return { text: SAMPLE_OPENAPI, contentType: "application/yaml" };
+  }
+  const res = await apiFetch(
+    `/apis/${encodeURIComponent(apiId)}/versions/${encodeURIComponent(version)}/spec`,
+  );
+  if (!res.ok) throw new Response(res.statusText, { status: res.status });
+  return {
+    text: await res.text(),
+    contentType: res.headers.get("content-type") ?? "application/yaml",
+  };
+}
+
 export interface RegisterApiInput {
   name: string;
+  /** Explicit id/slug — decoupled from `name`. Slugified server-side; defaults
+   * to a slug of the name when omitted. */
+  id?: string;
   ns?: string;
   format?: RegistryEntry["format"];
   kind?: RegistryEntry["kind"];
@@ -389,12 +422,13 @@ export async function createSdk(input: {
 export async function addSdkTarget(
   sdkId: string,
   language: SdkLanguage,
+  version?: string,
 ): Promise<{ ok: true; target: SdkTarget } | { ok: false; message: string }> {
   if (!apiBase()) return { ok: false, message: "Backend not configured." };
   const res = await apiFetch(`/sdks/${encodeURIComponent(sdkId)}/targets`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ language }),
+    body: JSON.stringify({ language, ...(version ? { version } : {}) }),
   });
   const body = (await res.json()) as SdkTarget & {
     message?: string;
@@ -892,6 +926,144 @@ export async function syncRepoConnection(
     };
   }
   return { ok: true, connection: mapConn(body) };
+}
+
+// ── Package registries + publish connections ────────────────────────────────
+const mapRegistry = (w: PackageRegistry): PackageRegistry => ({
+  ...w,
+  createdAt: ts(w.createdAt),
+});
+const mapRegConn = (w: RegistryConnection): RegistryConnection => ({
+  ...w,
+  lastPublishedAt: tsOpt(w.lastPublishedAt),
+});
+
+export async function listPackageRegistries(): Promise<PackageRegistry[]> {
+  if (!apiBase()) return PACKAGE_REGISTRIES;
+  return (await get<PackageRegistry[]>("/package-registries")).map(mapRegistry);
+}
+
+export async function connectPackageRegistry(input: {
+  kind: PackageRegistryKind;
+  url: string;
+  token?: string;
+  name?: string;
+}): Promise<
+  { ok: true; registry: PackageRegistry } | { ok: false; message: string }
+> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await apiFetch(`/package-registries`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  const body = (await res.json()) as PackageRegistry & {
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number") {
+    return {
+      ok: false,
+      message: body.message ?? `Connect failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, registry: mapRegistry(body) };
+}
+
+export async function removePackageRegistry(
+  id: string,
+): Promise<{ ok: boolean; message?: string }> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await apiFetch(`/package-registries/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+  if (res.ok) return { ok: true };
+  const body = (await res.json().catch(() => ({}))) as { message?: string };
+  return {
+    ok: false,
+    message: body.message ?? `Delete failed (${res.status})`,
+  };
+}
+
+export async function listRegistryConnections(
+  targetId?: string,
+): Promise<RegistryConnection[]> {
+  if (!apiBase()) {
+    return targetId
+      ? REGISTRY_CONNECTIONS.filter((c) => c.targetId === targetId)
+      : REGISTRY_CONNECTIONS;
+  }
+  const qs = targetId ? `?targetId=${encodeURIComponent(targetId)}` : "";
+  return (await get<RegistryConnection[]>(`/registry-connections${qs}`)).map(
+    mapRegConn,
+  );
+}
+
+export async function createRegistryConnection(input: {
+  registryId: string;
+  targetId: string;
+  packageName?: string;
+  autoPublish?: boolean;
+}): Promise<
+  { ok: true; connection: RegistryConnection } | { ok: false; message: string }
+> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await apiFetch(`/registry-connections`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  const body = (await res.json()) as RegistryConnection & {
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number") {
+    return {
+      ok: false,
+      message: body.message ?? `Connect failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, connection: mapRegConn(body) };
+}
+
+export async function removeRegistryConnection(
+  id: string,
+): Promise<{ ok: boolean; message?: string }> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await apiFetch(
+    `/registry-connections/${encodeURIComponent(id)}`,
+    { method: "DELETE" },
+  );
+  if (res.ok) return { ok: true };
+  const body = (await res.json().catch(() => ({}))) as { message?: string };
+  return {
+    ok: false,
+    message: body.message ?? `Delete failed (${res.status})`,
+  };
+}
+
+/** Kick a publish (push the SDK to the registry). Returns the building connection. */
+export async function publishRegistryConnection(
+  id: string,
+): Promise<
+  { ok: true; connection: RegistryConnection } | { ok: false; message: string }
+> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await apiFetch(
+    `/registry-connections/${encodeURIComponent(id)}/publish`,
+    { method: "POST" },
+  );
+  const body = (await res.json()) as RegistryConnection & {
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number") {
+    return {
+      ok: false,
+      message: body.message ?? `Publish failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, connection: mapRegConn(body) };
 }
 
 // ── Usage (deterministic mock series — no Date/random → SSR-stable) ──────────

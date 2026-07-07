@@ -1,7 +1,7 @@
 import {
   Badge,
   type BadgeTone,
-  Button,
+  ButtonCTA,
   type Column,
   EmptyState,
   LaTable,
@@ -112,9 +112,9 @@ export default function McpRoute({ loaderData }: Route.ComponentProps) {
       <PageHeader
         title="MCP"
         actions={
-          <Button variant="primary" icon="plus">
+          <ButtonCTA variant="primary" icon="plus">
             New MCP server
-          </Button>
+          </ButtonCTA>
         }
       />
       <LaTable
@@ -131,9 +131,9 @@ export default function McpRoute({ loaderData }: Route.ComponentProps) {
             title="No MCP servers match"
             description="Generate an MCP server from a registered API — or clear the filters above."
             action={
-              <Button variant="primary" icon="plus">
+              <ButtonCTA variant="primary" icon="plus">
                 New MCP server
-              </Button>
+              </ButtonCTA>
             }
           />
         }

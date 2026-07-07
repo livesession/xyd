@@ -30,8 +30,8 @@ await ctxQ.upsertSettings(pool, {
 
 // A dev owner account so login works out of the box. Fixed, well-known creds —
 // dev only. `user_settings` sets the current org + project the app opens on.
-const DEV_EMAIL = "dev@apitoolchain.dev";
-const DEV_PASSWORD = "password";
+const DEV_EMAIL = process.env.ATC_DEV_EMAIL ?? "dev@apitoolchain.dev";
+const DEV_PASSWORD = process.env.ATC_DEV_PASSWORD ?? "password";
 let owner = await authQ.getUserByEmail(pool, { email: DEV_EMAIL });
 if (!owner) {
   owner = await authQ.insertUser(pool, {

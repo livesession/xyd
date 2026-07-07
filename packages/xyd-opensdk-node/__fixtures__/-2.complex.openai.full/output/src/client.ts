@@ -26,7 +26,7 @@ import { VectorStores } from './resources/vector-stores';
 import { Videos } from './resources/videos';
 
 /** The openai API client. */
-export class Client extends APIClient {
+export class Openai extends APIClient {
   readonly admin: Admin;
   readonly audio: Audio;
   readonly batches: Batches;

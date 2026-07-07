@@ -98,6 +98,9 @@ export interface TargetVersion {
   createdAt: string;
   publishedAt?: string;
   registryUrl?: string;
+  /** Dist-tags pointing at this version — inherited from the parent spec's
+   * dist-tags (the SDK tracks the spec version). */
+  tags?: string[];
 }
 
 export interface DocsProject {
@@ -216,6 +219,40 @@ export interface RepoConnection {
   baseBranch?: string;
   prerelease?: boolean;
   lastReleasedVersion?: string;
+}
+
+/** Package registry flavour — the language ecosystem an SDK publishes into. */
+export type PackageRegistryKind =
+  | "npm"
+  | "pypi"
+  | "gems"
+  | "maven"
+  | "nuget"
+  | "goproxy";
+
+/** A connected package registry account (token is server-side only). */
+export interface PackageRegistry {
+  id: string;
+  kind: PackageRegistryKind;
+  name: string;
+  /** Registry URL, or a local file-feed path (maven/nuget/go). */
+  url: string;
+  connectedAs: string;
+  createdAt: string;
+}
+
+/** Links one SDK target (a language) to a package registry it publishes into. */
+export interface RegistryConnection {
+  id: string;
+  registryId: string;
+  targetId: string;
+  language: string;
+  packageName: string;
+  autoPublish: boolean;
+  lastPublishedVersion?: string;
+  lastPublishedAt?: string;
+  lastPublishStatus?: BuildStatus;
+  lastPublishError?: string;
 }
 
 export type ReleaseState =

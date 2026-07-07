@@ -32,3 +32,8 @@ export {
     useActivePageRoute,
     useActivePage,
 } from "./hooks"
+
+export {
+    SidebarActiveProvider,
+    useSidebarActive,
+} from "./lib"

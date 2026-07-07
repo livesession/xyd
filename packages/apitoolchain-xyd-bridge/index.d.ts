@@ -85,3 +85,28 @@ export interface IrDiff {
 }
 /** Diff two OpenSDK IRs (base = published/old, head = new). */
 export function diffIR(base: OpensdkSpecJson, head: OpensdkSpecJson): IrDiff;
+
+// ── generated SDK -> package registry ──
+/** Per-language publish option bag (from @xyd-js/opensdk-framework). */
+export interface EmitterPublishOptions {
+  /** Registry URL, or a folder/file feed path (npm registry / PyPI repository-url / NuGet source / Maven repo). */
+  registry?: string;
+  /** Auth token (undefined for an anonymous/local registry). */
+  token?: string;
+  /** Version for registries with no manifest version (the Go git tag). Falls back to `0.0.0`. */
+  version?: string;
+  /** Dist-tag for registries that support one (npm). Omit for the default (`latest`). */
+  tag?: string;
+  /** Package only (pack/build), never push. */
+  dryRun?: boolean;
+}
+/**
+ * Pack + publish an already-generated SDK at `dir` for `lang` via its emitter's
+ * publisher (shells out to npm/twine/gem/dotnet/mvn on the host). Throws if the
+ * dir is missing or the language toolchain isn't available.
+ */
+export function publishTarget(
+  lang: string,
+  dir: string,
+  opts: EmitterPublishOptions,
+): void;

@@ -262,15 +262,24 @@ function renderParamsInterface(
   refs: ModelRefs,
 ): string {
   const lines: string[] = [];
+  // Dedupe by property key: a body field and a same-named query/header param
+  // (e.g. a `version` in both the request body AND a `?version=` query) would
+  // otherwise emit a duplicate identifier (invalid TS). Body wins (emitted
+  // first); the colliding param is skipped.
+  const seen = new Set<string>();
+  const pushField = (name: string, required: boolean | undefined, type: Parameters<typeof nodeType>[0]): void => {
+    const key = propKey(name);
+    if (seen.has(key)) return;
+    seen.add(key);
+    lines.push(`  ${key}${required ? '' : '?'}: ${nodeType(type, refs)};`);
+  };
   if (hasBody) {
-    for (const f of bodyList) {
-      lines.push(`  ${propKey(f.name)}${f.required ? '' : '?'}: ${nodeType(f.type, refs)};`);
-    }
+    for (const f of bodyList) pushField(f.name, f.required, f.type);
   }
   // query/header params keyed by their LOGICAL name (mapped to the wire name at
   // request time), so a param like `tags` reads nicely even when its wire key is `tags[]`.
   for (const p of [...queryParams, ...headerParams]) {
-    lines.push(`  ${propKey(p.name)}${p.required ? '' : '?'}: ${nodeType(p.type, refs)};`);
+    pushField(p.name, p.required, p.type);
   }
   const body = lines.length ? `\n${lines.join('\n')}\n` : '';
   return `export interface ${typeName} {${body}}`;

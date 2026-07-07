@@ -1,20 +1,32 @@
 import type { OpensdkSpecJson } from '@xyd-js/opensdk-core';
 
-import { npmPackageName, screamingSnakeCase } from './naming';
+import { npmPackageName, pascalCase, screamingSnakeCase } from './naming';
 import type { OpensdkNodeOptions } from './types';
 
 export interface ResolvedNodeOptions {
   pkg: string;
   baseURL: string;
   envVar: string;
+  /** The client class name (also the exported symbol in named mode). */
+  clientName: string;
+  /** `true` → default export (`import X from 'pkg'`); `false` → named export. */
+  defaultExport: boolean;
 }
 
 export function resolveNodeOptions(spec: OpensdkSpecJson, options: OpensdkNodeOptions): ResolvedNodeOptions {
   const pkg = options.packageName ?? npmPackageName(spec.info.title);
+  const exportName = options.exportName?.trim() || 'default';
+  const named = exportName !== 'default';
+  // A custom name (anything but the `package` sentinel) is used verbatim; else the
+  // symbol/class name is derived (PascalCase) from the package name —
+  // `@cloudinary/analysis` → `CloudinaryAnalysis`.
+  const clientName = named && exportName !== 'package' ? exportName : pascalCase(pkg);
   return {
     pkg,
     baseURL: options.baseURL ?? spec.servers?.[0] ?? '',
     envVar: options.envVar ?? spec.security?.find((s) => s.envVar)?.envVar ?? `${screamingSnakeCase(pkg)}_API_KEY`,
+    clientName,
+    defaultExport: !named,
   };
 }
 
@@ -81,16 +93,19 @@ export function tsconfigJson(): string {
 }
 
 /** A minimal README scaffold. */
-export function readme(pkg: string, spec: OpensdkSpecJson): string {
+export function readme(pkg: string, spec: OpensdkSpecJson, clientName: string, defaultExport: boolean): string {
   const summary = spec.info.description ? `\n${spec.info.description}\n` : '';
+  const importLine = defaultExport
+    ? `import ${clientName} from '${pkg}';`
+    : `import { ${clientName} } from '${pkg}';`;
   return `# ${pkg}
 ${summary}
 ## Usage
 
 \`\`\`ts
-import { Client } from '${pkg}';
+${importLine}
 
-const client = new Client({ apiKey: process.env.API_KEY });
+const client = new ${clientName}({ apiKey: process.env.API_KEY });
 \`\`\`
 `;
 }

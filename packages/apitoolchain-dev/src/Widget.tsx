@@ -53,23 +53,30 @@ export function DevWidget() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // The login page must stay usable (it's how you authenticate) — the mandatory
+  // profile picker belongs on the app's onboarding, never here.
+  const onLoginPage =
+    typeof window !== "undefined" && window.location.pathname === "/login";
+
   // Storage is client-only; read it after hydration and lift the pre-paint gate
-  // if a profile was already picked this tab session.
+  // if a profile was already picked. localStorage (not sessionStorage) so the
+  // gate is shared across same-origin tabs — a new tab (e.g. the editor opened
+  // via `newTab`) doesn't re-prompt for a profile that's already applied.
   useEffect(() => {
     setMounted(true);
     let already = false;
     try {
-      already = !!sessionStorage.getItem(GATE_KEY);
+      already = !!localStorage.getItem(GATE_KEY);
     } catch {
       /* ignore */
     }
     setPicked(already);
-    if (already) ungate();
-  }, []);
+    if (already || onLoginPage) ungate();
+  }, [onLoginPage]);
 
   if (!mounted) return null;
 
-  const mandatory = !picked;
+  const mandatory = !picked && !onLoginPage;
   const showPicker = mandatory || pickerOpen;
 
   // The gate hides <body>; `visible` re-shows this subtree so the widget is
@@ -143,7 +150,7 @@ function ProfilePicker({
       const j = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(j?.error || "apply failed");
       try {
-        sessionStorage.setItem(GATE_KEY, p.id);
+        localStorage.setItem(GATE_KEY, p.id);
       } catch {
         /* ignore */
       }
@@ -193,7 +200,7 @@ function ProfilePicker({
             }
       }
     >
-      <div className="box-border max-h-[86vh] w-[520px] max-w-[92vw] overflow-auto rounded-[14px] bg-white p-[22px] shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
+      <div className="box-border max-h-[86vh] w-[760px] max-w-[92vw] overflow-auto rounded-[14px] bg-white p-[22px] shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
         <div className="text-[16px] font-semibold text-[#12161c]">
           Load a dev data profile
         </div>
@@ -210,14 +217,14 @@ function ProfilePicker({
           <div className="text-[13px] text-[#5b6472]">Loading…</div>
         )}
 
-        <div className="flex flex-col gap-2">
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
           {profiles?.map((p) => (
             <button
               key={p.id}
               type="button"
               disabled={applying !== null}
               onClick={() => apply(p)}
-              className="cursor-pointer rounded-[10px] border border-[#e6e8eb] bg-white px-3.5 py-3 text-left hover:border-[#12161c] hover:bg-[#fafafa] disabled:cursor-progress disabled:opacity-60"
+              className="flex cursor-pointer flex-col rounded-[10px] border border-[#e6e8eb] bg-white px-3.5 py-3 text-left hover:border-[#12161c] hover:bg-[#fafafa] disabled:cursor-progress disabled:opacity-60"
             >
               <div className="text-[14px] font-semibold text-[#12161c]">
                 {p.name}

@@ -1617,6 +1617,227 @@ export const openApiDocument = {
         },
       },
     },
+    "/package-registries": {
+      get: {
+        operationId: "PackageRegistries_list",
+        parameters: [],
+        responses: {
+          "200": {
+            description: "The request has succeeded.",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "array",
+                  items: {
+                    $ref: "#/components/schemas/Apitoolchain.PackageRegistry",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      post: {
+        operationId: "PackageRegistries_create",
+        parameters: [],
+        responses: {
+          "200": {
+            description: "The request has succeeded.",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/Apitoolchain.PackageRegistry",
+                },
+              },
+            },
+          },
+          "422": {
+            description: "Client error",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ValidationError" },
+              },
+            },
+          },
+        },
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/Apitoolchain.ConnectRegistryInput",
+              },
+            },
+          },
+        },
+      },
+    },
+    "/package-registries/{id}": {
+      delete: {
+        operationId: "PackageRegistries_remove",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+        ],
+        responses: {
+          "204": {
+            description:
+              "There is no content to send for this request, but the headers may be useful. ",
+          },
+          "404": {
+            description: "The server cannot find the requested resource.",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/NotFoundError" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/registry-connections": {
+      get: {
+        operationId: "RegistryConnections_list",
+        parameters: [
+          {
+            name: "targetId",
+            in: "query",
+            required: false,
+            schema: { type: "string" },
+            explode: false,
+          },
+        ],
+        responses: {
+          "200": {
+            description: "The request has succeeded.",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "array",
+                  items: {
+                    $ref: "#/components/schemas/Apitoolchain.RegistryConnection",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      post: {
+        operationId: "RegistryConnections_create",
+        parameters: [],
+        responses: {
+          "200": {
+            description: "The request has succeeded.",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/Apitoolchain.RegistryConnection",
+                },
+              },
+            },
+          },
+          "404": {
+            description: "The server cannot find the requested resource.",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/NotFoundError" },
+              },
+            },
+          },
+          "422": {
+            description: "Client error",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ValidationError" },
+              },
+            },
+          },
+        },
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                $ref: "#/components/schemas/Apitoolchain.CreateRegistryConnectionInput",
+              },
+            },
+          },
+        },
+      },
+    },
+    "/registry-connections/{id}": {
+      delete: {
+        operationId: "RegistryConnections_remove",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+        ],
+        responses: {
+          "204": {
+            description:
+              "There is no content to send for this request, but the headers may be useful. ",
+          },
+          "404": {
+            description: "The server cannot find the requested resource.",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/NotFoundError" },
+              },
+            },
+          },
+        },
+      },
+    },
+    "/registry-connections/{id}/publish": {
+      post: {
+        operationId: "RegistryConnections_publish",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+          },
+        ],
+        responses: {
+          "200": {
+            description: "The request has succeeded.",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/Apitoolchain.RegistryConnection",
+                },
+              },
+            },
+          },
+          "404": {
+            description: "The server cannot find the requested resource.",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/NotFoundError" },
+              },
+            },
+          },
+          "422": {
+            description: "Client error",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ValidationError" },
+              },
+            },
+          },
+        },
+      },
+    },
   },
   components: {
     schemas: {
@@ -1720,6 +1941,11 @@ export const openApiDocument = {
         required: ["name"],
         properties: {
           name: { type: "string" },
+          id: {
+            type: "string",
+            description:
+              "Explicit id/slug for the entry. Slugified server-side; defaults to a slug\nof `name`. Lets the display title (`name`) be decoupled from the stable id.",
+          },
           format: { $ref: "#/components/schemas/Apitoolchain.ApiFormat" },
           kind: {
             allOf: [{ $ref: "#/components/schemas/Apitoolchain.EntryKind" }],
@@ -1834,6 +2060,11 @@ export const openApiDocument = {
         properties: {
           language: { $ref: "#/components/schemas/Apitoolchain.SdkLanguage" },
           packageName: { type: "string" },
+          version: {
+            type: "string",
+            description:
+              "API version to generate from; defaults to the API's current version.",
+          },
         },
         description: "Add a language target to an SDK (kicks off generation).",
       },
@@ -2336,6 +2567,113 @@ export const openApiDocument = {
           connectionId: { type: "string" },
           versionOverride: { type: "string" },
         },
+      },
+      "Apitoolchain.PackageRegistryKind": {
+        type: "string",
+        enum: ["npm", "pypi", "gems", "maven", "nuget", "goproxy"],
+        description:
+          "Package registry flavour — the language ecosystem an SDK publishes into.",
+      },
+      "Apitoolchain.PackageRegistry": {
+        type: "object",
+        required: ["id", "kind", "name", "url", "connectedAs", "createdAt"],
+        properties: {
+          id: { type: "string" },
+          kind: {
+            $ref: "#/components/schemas/Apitoolchain.PackageRegistryKind",
+          },
+          name: { type: "string" },
+          url: {
+            type: "string",
+            description:
+              "Registry URL, or a local file-feed path (maven/nuget/go).",
+          },
+          connectedAs: {
+            type: "string",
+            description:
+              "Account/scope the token publishes as (informational).",
+          },
+          createdAt: { type: "string" },
+        },
+        description:
+          "A connected package registry account (token is server-side only).",
+      },
+      "Apitoolchain.ConnectRegistryInput": {
+        type: "object",
+        required: ["kind", "url"],
+        properties: {
+          kind: {
+            $ref: "#/components/schemas/Apitoolchain.PackageRegistryKind",
+          },
+          name: { type: "string" },
+          url: {
+            type: "string",
+            description: "Registry URL, or a local file-feed path.",
+          },
+          token: {
+            type: "string",
+            description:
+              "Auth token; may be empty for an anonymous/local registry.",
+          },
+        },
+        description: "Connect a package registry account.",
+      },
+      "Apitoolchain.RegistryConnection": {
+        type: "object",
+        required: [
+          "id",
+          "registryId",
+          "targetId",
+          "language",
+          "packageName",
+          "autoPublish",
+        ],
+        properties: {
+          id: { type: "string" },
+          registryId: { type: "string" },
+          targetId: {
+            type: "string",
+            description: "The SDK target id this connection publishes.",
+          },
+          language: {
+            type: "string",
+            description:
+              "The target's language (must match the registry kind's ecosystem).",
+          },
+          packageName: {
+            type: "string",
+            description:
+              "Package name as published (defaults to the SDK's own package name).",
+          },
+          autoPublish: {
+            type: "boolean",
+            description:
+              "Publish automatically when a release for this target is merged.",
+          },
+          lastPublishedVersion: { type: "string" },
+          lastPublishedAt: { type: "string" },
+          lastPublishStatus: {
+            $ref: "#/components/schemas/Apitoolchain.BuildStatus",
+          },
+          lastPublishError: { type: "string" },
+        },
+        description:
+          "Links ONE SDK target (a language) to a package registry it publishes into.",
+      },
+      "Apitoolchain.CreateRegistryConnectionInput": {
+        type: "object",
+        required: ["registryId", "targetId"],
+        properties: {
+          registryId: { type: "string" },
+          targetId: { type: "string" },
+          packageName: {
+            type: "string",
+            description:
+              "Override the published package name (defaults to the SDK's own name).",
+          },
+          autoPublish: { type: "boolean" },
+        },
+        description: "Link an SDK target to a package registry.",
       },
     },
   },

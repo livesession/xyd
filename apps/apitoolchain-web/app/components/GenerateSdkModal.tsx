@@ -9,11 +9,13 @@ import {
   OptionCard,
   RadioButtonCard,
   Search,
+  Select,
   ToggleTile,
 } from "@apitoolchain/design-system";
 import { useEffect, useRef, useState } from "react";
 import { useFetcher, useNavigate } from "react-router";
 import type { RegistryEntry, SdkLanguage } from "~/data";
+import { formatVersion } from "~/version";
 import { RegisterApiModal } from "./RegisterApiModal";
 import { COMING_SOON_LANGS, SDK_LANGS, SdkLangIcon } from "./SdkLangIcon";
 
@@ -100,6 +102,7 @@ export function GenerateSdkModal({
   const [search, setSearch] = useState("");
   const [name, setName] = useState("");
   const [nameTouched, setNameTouched] = useState(false);
+  const [version, setVersion] = useState("");
   const [langs, setLangs] = useState<Set<SdkLanguage>>(new Set());
 
   const submitting = fetcher.state !== "idle";
@@ -116,6 +119,7 @@ export function GenerateSdkModal({
       setSearch("");
       setName("");
       setNameTouched(false);
+      setVersion("");
       setLangs(new Set());
       setDirty(false);
       setImportOpen(false);
@@ -135,6 +139,14 @@ export function GenerateSdkModal({
   const selected = openapi.find((a) => a.id === apiId);
   // Default the SDK name from the API until the user edits it.
   const sdkName = nameTouched ? name : selected ? `${selected.name} SDK` : "";
+  // Version to generate from — defaults to the API's current version.
+  const currentVer =
+    selected?.versions.find((v) => v.current)?.version ??
+    selected?.versions[0]?.version ??
+    "";
+  const genVersion = version || currentVer;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reset the pick when the API changes
+  useEffect(() => setVersion(""), [apiId]);
   const filtered = openapi.filter(
     (a) =>
       a.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -159,6 +171,7 @@ export function GenerateSdkModal({
         intent: "generate-sdk",
         apiId,
         name: sdkName.trim(),
+        version: genVersion,
         langs: [...langs].join(","),
       },
       { method: "post", action: "/sdks" },
@@ -304,6 +317,24 @@ export function GenerateSdkModal({
                 placeholder={`${selected.name} SDK`}
               />
             </Field>
+            <div className="mt-4">
+              <Field
+                label="Version"
+                hint="Which spec version to generate the SDK from."
+              >
+                <Select
+                  value={genVersion}
+                  onChange={setVersion}
+                  leadingIcon="tags-outline"
+                  options={selected.versions.map((v) => ({
+                    value: v.version,
+                    label: v.current
+                      ? `${formatVersion(v.version)} (current)`
+                      : formatVersion(v.version),
+                  }))}
+                />
+              </Field>
+            </div>
             <div className="mt-4 flex flex-col gap-2">
               <span className="text-sm font-medium text-ink">
                 Select SDK languages

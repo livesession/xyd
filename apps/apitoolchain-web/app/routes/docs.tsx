@@ -1,54 +1,61 @@
 import {
   Badge,
-  Button,
+  ButtonCTA,
   type Column,
   EmptyState,
   LaTable,
-  Menu,
   Mono,
   PageHeader,
   StatusPill,
 } from "@apitoolchain/design-system";
 import { useMemo } from "react";
-import { RouterLink } from "~/components/RouterLink";
 import { type DocsProject, listApis, listDocsProjects } from "~/data";
 import { docsFilterSchema } from "~/data/filters";
 import { useUrlFilters } from "~/hooks/useUrlFilters";
 import type { Route } from "./+types/docs";
 
+/** A docs project flattened with its API name + a search blob. */
+type DocsRow = DocsProject & { apiName: string; search: string };
+
 export function meta() {
   return [{ title: "Docs — apitoolchain" }];
 }
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const apis = await listApis();
-  const apiId = new URL(request.url).searchParams.get("apiId") ?? apis[0]?.id;
-  const projects = await listDocsProjects(apiId);
-  const selected = apis.find((a) => a.id === apiId);
-  return { apis, apiId, selectedName: selected?.name ?? null, projects };
+export async function loader() {
+  const [projects, apis] = await Promise.all([listDocsProjects(), listApis()]);
+  const apiName = Object.fromEntries(apis.map((a) => [a.id, a.name]));
+  const rows: DocsRow[] = projects.map((d) => ({
+    ...d,
+    apiName: apiName[d.apiId] ?? d.apiId,
+    search: `${d.name} ${apiName[d.apiId] ?? ""} ${d.sourceSpec}`.toLowerCase(),
+  }));
+  return { rows, apis };
 }
 
 const CELL_LINK =
   "inline-flex items-center gap-[5px] text-[13px] text-blue no-underline";
 
 export default function DocsRoute({ loaderData }: Route.ComponentProps) {
-  const { apis, apiId, selectedName, projects } = loaderData;
+  const { rows, apis } = loaderData;
 
-  const themes = [...new Set(projects.map((d) => d.theme))].sort();
-  const themeKey = themes.join(",");
-  // biome-ignore lint/correctness/useExhaustiveDependencies: recompute on the theme SET, not array identity
-  const schema = useMemo(() => docsFilterSchema(themes), [themeKey]);
+  const themes = [...new Set(rows.map((d) => d.theme))].sort();
+  const facetKey = `${apis.map((a) => a.id).join(",")}|${themes.join(",")}`;
+  // biome-ignore lint/correctness/useExhaustiveDependencies: recompute on the facet SETs, not array identity
+  const schema = useMemo(() => docsFilterSchema(apis, themes), [facetKey]);
   const filter = useUrlFilters(schema);
-  // Preserve the active `?q=` when switching the API selector.
-  const qActive = filter.rules.length > 0 || filter.query.trim().length > 0;
-  const qParam = qActive ? `&q=${encodeURIComponent(filter.toQuery())}` : "";
 
-  const columns: Column<DocsProject>[] = [
+  const columns: Column<DocsRow>[] = [
     {
       key: "name",
       header: "Name",
       width: "wide",
       render: (d) => <span className="font-medium text-ink">{d.name}</span>,
+    },
+    {
+      key: "api",
+      header: "API",
+      width: "md",
+      render: (d) => <span className="text-body">{d.apiName}</span>,
     },
     {
       key: "theme",
@@ -100,28 +107,14 @@ export default function DocsRoute({ loaderData }: Route.ComponentProps) {
       <PageHeader
         title="Docs"
         actions={
-          <>
-            <Menu
-              variant="select"
-              icon="registry"
-              label={selectedName ?? "Select API"}
-              linkComponent={RouterLink}
-              items={apis.map((a) => ({
-                key: a.id,
-                label: a.name,
-                href: `/docs?apiId=${a.id}${qParam}`,
-                active: a.id === apiId,
-              }))}
-            />
-            <Button variant="primary" icon="plus">
-              New docs site
-            </Button>
-          </>
+          <ButtonCTA variant="primary" icon="plus">
+            New docs site
+          </ButtonCTA>
         }
       />
       <LaTable
         filter={filter}
-        data={projects}
+        data={rows}
         columns={columns}
         getRowKey={(d) => d.id}
         searchPlaceholder="Search docs sites…"
@@ -129,11 +122,11 @@ export default function DocsRoute({ loaderData }: Route.ComponentProps) {
           <EmptyState
             icon="docs"
             title="No docs sites match"
-            description="Create a docs site to publish reference + guides for this API, or clear the filters above."
+            description="Create a docs site to publish reference + guides, or clear the filters above."
             action={
-              <Button variant="primary" icon="plus">
+              <ButtonCTA variant="primary" icon="plus">
                 New docs site
-              </Button>
+              </ButtonCTA>
             }
           />
         }

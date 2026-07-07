@@ -1,5 +1,5 @@
 import type { FilterComposerController } from "@apitoolchain/filters";
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import type { IconName } from "../icons";
 import { ButtonFilter } from "./ButtonFilter";
 import { FilterBar } from "./FilterBar";
@@ -76,6 +76,11 @@ function LaTableFilters({
   filter: FilterComposerController;
   addLabel: string;
 }) {
+  // The rule just added from the add-filter menu — its value picker opens on
+  // mount so picking a filter flows straight into picking its value. Read once
+  // at chip mount (see ButtonFilter/DropdownMenu `defaultOpen`), so rules
+  // restored from the URL on first render never auto-open.
+  const [justAdded, setJustAdded] = useState<string | null>(null);
   return (
     <>
       {filter.rules.map((rule) => {
@@ -89,6 +94,7 @@ function LaTableFilters({
             key={rule.key}
             icon={def.icon as IconName}
             onRemove={() => filter.removeRule(rule.key)}
+            defaultOpen={rule.key === justAdded}
             valueLabel={
               picked.length ? picked.map((v) => v.label).join(", ") : undefined
             }
@@ -113,7 +119,11 @@ function LaTableFilters({
             key: d.key,
             label: d.label,
             icon: d.icon as IconName,
-            onSelect: () => filter.addRule(d.key),
+            onSelect: () => {
+              filter.addRule(d.key);
+              // Only value-bearing filters have a picker to open.
+              setJustAdded(d.values?.length ? d.key : null);
+            },
           }))}
         >
           {addLabel}

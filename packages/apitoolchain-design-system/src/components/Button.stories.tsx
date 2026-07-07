@@ -62,3 +62,15 @@ export const Small: Story = {
 export const Disabled: Story = {
   args: { children: "Create key", disabled: true },
 };
+
+/** A link that opens in a new tab — a trailing ↗ tells users it leaves the
+ * current tab. */
+export const NewTab: Story = {
+  args: {
+    children: "Open editor ↗",
+    variant: "secondary",
+    icon: "docs",
+    href: "https://example.com",
+    newTab: true,
+  },
+};

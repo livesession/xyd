@@ -24,6 +24,11 @@ export interface ButtonFilterProps {
   values?: DropdownMenuItem[];
   /** Summary of the picked values shown after the label (rendered in ink). */
   valueLabel?: ReactNode;
+  /**
+   * Open the value picker immediately on mount — for a rule that was just added,
+   * so the user lands straight in "pick a value" instead of an inert chip.
+   */
+  defaultOpen?: boolean;
   align?: "left" | "right";
   linkComponent?: LinkComponent;
   /** Greyer text. Applied rules (those with `onRemove`) are muted by default. */
@@ -50,6 +55,7 @@ export function ButtonFilter({
   items,
   values,
   valueLabel,
+  defaultOpen,
   align,
   linkComponent,
   muted,
@@ -96,6 +102,7 @@ export function ButtonFilter({
         align={align}
         linkComponent={linkComponent}
         closeOnSelect={false}
+        defaultOpen={defaultOpen}
         trigger={
           <button
             type="button"

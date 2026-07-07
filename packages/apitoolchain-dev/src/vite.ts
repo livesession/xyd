@@ -4,9 +4,10 @@ import {
   spawn,
   spawnSync,
 } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync } from "node:fs";
 import { createServer } from "node:net";
-import { resolve } from "node:path";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
 import {
   PostgreSqlContainer,
   type StartedPostgreSqlContainer,
@@ -17,7 +18,7 @@ import {
   Wait,
 } from "testcontainers";
 import type { Plugin } from "vite";
-import { DEV_EMAIL, DEV_PASSWORD } from "./apply-profile";
+import { DEV_EMAIL, DEV_PASSWORD, type RegistriesInfo } from "./apply-profile";
 import { loadProfiles, profileSummary } from "./profiles";
 import { applyOrRestore, clearSnapshots } from "./snapshot";
 
@@ -28,6 +29,152 @@ type Env = Record<string, string>;
 // run leaked instead of piling up a new Postgres/MinIO/Gitea stack each time.
 const DEV_LABEL = "com.apitoolchain.dev";
 const DEV_LABELS = { [DEV_LABEL]: "1" };
+
+/**
+ * Load dev-stack config from `packages/apitoolchain-dev/{.env.example,.env}` into
+ * `process.env` — precedence: real env > `.env` > `.env.example`. Lets the seeded
+ * creds + local-registry ports be configured without editing source (and gives
+ * the registries STABLE ports so a published SDK's URL survives a restart).
+ */
+function loadDevEnv(pkgs: string): void {
+  const parse = (file: string): Record<string, string> => {
+    if (!existsSync(file)) return {};
+    const out: Record<string, string> = {};
+    for (const line of readFileSync(file, "utf8").split("\n")) {
+      const t = line.trim();
+      if (!t || t.startsWith("#")) continue;
+      const eq = t.indexOf("=");
+      if (eq === -1) continue;
+      out[t.slice(0, eq).trim()] = t.slice(eq + 1).trim();
+    }
+    return out;
+  };
+  const dir = resolve(pkgs, "apitoolchain-dev");
+  const defaults = parse(resolve(dir, ".env.example"));
+  const overrides = parse(resolve(dir, ".env"));
+  for (const k of new Set([
+    ...Object.keys(defaults),
+    ...Object.keys(overrides),
+  ])) {
+    if (process.env[k] === undefined) {
+      process.env[k] = overrides[k] ?? defaults[k];
+    }
+  }
+}
+
+const emptyRegistries = (): RegistriesInfo => ({
+  nugetFeed: "",
+  mavenFeed: "",
+  goproxyFeed: "",
+});
+
+/**
+ * Start the local package registries the publish feature targets: verdaccio
+ * (npm), pypiserver (PyPI), gemstash (RubyGems) as throwaway testcontainers, and
+ * file-feed dirs for nuget/maven/go. Each daemon is best-effort — a missing
+ * image or slow boot logs a warning and leaves that ecosystem unavailable, never
+ * blocking the core stack. Reuses the publish-e2e verdaccio config.
+ */
+async function startLocalRegistries(
+  pkgs: string,
+  log: (m: string) => void,
+): Promise<{ info: RegistriesInfo; containers: StartedTestContainer[] }> {
+  const feeds = mkdtempSync(join(tmpdir(), "apitoolchain-feeds-"));
+  const nugetFeed = join(feeds, "nuget");
+  const mavenFeed = join(feeds, "maven");
+  const goproxyFeed = join(feeds, "goproxy");
+  for (const d of [nugetFeed, mavenFeed, goproxyFeed])
+    mkdirSync(d, { recursive: true });
+
+  const verdaccioCfg = resolve(
+    pkgs,
+    "xyd-opensdk-ci/e2e/publish/verdaccio-config.yaml",
+  );
+  // FIXED host ports (env-overridable) so a published SDK's registry URL stays
+  // valid across dev-server restarts + snapshot restores — random ports would go
+  // stale and publishes would hang against a dead port.
+  const npmPort = Number(process.env.ATC_VERDACCIO_PORT || 4873);
+  const pypiPort = Number(process.env.ATC_PYPI_PORT || 8081);
+  const gemsPort = Number(process.env.ATC_GEMS_PORT || 9292);
+  const started: StartedTestContainer[] = [];
+  const tryStart = async (
+    name: string,
+    build: () => Promise<StartedTestContainer>,
+  ): Promise<StartedTestContainer | undefined> => {
+    try {
+      const c = await build();
+      started.push(c);
+      log(`  ${name} ready`);
+      return c;
+    } catch (e) {
+      log(`! ${name} did not start (${(e as Error).message}) — off`);
+      return undefined;
+    }
+  };
+
+  const [verdaccio, pypi, gems] = await Promise.all([
+    tryStart("verdaccio", () =>
+      new GenericContainer("verdaccio/verdaccio:6")
+        .withExposedPorts({ container: 4873, host: npmPort })
+        .withCopyFilesToContainer([
+          { source: verdaccioCfg, target: "/verdaccio/conf/config.yaml" },
+        ])
+        .withLabels(DEV_LABELS)
+        .withWaitStrategy(Wait.forHttp("/-/ping", 4873).forStatusCode(200))
+        .start(),
+    ),
+    tryStart("pypiserver", () =>
+      new GenericContainer("pypiserver/pypiserver:latest")
+        .withExposedPorts({ container: 8080, host: pypiPort })
+        .withCommand([
+          "run",
+          "-P",
+          ".",
+          "-a",
+          ".",
+          "--overwrite",
+          "-p",
+          "8080",
+          "/data/packages",
+        ])
+        .withLabels(DEV_LABELS)
+        .withWaitStrategy(Wait.forHttp("/", 8080).forStatusCode(200))
+        .start(),
+    ),
+    tryStart("gemstash", () =>
+      new GenericContainer("ruby:3.3")
+        .withExposedPorts({ container: 9292, host: gemsPort })
+        .withCommand([
+          "sh",
+          "-c",
+          "gem install gemstash --no-document && gemstash start --no-daemonize",
+        ])
+        .withLabels(DEV_LABELS)
+        .withStartupTimeout(180000)
+        .withWaitStrategy(Wait.forListeningPorts())
+        .start(),
+    ),
+  ]);
+
+  const at = (
+    c: StartedTestContainer | undefined,
+    port: number,
+  ): string | undefined =>
+    c ? `http://localhost:${c.getMappedPort(port)}` : undefined;
+
+  const info: RegistriesInfo = {
+    npmUrl: at(verdaccio, 4873),
+    pypiUrl: at(pypi, 8080),
+    gemsUrl: gems ? `${at(gems, 9292)}/private` : undefined,
+    nugetFeed,
+    mavenFeed,
+    goproxyFeed,
+  };
+  log(
+    `local registries → npm ${info.npmUrl ?? "off"} · pypi ${info.pypiUrl ?? "off"} · gems ${info.gemsUrl ?? "off"}`,
+  );
+  return { info, containers: started };
+}
 
 // Force-remove any containers left over from a previous run (identified by the
 // dev label). testcontainers has no Ryuk reaper here, so without this each
@@ -96,7 +243,10 @@ function run(
 
 /** Spawn a long-running service, prefixing its logs. */
 function spawnService(name: string, cwd: string, env: Env): ChildProcess {
-  const child = spawn("bun", ["src/server.ts"], {
+  // `--watch` so backend edits (handlers, gen/*, mappers) hot-reload the running
+  // service — otherwise a code fix looks "not applied" until the whole dev stack
+  // is restarted.
+  const child = spawn("bun", ["--watch", "src/server.ts"], {
     cwd,
     env: { ...process.env, ...env },
   });
@@ -245,6 +395,7 @@ export function apitoolchainViteDev(
   let registry: ChildProcess | undefined;
   let platform: ChildProcess | undefined;
   let gitprovider: ChildProcess | undefined;
+  let registryContainers: StartedTestContainer[] = [];
   let started = false;
   // Set once the stack is up — the dev profile picker (middleware + overlay)
   // needs the gateway URL + the Postgres container id to reset/seed data, and
@@ -254,6 +405,7 @@ export function apitoolchainViteDev(
     pgId: string;
     apps: string;
     services: { name: string; url: string }[];
+    registries: RegistriesInfo;
     /** Re-run registry + platform migrations (forward-only, idempotent) — used
      * to heal schema drift after a snapshot restore loads an older dump. */
     migrate: () => Promise<void>;
@@ -330,6 +482,22 @@ export function apitoolchainViteDev(
     minio = containers[1];
     gitea = containers[2] as StartedTestContainer | undefined;
 
+    // Local package registries (best-effort). Kicked off here so they boot in
+    // parallel with the registry-api/platform below; awaited before `stack`.
+    // Off with APITOOLCHAIN_REGISTRIES=off.
+    const regsEnabled = process.env.APITOOLCHAIN_REGISTRIES !== "off";
+    if (regsEnabled)
+      log(
+        "starting local package registries: verdaccio (npm) + pypiserver + gemstash (first run pulls the images)…",
+      );
+    else log("local package registries disabled (APITOOLCHAIN_REGISTRIES=off)");
+    const registriesPromise = regsEnabled
+      ? startLocalRegistries(pkgs, log)
+      : Promise.resolve({
+          info: emptyRegistries(),
+          containers: [] as StartedTestContainer[],
+        });
+
     const storage: Env = {
       DATABASE_URL: pg.getConnectionUri(),
       STORAGE_DRIVER: "s3",
@@ -403,6 +571,9 @@ export function apitoolchainViteDev(
     platform = spawnService("platform-api", platDir, platEnv);
     await waitHealthz(`${platUrl}/healthz`, 20000);
 
+    const { info: registries, containers: regCs } = await registriesPromise;
+    registryContainers = regCs;
+
     const services: { name: string; url: string }[] = [
       { name: "platform-api", url: platUrl },
       { name: "registry-api", url: regUrl },
@@ -411,6 +582,12 @@ export function apitoolchainViteDev(
     ];
     if (giteaWebUrl) services.push({ name: "gitea", url: giteaWebUrl });
     if (gpWebUrl) services.push({ name: "gitproviderd", url: gpWebUrl });
+    if (registries.npmUrl)
+      services.push({ name: "verdaccio (npm)", url: registries.npmUrl });
+    if (registries.pypiUrl)
+      services.push({ name: "pypiserver", url: registries.pypiUrl });
+    if (registries.gemsUrl)
+      services.push({ name: "gemstash", url: registries.gemsUrl });
 
     // Re-runnable migrate for both services (the runner is a forward-only
     // ledger, so re-running only applies what's missing). A snapshot restore
@@ -421,7 +598,14 @@ export function apitoolchainViteDev(
       await run("bun", ["db/migrate.ts"], platDir, platEnv);
     };
 
-    stack = { platUrl, pgId: pg.getId(), apps, services, migrate };
+    stack = {
+      platUrl,
+      pgId: pg.getId(),
+      apps,
+      services,
+      registries,
+      migrate,
+    };
     return platUrl;
   }
 
@@ -429,7 +613,12 @@ export function apitoolchainViteDev(
     registry?.kill("SIGTERM");
     platform?.kill("SIGTERM");
     gitprovider?.kill("SIGTERM");
-    await Promise.allSettled([pg?.stop(), minio?.stop(), gitea?.stop()]);
+    await Promise.allSettled([
+      pg?.stop(),
+      minio?.stop(),
+      gitea?.stop(),
+      ...registryContainers.map((c) => c.stop()),
+    ]);
   }
 
   return {
@@ -460,6 +649,8 @@ export function apitoolchainViteDev(
       const xydRoot = options.xydRoot ?? resolve(server.config.root, "../..");
       const apps = resolve(xydRoot, "apps");
       const pkgs = resolve(xydRoot, "packages");
+      // Config/creds from .env(.example) → process.env before anything reads them.
+      loadDevEnv(pkgs);
       const profiles = loadProfiles(
         resolve(pkgs, "apitoolchain-dev", "profiles"),
       );
@@ -512,6 +703,7 @@ export function apitoolchainViteDev(
                   platUrl: stack.platUrl,
                   pgId: stack.pgId,
                   apps: stack.apps,
+                  registries: stack.registries,
                   log,
                 },
                 {

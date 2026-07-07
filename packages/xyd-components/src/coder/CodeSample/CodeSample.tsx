@@ -27,6 +27,16 @@ export interface CodeSampleProps {
     markdownFormat?: boolean
     kind?: "secondary"
     controlByMeta?: boolean // TODO: BETTER IN THE FUTURE
+    /** How the language switcher renders: a row of tabs (default) or a
+     * dropdown to pick the language. */
+    languageSwitcher?: "tabs" | "dropdown"
+    /** Render each language as its programming-language icon (from xyd's
+     * built-in code-language icon set, drawn via the xyd `Icon` component)
+     * instead of the raw name. Languages without an icon keep their name. */
+    languageIcons?: boolean
+    /** Advanced override: fully control the label for a language tab/option.
+     * Takes precedence over `languageIcons`. Falls back to the name otherwise. */
+    renderLanguage?: (lang: string, meta?: string) => React.ReactNode
 }
 
 export const CodeContext = React.createContext<{
@@ -36,6 +46,9 @@ export const CodeContext = React.createContext<{
     descriptionContent?: string | React.ReactNode
     descriptionIcon?: string
     markdownFormat?: boolean
+    languageSwitcher?: "tabs" | "dropdown"
+    languageIcons?: boolean
+    renderLanguage?: (lang: string, meta?: string) => React.ReactNode
 }>({})
 
 export function CodeSample(props: CodeSampleProps) {
@@ -89,6 +102,9 @@ function $ThemedCodeSample(props: CodeSampleProps) {
         descriptionContent: props.descriptionContent,
         descriptionIcon: props.descriptionIcon,
         markdownFormat: props.markdownFormat,
+        languageSwitcher: props.languageSwitcher,
+        languageIcons: props.languageIcons,
+        renderLanguage: props.renderLanguage,
     }}>
         <$CodeSampleTabs
             description={props.description}

@@ -37,6 +37,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
+        {/* Pin the CSS @layer order BEFORE route stylesheets load (via <Links/>).
+            The OpenAPI editor loads a xyd theme stylesheet whose own
+            `@layer reset…overrides` would otherwise set the order first — landing
+            Tailwind's preflight (`base`) LAST, where its `*{margin:0;padding:0}`
+            reset then overrides the xyd/atlas component styles (which predate
+            Tailwind and lean on default element styling). Declaring the full
+            order here — Tailwind `base` early, xyd layers in the middle, Tailwind
+            `utilities` last — makes the xyd components beat preflight while the
+            app's own utilities still win outside them. (app.css declares the same
+            order, but Vite injects it too late in dev.) */}
+        <style
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: static layer-order pin.
+          dangerouslySetInnerHTML={{
+            __html:
+              "@layer theme,base,reset,defaults,defaultfix,components,fabric,templates,decorators,themes,themedecorator,presets,user,overrides,utilities;",
+          }}
+        />
         <Links />
         {/* Dev-only: hide the app before it paints until a data profile is
             picked, so nothing loads "under the hood" before the picker. The
@@ -53,7 +70,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
               // biome-ignore lint/security/noDangerouslySetInnerHtml: static dev-only pre-paint gate.
               dangerouslySetInnerHTML={{
                 __html:
-                  "try{if(!sessionStorage.getItem('atc-dev-profile-picked'))document.documentElement.setAttribute('data-atc-gate','')}catch(e){}",
+                  "try{if(location.pathname!=='/login'&&!localStorage.getItem('atc-dev-profile-picked'))document.documentElement.setAttribute('data-atc-gate','')}catch(e){}",
               }}
             />
           </>

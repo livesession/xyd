@@ -9,7 +9,7 @@ import { resourceClassName } from './resource';
  * `APIClient`) with a field per top-level resource, seeding the credential from
  * the configured environment variable when no `apiKey` is passed.
  */
-export function renderClientFile(spec: OpensdkSpecJson, envVar: string): string {
+export function renderClientFile(spec: OpensdkSpecJson, envVar: string, clientName: string): string {
   const resources = spec.resources || [];
   const imports = [
     `import { APIClient, readEnv } from './core/request';`,
@@ -29,7 +29,7 @@ export function renderClientFile(spec: OpensdkSpecJson, envVar: string): string 
   const fieldBlock = fields.length ? `${fields.join('\n')}\n\n` : '';
   return (
     `${imports.join('\n')}\n\n` +
-    `${doc}export class Client extends APIClient {\n` +
+    `${doc}export class ${clientName} extends APIClient {\n` +
     `${fieldBlock}` +
     `  constructor(options: ClientOptions = {}) {\n${ctorLines.join('\n')}\n  }\n` +
     `}\n`
@@ -41,10 +41,18 @@ export function renderClientFile(spec: OpensdkSpecJson, envVar: string): string 
  * error base + policy error-kind subclasses, the option types, every model
  * (and its union decode helpers) and every resource (classes + param types).
  */
-export function renderRootIndexFile(spec: OpensdkSpecJson, errorClasses: string[]): string {
+export function renderRootIndexFile(
+  spec: OpensdkSpecJson,
+  errorClasses: string[],
+  clientName: string,
+  defaultExport: boolean,
+): string {
   const errors = ['APIError', ...errorClasses];
+  const clientLine = defaultExport
+    ? `export { ${clientName} as default } from './client';`
+    : `export { ${clientName} } from './client';`;
   const lines = [
-    `export { Client } from './client';`,
+    clientLine,
     `export { ${errors.join(', ')} } from './core/error';`,
     `export type { ClientOptions, RequestOptions } from './core/request';`,
     `export * from './models';`,

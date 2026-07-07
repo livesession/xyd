@@ -4,7 +4,9 @@ import type {
   McpServer,
   Notification,
   Organization,
+  PackageRegistry,
   Project,
+  RegistryConnection,
   RegistryEntry,
   Release,
   RepoConnection,
@@ -19,6 +21,10 @@ import type {
 export const GIT_PROVIDERS: GitProvider[] = [];
 export const REPO_CONNECTIONS: RepoConnection[] = [];
 export const RELEASES: Release[] = [];
+// Package registries + publish connections likewise need the live gateway
+// (which shells out to npm/twine/… against a real registry).
+export const PACKAGE_REGISTRIES: PackageRegistry[] = [];
+export const REGISTRY_CONNECTIONS: RegistryConnection[] = [];
 
 /**
  * Mock data for the front-end pass. Timestamps are friendly relative strings
@@ -282,7 +288,7 @@ export const SDK_TARGETS: SdkTarget[] = [
     sdkId: "sdkp_petstore",
     language: "go",
     packageName: "github.com/acme/petstore-go",
-    output: "./sdk/go",
+    output: ".",
     version: "2.1.0",
     status: "ready",
     lastPublishedAt: "2 hours ago",
@@ -294,7 +300,7 @@ export const SDK_TARGETS: SdkTarget[] = [
     sdkId: "sdkp_petstore",
     language: "node",
     packageName: "@acme/petstore",
-    output: "./sdk/node",
+    output: ".",
     version: "2.1.0",
     status: "ready",
     lastPublishedAt: "2 hours ago",
@@ -306,7 +312,7 @@ export const SDK_TARGETS: SdkTarget[] = [
     sdkId: "sdkp_petstore",
     language: "python",
     packageName: "acme-petstore",
-    output: "./sdk/python",
+    output: ".",
     version: "2.1.0",
     status: "building",
   },
@@ -317,7 +323,7 @@ export const SDK_TARGETS: SdkTarget[] = [
     sdkId: "sdkp_payments",
     language: "go",
     packageName: "github.com/acme/payments-go",
-    output: "./sdk/go",
+    output: ".",
     version: "3.2.1",
     status: "ready",
     lastPublishedAt: "yesterday",
@@ -328,7 +334,7 @@ export const SDK_TARGETS: SdkTarget[] = [
     sdkId: "sdkp_payments",
     language: "node",
     packageName: "@acme/payments",
-    output: "./sdk/node",
+    output: ".",
     version: "3.2.1",
     status: "ready",
     lastPublishedAt: "yesterday",
@@ -340,7 +346,7 @@ export const SDK_TARGETS: SdkTarget[] = [
     sdkId: "sdkp_payments",
     language: "python",
     packageName: "acme-payments",
-    output: "./sdk/python",
+    output: ".",
     version: "3.2.1",
     status: "ready",
     lastPublishedAt: "yesterday",
@@ -351,7 +357,7 @@ export const SDK_TARGETS: SdkTarget[] = [
     sdkId: "sdkp_payments",
     language: "ruby",
     packageName: "acme-payments",
-    output: "./sdk/ruby",
+    output: ".",
     version: "3.2.1",
     status: "ready",
     lastPublishedAt: "2 days ago",
@@ -362,7 +368,7 @@ export const SDK_TARGETS: SdkTarget[] = [
     sdkId: "sdkp_payments",
     language: "java",
     packageName: "com.acme.payments",
-    output: "./sdk/java",
+    output: ".",
     version: "3.2.0",
     status: "draft",
   },
@@ -372,7 +378,7 @@ export const SDK_TARGETS: SdkTarget[] = [
     sdkId: "sdkp_payments",
     language: "dotnet",
     packageName: "Acme.Payments",
-    output: "./sdk/dotnet",
+    output: ".",
     version: "3.2.0",
     status: "error",
   },
@@ -383,7 +389,7 @@ export const SDK_TARGETS: SdkTarget[] = [
     sdkId: "sdkp_identity",
     language: "node",
     packageName: "@acme/identity",
-    output: "./sdk/node",
+    output: ".",
     version: "1.0.0",
     status: "ready",
     lastPublishedAt: "5 days ago",

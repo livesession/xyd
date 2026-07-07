@@ -1,5 +1,6 @@
 import { defineFilterSchema, useFilterComposer } from "@apitoolchain/filters";
 import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
 import type { IconName } from "../icons";
 import { ButtonFilter } from "./ButtonFilter";
 import { FilterBar } from "./FilterBar";
@@ -99,6 +100,8 @@ export const Default: Story = {
     const f = useFilterComposer(SCHEMA, {
       rules: [{ key: "language", values: ["go", "python"] }],
     });
+    // Picking a filter from the add menu opens its value picker straight away.
+    const [justAdded, setJustAdded] = useState<string | null>(null);
     const compiled = f.compile({
       table: args.table || undefined,
       alias: args.alias || undefined,
@@ -127,6 +130,7 @@ export const Default: Story = {
                     key={rule.key}
                     icon={def.icon as IconName}
                     onRemove={() => f.removeRule(rule.key)}
+                    defaultOpen={rule.key === justAdded}
                     valueLabel={
                       picked.length
                         ? picked.map((v) => v.label).join(", ")
@@ -153,7 +157,10 @@ export const Default: Story = {
                     key: d.key,
                     label: d.label,
                     icon: d.icon as IconName,
-                    onSelect: () => f.addRule(d.key),
+                    onSelect: () => {
+                      f.addRule(d.key);
+                      setJustAdded(d.values?.length ? d.key : null);
+                    },
                   }))}
                 >
                   Filter

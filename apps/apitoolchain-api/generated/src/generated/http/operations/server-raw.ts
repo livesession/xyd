@@ -26,6 +26,8 @@ import {
   GitProviders,
   RepoConnections,
   Releases,
+  PackageRegistries,
+  RegistryConnections,
 } from "../../models/all/platform-api.js";
 
 import {
@@ -65,6 +67,10 @@ import {
   SetReleaseConfigInput,
   Release,
   PrepareReleaseInput,
+  PackageRegistry,
+  ConnectRegistryInput,
+  RegistryConnection,
+  CreateRegistryConnectionInput,
 } from "../../models/all/apitoolchain.js";
 
 import { parseHeaderValueParameters } from "../../helpers/header.js";
@@ -1942,5 +1948,247 @@ export async function releases_publish(
     __ctx_236.response.statusCode = 422;
     __ctx_236.response.setHeader("content-type", "application/json");
     __ctx_236.response.end(globalThis.JSON.stringify(__result_237));
+  }
+}
+
+export async function package_registries_list(
+  __ctx_240: HttpContext,
+  __operations_242: PackageRegistries,
+): Promise<void> {
+  let __result_241: PackageRegistry[];
+
+  try {
+    __result_241 = await __operations_242.list(__ctx_240);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_240);
+    } else throw e;
+  }
+
+  __ctx_240.response.setHeader("content-type", "application/json");
+  __ctx_240.response.end(globalThis.JSON.stringify(__result_241));
+}
+
+export async function package_registries_create(
+  __ctx_244: HttpContext,
+  __operations_246: PackageRegistries,
+): Promise<void> {
+  const __contentType_249 = parseHeaderValueParameters(
+    __ctx_244.request.headers["content-type"] as string | undefined,
+  );
+  if (__contentType_249?.value !== "application/json") {
+    return __ctx_244.errorHandlers.onInvalidRequest(
+      __ctx_244,
+      "/package-registries",
+      `unexpected "content-type": '${__contentType_249?.value}', expected '"application/json"'`,
+    );
+  }
+
+  const __input_248 = (await new Promise(function parseInput(resolve, reject) {
+    const chunks: Array<Buffer> = [];
+    __ctx_244.request.on("data", function appendChunk(chunk) {
+      chunks.push(chunk);
+    });
+    __ctx_244.request.on("end", function finalize() {
+      try {
+        const body = Buffer.concat(chunks).toString();
+        resolve(JSON.parse(body));
+      } catch {
+        __ctx_244.errorHandlers.onInvalidRequest(
+          __ctx_244,
+          "/package-registries",
+          "invalid JSON in request body",
+        );
+        reject();
+      }
+    });
+    __ctx_244.request.on("error", reject);
+  })) as ConnectRegistryInput;
+
+  let __result_245: PackageRegistry | ValidationError;
+
+  try {
+    __result_245 = await __operations_246.create(__ctx_244, __input_248);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_244);
+    } else throw e;
+  }
+
+  if ("id" in __result_245) {
+    __ctx_244.response.setHeader("content-type", "application/json");
+    __ctx_244.response.end(globalThis.JSON.stringify(__result_245));
+  } else if ("statusCode" in __result_245 && __result_245.statusCode === 422) {
+    __ctx_244.response.statusCode = 422;
+    __ctx_244.response.setHeader("content-type", "application/json");
+    __ctx_244.response.end(globalThis.JSON.stringify(__result_245));
+  }
+}
+
+export async function package_registries_remove(
+  __ctx_250: HttpContext,
+  __operations_252: PackageRegistries,
+  id: string,
+): Promise<void> {
+  let __result_251: void | NotFoundError;
+
+  try {
+    __result_251 = await __operations_252.remove(__ctx_250, id);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_250);
+    } else throw e;
+  }
+
+  if (__result_251 === undefined) {
+    __ctx_250.response.statusCode = 204;
+    __ctx_250.response.end();
+  } else {
+    if ("statusCode" in __result_251 && __result_251.statusCode === 404) {
+      __ctx_250.response.statusCode = 404;
+      __ctx_250.response.setHeader("content-type", "application/json");
+      __ctx_250.response.end(globalThis.JSON.stringify(__result_251));
+    }
+  }
+}
+
+export async function registry_connections_list(
+  __ctx_254: HttpContext,
+  __operations_256: RegistryConnections,
+): Promise<void> {
+  const __queryParams_257 = new URLSearchParams(
+    __ctx_254.request.url!.split("?", 2)[1] ?? "",
+  );
+
+  const targetId = __queryParams_257.get("targetId") ?? undefined;
+  let __result_255: RegistryConnection[];
+
+  try {
+    __result_255 = await __operations_256.list(__ctx_254, {
+      targetId: targetId === undefined ? undefined : targetId,
+    });
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_254);
+    } else throw e;
+  }
+
+  __ctx_254.response.setHeader("content-type", "application/json");
+  __ctx_254.response.end(globalThis.JSON.stringify(__result_255));
+}
+
+export async function registry_connections_create(
+  __ctx_258: HttpContext,
+  __operations_260: RegistryConnections,
+): Promise<void> {
+  const __contentType_263 = parseHeaderValueParameters(
+    __ctx_258.request.headers["content-type"] as string | undefined,
+  );
+  if (__contentType_263?.value !== "application/json") {
+    return __ctx_258.errorHandlers.onInvalidRequest(
+      __ctx_258,
+      "/registry-connections",
+      `unexpected "content-type": '${__contentType_263?.value}', expected '"application/json"'`,
+    );
+  }
+
+  const __input_262 = (await new Promise(function parseInput(resolve, reject) {
+    const chunks: Array<Buffer> = [];
+    __ctx_258.request.on("data", function appendChunk(chunk) {
+      chunks.push(chunk);
+    });
+    __ctx_258.request.on("end", function finalize() {
+      try {
+        const body = Buffer.concat(chunks).toString();
+        resolve(JSON.parse(body));
+      } catch {
+        __ctx_258.errorHandlers.onInvalidRequest(
+          __ctx_258,
+          "/registry-connections",
+          "invalid JSON in request body",
+        );
+        reject();
+      }
+    });
+    __ctx_258.request.on("error", reject);
+  })) as CreateRegistryConnectionInput;
+
+  let __result_259: RegistryConnection | NotFoundError | ValidationError;
+
+  try {
+    __result_259 = await __operations_260.create(__ctx_258, __input_262);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_258);
+    } else throw e;
+  }
+
+  if ("id" in __result_259) {
+    __ctx_258.response.setHeader("content-type", "application/json");
+    __ctx_258.response.end(globalThis.JSON.stringify(__result_259));
+  } else if ("statusCode" in __result_259 && __result_259.statusCode === 404) {
+    __ctx_258.response.statusCode = 404;
+    __ctx_258.response.setHeader("content-type", "application/json");
+    __ctx_258.response.end(globalThis.JSON.stringify(__result_259));
+  } else if ("statusCode" in __result_259 && __result_259.statusCode === 422) {
+    __ctx_258.response.statusCode = 422;
+    __ctx_258.response.setHeader("content-type", "application/json");
+    __ctx_258.response.end(globalThis.JSON.stringify(__result_259));
+  }
+}
+
+export async function registry_connections_remove(
+  __ctx_264: HttpContext,
+  __operations_266: RegistryConnections,
+  id: string,
+): Promise<void> {
+  let __result_265: void | NotFoundError;
+
+  try {
+    __result_265 = await __operations_266.remove(__ctx_264, id);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_264);
+    } else throw e;
+  }
+
+  if (__result_265 === undefined) {
+    __ctx_264.response.statusCode = 204;
+    __ctx_264.response.end();
+  } else {
+    if ("statusCode" in __result_265 && __result_265.statusCode === 404) {
+      __ctx_264.response.statusCode = 404;
+      __ctx_264.response.setHeader("content-type", "application/json");
+      __ctx_264.response.end(globalThis.JSON.stringify(__result_265));
+    }
+  }
+}
+
+export async function registry_connections_publish(
+  __ctx_268: HttpContext,
+  __operations_270: RegistryConnections,
+  id: string,
+): Promise<void> {
+  let __result_269: RegistryConnection | NotFoundError | ValidationError;
+
+  try {
+    __result_269 = await __operations_270.publish(__ctx_268, id);
+  } catch (e) {
+    if (__isHttpResponder_0(e)) {
+      return e[__httpResponderSymbol_1](__ctx_268);
+    } else throw e;
+  }
+
+  if ("id" in __result_269) {
+    __ctx_268.response.setHeader("content-type", "application/json");
+    __ctx_268.response.end(globalThis.JSON.stringify(__result_269));
+  } else if ("statusCode" in __result_269 && __result_269.statusCode === 404) {
+    __ctx_268.response.statusCode = 404;
+    __ctx_268.response.setHeader("content-type", "application/json");
+    __ctx_268.response.end(globalThis.JSON.stringify(__result_269));
+  } else if ("statusCode" in __result_269 && __result_269.statusCode === 422) {
+    __ctx_268.response.statusCode = 422;
+    __ctx_268.response.setHeader("content-type", "application/json");
+    __ctx_268.response.end(globalThis.JSON.stringify(__result_269));
   }
 }

@@ -327,6 +327,24 @@ export async function markSdkTargetError(client: Client, args: MarkSdkTargetErro
     });
 }
 
+export const markSdkTargetPublishedQuery = `-- name: MarkSdkTargetPublished :exec
+UPDATE sdk_targets
+SET registry_url = $2, last_published_at = now(), updated_at = now()
+WHERE id = $1`;
+
+export interface MarkSdkTargetPublishedArgs {
+    id: string;
+    registryUrl: string | null;
+}
+
+export async function markSdkTargetPublished(client: Client, args: MarkSdkTargetPublishedArgs): Promise<void> {
+    await client.query({
+        text: markSdkTargetPublishedQuery,
+        values: [args.id, args.registryUrl],
+        rowMode: "array"
+    });
+}
+
 export const deleteSdkTargetQuery = `-- name: DeleteSdkTarget :exec
 DELETE FROM sdk_targets WHERE id = $1`;
 

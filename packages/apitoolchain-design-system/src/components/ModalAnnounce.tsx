@@ -66,6 +66,8 @@ export function ModalAnnounce({
     }
   };
 
+  const goBack = () => setI((n) => Math.max(0, n - 1));
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <button
@@ -111,10 +113,7 @@ export function ModalAnnounce({
           </div>
 
           {multi && (
-            <div
-              className="flex items-center gap-1.5"
-              aria-label={`Step ${idx + 1} of ${steps.length}`}
-            >
+            <div className="flex items-center gap-1.5" aria-hidden="true">
               {steps.map((s, n) => (
                 <span
                   key={s.title}
@@ -126,9 +125,16 @@ export function ModalAnnounce({
             </div>
           )}
 
-          <ButtonCTA variant="secondary" size="sm" onClick={advance}>
-            {last ? finishLabel : "Next"}
-          </ButtonCTA>
+          <div className="flex items-center justify-center gap-2">
+            {idx > 0 && (
+              <ButtonCTA variant="ghost" size="sm" onClick={goBack}>
+                Back
+              </ButtonCTA>
+            )}
+            <ButtonCTA variant="secondary" size="sm" onClick={advance}>
+              {last ? finishLabel : "Next"}
+            </ButtonCTA>
+          </div>
         </div>
       </div>
     </div>

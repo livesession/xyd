@@ -3,6 +3,20 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { DevProfile } from "./profiles";
 
+/** Local package registries (+ file feeds) the dev stack publishes SDKs into. */
+export interface RegistriesInfo {
+  /** verdaccio (npm) base URL, if it started. */
+  npmUrl?: string;
+  /** pypiserver (PyPI) base URL, if it started. */
+  pypiUrl?: string;
+  /** gemstash (RubyGems) push host, if it started. */
+  gemsUrl?: string;
+  /** Throwaway file-feed dirs on the host (nuget/maven/go). */
+  nugetFeed: string;
+  mavenFeed: string;
+  goproxyFeed: string;
+}
+
 export interface ApplyCtx {
   /** platform-api gateway base URL (drives registry + sdks + connections). */
   platUrl: string;
@@ -10,6 +24,8 @@ export interface ApplyCtx {
   pgId: string;
   /** Monorepo `apps/` dir — used to resolve vendored spec files. */
   apps: string;
+  /** Local package registries the profile can connect + publish SDKs into. */
+  registries?: RegistriesInfo;
   log: (m: string) => void;
 }
 
@@ -41,6 +57,8 @@ const RESET_TABLES = [
   "sdk_targets",
   "sdks",
   "repo_connections",
+  "registry_connections",
+  "package_registries",
   "jobs",
   "notifications",
   "api_versions",
@@ -103,8 +121,8 @@ function resetTenant(pgId: string): void {
 // the (now auth-gated) gateway accepts its writes, and data lands in their org.
 // Exported so the dev overlay can establish the SAME browser session after apply
 // (the seed creates this owner with these exact creds).
-export const DEV_EMAIL = "dev@apitoolchain.dev";
-export const DEV_PASSWORD = "password";
+export const DEV_EMAIL = process.env.ATC_DEV_EMAIL ?? "dev@apitoolchain.dev";
+export const DEV_PASSWORD = process.env.ATC_DEV_PASSWORD ?? "password";
 let authToken: string | undefined;
 
 function authHeaders(): Record<string, string> {
@@ -208,6 +226,127 @@ async function seedTenant(
   }
 }
 
+/** Language → the local dev registry (kind + url/feed) it publishes into. */
+function registryForLanguage(
+  language: string,
+  r: RegistriesInfo,
+): { kind: string; url: string } | undefined {
+  const map: Record<string, { kind: string; url?: string }> = {
+    node: { kind: "npm", url: r.npmUrl },
+    python: { kind: "pypi", url: r.pypiUrl },
+    ruby: { kind: "gems", url: r.gemsUrl },
+    dotnet: { kind: "nuget", url: r.nugetFeed || undefined },
+    java: { kind: "maven", url: r.mavenFeed || undefined },
+    go: { kind: "goproxy", url: r.goproxyFeed || undefined },
+  };
+  const m = map[language];
+  return m?.url ? { kind: m.kind, url: m.url } : undefined;
+}
+
+/** Connect every generated SDK target to its matching dev registry + publish. */
+async function publishSdkTargets(
+  platUrl: string,
+  sdkTargets: {
+    sdkId: string;
+    targetId: string;
+    language: string;
+    sdkName: string;
+  }[],
+  registries: RegistriesInfo,
+  log: (m: string) => void,
+): Promise<void> {
+  // Publishing needs a built artifact — wait for generation first.
+  const bySdk = new Map<string, Set<string>>();
+  for (const t of sdkTargets) {
+    if (!bySdk.has(t.sdkId)) bySdk.set(t.sdkId, new Set());
+    bySdk.get(t.sdkId)?.add(t.targetId);
+  }
+  log("  waiting for SDK generation (publish)…");
+  await Promise.all(
+    [...bySdk].map(([id, ids]) => waitTargetsReady(platUrl, id, ids, 60000)),
+  );
+
+  // One package_registry per kind+url (the backend dedups by url).
+  const registryIdByKey = new Map<string, string>();
+  const ensureRegistry = async (
+    kind: string,
+    url: string,
+  ): Promise<string | undefined> => {
+    const key = `${kind}|${url}`;
+    const cached = registryIdByKey.get(key);
+    if (cached) return cached;
+    try {
+      const reg = await jpost(`${platUrl}/package-registries`, {
+        kind,
+        url,
+        name: `dev ${kind}`,
+        // npm's client refuses to publish without SOME token even to an
+        // anonymous verdaccio; any value works (verdaccio `$all` ignores it).
+        token: process.env.ATC_PUBLISH_TOKEN || "dev",
+      });
+      registryIdByKey.set(key, reg.id);
+      return reg.id;
+    } catch (e) {
+      log(`  ! registry ${kind}: ${(e as Error).message}`);
+      return undefined;
+    }
+  };
+
+  for (const t of sdkTargets) {
+    const reg = registryForLanguage(t.language, registries);
+    if (!reg) continue; // no local registry for this language
+    const registryId = await ensureRegistry(reg.kind, reg.url);
+    if (!registryId) continue;
+    try {
+      const conn = await jpost(`${platUrl}/registry-connections`, {
+        registryId,
+        targetId: t.targetId,
+      });
+      await jpost(`${platUrl}/registry-connections/${conn.id}/publish`, {});
+      log(
+        `  publishing sdk "${t.sdkName}/${t.language}" → ${reg.kind} (${reg.url})…`,
+      );
+      // Wait for the publish to actually finish (npm publish shells out) so the
+      // apply returns on a settled status — not a transient `building` the UI
+      // would otherwise show until the user refreshes.
+      const status = await waitPublishDone(
+        platUrl,
+        t.targetId,
+        conn.id,
+        120000,
+      );
+      log(`  → ${t.sdkName}/${t.language}: publish ${status}`);
+    } catch (e) {
+      log(`  ! publish "${t.sdkName}/${t.language}": ${(e as Error).message}`);
+    }
+  }
+}
+
+/** Poll a registry connection until its publish settles (ready/error), capped. */
+async function waitPublishDone(
+  platUrl: string,
+  targetId: string,
+  connId: string,
+  timeoutMs: number,
+): Promise<string> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    try {
+      const conns = await jget(
+        `${platUrl}/registry-connections?targetId=${encodeURIComponent(targetId)}`,
+      );
+      // biome-ignore lint/suspicious/noExplicitAny: loosely-typed JSON API.
+      const c = (conns ?? []).find((x: any) => x.id === connId);
+      const st = c?.lastPublishStatus as string | undefined;
+      if (st && st !== "building") return st;
+    } catch {
+      // keep polling
+    }
+    await new Promise((r) => setTimeout(r, 1500));
+  }
+  return "still building (timed out)";
+}
+
 /** Reset the dev stack's data to the given profile. Best-effort per step so a
  * single failed connection doesn't abort the whole profile. */
 export async function applyProfile(
@@ -290,6 +429,13 @@ export async function applyProfile(
       });
       log(`  sdk "${created.name}" + ${language} → ${t.id}`);
     }
+  }
+
+  // 2b. Publish generated SDK targets to the matching local dev registries
+  // (independent of git connect). Best-effort — a missing registry/toolchain
+  // just skips that language.
+  if (profile.publish && sdkTargets.length && ctx.registries) {
+    await publishSdkTargets(platUrl, sdkTargets, ctx.registries, log);
   }
 
   if (!profile.connect) return;

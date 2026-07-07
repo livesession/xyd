@@ -1,5 +1,5 @@
-import { createElement } from "react";
 import type { ComponentType, ReactNode } from "react";
+import { createElement } from "react";
 
 /**
  * Props the design system passes to an injected link element. The DS stays
@@ -15,6 +15,9 @@ export interface LinkComponentProps {
   "aria-current"?: "page";
   onClick?: () => void;
   children?: ReactNode;
+  /** For new-tab links (e.g. `Button newTab`). Forwarded onto the anchor. */
+  target?: string;
+  rel?: string;
 }
 
 export type LinkComponent = ComponentType<LinkComponentProps>;

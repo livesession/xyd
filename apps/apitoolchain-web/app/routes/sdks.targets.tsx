@@ -15,6 +15,7 @@ import { SdksTabs } from "~/components/SdksTabs";
 import { listApis, listSdks, listSdkTargets, type SdkTarget } from "~/data";
 import { sdkTargetFilterSchema } from "~/data/filters";
 import { useUrlFilters } from "~/hooks/useUrlFilters";
+import { sdkBuildStatus } from "~/lib/sdkStatus";
 import { formatVersion } from "~/version";
 import type { Route } from "./+types/sdks.targets";
 
@@ -98,7 +99,7 @@ export default function SdkTargetsRoute({ loaderData }: Route.ComponentProps) {
     },
     {
       key: "version",
-      header: "Version",
+      header: "Latest version",
       width: "sm",
       render: (t) => (
         <span className="text-body">{formatVersion(t.version)}</span>
@@ -119,7 +120,7 @@ export default function SdkTargetsRoute({ loaderData }: Route.ComponentProps) {
       header: "Status",
       width: "sm",
       align: "right",
-      render: (t) => <StatusPill status={t.status} />,
+      render: (t) => <StatusPill status={sdkBuildStatus(t)} />,
     },
   ];
 

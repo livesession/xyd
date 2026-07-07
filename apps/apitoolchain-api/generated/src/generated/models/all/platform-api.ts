@@ -37,6 +37,10 @@ import {
   SetReleaseConfigInput,
   Release,
   PrepareReleaseInput,
+  PackageRegistry,
+  ConnectRegistryInput,
+  RegistryConnection,
+  CreateRegistryConnectionInput,
 } from "./apitoolchain.js";
 
 import { ListOptions } from "../synthetic.js";
@@ -308,4 +312,35 @@ export interface Releases<Context = unknown> {
     ctx: Context,
     id: string,
   ): Promise<Release | NotFoundError | ValidationError>;
+}
+
+export interface PackageRegistries<Context = unknown> {
+  list(ctx: Context): Promise<PackageRegistry[]>;
+
+  create(
+    ctx: Context,
+    input: ConnectRegistryInput,
+  ): Promise<PackageRegistry | ValidationError>;
+
+  remove(ctx: Context, id: string): Promise<void | NotFoundError>;
+}
+
+/**
+ * Registry connections: link an SDK target to a package registry and publish it.
+ * `publish` regenerates + pushes the package (reusing opensdk `publishTarget`).
+ */
+export interface RegistryConnections<Context = unknown> {
+  list(ctx: Context, options?: ListOptions): Promise<RegistryConnection[]>;
+
+  create(
+    ctx: Context,
+    input: CreateRegistryConnectionInput,
+  ): Promise<RegistryConnection | NotFoundError | ValidationError>;
+
+  remove(ctx: Context, id: string): Promise<void | NotFoundError>;
+
+  publish(
+    ctx: Context,
+    id: string,
+  ): Promise<RegistryConnection | NotFoundError | ValidationError>;
 }

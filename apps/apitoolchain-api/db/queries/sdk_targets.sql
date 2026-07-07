@@ -25,5 +25,10 @@ UPDATE sdk_targets
 SET status = 'error', error_message = $2, updated_at = now()
 WHERE id = $1;
 
+-- name: MarkSdkTargetPublished :exec
+UPDATE sdk_targets
+SET registry_url = $2, last_published_at = now(), updated_at = now()
+WHERE id = $1;
+
 -- name: DeleteSdkTarget :exec
 DELETE FROM sdk_targets WHERE id = $1;

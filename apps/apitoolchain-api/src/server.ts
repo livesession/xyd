@@ -1,8 +1,10 @@
 import * as http from "node:http";
 import { createPlatformApiRouter } from "../generated/src/generated/http/router";
 import { gitProviderClient } from "./clients/gitprovider";
+import { registryClient } from "./clients/registry";
 import { config } from "./config";
 import * as gitQ from "./db/generated/git_sql";
+import * as regQ from "./db/generated/registries_sql";
 import * as releaseQ from "./db/generated/releases_sql";
 import * as sdkQ from "./db/generated/sdk_targets_sql";
 import { pool } from "./db/pool";
@@ -17,7 +19,9 @@ import {
   members,
   notifications,
   overview,
+  packageRegistries,
   projects,
+  registryConnections,
   releases,
   repoConnections,
   sdks,
@@ -42,6 +46,8 @@ const router = createPlatformApiRouter(
   gitProviders,
   repoConnections,
   releases,
+  packageRegistries,
+  registryConnections,
 );
 
 // Owned binary route: download the generated SDK zip (the future "Download SDK"
@@ -71,6 +77,32 @@ async function serveArtifact(
     res
       .writeHead(500, { "content-type": "text/plain" })
       .end("artifact read error");
+  }
+}
+
+// Owned route: raw spec bytes for the web OpenAPI editor. Proxies the
+// lower-layer registry-api's raw-spec route (which lives outside the TypeSpec
+// router), so the editor can load the actual stored OpenAPI for an api+version.
+const SPEC_RE = /^\/apis\/([^/]+)\/versions\/([^/]+)\/spec(?:\?.*)?$/;
+
+async function serveSpec(
+  res: http.ServerResponse,
+  apiId: string,
+  version: string,
+): Promise<void> {
+  try {
+    const spec = await registryClient.fetchSpecRaw(apiId, version);
+    if (!spec) {
+      res
+        .writeHead(404, { "content-type": "text/plain" })
+        .end("spec not found");
+      return;
+    }
+    res.writeHead(200, { "content-type": spec.contentType }).end(spec.text);
+  } catch {
+    res
+      .writeHead(502, { "content-type": "text/plain" })
+      .end("spec fetch error");
   }
 }
 
@@ -147,10 +179,19 @@ const server = http.createServer((req, res) => {
     void serveArtifact(res, decodeURIComponent(m[1]));
     return;
   }
+  const sp = url.match(SPEC_RE);
+  if (sp && req.method === "GET") {
+    void serveSpec(res, decodeURIComponent(sp[1]), decodeURIComponent(sp[2]));
+    return;
+  }
   router.dispatch(req, res);
 });
 
 await ensureBucket();
+// Recover orphaned publishes: a `runPublish` is fire-and-forget, so a restart
+// mid-publish leaves the connection stuck in `building` forever. Fail those on
+// boot so the UI shows an actionable error instead of an eternal spinner.
+await regQ.failInterruptedPublishes(pool).catch(() => {});
 server.listen(config.port, () => {
   console.log(`[platform-api] listening on http://localhost:${config.port}`);
 });

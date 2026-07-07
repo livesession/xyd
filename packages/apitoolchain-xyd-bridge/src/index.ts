@@ -33,6 +33,11 @@ export {
 // ── OpenSDK IR ⇄ IR breaking-change diff (drives release version + changelog) ──
 export { diffIR } from "@xyd-js/opensdk-core";
 
+// ── Generated SDK → package registry (the SAME per-language pack/push the
+//    publish e2e drives; shells out to npm/twine/gem/… on the host) ──
+export { publishTarget } from "@xyd-js/opensdk-cli";
+
 // ── Types ──
 export type { OpensdkSpecJson } from "@xyd-js/opensdk-core";
 export type { IrChange, IrDiff, IrSeverity } from "@xyd-js/opensdk-core";
+export type { EmitterPublishOptions } from "@xyd-js/opensdk-framework";

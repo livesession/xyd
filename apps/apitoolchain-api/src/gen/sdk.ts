@@ -105,14 +105,18 @@ function sdkPackageIdentity(
   }
 }
 
-export const SDK_OUTPUT: Record<string, string> = {
-  go: "./sdk/go",
-  node: "./sdk/node",
-  python: "./sdk/python",
-  ruby: "./sdk/ruby",
-  java: "./sdk/java",
-  dotnet: "./sdk/dotnet",
-};
+/**
+ * Coerce a spec `info.version` into a valid semver for the SDK package version
+ * (npm/gems reject non-semver). "v1"→"1.0.0", "1.2"→"1.2.0", "1.2.3"→"1.2.3",
+ * anything without leading digits → "0.0.0".
+ */
+function toSemver(v: string): string {
+  const s = (v || "").trim().replace(/^v/i, "");
+  const parts = s.split(".").filter((p) => /^\d+$/.test(p));
+  if (parts.length === 0) return "0.0.0";
+  while (parts.length < 3) parts.push("0");
+  return parts.slice(0, 3).join(".");
+}
 
 /**
  * RAW spec doc → OpenSDK IR → per-language file map + the package identity and
@@ -127,6 +131,9 @@ export function generateSdkFileMap(o: {
 }): { files: Record<string, string>; packageName: string; version: string } {
   ensureEmitters();
   const ir = openapi2opensdk(o.doc);
+  // The SDK's PACKAGE version must be valid semver — a spec `info.version` like
+  // "v1" bakes an unpublishable version into the manifest (npm/gems reject it).
+  ir.info.version = toSemver(ir.info.version ?? "");
   const emitter = getEmitter(o.language);
   const { packageName, options } = sdkPackageIdentity(
     o.language,
