@@ -58,6 +58,46 @@ const tests: {
         name: '-3.vite-app.iframe-multi-entry',
         description: 'vite app: multi-entry with iframe loading separate React app',
     },
+    {
+        name: '9.vite-lib.hooks-and-context',
+        description: 'vite lib: useState state extraction and createContext type detection',
+    },
+    {
+        name: '10.vite-lib.namespaced-context',
+        description: 'vite lib: createContext inside dotted namespaces (namespace a.b { Context })',
+    },
+    {
+        name: '11.vite-lib.date-types',
+        description: 'vite lib: Date type preserved (typia escaped → native Date)',
+    },
+    {
+        name: '12.vite-lib.string-unions',
+        description: 'vite lib: string literal unions ("a" | "b" | "c") as readable type',
+    },
+    {
+        name: '13.vite-lib.namespace-complex-types',
+        description: 'vite lib: namespaced types with functions, Maps, Uint8Array resolved as nested properties',
+    },
+    {
+        name: '14.vite-lib.context-string-unions',
+        description: 'vite lib: createContext with string literal union type aliases in separate files',
+    },
+    {
+        name: '15.vite-lib.merged-context-string-unions',
+        description: 'vite lib: merged single-file namespaces with string literal unions (Mode/Model) resolved as $xor',
+    },
+    {
+        name: '16.vite-lib.merged-context-namespaced-objects',
+        description: 'vite lib: merged single-file namespaces with namespaced object types (VFS, BootVolume) preserve original type name',
+    },
+    {
+        name: '17.vite-lib.merged-named-arrays',
+        description: 'vite lib: fallback path resolves named arrays (Tab[]) and nullable types (Tab | null, string | null) into $array / nullable structures',
+    },
+    {
+        name: '18.vite-lib.typia-nullable-named',
+        description: 'vite lib: typia path deeply resolves nested named types (PreviewEngine inside Tab inside Tab[]) and nullable types',
+    },
 ];
 
 describe('xyd-source-react-runtime', () => {
