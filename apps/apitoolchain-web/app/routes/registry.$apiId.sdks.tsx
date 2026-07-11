@@ -1,6 +1,6 @@
 import {
   Badge,
-  Button,
+  ButtonCTA,
   type Column,
   EmptyState,
   Mono,
@@ -51,9 +51,9 @@ export default function RegistrySdksTab() {
         title="No SDKs yet"
         description="Generate a typed client SDK from this spec in the languages you need."
         action={
-          <Button variant="secondary" icon="sdk" onClick={openGen}>
+          <ButtonCTA variant="primary" icon="sdk" onClick={openGen}>
             Generate SDKs
-          </Button>
+          </ButtonCTA>
         }
       />
     );

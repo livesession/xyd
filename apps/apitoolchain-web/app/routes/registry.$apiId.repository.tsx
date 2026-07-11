@@ -1,4 +1,4 @@
-import { Button, EmptyState } from "@apitoolchain/design-system";
+import { Button, ButtonCTA, EmptyState } from "@apitoolchain/design-system";
 import { useOutletContext } from "react-router";
 import { RepositorySettings } from "~/components/RepositoryModal";
 import type { RegistryDetailContext } from "~/components/registryDetailShared";
@@ -16,9 +16,9 @@ export default function RegistryRepositoryTab() {
         title="No repositories connected"
         description="Connect a git repo to sync this spec or open release PRs."
         action={
-          <Button variant="secondary" icon="git" onClick={openConnect}>
+          <ButtonCTA variant="primary" icon="git" onClick={openConnect}>
             Connect repo
-          </Button>
+          </ButtonCTA>
         }
       />
     );
