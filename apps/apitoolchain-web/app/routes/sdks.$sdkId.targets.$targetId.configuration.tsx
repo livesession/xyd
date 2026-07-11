@@ -7,6 +7,7 @@ import {
 } from "@apitoolchain/sdkjson-wizard";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useFetcher, useOutletContext } from "react-router";
+import { RouterLink } from "~/components/RouterLink";
 import type { SdkTargetContext } from "~/components/sdkTargetShared";
 
 // Persisting the edited config posts back to the target path (`base`).
@@ -20,7 +21,8 @@ const fetchPreview = createFetchPreview("/api/sdk-preview");
  * edited config to the target (applied on the next rebuild).
  */
 export default function SdkTargetConfigurationTab() {
-  const { target, base, label, sdkJson } = useOutletContext<SdkTargetContext>();
+  const { target, sdkId, base, label, sdkJson } =
+    useOutletContext<SdkTargetContext>();
   const fetcher = useFetcher();
 
   // Seed from the current built sdk.json (what the Overview shows). Normalize the
@@ -108,10 +110,26 @@ export default function SdkTargetConfigurationTab() {
           {result.message ?? "Could not save the configuration."}
         </Callout>
       )}
-      {/* Clear the "Saved" banner on new unsaved edits, or when dismissed (×). */}
+      {/* After a save the config is stored, but the live SDK still runs its
+          current build — spell out the pending state + the build next-step
+          (dismissible; auto-cleared on new edits). */}
       {result?.ok && !saving && !dirty && !savedDismissed && (
-        <Callout tone="success" onClose={() => setSavedDismissed(true)}>
-          Saved — applies the next time this SDK is rebuilt.
+        <Callout
+          tone="info"
+          icon="check"
+          title="Configuration saved — pending next build"
+          onClose={() => setSavedDismissed(true)}
+        >
+          <p className="m-0">
+            The live {label} SDK still uses its current build. These changes
+            take effect the next time this SDK is built.
+          </p>
+          <RouterLink
+            href={`/sdks/${sdkId}`}
+            className="mt-1.5 inline-block font-medium text-current underline-offset-2 hover:underline"
+          >
+            Build the SDK to apply →
+          </RouterLink>
         </Callout>
       )}
 
