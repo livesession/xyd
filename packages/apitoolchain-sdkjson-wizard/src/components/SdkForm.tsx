@@ -56,8 +56,9 @@ export function SdkForm({
                   <Field
                     key={`${path}:${formNonce}`}
                     label={field.label}
-                    hint={field.hint}
-                    labelHint={field.labelHint}
+                    // Every field's description behind the ⓘ Hint (like the JSON
+                    // editor's per-key hover), not spelled out inline.
+                    labelHint={field.labelHint ?? field.hint}
                     htmlFor={path}
                   >
                     <ControlInput
