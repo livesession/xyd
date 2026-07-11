@@ -117,7 +117,7 @@ export default function SdkTargetConfigurationTab() {
         onChange={setValue}
         languages={[target.language]}
         generatePreview={fetchPreview}
-        defaultEditMode="json"
+        defaultEditMode="form"
         // Diff the Changes panel against the first generation (state 0), so it
         // shows the cumulative effect of the config vs the pristine SDK — not
         // just the delta from the previous keystroke (matches GenerateSdkModal).
