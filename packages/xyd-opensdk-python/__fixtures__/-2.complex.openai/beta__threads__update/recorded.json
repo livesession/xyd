@@ -1,0 +1,11 @@
+{
+  "call": "beta.threads.update",
+  "request": {
+    "method": "post",
+    "path": "/threads/{thread_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

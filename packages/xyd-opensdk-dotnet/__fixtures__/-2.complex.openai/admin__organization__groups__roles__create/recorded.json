@@ -1,0 +1,13 @@
+{
+  "call": "Admin.Organization.Groups.Roles.Create",
+  "request": {
+    "method": "post",
+    "path": "/organization/groups/{group_id}/roles",
+    "query": [],
+    "bodyFields": [
+      "role_id"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

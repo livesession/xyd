@@ -1,0 +1,10 @@
+{
+  "call": "vectorStores.list",
+  "request": {
+    "method": "get",
+    "path": "/vector_stores",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

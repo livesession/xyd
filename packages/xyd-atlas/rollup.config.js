@@ -60,23 +60,20 @@ export default [
                         '@babel/preset-react'
                     ],
                 },
-                // classNameSlug: (hash, title, {file}) => {
-                //     // Get the full path after 'src/components/'
-                //     const pathParts = file.split('/');
-                //     const componentsIndex = pathParts.indexOf('components');
-                //     if (componentsIndex === -1) return `XydAtlas-Component-${title}`;
-                    
-                //     // Get everything after 'components' directory
-                //     const componentPath = pathParts
-                //         .slice(componentsIndex + 1)
-                //         .filter(part => !part.endsWith('.styles.tsx')) // Remove styles.tsx
-                //         .join('-');
-                    
-                //     // Use the title as the style name (it's already the variable name)
-                //     const styleName = title.replace(/^\$/, ''); // Remove $ prefix if present
-                    
-                //     return `XydAtlas-Component-${componentPath}__${styleName}`;
-                // }
+                // Prefix every generated class with its EXPORT NAME (`title`) so the
+                // class encodes *which* styled block it is. wyw/Linaria's default slug
+                // is a hash of `<file>:<ordinal-index>`, so inserting/removing/reordering
+                // one `css` literal renumbers every LATER one in the same file and their
+                // hashes all change — a stale, cached index.css then assigns the SAME short
+                // class (e.g. `.aq5m3p7`) to a DIFFERENT export than a fresh build does, and
+                // a browser holding both payloads corrupts the styling (observed:
+                // NavbarSubtitle picking up ApiRefItemHost's flex-column + padding-bottom).
+                // The `title` prefix makes that impossible: `ApiRefItemHost_*` can never be
+                // applied to an ApiRefItemNavbarSubtitle element. `hash` keeps names unique.
+                classNameSlug: (hash, title) => {
+                    const name = String(title || '').replace(/[^a-zA-Z0-9_]/g, '');
+                    return name ? `${name}_${hash}` : hash;
+                },
             }),
             css({
                 output: 'index.css',

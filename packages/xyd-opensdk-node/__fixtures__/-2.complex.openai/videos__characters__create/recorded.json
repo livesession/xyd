@@ -1,0 +1,14 @@
+{
+  "call": "videos.characters.create",
+  "request": {
+    "method": "post",
+    "path": "/videos/characters",
+    "query": [],
+    "bodyFields": [
+      "name",
+      "video"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

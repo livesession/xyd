@@ -1,0 +1,10 @@
+{
+  "call": "Admin.Organization.AuditLogs.List",
+  "request": {
+    "method": "get",
+    "path": "/organization/audit_logs",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

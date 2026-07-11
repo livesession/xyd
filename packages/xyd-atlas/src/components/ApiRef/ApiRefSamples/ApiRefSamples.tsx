@@ -1,18 +1,23 @@
-import React, { useState, useMemo, useContext } from "react";
+import { Play } from "lucide-react";
 import { UXNode } from "openux-js";
+import React, { useState, useMemo, useContext } from "react";
 
-import { Example, ExampleRoot } from "@xyd-js/uniform";
+import { Example, ExampleRoot, ReferenceCategory, type Reference } from "@xyd-js/uniform";
 import { CodeSample, type CodeThemeBlockProps } from "@xyd-js/components/coder";
 
 import { CodeExampleButtons } from "@/components/Code";
 import {
   AtlasContext,
+  usePlayground,
+  useSdkLanguage,
   useSyntaxHighlight,
 } from "@/components/Atlas/AtlasContext";
 
 import * as cn from "./ApiRefSamples.styles";
 
 export interface ApiRefSamplesProps {
+  /** The reference these samples belong to — drives the "run request" play. */
+  reference: Reference;
   examples: ExampleRoot;
   /**
    * Also show the example switcher for a single *labelled* example (one whose
@@ -22,10 +27,11 @@ export interface ApiRefSamplesProps {
   singleExampleTab?: boolean;
 }
 
-export function ApiRefSamples({ examples, singleExampleTab }: ApiRefSamplesProps) {
+export function ApiRefSamples({ reference, examples, singleExampleTab }: ApiRefSamplesProps) {
   const [activeExampleIndices, setActiveExampleIndices] = useState<
     Record<number, number>
   >({});
+  const playground = usePlayground();
 
   const handleExampleChange = (groupIndex: number, exampleIndex: number) => {
     setActiveExampleIndices((prev) => ({
@@ -34,9 +40,26 @@ export function ApiRefSamples({ examples, singleExampleTab }: ApiRefSamplesProps
     }));
   };
 
+  // Opt-in "run request" — a play icon rendered right after the copy button in
+  // the code toolbar (via CodeSample's `codeActions`). Only when the host wires a
+  // playground and this is a REST operation; clicking opens the host's widget.
+  const codeActions =
+    playground && reference?.category === ReferenceCategory.REST ? (
+      <button
+        type="button"
+        part="run-request"
+        aria-label="Run request"
+        title="Run request"
+        className={cn.ApiRefSamplesPlay}
+        onClick={() => playground.onTry(reference)}
+      >
+        <Play size={16} />
+      </button>
+    ) : null;
+
   return (
     <atlas-apiref-samples className={cn.ApiRefSamplesContainerHost}>
-      {examples.groups?.map(({ description, examples: samples }, i) => {
+      {examples.groups?.map(({ description, examples: samples, kind }, i) => {
         const activeExampleIndex = activeExampleIndices[i] || 0;
         const activeExample = samples[activeExampleIndex];
 
@@ -48,6 +71,8 @@ export function ApiRefSamples({ examples, singleExampleTab }: ApiRefSamplesProps
             name={String(i)}
             description={description}
             singleExampleTab={singleExampleTab}
+            // "Run request" only makes sense on REQUEST samples, not response bodies.
+            codeActions={kind === "response" ? undefined : codeActions}
             onExampleChange={(ex) => {
               const index = samples.findIndex((e) => e === ex);
               handleExampleChange(i, index);
@@ -65,14 +90,18 @@ interface CodeSampleItemProps {
   name: string;
   description?: string;
   singleExampleTab?: boolean;
+  codeActions?: React.ReactNode;
   onExampleChange: (example: Example) => void;
 }
 
 function CodeSampleItem(props: CodeSampleItemProps) {
-  const { currentExample, examples, name, description, singleExampleTab, onExampleChange } =
+  const { currentExample, examples, name, description, singleExampleTab, codeActions, onExampleChange } =
     props;
-  const { markdownFormat } = useContext(AtlasContext);
+  const { markdownFormat, codeSample } = useContext(AtlasContext);
   const syntaxHighlight = useSyntaxHighlight();
+  // The page-shared language (header signature + type variants + every code
+  // sample stay in sync). null outside a SdkLanguageProvider → uncontrolled.
+  const sdkLang = useSdkLanguage();
 
   const shouldRenderAllExamples = markdownFormat;
 
@@ -99,6 +128,12 @@ function CodeSampleItem(props: CodeSampleItemProps) {
         codeblocks={createCodeblocks(currentExample)}
         theme={syntaxHighlight || undefined}
         markdownFormat={markdownFormat}
+        languageSwitcher={codeSample?.languageSwitcher}
+        languageIcons={codeSample?.languageIcons}
+        renderLanguage={codeSample?.renderLanguage}
+        codeActions={codeActions}
+        activeLang={sdkLang?.language}
+        onLangChange={sdkLang?.setLanguage}
       />
     </UXNode>
   );
@@ -111,6 +146,12 @@ function CodeSampleItem(props: CodeSampleItemProps) {
         codeblocks={createCodeblocks(example)}
         theme={syntaxHighlight || undefined}
         markdownFormat={markdownFormat}
+        languageSwitcher={codeSample?.languageSwitcher}
+        languageIcons={codeSample?.languageIcons}
+        renderLanguage={codeSample?.renderLanguage}
+        codeActions={codeActions}
+        activeLang={sdkLang?.language}
+        onLangChange={sdkLang?.setLanguage}
       />
     </UXNode>
   ));

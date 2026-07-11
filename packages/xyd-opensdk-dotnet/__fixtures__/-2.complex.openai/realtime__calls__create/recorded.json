@@ -1,0 +1,13 @@
+{
+  "call": "Realtime.Calls.Create",
+  "request": {
+    "method": "post",
+    "path": "/realtime/calls",
+    "query": [],
+    "bodyFields": [
+      "sdp"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

@@ -48,7 +48,7 @@ export function renderResourceFiles(resources: Resource[], ctx: JavaCtx): Genera
 
 // ---- params planning -------------------------------------------------------
 
-interface ParamsPlan {
+export interface ParamsPlan {
   className: string;
   bodyFields: Field[];
   query: Param[];
@@ -56,7 +56,7 @@ interface ParamsPlan {
 }
 
 /** The params class a method needs (body + query + header), or null when it takes only path args. */
-function planParams(segments: string[], method: Method, plan: OperationPlan, ctx: JavaCtx): ParamsPlan | null {
+export function planParams(segments: string[], method: Method, plan: OperationPlan, ctx: JavaCtx): ParamsPlan | null {
   const query = plan.paramGroups.query;
   const header = plan.paramGroups.header;
   const bodyFields = requestBodyFields(method, ctx.types);
@@ -242,7 +242,7 @@ function headerLine(h: Param): string {
 }
 
 /** The Java return type + the terminal statement (page / decode / raw / execute-and-ignore). */
-function returnPlan(method: Method, plan: OperationPlan, ctx: JavaCtx): { type: string; statement: string } {
+export function returnPlan(method: Method, plan: OperationPlan, ctx: JavaCtx): { type: string; statement: string } {
   if (plan.binaryContentType) return { type: 'byte[]', statement: '    return transport.executeRaw(request);' };
   // A paginated list returns a vendored generic page container that decodes the
   // {data:[...], has_more:bool} envelope with a per-item decoder.

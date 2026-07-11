@@ -1,0 +1,13 @@
+{
+  "call": "admin.organization.users.roles.create",
+  "request": {
+    "method": "post",
+    "path": "/organization/users/{user_id}/roles",
+    "query": [],
+    "bodyFields": [
+      "role_id"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

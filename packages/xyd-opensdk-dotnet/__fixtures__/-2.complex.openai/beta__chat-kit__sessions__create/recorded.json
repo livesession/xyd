@@ -1,0 +1,14 @@
+{
+  "call": "Beta.ChatKit.Sessions.Create",
+  "request": {
+    "method": "post",
+    "path": "/chatkit/sessions",
+    "query": [],
+    "bodyFields": [
+      "user",
+      "workflow"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

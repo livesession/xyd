@@ -1,9 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { walkMethods } from '@xyd-js/opensdk-core';
 import { describe, expect, it } from 'vitest';
 
-import { opensdkJava } from '../index';
+import { javaEmitter, opensdkJava } from '../index';
 import { JAVA_SMOKE, javacSmoke, testFixture } from './utils';
 
 const fixtures: { name: string; description: string }[] = [
@@ -21,6 +22,11 @@ const fixtures: { name: string; description: string }[] = [
     name: '3.unions',
     description:
       'type-system consumption: discriminated-union decode (mapping + raw fallback), const auto-fill on request marshal, cursor/offset page containers',
+  },
+  {
+    name: '9.x-open-sdk',
+    description:
+      'x-open-sdk naming overrides: method/resource names from the IR action + resource tree (catalog.browse, system.health.check, things.fetch)',
   },
 ];
 
@@ -133,5 +139,43 @@ describe('opensdk-java shape', () => {
     expect(transport).toContain('builder.header("Authorization", "Bearer " + apiKey);');
     expect(files['src/main/java/com/example/petstore/Json.java']).toContain('public static Object parse(String text) {');
     expect(files['pom.xml']).not.toMatch(/<dependencies>/);
+  });
+});
+
+// The OPTIONAL generateUsage capability: one self-contained, runnable-looking
+// doc snippet per operation — client construction + a single required-only call
+// (à la Fern/Speakeasy/Stainless). Mirrors the Go/Python emitters' usage tests.
+describe('opensdk-java generateUsage', () => {
+  const readIR = (name: string) =>
+    JSON.parse(fs.readFileSync(path.join(__dirname, '../__fixtures__', name, 'input.json'), 'utf8'));
+
+  it('emits a client-init + one required-only call snippet for a method', () => {
+    const ir = readIR('9.x-open-sdk');
+    const types = new Map((ir.types || []).map((t: { name: string }) => [t.name, t]));
+    const ctx = { spec: ir, types, emitterOptions: {} };
+    const browse = walkMethods(ir).find((f) => f.method.action === 'browse');
+    if (!browse) throw new Error('browse method not found in 9.x-open-sdk fixture');
+
+    // biome-ignore lint/style/noNonNullAssertion: generateUsage is present on the emitter
+    const code = javaEmitter.generateUsage!(browse.method, browse.path, ctx);
+
+    // client construction + the resource accessor chain + the browse call (java casing).
+    expect(code).toContain('Client client = Client.builder().apiKey(');
+    expect(code).toContain('client.catalog().browse()');
+    // browse returns a primary response, so the result is captured + printed.
+    expect(code).toContain('var result = client.catalog().browse();');
+    expect(code).toContain('System.out.println(result);');
+  });
+
+  it('camelCases a nested resource chain (system.health.check)', () => {
+    const ir = readIR('9.x-open-sdk');
+    const types = new Map((ir.types || []).map((t: { name: string }) => [t.name, t]));
+    const ctx = { spec: ir, types, emitterOptions: {} };
+    const check = walkMethods(ir).find((f) => f.method.action === 'check');
+    if (!check) throw new Error('check method not found in 9.x-open-sdk fixture');
+
+    // biome-ignore lint/style/noNonNullAssertion: generateUsage is present on the emitter
+    const code = javaEmitter.generateUsage!(check.method, check.path, ctx);
+    expect(code).toContain('client.system().health().check()');
   });
 });

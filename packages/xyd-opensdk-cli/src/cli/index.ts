@@ -83,7 +83,7 @@ export async function main(argv: string[] = process.argv): Promise<void> {
   program
     .command('generate')
     .description('Generate an SDK from an OpenAPI spec (or a pre-parsed IR json). With no --lang, every language declared in sdk.json is generated.')
-    .requiredOption('--spec <path>', 'Path to the OpenAPI spec (yaml/json) or OpenSDK IR (.json)')
+    .option('--spec <path>', 'Path to the OpenAPI spec (yaml/json) or OpenSDK IR (.json); omit to use the "spec" field in sdk.json')
     .option('--lang <language>', 'Emitter language/alias (go|python|typescript|ruby|java|csharp|...); omit to build every language in sdk.json')
     .option('--output <dir>', 'Output directory (single --lang), or the base dir for per-language subfolders (multi-target)')
     .option('--sdk-name <name>', 'SDK name for the converter')
@@ -101,13 +101,19 @@ export async function main(argv: string[] = process.argv): Promise<void> {
           // Commander maps `--no-tests` to opts.tests === false (default true).
           noTests: opts.tests === false,
         };
+        // --spec wins; else fall back to the config's predefined `spec` (already
+        // resolved absolute against the config dir).
+        const spec = opts.spec ?? config?.spec;
+        if (!spec) {
+          throw new Error('No spec — pass --spec, or add a "spec" field to your sdk.json.');
+        }
         if (opts.lang) {
           // Single target: merge the language's behavior over the global one.
           const lang = resolveLanguage(opts.lang);
           const target = config?.targets?.[lang];
           await generateCommand({
             ...shared,
-            spec: opts.spec,
+            spec,
             lang: opts.lang,
             output: opts.output ?? target?.output ?? './sdk',
             sdk: mergeBehaviorOverrides(config?.sdk, target?.behavior),
@@ -119,7 +125,7 @@ export async function main(argv: string[] = process.argv): Promise<void> {
           if (!config) {
             throw new Error('No config found — pass --lang, or add a sdk.json with language sections.');
           }
-          await generateTargets({ ...shared, spec: opts.spec, output: opts.output ?? './sdk', sdk: config.sdk, config });
+          await generateTargets({ ...shared, spec, output: opts.output ?? './sdk', sdk: config.sdk, config });
         }
       } catch (err) {
         handleError(err);

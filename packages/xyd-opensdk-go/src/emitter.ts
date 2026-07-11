@@ -2,7 +2,7 @@ import { type NamedType, type OpensdkSpecJson, type Resource, sdkBehavior } from
 import type { Emitter, EmitterContext, GeneratedFile } from '@xyd-js/opensdk-framework';
 
 import { renderClientFile } from './client';
-import { generateGoTests } from './example-go';
+import { generateGoTests, generateGoTypeReference, generateGoUsage } from './example-go';
 import { renderTypesFile } from './model';
 import { goPackageName } from './naming';
 import { runtimeFiles } from './runtime';
@@ -30,7 +30,8 @@ function resolveOptions(spec: OpensdkSpecJson, ctx: EmitterContext): ResolvedGoO
 
 function goCtx(spec: OpensdkSpecJson, ctx: EmitterContext): GoCtx {
   const { pkg, modulePath } = resolveOptions(spec, ctx);
-  return { modulePath, pkg, types: ctx.types as Map<string, NamedType>, behavior: sdkBehavior(spec) };
+  const { baseUrlEnv } = ctx.emitterOptions as OpensdkGoOptions;
+  return { modulePath, pkg, types: ctx.types as Map<string, NamedType>, behavior: sdkBehavior(spec), baseUrlEnv };
 }
 
 /**
@@ -81,5 +82,15 @@ export const goEmitter: Emitter = {
   generateTests(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[] {
     if ((ctx.emitterOptions as OpensdkGoOptions).tests === false) return [];
     return generateGoTests(spec, goCtx(spec, ctx));
+  },
+
+  // A single per-operation usage snippet for docs (client init + one call).
+  generateUsage(method, chain, ctx: EmitterContext): string {
+    return generateGoUsage(method, chain, goCtx(ctx.spec, ctx));
+  },
+
+  // The per-operation SDK type reference (signature + request/response types).
+  generateTypeReference(method, chain, ctx: EmitterContext) {
+    return generateGoTypeReference(method, chain, goCtx(ctx.spec, ctx));
   },
 };

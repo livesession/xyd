@@ -1,5 +1,10 @@
 import type { Method, NamedType, Param, ResolvedSdkBehavior, Resource, TypeRef } from '@xyd-js/opensdk-core';
-import { type OperationPlan, type PageName, planOperation } from '@xyd-js/opensdk-framework';
+import type {
+  NeutralTypeField,
+  RenderedTypeField,
+  RenderedTypeReference,
+} from '@xyd-js/opensdk-framework';
+import { type OperationPlan, type PageName, planOperation, planTypeReference, refSchemaName } from '@xyd-js/opensdk-framework';
 
 import { jsDoc, propKey, unionDecodeName } from './model';
 import { camelCase, nodeMethodName, pascalCase, singularPascalCase, slug } from './naming';
@@ -33,6 +38,11 @@ export function resourceClassName(segments: string[]): string {
 /** The params-type qualifier (SINGULARIZED, openai-node's `PetCreateParams` shape). */
 function paramsQualifier(segments: string[]): string {
   return segments.map(singularPascalCase).join('');
+}
+
+/** The synthesized params-interface NAME (openai-node's `PetCreateParams` shape). */
+export function paramsTypeName(segments: string[], action: string): string {
+  return `${paramsQualifier(segments)}${pascalCase(action)}Params`;
 }
 
 /** Emit `src/resources/index.ts`: the barrel re-exporting every top-level resource file. */
@@ -129,7 +139,7 @@ function emitMethod(
   // The params object argument (body/query/header), openai-node's `PetCreateParams`.
   const hasParams = hasBody || queryParams.length > 0 || headerParams.length > 0;
   const argName = paramsArgName(hasBody, queryParams.length, headerParams.length);
-  const paramsType = `${paramsQualifier(segments)}${pascalCase(method.action)}Params`;
+  const paramsType = paramsTypeName(segments, method.action);
   if (hasParams) {
     paramInterfaces.push(
       renderParamsInterface(paramsType, hasBody, bodyList, queryParams, headerParams, uses.refs),
@@ -262,15 +272,24 @@ function renderParamsInterface(
   refs: ModelRefs,
 ): string {
   const lines: string[] = [];
+  // Dedupe by property key: a body field and a same-named query/header param
+  // (e.g. a `version` in both the request body AND a `?version=` query) would
+  // otherwise emit a duplicate identifier (invalid TS). Body wins (emitted
+  // first); the colliding param is skipped.
+  const seen = new Set<string>();
+  const pushField = (name: string, required: boolean | undefined, type: Parameters<typeof nodeType>[0]): void => {
+    const key = propKey(name);
+    if (seen.has(key)) return;
+    seen.add(key);
+    lines.push(`  ${key}${required ? '' : '?'}: ${nodeType(type, refs)};`);
+  };
   if (hasBody) {
-    for (const f of bodyList) {
-      lines.push(`  ${propKey(f.name)}${f.required ? '' : '?'}: ${nodeType(f.type, refs)};`);
-    }
+    for (const f of bodyList) pushField(f.name, f.required, f.type);
   }
   // query/header params keyed by their LOGICAL name (mapped to the wire name at
   // request time), so a param like `tags` reads nicely even when its wire key is `tags[]`.
   for (const p of [...queryParams, ...headerParams]) {
-    lines.push(`  ${propKey(p.name)}${p.required ? '' : '?'}: ${nodeType(p.type, refs)};`);
+    pushField(p.name, p.required, p.type);
   }
   const body = lines.length ? `\n${lines.join('\n')}\n` : '';
   return `export interface ${typeName} {${body}}`;
@@ -345,4 +364,104 @@ function pathExpr(path: string): string {
   if (!p.includes('{')) return JSON.stringify(p);
   const tmpl = p.replace(/\{([^}]+)\}/g, (_, w) => `\${${camelCase(w)}}`);
   return `\`${tmpl}\``;
+}
+
+// ---- type reference (Atlas SDK-types view) -------------------------------
+
+/** A throwaway import tracker for a display-only type string (never emitted). */
+function displayRefs(): ModelRefs {
+  return new ModelRefs();
+}
+
+/** One params-interface field's TS type — mirrors renderParamsInterface's field
+ * line (the property key carries `?` for optional; the TYPE itself is plain), as
+ * a display string (the model-import tracking is discarded). */
+function nodeFieldTypeDisplay(f: NeutralTypeField): string {
+  return nodeType(f.typeRef, displayRefs());
+}
+
+/** One request field row — the params-interface key casing (`propKey` of the
+ * LOGICAL name, matching how renderParamsInterface keys body/query/header). */
+function nodeRenderField(f: NeutralTypeField): RenderedTypeField {
+  return {
+    name: propKey(f.logicalName),
+    langType: nodeFieldTypeDisplay(f),
+    required: f.required,
+    description: f.description,
+    deprecated: f.deprecated,
+    refTypeName: refSchemaName(f.typeRef),
+  };
+}
+
+/** The idiomatic `Promise<...>` return type — mirrors returnPlan's returnType
+ * (Response / <Page><Item> / decoded model / void), minus the request call. */
+function nodeReturnDisplay(op: OperationPlan, ctx: NodeCtx): string {
+  return returnPlan(op, '', throwawayUses(), ctx).returnType;
+}
+
+/** A throwaway FileUses for a display-only return type (its trackers are discarded). */
+function throwawayUses(): FileUses {
+  return { refs: new ModelRefs(), decodeNames: new Set(), pages: new Set(), needsJoinCsv: false, hasNested: false };
+}
+
+function nodeResponse(op: OperationPlan, neutral: NeutralTypeReference, ctx: NodeCtx): RenderedTypeReference['response'] {
+  if (op.binaryContentType) return { langType: 'Response', note: `binary download (${op.binaryContentType})` };
+  const ref = neutral.response.typeRef;
+  if (!ref || op.primaryResponse === 'none') return { langType: 'void', note: 'no response body' };
+  const typeName = nodeType(ref, displayRefs());
+  const note = op.pageName ? `paginated (${op.pageName})` : undefined;
+  if (neutral.response.fields) {
+    return {
+      typeName,
+      note,
+      fields: neutral.response.fields.map((f) => ({
+        name: propKey(f.logicalName),
+        langType: nodeType(f.typeRef, displayRefs()),
+        required: f.required,
+        description: f.description,
+        deprecated: f.deprecated,
+        refTypeName: refSchemaName(f.typeRef),
+      })),
+    };
+  }
+  return { typeName, langType: typeName, note };
+}
+
+/**
+ * The per-operation TYPE REFERENCE for Node/TypeScript: the idiomatic call
+ * signature, the request params type's field rows, and the response type — the
+ * SDK-native view Atlas renders in place of the REST param definitions. Node
+ * carries a synthesized params interface, so `request.typeName` is set (mirrors
+ * the Go emitter's `generateGoTypeReference`, using Node's primitives).
+ */
+export function generateNodeTypeReference(method: Method, chain: string[], ctx: NodeCtx): RenderedTypeReference {
+  const op = planOperation(method, ctx.types);
+  const neutral = planTypeReference(method, ctx.types);
+
+  const requestFields = neutral.request.fields.map(nodeRenderField);
+
+  const hasParams = neutral.request.fields.length > 0;
+  const typeName = hasParams ? paramsTypeName(chain, method.action) : undefined;
+
+  // The call signature: `client.<attr>.<action>(<path args>, <params arg>): Promise<<return>>`.
+  // Positional path params by camel name, then the single params argument (`body`
+  // / `query` / `params`, `?`-marked when optional), mirroring emitMethod's args.
+  const attrs = chain.map((s) => camelCase(s));
+  const action = nodeMethodName(method.action);
+  const callChain = `client.${[...attrs, action].join('.')}`;
+  const args = op.paramGroups.path.map((p) => camelCase(p.name));
+  const argName = hasParams
+    ? paramsArgName(op.hasBody, op.paramGroups.query.length, op.paramGroups.header.length)
+    : undefined;
+  if (hasParams && argName) {
+    const required = paramsRequired(op.hasBody, op.bodyRequired, op.paramGroups.query, op.paramGroups.header);
+    args.push(required ? argName : `${argName}?`);
+  }
+  const signature = `${callChain}(${args.join(', ')}): Promise<${nodeReturnDisplay(op, ctx)}>`;
+
+  return {
+    signature,
+    request: { typeName, argName, fields: requestFields },
+    response: nodeResponse(op, neutral, ctx),
+  };
 }

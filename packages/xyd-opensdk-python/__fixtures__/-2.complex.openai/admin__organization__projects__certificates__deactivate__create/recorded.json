@@ -1,0 +1,13 @@
+{
+  "call": "admin.organization.projects.certificates.deactivate.create",
+  "request": {
+    "method": "post",
+    "path": "/organization/projects/{project_id}/certificates/deactivate",
+    "query": [],
+    "bodyFields": [
+      "certificate_ids"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

@@ -15,4 +15,11 @@ export interface OpensdkGoOptions {
    * openai-go-shaped. Default: true. Set false to skip.
    */
   tests?: boolean;
+  /**
+   * When set, the generated USAGE snippet constructs its client reading the base
+   * URL from this environment variable (`option.WithBaseURL(os.Getenv(<baseUrlEnv>))`)
+   * INSTEAD of the default — so a snippet-run test can point it at a recording
+   * server. Only affects generateUsage; unset = default output (byte-identical).
+   */
+  baseUrlEnv?: string;
 }

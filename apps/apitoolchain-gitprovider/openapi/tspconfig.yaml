@@ -1,0 +1,7 @@
+emit:
+  - "@typespec/openapi3"
+options:
+  "@typespec/openapi3":
+    emitter-output-dir: "{cwd}/__generated__"
+    openapi-versions:
+      - 3.0.0

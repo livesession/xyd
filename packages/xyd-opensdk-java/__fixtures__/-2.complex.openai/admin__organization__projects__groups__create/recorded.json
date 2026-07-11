@@ -1,0 +1,14 @@
+{
+  "call": "admin.organization.projects.groups.create",
+  "request": {
+    "method": "post",
+    "path": "/organization/projects/{project_id}/groups",
+    "query": [],
+    "bodyFields": [
+      "group_id",
+      "role"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

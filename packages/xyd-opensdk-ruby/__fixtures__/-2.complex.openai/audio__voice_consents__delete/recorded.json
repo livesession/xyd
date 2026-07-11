@@ -1,0 +1,10 @@
+{
+  "call": "audio.voice_consents.delete",
+  "request": {
+    "method": "delete",
+    "path": "/audio/voice_consents/{consent_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

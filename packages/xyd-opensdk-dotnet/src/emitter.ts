@@ -1,4 +1,4 @@
-import { type NamedType, type OpensdkSpecJson, type Resource, type SdkSecurity, sdkBehavior, walkMethods } from '@xyd-js/opensdk-core';
+import { type Method, type NamedType, type OpensdkSpecJson, type Resource, type SdkSecurity, sdkBehavior, walkMethods } from '@xyd-js/opensdk-core';
 import type { Emitter, EmitterContext, GeneratedFile } from '@xyd-js/opensdk-framework';
 import { planOperation } from '@xyd-js/opensdk-framework';
 
@@ -9,7 +9,7 @@ import { dotnetPageName, renderPaginationFile } from './pagination';
 import { pascalCase } from './naming';
 import { renderTransportFile } from './runtime';
 import { renderServiceFile } from './service';
-import { renderTestFiles } from './tests-cs';
+import { generateDotnetTypeReference, generateDotnetUsage, renderTestFiles } from './tests-cs';
 import type { OpensdkDotnetOptions } from './types';
 
 interface ResolvedDotnetOptions {
@@ -18,6 +18,8 @@ interface ResolvedDotnetOptions {
   baseURL: string;
   targetFramework: string;
   envVar?: string;
+  /** Snippet-run only: read the client base URL from this env var (ask C.2). */
+  baseUrlEnv?: string;
 }
 
 function resolveOptions(spec: OpensdkSpecJson, ctx: EmitterContext): ResolvedDotnetOptions {
@@ -29,6 +31,7 @@ function resolveOptions(spec: OpensdkSpecJson, ctx: EmitterContext): ResolvedDot
     baseURL: options.baseURL ?? spec.servers?.[0] ?? '',
     targetFramework: options.targetFramework ?? 'net8.0',
     envVar: spec.security?.find((s) => s.envVar)?.envVar,
+    baseUrlEnv: options.baseUrlEnv,
   };
 }
 
@@ -133,5 +136,19 @@ export const dotnetEmitter: Emitter = {
     const resources = spec.resources || [];
     if (resources.length === 0) return [];
     return renderTestFiles(resources, { sdk, namespace, targetFramework, types: ctx.types as Map<string, NamedType> });
+  },
+
+  // A single per-operation doc USAGE SNIPPET: an `Example` program that
+  // constructs the client and makes one required-only call (à la
+  // Fern/Speakeasy/Stainless). `chain` is the resource-name path (root→owner).
+  generateUsage(method: Method, chain: string[], ctx: EmitterContext): string {
+    const { sdk, namespace, envVar, baseUrlEnv } = resolveOptions(ctx.spec, ctx);
+    return generateDotnetUsage(method, chain, { sdk, namespace, envVar, baseUrlEnv, types: ctx.types as Map<string, NamedType> });
+  },
+
+  // The per-operation SDK type reference (signature + request/response types).
+  generateTypeReference(method: Method, chain: string[], ctx: EmitterContext) {
+    const { sdk, namespace, envVar } = resolveOptions(ctx.spec, ctx);
+    return generateDotnetTypeReference(method, chain, { sdk, namespace, envVar, types: ctx.types as Map<string, NamedType> });
   },
 };

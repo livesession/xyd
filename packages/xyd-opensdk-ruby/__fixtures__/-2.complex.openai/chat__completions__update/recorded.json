@@ -1,0 +1,13 @@
+{
+  "call": "chat.completions.update",
+  "request": {
+    "method": "post",
+    "path": "/chat/completions/{completion_id}",
+    "query": [],
+    "bodyFields": [
+      "metadata"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

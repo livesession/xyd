@@ -1,0 +1,10 @@
+{
+  "call": "Admin.Organization.Certificates.Delete",
+  "request": {
+    "method": "delete",
+    "path": "/organization/certificates/{certificate_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

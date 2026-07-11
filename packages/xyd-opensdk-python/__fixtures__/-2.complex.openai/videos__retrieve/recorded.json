@@ -1,0 +1,10 @@
+{
+  "call": "videos.retrieve",
+  "request": {
+    "method": "get",
+    "path": "/videos/{video_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

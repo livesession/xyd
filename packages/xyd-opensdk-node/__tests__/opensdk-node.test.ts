@@ -1,9 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { walkMethods } from '@xyd-js/opensdk-core';
 import { describe, expect, it } from 'vitest';
 
-import { opensdkNode } from '../index';
+import { nodeEmitter, opensdkNode } from '../index';
 import { NODE_SMOKE, testFixture, tscSmoke } from './utils';
 
 const fixtures: { name: string; description: string }[] = [
@@ -17,6 +18,11 @@ const fixtures: { name: string; description: string }[] = [
     name: '3.unions',
     description:
       'type-system consumption: discriminated-union decode (mapping + raw fallback), const literal fields, cursor/offset page containers',
+  },
+  {
+    name: '9.x-open-sdk',
+    description:
+      'x-open-sdk naming overrides: method/resource names from the IR action + resource tree (catalog.browse, system.health.check, things.fetch)',
   },
 ];
 
@@ -53,7 +59,9 @@ describe('opensdk-node emitter shape', () => {
     const pkg = JSON.parse(files['package.json']);
     expect(pkg.name).toBe('petstore');
     expect(pkg.dependencies).toEqual({});
-    expect(files['src/client.ts']).toContain('export class Client extends APIClient');
+    expect(files['src/client.ts']).toContain('export class Petstore extends APIClient');
+    // Default export style: consumers name it themselves (`import Petstore from 'petstore'`).
+    expect(files['src/index.ts']).toContain("export { Petstore as default } from './client';");
     expect(files['src/resources/pets.ts']).toContain('export class Pets extends APIResource');
     expect(files['src/models.ts']).toContain('export type PetStatus = "available" | "pending" | "sold";');
     expect(files['src/core/request.ts']).toContain('response = await this.fetchImpl(');
@@ -85,5 +93,171 @@ describe('opensdk-node emitter shape', () => {
     expect(unions['src/resources/events.ts']).toContain('CursorPage<Event>');
     expect(unions['src/resources/logs.ts']).toContain('OffsetPage<Log>');
     expect(unions['src/core/pagination.ts']).toContain('export class CursorPage<T>');
+  });
+});
+
+describe('opensdk-node client export styles', () => {
+  const ir = JSON.parse(
+    fs.readFileSync(path.join(__dirname, '../__fixtures__/1.basic/input.json'), 'utf8'),
+  );
+
+  it('default (no option) → a default export; consumer names it (import OpenAI from …)', () => {
+    const files = opensdkNode(ir, { packageName: 'openai' });
+    expect(files['src/client.ts']).toContain('export class Openai extends APIClient');
+    expect(files['src/index.ts']).toContain("export { Openai as default } from './client';");
+    // No fixed named symbol — the returned object isn't a specific export.
+    expect(files['src/index.ts']).not.toContain("export { Openai } from './client';");
+    expect(files['README.md']).toContain("import Openai from 'openai';");
+  });
+
+  it('default (custom) → a default export with a custom symbol (import Abc from …)', () => {
+    const files = opensdkNode(ir, { packageName: 'openai', exportDefault: 'Abc' });
+    expect(files['src/client.ts']).toContain('export class Abc extends APIClient');
+    expect(files['src/index.ts']).toContain("export { Abc as default } from './client';");
+    expect(files['src/index.ts']).not.toContain("export { Abc } from './client';");
+    expect(files['README.md']).toContain("import Abc from 'openai';");
+  });
+
+  it('named (derived) → a PascalCase symbol from the package name (@cloudinary/analysis → CloudinaryAnalysis)', () => {
+    const files = opensdkNode(ir, {
+      packageName: '@cloudinary/analysis',
+      exportPackage: true,
+    });
+    expect(files['src/client.ts']).toContain('export class CloudinaryAnalysis extends APIClient');
+    expect(files['src/index.ts']).toContain("export { CloudinaryAnalysis } from './client';");
+    expect(files['src/index.ts']).not.toContain('as default');
+    expect(files['README.md']).toContain("import { CloudinaryAnalysis } from '@cloudinary/analysis';");
+  });
+
+  it('named (explicit) → a custom symbol when no pattern fits (import { Leonardo } from @leonardo-ai/sdk)', () => {
+    const files = opensdkNode(ir, {
+      packageName: '@leonardo-ai/sdk',
+      exportPackage: 'Leonardo',
+    });
+    expect(files['src/client.ts']).toContain('export class Leonardo extends APIClient');
+    expect(files['src/index.ts']).toContain("export { Leonardo } from './client';");
+    expect(files['README.md']).toContain("import { Leonardo } from '@leonardo-ai/sdk';");
+  });
+
+  it('the generated test setup binds the client to a local `Client` for any export style', () => {
+    const def = opensdkNode(ir, { packageName: 'openai' });
+    expect(def['tests/setup.ts']).toContain("import Client from '../src/index';");
+    const named = opensdkNode(ir, {
+      packageName: '@leonardo-ai/sdk',
+      exportPackage: 'Leonardo',
+    });
+    expect(named['tests/setup.ts']).toContain("import { Leonardo as Client } from '../src/index';");
+  });
+});
+
+// The OPTIONAL generateUsage capability: one self-contained, runnable-looking
+// doc snippet per operation — client construction + a single required-only call
+// (à la Fern/Speakeasy/Stainless). Mirrors the Go/Python emitters' generateUsage test.
+describe('opensdk-node generateUsage', () => {
+  const readIR = (name: string) =>
+    JSON.parse(fs.readFileSync(path.join(__dirname, '../__fixtures__', name, 'input.json'), 'utf8'));
+
+  it('emits a client-init + one required-only call snippet for a method', () => {
+    const ir = readIR('9.x-open-sdk');
+    const types = new Map((ir.types || []).map((t: { name: string }) => [t.name, t]));
+    const ctx = { spec: ir, types, emitterOptions: {} };
+    const browse = walkMethods(ir).find((f) => f.method.action === 'browse');
+    if (!browse) throw new Error('browse method not found in 9.x-open-sdk fixture');
+
+    // biome-ignore lint/style/noNonNullAssertion: generateUsage is present on the emitter
+    const code = nodeEmitter.generateUsage!(browse.method, browse.path, ctx);
+
+    // client construction (class name derived from the package) + the resource
+    // attribute chain + the browse call.
+    expect(code).toContain('import ExtensionsDemo from "extensions-demo";');
+    expect(code).toContain('const client = new ExtensionsDemo({');
+    expect(code).toContain('apiKey: process.env["EXTENSIONS_DEMO_API_KEY"]');
+    expect(code).toContain('await client.catalog.browse()');
+    // browse returns a primary response, so the result is captured + logged.
+    expect(code).toContain('const result = await client.catalog.browse();');
+    expect(code).toContain('console.log(result);');
+  });
+
+  it('camelCases a nested resource chain (system.health.check)', () => {
+    const ir = readIR('9.x-open-sdk');
+    const types = new Map((ir.types || []).map((t: { name: string }) => [t.name, t]));
+    const ctx = { spec: ir, types, emitterOptions: {} };
+    const check = walkMethods(ir).find((f) => f.method.action === 'check');
+    if (!check) throw new Error('check method not found in 9.x-open-sdk fixture');
+
+    // biome-ignore lint/style/noNonNullAssertion: generateUsage is present on the emitter
+    const code = nodeEmitter.generateUsage!(check.method, check.path, ctx);
+    expect(code).toContain('client.system.health.check()');
+  });
+});
+
+// The OPTIONAL busybox capability: a bundle of error-handling helpers built on
+// the SDK's own `APIError`, exposed one of four ways. Off by default; every
+// exposure style shares ONE helper definition in `src/busybox.ts`.
+describe('opensdk-node busybox', () => {
+  const ir = JSON.parse(
+    fs.readFileSync(path.join(__dirname, '../__fixtures__/1.basic/input.json'), 'utf8'),
+  );
+
+  it('is off by default — no helpers file, no re-export', () => {
+    const files = opensdkNode(ir);
+    expect(files['src/busybox.ts']).toBeUndefined();
+    expect(files['src/index.ts']).not.toContain('busybox');
+    expect(files['src/client.ts']).not.toContain('busybox');
+  });
+
+  it('emits a self-contained helper file built on APIError (isNotFound / errMessage / apiErrMessage)', () => {
+    const busybox = opensdkNode(ir, { busybox: true })['src/busybox.ts'];
+    expect(busybox).toBeDefined();
+    expect(busybox).toContain("import { APIError } from './core/error';");
+    // The three the user asked for, plus status predicates.
+    expect(busybox).toContain('export function isNotFound(err: unknown): boolean {');
+    expect(busybox).toContain('return isStatus(err, 404);');
+    expect(busybox).toContain('export function errMessage(err: unknown): string {');
+    expect(busybox).toContain('export function apiErrMessage(err: unknown): string {');
+    // apiErrMessage prefers the API body's `message` over the generic status text.
+    expect(busybox).toContain('JSON.parse(err.body)');
+    expect(busybox).toContain('if (body?.message) return body.message;');
+  });
+
+  // Variant 1 — static members on the client class: `Petstore.isNotFound(err)`.
+  it("style 'static' — helpers become static members of the client class", () => {
+    const files = opensdkNode(ir, { busybox: 'static' });
+    expect(files['src/busybox.ts']).toBeDefined();
+    expect(files['src/client.ts']).toContain("import * as busybox from './busybox';");
+    expect(files['src/client.ts']).toContain('export class Petstore extends APIClient {');
+    expect(files['src/client.ts']).toContain('static isNotFound = busybox.isNotFound;');
+    expect(files['src/client.ts']).toContain('static apiErrMessage = busybox.apiErrMessage;');
+    // static-only: the package root does NOT re-export the helpers.
+    expect(files['src/index.ts']).not.toContain('./busybox');
+  });
+
+  // Variant 2 — flat named exports: `import { isNotFound } from '<pkg>'`.
+  it("style 'flat' — helpers are flat named exports from the package root", () => {
+    const files = opensdkNode(ir, { busybox: 'flat' });
+    expect(files['src/busybox.ts']).toBeDefined();
+    expect(files['src/index.ts']).toContain(
+      "export { isAPIError, isStatus, isNotFound, isUnauthorized, isForbidden, isConflict, isRateLimited, isServerError, errMessage, apiErrMessage } from './busybox';",
+    );
+    // flat: no namespace object, no client statics.
+    expect(files['src/index.ts']).not.toContain('export * as');
+    expect(files['src/client.ts']).not.toContain('static isNotFound');
+  });
+
+  // Variant 3 — a `busybox` namespace object: `import { busybox } from '<pkg>'`.
+  it("style 'namespace' (default) — a single `busybox` namespace object", () => {
+    const viaBool = opensdkNode(ir, { busybox: true });
+    const viaStr = opensdkNode(ir, { busybox: 'namespace' });
+    for (const files of [viaBool, viaStr]) {
+      expect(files['src/index.ts']).toContain("export * as busybox from './busybox';");
+      expect(files['src/index.ts']).not.toContain('static isNotFound');
+    }
+  });
+
+  // Variant 4 — a custom-named namespace object: `import { apiutils } from '<pkg>'`.
+  it("style 'namespace' with a custom name — `import { apiutils } from '<pkg>'`", () => {
+    const files = opensdkNode(ir, { busybox: { style: 'namespace', name: 'apiutils' } });
+    expect(files['src/index.ts']).toContain("export * as apiutils from './busybox';");
+    expect(files['src/index.ts']).not.toContain("export * as busybox");
   });
 });

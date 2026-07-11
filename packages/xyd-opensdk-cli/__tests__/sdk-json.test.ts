@@ -60,6 +60,32 @@ describe('resolveConfig — sdk.json', () => {
     }
   });
 
+  it('resolves a predefined `spec` (relative to the config file) for --spec-less generate', async () => {
+    const dir = tmp();
+    try {
+      write(dir, 'sdk.json', { version: 1, spec: 'openapi/api.yaml', typescript: { output: './out/ts' } });
+      const config = await resolveConfig(dir);
+      // Resolved absolute against the config dir…
+      expect(config?.spec).toBe(path.resolve(dir, 'openapi/api.yaml'));
+      // …and `spec` is a reserved key, never treated as a language section.
+      expect(config?.emitterOptions?.spec).toBeUndefined();
+      expect(config?.targets?.spec).toBeUndefined();
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('keeps an absolute `spec` as-is', async () => {
+    const dir = tmp();
+    try {
+      write(dir, 'sdk.json', { version: 1, spec: SPEC });
+      const config = await resolveConfig(dir);
+      expect(config?.spec).toBe(SPEC);
+    } finally {
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
   it('normalizes global + per-language publish targets', async () => {
     const dir = tmp();
     try {

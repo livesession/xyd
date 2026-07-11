@@ -18,4 +18,11 @@ export interface OpensdkJavaOptions {
    * `false` to opt out (same gate as the Go/Python emitters).
    */
   tests?: boolean;
+  /**
+   * When set, a generated USAGE snippet constructs the client reading the base
+   * URL from this env var (`.baseUrl(System.getenv("<baseUrlEnv>"))`) INSTEAD of
+   * the default client base URL — so the snippet can be pointed at a recording
+   * server for the run-diff tier. Unset (default) → byte-identical default output.
+   */
+  baseUrlEnv?: string;
 }

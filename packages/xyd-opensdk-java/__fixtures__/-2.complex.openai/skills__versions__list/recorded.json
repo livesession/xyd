@@ -1,0 +1,10 @@
+{
+  "call": "skills.versions.list",
+  "request": {
+    "method": "get",
+    "path": "/skills/{skill_id}/versions",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

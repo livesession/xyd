@@ -1,0 +1,23 @@
+{
+  "name": "Petstore (local spec)",
+  "description": "Two APIs — one from a shared spec, one from this folder's own specs/petstore.yaml. Shows how a profile bundles its own data.",
+  "order": 5,
+  "apis": [
+    {
+      "name": "LiveSession API",
+      "ns": "livesession",
+      "spec": "livesession",
+      "source": "github.com/livesession/livesession-docs"
+    },
+    {
+      "name": "Petstore API",
+      "ns": "petstore",
+      "spec": "specs/petstore.yaml",
+      "source": "github.com/example/petstore"
+    }
+  ],
+  "sdks": [
+    { "api": "Petstore API", "name": "Petstore SDK", "languages": ["node"] }
+  ],
+  "connect": false
+}

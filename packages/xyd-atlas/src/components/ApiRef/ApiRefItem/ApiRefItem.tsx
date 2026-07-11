@@ -15,7 +15,7 @@ import {
     ApiRefSamples
 } from "@/components/ApiRef";
 import * as cn from "@/components/ApiRef/ApiRefItem/ApiRefItem.styles";
-import { useVariantToggles, type VariantToggleConfig } from "@/components/Atlas/AtlasContext";
+import { useSdkLanguage, useSdkTypes, useVariantToggles, type VariantToggleConfig } from "@/components/Atlas/AtlasContext";
 
 export interface ApiRefItemProps {
     reference: Reference
@@ -33,6 +33,7 @@ export function ApiRefItem({
     // CLI Tool samples read as tabs even when there's a single labelled example
     // (e.g. `diagrams`); other reference types keep the default (2+ only).
     let examples: React.ReactNode | null = <ApiRefSamples
+        reference={reference}
         examples={reference.examples}
         singleExampleTab={reference.category === ReferenceCategory.CLI}
     />
@@ -60,7 +61,52 @@ export function ApiRefItem({
     </atlas-apiref-item>
 }
 
+/** Emphasise the called method (the last `.`-segment before the argument list) in
+ * an SDK signature, e.g. `client.Widgets.`**`List`**`(ctx, query)` — so the eye
+ * lands on what's being called, not the receiver chain. */
+function renderSdkSignature(signature: string): React.ReactNode {
+    const parenIdx = signature.indexOf("(");
+    const head = parenIdx >= 0 ? signature.slice(0, parenIdx) : signature;
+    const tail = parenIdx >= 0 ? signature.slice(parenIdx) : "";
+    const lastDot = head.lastIndexOf(".");
+    const methodName = head.slice(lastDot + 1);
+    if (!methodName) return signature;
+    const prefix = head.slice(0, lastDot + 1);
+    // NOTE: keep the pieces on ONE line with no whitespace between them — the
+    // signature <code> preserves whitespace, so any newline/indent here would
+    // split the signature across lines. Returned as an array (no JSX text nodes).
+    // display:inline is set INLINE (not only via the class) as a hard guarantee the
+    // method stays in the inline flow — the Linaria class can collide with another
+    // styled block's hash (observed: it shared `apmrvhc` with ApiRefItemDefinitionsItem,
+    // which is display:flex;flex-direction:column, knocking the method onto its own
+    // line). Inline style beats any such class rule and ships in the (fresh) JS bundle.
+    return [prefix, <strong key="m" className={cn.ApiRefItemSdkMethod} part="sdk-method" style={{ display: "inline", fontWeight: "var(--xyd-font-weight-bold, 700)" }}>{methodName}</strong>, tail]
+}
+
+function $SdkHeader({ signature, method, path, matchPath }: {
+    signature: string,
+    method: string,
+    path: string,
+    matchPath?: string,
+}) {
+    // No language <select> here — the code-sample language switcher below is the
+    // single, page-shared control (it drives this signature's language too).
+    return <div className={cn.ApiRefItemSdkHeader} part="sdk-header">
+        {/* whiteSpace inline (not only in the linaria class): `white-space` is an
+            inherited property and the signature <code> sets none of its own, so this
+            propagates down to the code + its <strong> and keeps the whole signature
+            on ONE line. Inline so it wins over any rule and ships in the JS bundle
+            (not the separately-cached atlas stylesheet). */}
+        <div className={cn.ApiRefItemSdkSignature} part="sdk-signature" style={{ whiteSpace: "nowrap" }}>
+            <Code>{renderSdkSignature(signature)}</Code>
+        </div>
+        <$Navbar label={method} subtitle={path} matchSubtitle={matchPath} />
+    </div>
+}
+
 function $IntroHeader({ reference }: ApiRefItemProps) {
+    const sdkTypes = useSdkTypes();
+    const sdkLang = useSdkLanguage();
     let topNavbar;
 
     switch (reference?.category) {
@@ -68,6 +114,21 @@ function $IntroHeader({ reference }: ApiRefItemProps) {
             const ctx = reference.context as OpenAPIReferenceContext
 
             if (!ctx || !ctx.method || !ctx.fullPath) {
+                break;
+            }
+
+            // SDK-native mode: show the method SIGNATURE (per the shared language)
+            // above the HTTP method + path, with the single language selector.
+            const signature = sdkTypes?.enabled && sdkLang && ctx.sdk?.signatures
+                ? ctx.sdk.signatures[sdkLang.language]
+                : undefined;
+            if (signature && sdkLang) {
+                topNavbar = <$SdkHeader
+                    signature={signature}
+                    method={ctx.method}
+                    path={ctx.fullPath}
+                    matchPath={ctx.path}
+                />
                 break;
             }
 
@@ -271,13 +332,23 @@ function $VariantsProvider({ definition, children }: {
     }, {});
     const variantToggles = (useVariantToggles() || []).filter(toggle => variantMetas[toggle.key])
 
+    // The `sdkLang` toggle is driven by the page-shared SDK language (one control
+    // switches every operation's header + types together), not local state.
+    const sdkLang = useSdkLanguage();
+
     const [selectedValues, setSelectedValues] = useState<Record<string, string>>(() => {
         const initial: Record<string, string> = {};
         variantToggles.forEach(toggle => {
             initial[toggle.key] = toggle.defaultValue;
         });
+        if (sdkLang) initial.sdkLang = sdkLang.language;
         return initial;
     });
+
+    useEffect(() => {
+        if (!sdkLang) return;
+        setSelectedValues(prev => prev.sdkLang === sdkLang.language ? prev : { ...prev, sdkLang: sdkLang.language });
+    }, [sdkLang?.language]);
 
     const setSelectedValue = useCallback((key: string, value: string) => {
         setSelectedValues(prev => ({ ...prev, [key]: value }));
@@ -323,10 +394,14 @@ function $VariantSelects() {
 
     if (!variants?.length) return null;
 
+    // `sdkLang` has no per-definition select — the single page-level language
+    // control (in the operation header) drives it.
+    const visibleToggles = variantToggles.filter(toggle => toggle.key !== "sdkLang");
+
     // Create selects based on variantToggles
     return (
         <div className={""}>
-            {variantToggles.map((toggle, index) => {
+            {visibleToggles.map((toggle, index) => {
                 // Get all unique values for this toggle
                 const availableValues = Array.from(new Set(
                     variants.map(v => {
@@ -418,11 +493,15 @@ function $DefinitionBody(props: DefinitionBodyProps) {
 
     let apiRefProperties: React.ReactNode | null = null;
 
+    // SDK-type view: the params/response type is a single root (`query
+    // SessionListParams`) whose fields should show, not hide behind a toggle.
+    const isSdk = variant?.meta?.some(m => m.name === "sdkLang");
+
     if (variant) {
         if (variant.properties?.length) {
             apiRefProperties = <ApiRefProperties properties={variant.properties} />;
         } else if (variant.rootProperty) {
-            apiRefProperties = <ApiRefProperties properties={[variant.rootProperty]} />;
+            apiRefProperties = <ApiRefProperties properties={[variant.rootProperty]} defaultExpanded={isSdk} />;
         }
     } else {
         if (definition.properties?.length) {

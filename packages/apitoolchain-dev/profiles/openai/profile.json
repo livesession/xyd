@@ -1,0 +1,21 @@
+{
+  "name": "OpenAI API",
+  "description": "The real OpenAI OpenAPI spec (fetched fresh from GitHub) registered under its own namespace, with a generated Node SDK. A large, real-world spec for exercising the registry, the editor and the SDK pipeline.",
+  "order": 9,
+  "apis": [
+    {
+      "name": "OpenAI API",
+      "ns": "openai",
+      "spec": "openai",
+      "source": "github.com/openai/openai-openapi"
+    }
+  ],
+  "sdks": [
+    {
+      "api": "OpenAI API",
+      "name": "OpenAI SDK",
+      "languages": ["node"]
+    }
+  ],
+  "connect": false
+}

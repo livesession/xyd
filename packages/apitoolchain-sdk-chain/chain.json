@@ -1,0 +1,53 @@
+{
+  "$schema": "../xyd-opensdk-schemas/chain.schema.json",
+  "version": 1,
+  "sources": {
+    "gitprovider": {
+      "inputs": [
+        {
+          "location": "../../apps/apitoolchain-gitprovider/openapi/__generated__/openapi.yaml"
+        }
+      ],
+      "output": "./.chain/gitprovider.openapi.json"
+    },
+    "registry-api": {
+      "inputs": [
+        { "location": "../../apps/apitoolchain-registry-api/openapi/v1/__generated__/openapi.yaml" }
+      ],
+      "output": "./.chain/registry-api.openapi.json"
+    },
+    "api": {
+      "inputs": [
+        { "location": "../../apps/apitoolchain-api/openapi/v1/__generated__/openapi.yaml" }
+      ],
+      "output": "./.chain/api.openapi.json"
+    }
+  },
+  "targets": {
+    "gitprovider-node": {
+      "target": "node",
+      "source": "gitprovider",
+      "output": "../apitoolchain-gitprovider-node",
+      "sdkName": "gitprovider",
+      "options": { "packageName": "@apitoolchain/gitprovider-node", "tests": false }
+    },
+    "registry-api-node": {
+      "target": "node",
+      "source": "registry-api",
+      "output": "../apitoolchain-registry-api-node",
+      "sdkName": "registry-api",
+      "options": {
+        "packageName": "@apitoolchain/registry-api-node",
+        "tests": false,
+        "busybox": "flat"
+      }
+    },
+    "api-node": {
+      "target": "node",
+      "source": "api",
+      "output": "../apitoolchain-api-node",
+      "sdkName": "api",
+      "options": { "packageName": "@apitoolchain/api-node", "tests": false }
+    }
+  }
+}

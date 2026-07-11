@@ -1,0 +1,15 @@
+{
+  "call": "Videos.Extensions.Create",
+  "request": {
+    "method": "post",
+    "path": "/videos/extensions",
+    "query": [],
+    "bodyFields": [
+      "prompt",
+      "seconds",
+      "video"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

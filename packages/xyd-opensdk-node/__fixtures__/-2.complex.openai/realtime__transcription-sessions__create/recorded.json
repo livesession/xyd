@@ -1,0 +1,11 @@
+{
+  "call": "realtime.transcriptionSessions.create",
+  "request": {
+    "method": "post",
+    "path": "/realtime/transcription_sessions",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

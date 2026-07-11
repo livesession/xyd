@@ -1,0 +1,10 @@
+{
+  "call": "files.retrieve",
+  "request": {
+    "method": "get",
+    "path": "/files/{file_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

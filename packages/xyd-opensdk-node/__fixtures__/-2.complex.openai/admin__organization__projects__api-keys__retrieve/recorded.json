@@ -1,0 +1,10 @@
+{
+  "call": "admin.organization.projects.apiKeys.retrieve",
+  "request": {
+    "method": "get",
+    "path": "/organization/projects/{project_id}/api_keys/{api_key_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

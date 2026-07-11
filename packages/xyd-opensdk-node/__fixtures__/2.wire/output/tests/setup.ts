@@ -2,7 +2,7 @@
 
 import assert from 'node:assert';
 
-import { Client } from '../src/index';
+import Client from '../src/index';
 
 /** The spec-shaped mock base URL the generated suite runs against (openai-node's TEST_API_BASE_URL). */
 const baseURL = readEnv('TEST_API_BASE_URL') ?? 'http://127.0.0.1:4010';

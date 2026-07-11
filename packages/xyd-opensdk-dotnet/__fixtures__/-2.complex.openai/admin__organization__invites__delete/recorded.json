@@ -1,0 +1,10 @@
+{
+  "call": "Admin.Organization.Invites.Delete",
+  "request": {
+    "method": "delete",
+    "path": "/organization/invites/{invite_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

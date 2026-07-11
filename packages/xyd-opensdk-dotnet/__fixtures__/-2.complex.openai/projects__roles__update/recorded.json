@@ -1,0 +1,11 @@
+{
+  "call": "Projects.Roles.Update",
+  "request": {
+    "method": "post",
+    "path": "/projects/{project_id}/roles/{role_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

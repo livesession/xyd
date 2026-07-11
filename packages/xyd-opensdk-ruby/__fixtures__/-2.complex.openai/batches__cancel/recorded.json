@@ -1,0 +1,10 @@
+{
+  "call": "batches.cancel",
+  "request": {
+    "method": "post",
+    "path": "/batches/{batch_id}/cancel",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "call": "evals.runs.outputItems.list",
+  "request": {
+    "method": "get",
+    "path": "/evals/{eval_id}/runs/{run_id}/output_items",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

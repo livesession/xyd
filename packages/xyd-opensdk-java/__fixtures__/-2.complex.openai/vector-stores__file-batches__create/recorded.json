@@ -1,0 +1,11 @@
+{
+  "call": "vectorStores.fileBatches.create",
+  "request": {
+    "method": "post",
+    "path": "/vector_stores/{vector_store_id}/file_batches",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

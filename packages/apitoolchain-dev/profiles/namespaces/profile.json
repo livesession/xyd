@@ -1,0 +1,20 @@
+{
+  "name": "Namespaces",
+  "description": "Several namespaces to manage — one backing a registered API, the rest empty. Shows namespaces as a first-class, managed concept you can add to or remove.",
+  "order": 6,
+  "namespaces": [
+    { "id": "partner", "description": "Partner-facing APIs" },
+    { "id": "internal", "description": "Internal-only services" },
+    { "id": "payments", "description": "Billing & payments APIs" }
+  ],
+  "apis": [
+    {
+      "name": "LiveSession API",
+      "ns": "livesession",
+      "spec": "livesession",
+      "source": "github.com/livesession/livesession-docs"
+    }
+  ],
+  "sdks": [],
+  "connect": false
+}

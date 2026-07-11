@@ -5,7 +5,7 @@ Handcrafted IR exercising discriminated-union decode, const auto-fill and auto-p
 ## Usage
 
 ```ts
-import { Client } from 'union-depot';
+import UnionDepot from 'union-depot';
 
-const client = new Client({ apiKey: process.env.API_KEY });
+const client = new UnionDepot({ apiKey: process.env.API_KEY });
 ```

@@ -1,0 +1,16 @@
+{
+  "call": "uploads.create",
+  "request": {
+    "method": "post",
+    "path": "/uploads",
+    "query": [],
+    "bodyFields": [
+      "bytes",
+      "filename",
+      "mime_type",
+      "purpose"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

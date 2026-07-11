@@ -1,0 +1,10 @@
+{
+  "call": "FineTuning.Checkpoints.Permissions.Delete",
+  "request": {
+    "method": "delete",
+    "path": "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

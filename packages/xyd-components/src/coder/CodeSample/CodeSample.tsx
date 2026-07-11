@@ -27,6 +27,25 @@ export interface CodeSampleProps {
     markdownFormat?: boolean
     kind?: "secondary"
     controlByMeta?: boolean // TODO: BETTER IN THE FUTURE
+    /** How the language switcher renders: a row of tabs (default) or a
+     * dropdown to pick the language. */
+    languageSwitcher?: "tabs" | "dropdown"
+    /** Render each language as its programming-language icon (from xyd's
+     * built-in code-language icon set, drawn via the xyd `Icon` component)
+     * instead of the raw name. Languages without an icon keep their name. */
+    languageIcons?: boolean
+    /** Advanced override: fully control the label for a language tab/option.
+     * Takes precedence over `languageIcons`. Falls back to the name otherwise. */
+    renderLanguage?: (lang: string, meta?: string) => React.ReactNode
+    /** Extra action(s) rendered in the code toolbar, right after the copy button
+     * (e.g. Atlas's "run request" play icon). */
+    codeActions?: React.ReactNode
+    /** Controlled active language (a tab value = `meta || lang`). When set with
+     * `onLangChange`, the language switcher is CONTROLLED and shared — every
+     * CodeSample fed the same value shows the same language, and switching one
+     * updates them all (Atlas wires this to its page-shared SDK language). */
+    activeLang?: string
+    onLangChange?: (lang: string) => void
 }
 
 export const CodeContext = React.createContext<{
@@ -36,6 +55,12 @@ export const CodeContext = React.createContext<{
     descriptionContent?: string | React.ReactNode
     descriptionIcon?: string
     markdownFormat?: boolean
+    languageSwitcher?: "tabs" | "dropdown"
+    languageIcons?: boolean
+    renderLanguage?: (lang: string, meta?: string) => React.ReactNode
+    codeActions?: React.ReactNode
+    activeLang?: string
+    onLangChange?: (lang: string) => void
 }>({})
 
 export function CodeSample(props: CodeSampleProps) {
@@ -89,6 +114,12 @@ function $ThemedCodeSample(props: CodeSampleProps) {
         descriptionContent: props.descriptionContent,
         descriptionIcon: props.descriptionIcon,
         markdownFormat: props.markdownFormat,
+        languageSwitcher: props.languageSwitcher,
+        languageIcons: props.languageIcons,
+        renderLanguage: props.renderLanguage,
+        codeActions: props.codeActions,
+        activeLang: props.activeLang,
+        onLangChange: props.onLangChange,
     }}>
         <$CodeSampleTabs
             description={props.description}

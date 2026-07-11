@@ -1,0 +1,11 @@
+{
+  "call": "vector_stores.create",
+  "request": {
+    "method": "post",
+    "path": "/vector_stores",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

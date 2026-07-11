@@ -1,0 +1,129 @@
+/* Pin the global CSS layer order BEFORE any import. The OpenAPI editor loads a
+   xyd theme stylesheet (per-route, via that route's `links()`) whose rules are
+   all wrapped in xyd's own layer chain (reset … overrides). Tailwind v4 declares
+   (theme, base, components, utilities). Whichever is imported first would
+   otherwise win the order; pinning keeps Tailwind's preflight FIRST (xyd layers
+   restyle the Atlas render on top of it) and Tailwind utilities LAST (the app's
+   own styling always wins outside the Atlas host). Mirrors apiatlas-web. */
+@layer theme,
+  base,
+  reset,
+  defaults,
+  defaultfix,
+  components,
+  fabric,
+  templates,
+  decorators,
+  themes,
+  themedecorator,
+  presets,
+  user,
+  overrides,
+  utilities;
+
+@import "tailwindcss";
+@import "@apitoolchain/design-system/theme.css";
+
+/* The design system ships raw TS source under node_modules (file: link), so
+   Tailwind's auto content-detection skips it — scan it explicitly for classes. */
+@source "../../../packages/apitoolchain-design-system/src";
+/* Auth building blocks live in their own linked source package. */
+@source "../../../packages/apitoolchain-auth-design-system/src";
+/* Same for the dev widget (@apitoolchain/dev/widget) — a linked source pkg. */
+@source "../../../packages/apitoolchain-dev/src";
+/* The sdk.json wizard — a linked source pkg whose JSX class strings need scanning. */
+@source "../../../packages/apitoolchain-sdkjson-wizard/src";
+
+/* The OpenAPI editor's preview pane is narrower than a full docs page, so xyd
+   Atlas can overflow horizontally (long code samples, the language-tab row,
+   endpoint URLs) and show stray/thick OS scrollbars. Soft-wrap code lines so
+   they don't scroll, and make any remaining scrollbar in the host thin + subtle.
+   Scoped to the atlas host (unlayered — wins the theme's layered rules). */
+.apitoolchain-atlas-host {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(0 0 0 / 0.2) transparent;
+}
+.apitoolchain-atlas-host ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.apitoolchain-atlas-host ::-webkit-scrollbar-thumb {
+  background: rgb(0 0 0 / 0.18);
+  border-radius: 4px;
+}
+.apitoolchain-atlas-host xyd-code-pre code,
+.apitoolchain-atlas-host xyd-code-pre [part="line"] {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+/* Smaller code-sample type — the preview pane is narrow, so the theme's default
+   size runs large; drop it a notch. */
+.apitoolchain-atlas-host xyd-code-pre,
+.apitoolchain-atlas-host xyd-code-pre code,
+.apitoolchain-atlas-host xyd-code-pre [part="line"] {
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+/* The code-sample language switcher — a compact inverted control. The trigger is
+   a light chip + border against the (always github-dark) code surface, and the
+   EXPANDED menu matches it (same light bg + border). The menu is styled via
+   GLOBAL part selectors because it portals out of the host; unlayered rules beat
+   the component's layered defaults (no !important — except the icon size, which
+   is an inline svg attribute). */
+
+/* Shared light surface for the trigger button + the expanded menu. */
+.apitoolchain-atlas-host [part="language-select-trigger"],
+[part="language-select-content"] {
+  background: #eef1f5;
+  color: #1f2328;
+  border: 1px solid rgb(0 0 0 / 0.14);
+}
+
+/* Trigger: a compact button. */
+.apitoolchain-atlas-host [part="language-select-trigger"] {
+  gap: 4px;
+  margin: 10px 8px 2px 8px;
+  padding: 5px 6px;
+  border-radius: 6px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.apitoolchain-atlas-host [part="language-select-trigger"]:hover {
+  background: #e1e6ee;
+}
+.apitoolchain-atlas-host [part="language-select-arrow"] {
+  opacity: 0.5;
+}
+
+/* Expanded menu: same surface, compact items with a light hover. */
+[part="language-select-content"] {
+  border-radius: 8px;
+  padding: 4px;
+}
+[part="language-select-item"] {
+  color: #1f2328;
+  padding: 3px 8px;
+  font-size: 11px;
+}
+[part="language-select-item"][data-highlighted],
+[part="language-select-item"][data-state="checked"] {
+  background: #e1e6ee;
+  color: #1f2328;
+}
+
+/* Tighter icon↔name gap for both the trigger and the menu. (The icon size
+   itself is set in the component — 14px.) */
+.apitoolchain-atlas-host [part="language-icon"],
+[part="language-select-content"] [part="language-icon"] {
+  gap: 5px;
+}
+
+/* Scroll-spy sidebar: the active item is centered (see EditorApp) as it follows
+   the Atlas. Give the list enough space below the last item so even the FINAL
+   endpoint can scroll up to the centre instead of hugging the bottom. The scroll
+   owner is the inner `[part="list"]` ul. */
+.atc-editor-sidebar [part="list"] {
+  padding-bottom: 50vh;
+}

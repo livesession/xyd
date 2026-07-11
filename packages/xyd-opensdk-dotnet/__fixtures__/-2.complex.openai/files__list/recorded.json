@@ -1,0 +1,10 @@
+{
+  "call": "Files.List",
+  "request": {
+    "method": "get",
+    "path": "/files",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

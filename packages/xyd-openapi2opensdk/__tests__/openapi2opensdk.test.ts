@@ -14,6 +14,7 @@ const fixtures = [
   { name: '6.offset-pagination', description: 'integer offset+limit query params on a markerless list envelope -> offset pagination', options: {} },
   { name: '7.allof-envelope', description: 'allOf-composed list envelope + $ref path-item cursor param -> cursor pagination', options: {} },
   { name: '8.idempotency', description: 'idempotency-key header (any casing) stripped from headerParams -> method.injectIdempotencyKey', options: {} },
+  { name: '9.x-open-sdk', description: 'x-open-sdk-method-name + x-open-sdk-group-name (string + nested array) override method/group', options: {} },
 ];
 
 describe('openapi2opensdk', () => {

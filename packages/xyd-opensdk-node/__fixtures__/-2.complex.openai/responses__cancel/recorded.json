@@ -1,0 +1,10 @@
+{
+  "call": "responses.cancel",
+  "request": {
+    "method": "post",
+    "path": "/responses/{response_id}/cancel",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

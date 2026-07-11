@@ -3,7 +3,7 @@
 ## Usage
 
 ```ts
-import { Client } from 'openai';
+import Openai from 'openai';
 
-const client = new Client({ apiKey: process.env.API_KEY });
+const client = new Openai({ apiKey: process.env.API_KEY });
 ```

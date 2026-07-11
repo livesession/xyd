@@ -1,0 +1,13 @@
+{
+  "call": "admin.organization.projects.create",
+  "request": {
+    "method": "post",
+    "path": "/organization/projects",
+    "query": [],
+    "bodyFields": [
+      "name"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "call": "admin.organization.invites.retrieve",
+  "request": {
+    "method": "get",
+    "path": "/organization/invites/{invite_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

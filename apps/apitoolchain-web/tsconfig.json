@@ -1,0 +1,75 @@
+{
+  "include": [
+    "**/*",
+    "**/.server/**/*",
+    "**/.client/**/*",
+    ".react-router/types/**/*"
+  ],
+  "exclude": ["node_modules", "build", "dashboarddesignsystem"],
+  "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "types": ["node", "vite/client"],
+    "target": "ES2022",
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "rootDirs": [".", "./.react-router/types"],
+    "paths": {
+      "~/*": ["./app/*"],
+      "@xyd-js/atlas": ["../../packages/xyd-atlas/dist/index.d.ts"],
+      "@xyd-js/uniform": ["../../packages/xyd-uniform/dist/index.d.ts"],
+      "@xyd-js/framework": ["../../packages/xyd-framework/dist/index.d.ts"],
+      "@xyd-js/framework/react": [
+        "../../packages/xyd-framework/dist/react.d.ts"
+      ],
+      "@xyd-js/framework/hydration": [
+        "../../packages/xyd-framework/dist/hydration.d.ts"
+      ],
+      "@xyd-js/openapi": ["../../packages/xyd-openapi/dist/index.d.ts"],
+      "@xyd-js/components": ["../../packages/xyd-components/dist/index.d.ts"],
+      "@xyd-js/components/content": [
+        "../../packages/xyd-components/dist/content.d.ts"
+      ],
+      "@xyd-js/components/writer": [
+        "../../packages/xyd-components/dist/writer.d.ts"
+      ],
+      "@xyd-js/theme-opener": [
+        "../../packages/xyd-theme-opener/dist/index.d.ts"
+      ],
+      "@xyd-js/openapi2opensdk": [
+        "../../packages/xyd-openapi2opensdk/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-core": [
+        "../../packages/xyd-opensdk-core/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-framework": [
+        "../../packages/xyd-opensdk-framework/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-go": ["../../packages/xyd-opensdk-go/dist/index.d.ts"],
+      "@xyd-js/opensdk-node": [
+        "../../packages/xyd-opensdk-node/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-python": [
+        "../../packages/xyd-opensdk-python/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-ruby": [
+        "../../packages/xyd-opensdk-ruby/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-java": [
+        "../../packages/xyd-opensdk-java/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-dotnet": [
+        "../../packages/xyd-opensdk-dotnet/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-uniform": [
+        "../../packages/xyd-opensdk-uniform/dist/index.d.ts"
+      ]
+    },
+    "esModuleInterop": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true
+  }
+}

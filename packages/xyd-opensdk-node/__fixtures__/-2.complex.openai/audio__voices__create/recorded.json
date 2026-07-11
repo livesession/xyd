@@ -1,0 +1,15 @@
+{
+  "call": "audio.voices.create",
+  "request": {
+    "method": "post",
+    "path": "/audio/voices",
+    "query": [],
+    "bodyFields": [
+      "audio_sample",
+      "consent",
+      "name"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

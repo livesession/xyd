@@ -1,0 +1,14 @@
+{
+  "call": "images.edits.create",
+  "request": {
+    "method": "post",
+    "path": "/images/edits",
+    "query": [],
+    "bodyFields": [
+      "images",
+      "prompt"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

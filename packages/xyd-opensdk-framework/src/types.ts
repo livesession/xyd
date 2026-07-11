@@ -1,4 +1,4 @@
-import type { NamedType, OpensdkSpecJson, Resource } from '@xyd-js/opensdk-core';
+import type { Method, NamedType, OpensdkSpecJson, Resource } from '@xyd-js/opensdk-core';
 
 /**
  * How writeProject treats a generated file that already exists on disk:
@@ -95,6 +95,70 @@ export interface Emitter {
    * both languages exercise identical shapes. Return [] to opt out.
    */
   generateTests?(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[];
+
+  /**
+   * A single per-operation USAGE SNIPPET (optional) — a self-contained,
+   * runnable-looking example that constructs the client and makes ONE call with
+   * required-only example values (the artifact docs render, à la
+   * Fern/Speakeasy/Stainless: `client.pets.list(...)`). `chain` is the resource
+   * name path (root→owner) the method hangs off, so the emitter can rebuild the
+   * client attribute chain in its own casing. Reuses the shared example planner
+   * (planMethodExample) so every language shows the same call shape. Pure.
+   */
+  generateUsage?(method: Method, chain: string[], ctx: EmitterContext): string;
+
+  /**
+   * A single per-operation TYPE REFERENCE (optional) — the request params type +
+   * response type as language-rendered field rows, plus the method signature.
+   * The artifact an SDK-native reference renders (à la OpenAI's Go docs:
+   * `AudioTranscriptionNewParams` with typed rows + a "Returns" type), replacing
+   * the REST "query params" framing. `chain` is the resource-name path
+   * (root→owner). Reuses the shared `planTypeReference`. Pure.
+   */
+  generateTypeReference?(method: Method, chain: string[], ctx: EmitterContext): RenderedTypeReference;
+}
+
+/** One language-rendered field row of an SDK type (shown in Atlas). */
+export interface RenderedTypeField {
+  /** Language field name (Go PascalCase, Python snake_case, ...). */
+  name: string;
+  /** Language type string (Go `param.Opt[string]`, TS `string | null`, ...). */
+  langType: string;
+  required: boolean;
+  description?: string;
+  deprecated?: boolean;
+  /** When the field type is a named type: the ORIGINAL IR schema name, for a
+   * cross-type link (`objects/<name>`). */
+  refTypeName?: string;
+}
+
+/** One SDK type (request params / a response struct) as rendered field rows. */
+export interface RenderedTypeGroup {
+  /** Synthesized params-type NAME where the language has one (Go/Node/Java);
+   * undefined for languages that flatten params (Python/Ruby/.NET). */
+  typeName?: string;
+  /** The method-argument name the params type is passed as (`body`/`query`/`params`)
+   * — the root label, e.g. `query SessionListParams`. Undefined when the language
+   * flattens params into the call (no single argument). */
+  argName?: string;
+  fields: RenderedTypeField[];
+}
+
+/** A per-operation TYPE reference, rendered in one language. */
+export interface RenderedTypeReference {
+  /** The method signature, e.g. `client.Audio.Transcriptions.New(ctx, body) (*Response, error)`. */
+  signature: string;
+  request: RenderedTypeGroup;
+  response: {
+    /** The response type's language name (the "Returns" heading). */
+    typeName?: string;
+    /** Struct field rows; absent for binary/scalar/open-union responses. */
+    fields?: RenderedTypeField[];
+    /** Fallback display for a non-struct response (e.g. `[]Pet`, `*http.Response`). */
+    langType?: string;
+    /** A human note for non-field responses ("binary download (audio/mpeg)"). */
+    note?: string;
+  };
 }
 
 /** Plugin bundle a consumer registers (mirrors oagen's config shape). */

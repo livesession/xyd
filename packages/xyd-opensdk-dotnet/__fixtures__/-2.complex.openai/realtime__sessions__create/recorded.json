@@ -1,0 +1,13 @@
+{
+  "call": "Realtime.Sessions.Create",
+  "request": {
+    "method": "post",
+    "path": "/realtime/sessions",
+    "query": [],
+    "bodyFields": [
+      "client_secret"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}
