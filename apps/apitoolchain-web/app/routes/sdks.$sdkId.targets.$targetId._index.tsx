@@ -1,9 +1,4 @@
-import {
-  Collapse,
-  DescriptionList,
-  Dropdown,
-  Mono,
-} from "@apitoolchain/design-system";
+import { DescriptionList, Dropdown, Mono } from "@apitoolchain/design-system";
 import { useState } from "react";
 import { useOutletContext } from "react-router";
 import { RouterLink } from "~/components/RouterLink";
@@ -43,7 +38,6 @@ export default function SdkTargetOverviewTab() {
     versions,
     registryConnections,
     openPublish,
-    sdkJson,
   } = useOutletContext<SdkTargetContext>();
   // Version selector — pick which build's details to show.
   const [versionSel, setVersionSel] = useState(
@@ -162,19 +156,6 @@ export default function SdkTargetOverviewTab() {
             </p>
           )}
         </div>
-      )}
-      {/* The regen config is an advanced detail — kept out of the way behind a
-          collapsed disclosure rather than dumped upfront. */}
-      {sdkJson && (
-        <Collapse
-          icon="settings"
-          title={<span className="font-medium text-ink">sdk.json</span>}
-          description="Regeneration config — a bare opensdk generate re-fetches the API and rebuilds this SDK."
-        >
-          <pre className="m-0 max-h-96 overflow-auto rounded-control border border-line bg-surface-muted px-3 py-2.5 font-mono text-[13px] leading-relaxed text-ink">
-            {sdkJson}
-          </pre>
-        </Collapse>
       )}
     </div>
   );
