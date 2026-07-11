@@ -200,7 +200,7 @@ export function SdkJsonWizard({
           (left, left-aligned), languages centered over the preview (right). In
           fill it's a fixed flex child; otherwise it pins on page scroll. */}
       <div
-        className={`grid grid-cols-1 gap-5 py-2 lg:grid-cols-[minmax(440px,600px)_1fr] ${
+        className={`grid grid-cols-1 gap-5 py-2 lg:grid-cols-[minmax(360px,460px)_1fr] ${
           pin ? "sticky top-0 z-20 bg-surface" : ""
         }`}
       >
@@ -225,7 +225,7 @@ export function SdkJsonWizard({
         </div>
       </div>
       <div
-        className={`grid grid-cols-1 gap-5 lg:grid-cols-[minmax(440px,600px)_1fr] ${
+        className={`grid grid-cols-1 gap-5 lg:grid-cols-[minmax(360px,460px)_1fr] ${
           fill ? "min-h-0 flex-1" : ""
         }`}
       >
