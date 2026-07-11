@@ -43,8 +43,6 @@ export default function SdkTargetConfigurationTab() {
   // The last PERSISTED config — what `value` is compared against to know if there
   // are unsaved edits. Starts at the seed (nothing to save on open).
   const [savedValue, setSavedValue] = useState<SdkJson>(seed);
-  // The "Saved" banner is dismissible (× on hover); a fresh save re-shows it.
-  const [savedDismissed, setSavedDismissed] = useState(false);
   const saving = fetcher.state !== "idle";
   const result = fetcher.data as { ok: boolean; message?: string } | undefined;
 
@@ -57,7 +55,6 @@ export default function SdkTargetConfigurationTab() {
   // baseline (flipping `dirty` back to false, even if the user kept typing).
   const pendingSave = useRef<SdkJson | null>(null);
   const save = () => {
-    setSavedDismissed(false);
     pendingSave.current = value;
     const fd = new FormData();
     fd.set("intent", "save-config");
@@ -110,19 +107,13 @@ export default function SdkTargetConfigurationTab() {
           {result.message ?? "Could not save the configuration."}
         </Callout>
       )}
-      {/* After a save the config is stored, but the live SDK still runs its
-          current build — spell out the pending state + the build next-step
-          (dismissible; auto-cleared on new edits). */}
-      {result?.ok && !saving && !dirty && !savedDismissed && (
-        <Callout
-          tone="info"
-          icon="check"
-          title="Configuration saved — pending next build"
-          onClose={() => setSavedDismissed(true)}
-        >
+      {/* Persistent pending state (from the backend, survives refresh + shows on
+          every tab): the saved config isn't applied until the SDK is rebuilt. */}
+      {target.configPending && (
+        <Callout tone="warning" icon="alert" title="Saved — pending next build">
           <p className="m-0">
-            The live {label} SDK still uses its current build. These changes
-            take effect the next time this SDK is built.
+            This config isn't applied yet. The live {label} SDK keeps its
+            current build until it's rebuilt — then these changes take effect.
           </p>
           <RouterLink
             href={`/sdks/${sdkId}`}

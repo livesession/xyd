@@ -1,4 +1,5 @@
 import {
+  Badge,
   Breadcrumb,
   Button,
   ButtonCTA,
@@ -178,7 +179,23 @@ export default function SdkTargetLayout({ loaderData }: Route.ComponentProps) {
           />
         }
         title={title}
-        leadingActions={<StatusPill status={sdkBuildStatus(target)} />}
+        leadingActions={
+          <div className="flex items-center gap-2">
+            <StatusPill status={sdkBuildStatus(target)} />
+            {/* Persistent across every tab: the saved config has unbuilt changes.
+                Links to the Configuration tab where they can be reviewed + built. */}
+            {target.configPending && (
+              <RouterLink
+                href={`${base}/configuration`}
+                className="no-underline"
+              >
+                <Badge tone="warning" icon="alert">
+                  Changes pending build
+                </Badge>
+              </RouterLink>
+            )}
+          </div>
+        }
         tabs={
           <Tabs
             linkComponent={RouterLink}

@@ -124,6 +124,10 @@ export interface SdkTarget {
   buildLogs?: string;
   lastPublishedAt?: string;
   registryUrl?: string;
+  /** The saved sdk.json config has unbuilt changes (set on save, cleared when a
+   * build applies it) — drives the persistent "pending build" status. Optional:
+   * undefined (fixtures / pre-migration backend) reads as not pending. */
+  configPending?: boolean;
 }
 
 /** One generated build of a single SDK target (its version history). */
