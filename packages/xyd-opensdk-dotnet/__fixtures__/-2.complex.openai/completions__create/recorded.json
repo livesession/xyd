@@ -1,0 +1,14 @@
+{
+  "call": "Completions.Create",
+  "request": {
+    "method": "post",
+    "path": "/completions",
+    "query": [],
+    "bodyFields": [
+      "model",
+      "prompt"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

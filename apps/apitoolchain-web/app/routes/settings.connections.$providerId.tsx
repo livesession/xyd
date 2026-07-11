@@ -13,6 +13,7 @@ import {
 } from "@apitoolchain/design-system";
 import { useState } from "react";
 import { redirect, useFetcher, useRevalidator } from "react-router";
+import { DeleteConfirm } from "~/components/DeleteConfirm";
 import { RouterLink } from "~/components/RouterLink";
 import {
   type GitProviderKind,
@@ -62,6 +63,7 @@ export default function ConnectionDetailRoute({
   const remove = useFetcher();
   const [tab, setTab] = useState<"repositories" | "details">("repositories");
   const refreshing = revalidator.state !== "idle";
+  const removing = remove.state !== "idle";
 
   return (
     <>
@@ -87,12 +89,23 @@ export default function ConnectionDetailRoute({
             >
               {refreshing ? "Refreshing…" : "Hard refresh"}
             </Button>
-            <remove.Form method="post">
-              <input type="hidden" name="intent" value="remove" />
-              <Button variant="danger" type="submit">
-                Remove
-              </Button>
-            </remove.Form>
+            <DeleteConfirm
+              title="Remove connection"
+              description={`Disconnect ${provider.name}? Repos linked through it stop syncing until it's reconnected.`}
+              warning="This can't be undone."
+              confirmText={provider.name}
+              confirmLabel="Remove connection"
+              confirming={removing}
+              busyLabel="Removing…"
+              onConfirm={() =>
+                remove.submit({ intent: "remove" }, { method: "post" })
+              }
+              trigger={(open) => (
+                <Button variant="danger" onClick={open} disabled={removing}>
+                  Remove
+                </Button>
+              )}
+            />
           </>
         }
       />

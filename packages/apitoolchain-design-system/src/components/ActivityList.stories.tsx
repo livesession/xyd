@@ -37,7 +37,7 @@ const items: ActivityItem[] = [
 ];
 
 const meta: Meta<typeof ActivityList> = {
-  title: "Design System/ActivityList",
+  title: "Components/ActivityList",
   component: ActivityList,
   parameters: { layout: "padded" },
   args: {

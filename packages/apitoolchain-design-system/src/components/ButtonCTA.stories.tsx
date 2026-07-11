@@ -3,7 +3,7 @@ import { Button } from "./Button";
 import { ButtonCTA } from "./ButtonCTA";
 
 const meta: Meta<typeof ButtonCTA> = {
-  title: "Design System/ButtonCTA",
+  title: "Components/ButtonCTA",
   component: ButtonCTA,
   parameters: { layout: "padded" },
   args: { children: "Get started" },

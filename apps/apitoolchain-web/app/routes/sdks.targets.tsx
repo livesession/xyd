@@ -1,6 +1,7 @@
 import {
   Badge,
   Button,
+  ButtonCTA,
   type Column,
   EmptyState,
   LaTable,
@@ -56,14 +57,18 @@ export default function SdkTargetsRoute({ loaderData }: Route.ComponentProps) {
   const { rows, apis, sdkCount } = loaderData;
   const [genOpen, setGenOpen] = useState(false);
 
+  // Distinct SDKs present, for the "SDK" facet (id filtered, name shown).
+  const sdkOptions = [...new Map(rows.map((r) => [r.sdkId, r.sdkName]))]
+    .map(([id, name]) => ({ id, name }))
+    .sort((a, b) => a.name.localeCompare(b.name));
   const namespaces = [...new Set(rows.map((r) => r.namespace))]
     .filter(Boolean)
     .sort();
   const languages = [...new Set(rows.map((r) => r.language))].sort();
-  const facetKey = `${namespaces.join(",")}|${languages.join(",")}`;
+  const facetKey = `${sdkOptions.map((s) => s.id).join(",")}|${namespaces.join(",")}|${languages.join(",")}`;
   // biome-ignore lint/correctness/useExhaustiveDependencies: recompute on the facet SET, not array identity
   const schema = useMemo(
-    () => sdkTargetFilterSchema(namespaces, languages),
+    () => sdkTargetFilterSchema(sdkOptions, namespaces, languages),
     [facetKey],
   );
   const filter = useUrlFilters(schema);
@@ -99,8 +104,10 @@ export default function SdkTargetsRoute({ loaderData }: Route.ComponentProps) {
     },
     {
       key: "version",
-      header: "Latest version",
-      width: "sm",
+      // nowrap + a wider column so the two-word header stays on one line
+      // (at `sm` it wrapped, which grew the whole header row's height).
+      header: <span className="whitespace-nowrap">Latest version</span>,
+      width: "md",
       render: (t) => (
         <span className="text-body">{formatVersion(t.version)}</span>
       ),
@@ -129,9 +136,23 @@ export default function SdkTargetsRoute({ loaderData }: Route.ComponentProps) {
       <PageHeader
         title="SDKs"
         actions={
-          <Button variant="primary" icon="sdk" onClick={() => setGenOpen(true)}>
-            Generate SDKs
-          </Button>
+          rows.length > 0 ? (
+            <Button
+              variant="primary"
+              icon="sdk"
+              onClick={() => setGenOpen(true)}
+            >
+              Generate SDKs
+            </Button>
+          ) : (
+            <ButtonCTA
+              variant="primary"
+              icon="sdk"
+              onClick={() => setGenOpen(true)}
+            >
+              Generate SDKs
+            </ButtonCTA>
+          )
         }
         tabs={
           <SdksTabs

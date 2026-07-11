@@ -5,7 +5,9 @@ import uniform, {
   type Reference,
 } from "@xyd-js/uniform";
 import { DOCS_PREFIX, EDITOR_SETTINGS } from "~/lib/xyd/editor-settings";
-import { specTextToReferences } from "./specToReferences";
+import { attachSdkExamples, attachSdkTypes } from "./sdkExamples.server";
+import { specPositions } from "./specPositions";
+import { specTextToReferencesAndRaw } from "./specToReferences";
 
 /** The FwSidebar tree — passed opaquely into `<Framework sidebarGroups>`, so we
  * keep it loosely typed here (the Framework component owns the real type). */
@@ -14,6 +16,9 @@ export type SidebarGroups = unknown[];
 export interface EditorUniform {
   references: Reference[];
   groups: SidebarGroups;
+  /** `canonical` → 1-based start line in the raw text, for the Monaco↔Atlas sync
+   * (absent from `referencesToUniform`, filled in by `specTextToUniform`). */
+  positions?: Record<string, number>;
   /** Parse/convert error, if any — the editor shows it and keeps the last render. */
   error?: string;
 }
@@ -27,8 +32,19 @@ export interface EditorUniform {
  */
 export async function specTextToUniform(text: string): Promise<EditorUniform> {
   try {
-    const references = await specTextToReferences(text);
-    return await referencesToUniform(references);
+    const { references, raw } = await specTextToReferencesAndRaw(text);
+    const uniform = await referencesToUniform(references);
+    // Provider-style SDK usage examples: rewrite each operation's request-sample
+    // tabs to one switcher (SDK call per language + curl), generated from the
+    // OpenSDK IR (openapi2opensdk needs the RAW $ref'd doc). Best-effort.
+    attachSdkExamples(uniform.references, raw);
+    // SDK-native definitions: replace the REST "Query/Path/Body params" + Response
+    // with the SDK request params type + response type as per-language `sdkLang`
+    // variants (and the header method signature on context.sdk). Best-effort.
+    attachSdkTypes(uniform.references, raw);
+    // Locate each operation in the raw text for the Monaco↔Atlas sync — keyed by
+    // the SAME canonicals the Atlas/sidebar use (uniform may have re-mapped refs).
+    return { ...uniform, positions: specPositions(text, uniform.references) };
   } catch (err) {
     return {
       references: [],

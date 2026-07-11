@@ -26,6 +26,14 @@ export class Apis extends APIResource {
     }
     return this._client.request<ApitoolchainRegistryEntry>({ method: "GET", path: `/apis/${apiId}` }, options);
   }
+
+  /** Proxy: rename an entry (display name + description). id/ns immutable. */
+  update(apiId: string, body: ApisUpdateParams, options?: RequestOptions): Promise<ApitoolchainRegistryEntry> {
+    if (!apiId) {
+      throw new Error("missing required apiId parameter");
+    }
+    return this._client.request<ApitoolchainRegistryEntry>({ method: "PATCH", path: `/apis/${apiId}`, body }, options);
+  }
 }
 
 export class ApisDistTags extends APIResource {
@@ -40,6 +48,7 @@ export class ApisDistTags extends APIResource {
 
 export interface ApisCreateParams {
   name: string;
+  id?: string;
   format?: ApitoolchainApiFormat;
   kind?: ApitoolchainEntryKind;
   ns?: string;
@@ -47,7 +56,13 @@ export interface ApisCreateParams {
   specText?: string;
   url?: string;
   version?: string;
+  distTag?: string;
   projectId?: string;
+}
+
+export interface ApisUpdateParams {
+  name?: string;
+  description?: string;
 }
 
 export interface ApisDistTagCreateParams {

@@ -16,7 +16,7 @@ import { UpsertPr } from './resources/upsert-pr';
 import { Whoami } from './resources/whoami';
 
 /** The apitoolchain gitproviderd API client. */
-export class Client extends APIClient {
+export class ApitoolchainGitproviderNode extends APIClient {
   readonly branches: Branches;
   readonly createRelease: CreateRelease;
   readonly createRepo: CreateRepo;

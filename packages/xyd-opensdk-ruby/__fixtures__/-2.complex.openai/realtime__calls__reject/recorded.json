@@ -1,0 +1,11 @@
+{
+  "call": "realtime.calls.reject",
+  "request": {
+    "method": "post",
+    "path": "/realtime/calls/{call_id}/reject",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

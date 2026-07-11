@@ -11,5 +11,15 @@
     "allowImportingTsExtensions": true,
     "types": ["node"]
   },
-  "include": ["src", "db", "scripts", "generated"]
+  "include": [
+    "api",
+    "clients",
+    "genframework",
+    "db",
+    "dbnode",
+    "openapi",
+    "config.ts",
+    "util.ts",
+    "storage.ts"
+  ]
 }

@@ -22,6 +22,7 @@ export default [
       route("mcp", "routes/registry.$apiId.mcp.tsx"),
       route("releases", "routes/registry.$apiId.releases.tsx"),
       route("repository", "routes/registry.$apiId.repository.tsx"),
+      route("settings", "routes/registry.$apiId.settings.tsx"),
     ]),
     route("docs", "routes/docs.tsx"),
     route("sdks", "routes/sdks.tsx"),
@@ -29,6 +30,7 @@ export default [
     route("sdks/:sdkId", "routes/sdks.$sdkId.tsx", [
       index("routes/sdks.$sdkId._index.tsx"),
       route("versions", "routes/sdks.$sdkId.versions.tsx"),
+      route("target-versions", "routes/sdks.$sdkId.target-versions.tsx"),
       route("settings", "routes/sdks.$sdkId.settings.tsx"),
     ]),
     route(
@@ -51,9 +53,12 @@ export default [
     route("mcp", "routes/mcp.tsx"),
     route("notifications/:filter?", "routes/notifications.tsx"),
     route("usage", "routes/usage.tsx"),
+    route("settings/organization", "routes/settings.organization.tsx"),
     route("settings/members", "routes/settings.members.tsx"),
+    route("settings/keys", "routes/settings.keys.tsx"),
     route("settings/namespaces", "routes/settings.namespaces.tsx"),
     route("settings/connections", "routes/settings.connections.tsx"),
+    route("settings/billing", "routes/settings.billing.tsx"),
     route(
       "settings/connections/:providerId",
       "routes/settings.connections.$providerId.tsx",
@@ -68,6 +73,8 @@ export default [
   // debounced preview (server-only xyd conversion). `editor-uniform`, not
   // `editor/uniform`, so it can't be mistaken for the editor's `:apiId`.
   route("editor-uniform", "routes/registry.editor.uniform.ts"),
+  // Resource route: the sdk.json wizard's live preview (server-only real emitters).
+  route("api/sdk-preview", "routes/api.sdk-preview.tsx"),
   // Resource route: project switcher + settings mutations (select/create/…).
   route("projects", "routes/projects.tsx"),
   // Resource route (streams the SDK zip) — outside the app layout.

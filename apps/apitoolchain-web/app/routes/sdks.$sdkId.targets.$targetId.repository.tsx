@@ -8,6 +8,7 @@ import {
 } from "@apitoolchain/design-system";
 import { useState } from "react";
 import { useFetcher, useOutletContext } from "react-router";
+import { DeleteConfirm } from "~/components/DeleteConfirm";
 import { ReleaseSettingsModal } from "~/components/ReleaseSettingsModal";
 import { ReleasesModal } from "~/components/ReleasesModal";
 import type { SdkTargetContext } from "~/components/sdkTargetShared";
@@ -130,13 +131,24 @@ function TargetRepoRow({
         >
           Settings
         </Button>
-        <fetcher.Form method="post" action={actionPath} className="contents">
-          <input type="hidden" name="intent" value="disconnect-repo" />
-          <input type="hidden" name="id" value={conn.id} />
-          <Button variant="ghost" size="sm" type="submit" disabled={busy}>
-            Remove
-          </Button>
-        </fetcher.Form>
+        <DeleteConfirm
+          title="Remove connection"
+          description={`Disconnect ${conn.repo}? Files already pushed stay in the repo — it just stops syncing.`}
+          confirmLabel="Remove"
+          confirming={busy}
+          busyLabel="Removing…"
+          onConfirm={() =>
+            fetcher.submit(
+              { intent: "disconnect-repo", id: conn.id },
+              { method: "post", action: actionPath },
+            )
+          }
+          trigger={(open) => (
+            <Button variant="ghost" size="sm" onClick={open} disabled={busy}>
+              Remove
+            </Button>
+          )}
+        />
       </div>
       <ReleaseSettingsModal
         open={cfgOpen}

@@ -23,7 +23,7 @@ if (typeof (globalThis as { Buffer?: unknown }).Buffer === "undefined") {
  */
 export async function specTextToDocument(
   text: string,
-): Promise<OpenAPIV3.Document> {
+): Promise<{ doc: OpenAPIV3.Document; raw: OpenAPIV3.Document }> {
   // YAML is a JSON superset, so this handles both spec encodings.
   const parsed = yaml.load(text);
   if (!parsed || typeof parsed !== "object") {
@@ -31,8 +31,12 @@ export async function specTextToDocument(
       "Spec did not parse to an object — is it valid OpenAPI JSON/YAML?",
     );
   }
-  // ref-parser mutates in place; `circular: true` keeps real object cycles for
-  // recursive schemas (uniform conversion tolerates them).
+  // Keep a pristine, still-$ref'd clone BEFORE dereferencing: `openapi2opensdk`
+  // (SDK-usage examples) wants the RAW document so component identity survives
+  // into nominal types — and ref-parser dereferences `parsed` IN PLACE.
+  const raw = JSON.parse(JSON.stringify(parsed)) as OpenAPIV3.Document;
+  // `circular: true` keeps real object cycles for recursive schemas (uniform
+  // conversion tolerates them).
   const dereferenced = (await $RefParser.dereference(parsed as object, {
     dereference: { circular: true },
   })) as OpenAPIV3.Document;
@@ -41,11 +45,23 @@ export async function specTextToDocument(
       "Document has no `openapi` version field — not an OpenAPI 3 spec?",
     );
   }
-  return dereferenced;
+  return { doc: dereferenced, raw };
 }
 
 /** OpenAPI text → uniform `Reference[]` (one per operation) for xyd Atlas. */
 export async function specTextToReferences(text: string): Promise<Reference[]> {
-  const doc = await specTextToDocument(text);
+  const { doc } = await specTextToDocument(text);
   return oapSchemaToReferences(doc);
+}
+
+/**
+ * Like {@link specTextToReferences}, but also returns the RAW un-dereferenced
+ * document — the input `openapi2opensdk` needs to build the SDK IR for usage
+ * examples (see `sdkExamples.server.ts`).
+ */
+export async function specTextToReferencesAndRaw(
+  text: string,
+): Promise<{ references: Reference[]; raw: OpenAPIV3.Document }> {
+  const { doc, raw } = await specTextToDocument(text);
+  return { references: oapSchemaToReferences(doc), raw };
 }

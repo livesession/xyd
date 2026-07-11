@@ -16,6 +16,8 @@ import type {
 export type SdkTargetContext = {
   target: SdkTarget;
   sdkId: string;
+  /** The parent SDK's own version (the global "builds" version). */
+  sdkVersion: string;
   apiName: string;
   /** `/sdks/:sdkId/targets/:targetId` — the tab route base + action path. */
   base: string;
@@ -29,6 +31,8 @@ export type SdkTargetContext = {
   registries: PackageRegistry[];
   registryConnections: RegistryConnection[];
   providers: GitProvider[];
+  /** The generated `sdk.json` (raw JSON text) — undefined until the SDK builds. */
+  sdkJson?: string;
   /** Open the shared "Connect a repo" modal (owned by the layout). */
   openConnect: () => void;
   /** Open the shared "Connect a registry" modal (owned by the layout). */

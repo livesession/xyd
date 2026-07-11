@@ -1,0 +1,10 @@
+{
+  "call": "admin.organization.groups.roles.delete",
+  "request": {
+    "method": "delete",
+    "path": "/organization/groups/{group_id}/roles/{role_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

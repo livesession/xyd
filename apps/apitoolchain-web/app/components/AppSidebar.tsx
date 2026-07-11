@@ -1,6 +1,8 @@
 import { Sidebar } from "@apitoolchain/design-system";
+import { useState } from "react";
 import { useFetcher, useLocation } from "react-router";
 import type { Organization, Project, User } from "~/data";
+import { NewProjectModal } from "./NewProjectModal";
 import { RouterLink } from "./RouterLink";
 
 /**
@@ -21,33 +23,35 @@ export function AppSidebar({
 }) {
   const { pathname } = useLocation();
   const fetcher = useFetcher();
+  const [newProjectOpen, setNewProjectOpen] = useState(false);
   return (
-    <Sidebar
-      activeHref={pathname}
-      linkComponent={RouterLink}
-      projects={projects}
-      currentProjectId={project.id}
-      onSelectProject={(id) =>
-        fetcher.submit(
-          { intent: "select", projectId: id },
-          { method: "post", action: "/projects" },
-        )
-      }
-      onCreateProject={() => {
-        const name = window.prompt("New project name")?.trim();
-        if (name)
+    <>
+      <Sidebar
+        activeHref={pathname}
+        linkComponent={RouterLink}
+        projects={projects}
+        currentProjectId={project.id}
+        onSelectProject={(id) =>
           fetcher.submit(
-            { intent: "create", name },
+            { intent: "select", projectId: id },
             { method: "post", action: "/projects" },
-          );
-      }}
-      user={{
-        name: user.name,
-        email: user.email,
-        orgName: org.name,
-        plan: org.plan,
-      }}
-      onLogout={() => fetcher.submit({}, { method: "post", action: "/logout" })}
-    />
+          )
+        }
+        onCreateProject={() => setNewProjectOpen(true)}
+        user={{
+          name: user.name,
+          email: user.email,
+          orgName: org.name,
+          plan: org.plan,
+        }}
+        onLogout={() =>
+          fetcher.submit({}, { method: "post", action: "/logout" })
+        }
+      />
+      <NewProjectModal
+        open={newProjectOpen}
+        onClose={() => setNewProjectOpen(false)}
+      />
+    </>
   );
 }

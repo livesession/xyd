@@ -1,0 +1,13 @@
+{
+  "call": "images.generations.create",
+  "request": {
+    "method": "post",
+    "path": "/images/generations",
+    "query": [],
+    "bodyFields": [
+      "prompt"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

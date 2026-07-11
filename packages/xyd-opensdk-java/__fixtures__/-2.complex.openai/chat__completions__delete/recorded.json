@@ -1,0 +1,10 @@
+{
+  "call": "chat.completions.delete",
+  "request": {
+    "method": "delete",
+    "path": "/chat/completions/{completion_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

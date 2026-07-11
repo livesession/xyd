@@ -145,6 +145,11 @@ model Sdk {
   // `namespace` is a TypeSpec keyword; wire field is `ns`.
   ns: string;
 
+  // Our SDK-level version — decoupled from the published per-target versions.
+  version: string;
+  // Registry reference for this SDK itself: `sdks/<ns>/<id>@<version>`.
+  registryRef: string;
+
   targetCount: int32;
   createdAt: string;
   updatedAt: string;
@@ -153,17 +158,58 @@ model Sdk {
 model SdkTarget {
   id: string;
 
+  /** Human display title, fixed at creation ("<API title> <language>", e.g.
+   * "LiveSession OpenAPI Python") — decoupled from the slug `id` and the
+   * published package name. */
+  name: string;
+
   /** The parent SDK this target belongs to. */
   sdkId: string;
 
   apiId: string;
+  /** The API spec version this target was last built from — decoupled from the
+   * target's own package `version`. */
+  apiVersion: string;
   language: SdkLanguage;
   packageName: string;
   output: string;
   version: string;
   status: BuildStatus;
+
+  /** The target's own generation log (`[<lang>] …` lines) — reset each build and
+   * appended live, so the dashboard can tail the current (re)generation. */
+  buildLogs: string;
+
   lastPublishedAt?: string;
   registryUrl?: string;
+
+  /** The custom sdk.json applied at generation (the "wizard" config), serialized;
+   * empty when the target used the auto-derived config. */
+  sdkJson?: string;
+}
+
+/** One SDK build — a produced SDK version, kept as history (the Versions tab).
+ * Regenerates every target from one API spec version; decoupled from each
+ * target's published package version. */
+model SdkBuild {
+  id: string;
+  sdkId: string;
+  /** The SDK version this build produced. */
+  version: string;
+  /** The API spec version every target was built from. */
+  apiVersion: string;
+  /** building | ready | error */
+  status: string;
+  /** Point-in-time snapshot of the targets that went into the build. */
+  targets: SdkBuildTarget[];
+  /** Accumulated build log — step lines from each target generation. */
+  logs: string;
+  createdAt: string;
+}
+
+model SdkBuildTarget {
+  language: string;
+  packageName: string;
 }
 
 model DocsProject {
@@ -323,6 +369,10 @@ model RepoConnection {
 
   prerelease?: boolean;
 
+  /** Comma-separated dist-tags this connection reacts to (default `latest`;
+   * `*` = all). */
+  distTags?: string;
+
   /** SDK semver of the last merged release. */
   lastReleasedVersion?: string;
 }
@@ -375,6 +425,10 @@ model RegistryConnection {
   /** Publish automatically when a release for this target is merged. */
   autoPublish: boolean;
 
+  /** The PUBLISHER's own log (extract → apply name → push → result) — reset each
+   * publish + appended live, so the dashboard can tail it. */
+  publishLogs: string;
+
   lastPublishedVersion?: string;
   lastPublishedAt?: string;
   lastPublishStatus?: BuildStatus;
@@ -415,6 +469,18 @@ model Release {
 }
 
 // ── inputs (request bodies) ──
+
+/**
+ * Editable presentation metadata for an existing registry entry. The id/slug,
+ * namespace, format, and kind are IMMUTABLE — they're baked into URLs, the
+ * `apis/<ns>/<api>@<ver>` registry refs, and already-generated SDKs — so only
+ * the display name + description can change (a partial update; omit to keep).
+ */
+model UpdateApiInput {
+  name?: string;
+  description?: string;
+}
+
 model RegisterApiInput {
   name: string;
 
@@ -439,6 +505,11 @@ model RegisterApiInput {
   /** Explicit version label; defaults to the spec's info.version. */
   version?: string;
 
+  /** Dist-tag to publish this version under (default `latest`). `latest` makes
+   * it the current/default version; any other tag (`canary`, `beta`, …) is a
+   * side-channel — added without moving `latest`/current off the stable one. */
+  distTag?: string;
+
   /** The project the API belongs to. Set server-side by the platform gateway
    * from the caller's current project; defaults to the seeded project. */
   projectId?: string;
@@ -454,6 +525,11 @@ model SetDistTagInput {
 model CreateSdkInput {
   apiId: string;
   name?: string;
+
+  /** Explicit id/slug for the SDK. Slugified server-side; defaults to a slug of
+   * `name`. Lets the display title (`name`) be decoupled from the stable id. */
+  id?: string;
+
   description?: string;
   ns?: string;
 }
@@ -465,6 +541,26 @@ model AddSdkTargetInput {
 
   /** API version to generate from; defaults to the API's current version. */
   version?: string;
+
+  /** A full custom sdk.json (behavior + per-language emitter options), serialized.
+   * When set it's applied over the derived defaults during generation (the
+   * "wizard" flow); empty → the auto-derived config. */
+  sdkJson?: string;
+}
+
+/** Rebuild every target of an SDK from one API spec version. */
+model BuildSdkInput {
+  /** API version to build every target from; defaults to the API's current. */
+  apiVersion?: string;
+}
+
+/** Create a new SDK version: bump the SDK's version and rebuild every target
+ * from one API spec version, recorded as a build in the history. */
+model CreateSdkVersionInput {
+  /** The new SDK version (e.g. "0.2.0"). */
+  version: string;
+  /** API version to build from; defaults to the API's current. */
+  apiVersion?: string;
 }
 
 model CreateDocsProjectInput {
@@ -503,6 +599,28 @@ model LoginInput {
 
 model CreateProjectInput {
   name: string;
+}
+
+/** A workspace API key. Only its SHA-256 hash is stored; the secret is returned
+ * once, at creation (see CreatedApiKey). */
+model ApiKey {
+  id: string;
+  name: string;
+  /** Public prefix shown in the list to tell keys apart (e.g. `atk_live_a1b2`). */
+  prefix: string;
+  createdAt: string;
+  lastUsedAt?: string;
+}
+
+model CreateApiKeyInput {
+  name: string;
+}
+
+/** The created key plus its plaintext secret — the ONLY time the secret is
+ * returned. Store it now; it can't be retrieved again. */
+model CreatedApiKey {
+  key: ApiKey;
+  secret: string;
 }
 
 model UpdateProjectInput {
@@ -555,6 +673,9 @@ model CreateRepoConnectionInput {
   releaseMode?: string;
   autoRelease?: boolean;
   baseBranch?: string;
+
+  /** Comma-separated dist-tags to react to (default `latest`; `*` = all). */
+  distTags?: string;
 }
 
 /** Connect a package registry account. */
@@ -590,4 +711,9 @@ model SetReleaseConfigInput {
   autoRelease: boolean;
   baseBranch?: string;
   prerelease?: boolean;
+
+  /** Comma-separated dist-tags this connection reacts to (default `latest`);
+   * `*` = all. Only a version published under a matching tag triggers a
+   * release. */
+  distTags?: string;
 }

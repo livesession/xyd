@@ -14,6 +14,13 @@ export interface CollapseProps {
    * so a click toggles the panel.
    */
   trailing?: ReactNode;
+  /**
+   * Interactive header content pinned to the far right (buttons, menus, links)
+   * that stays reachable while the panel is collapsed. Its clicks act on their
+   * own and do NOT toggle the panel (it stops propagation). The header row is a
+   * clickable div — a `title` link works the same way (stop propagation on it).
+   */
+  headerAction?: ReactNode;
   /** Uncontrolled initial open state. Default `false`. */
   defaultOpen?: boolean;
   /** Controlled open state — pair with `onOpenChange`. */
@@ -40,6 +47,7 @@ export function Collapse({
   description,
   icon,
   trailing,
+  headerAction,
   defaultOpen = false,
   open,
   onOpenChange,
@@ -61,13 +69,27 @@ export function Collapse({
 
   return (
     <div className="overflow-hidden rounded-panel border border-line bg-surface">
-      <button
-        type="button"
+      {/* A full-width clickable row (not a <button>, so it can host interactive
+          children — links, action buttons). Clicking bare space toggles; the
+          headerAction / any link inside stops propagation and acts on its own. */}
+      {/* biome-ignore lint/a11y/useSemanticElements: needs interactive children, which a <button> can't nest */}
+      <div
+        role="button"
+        tabIndex={disabled ? -1 : 0}
         onClick={toggle}
-        disabled={disabled}
+        onKeyDown={(e) => {
+          if (disabled || (e.key !== "Enter" && e.key !== " ")) return;
+          e.preventDefault();
+          toggle();
+        }}
         aria-expanded={isOpen}
         aria-controls={contentId}
-        className="flex w-full cursor-pointer items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-hover disabled:cursor-not-allowed disabled:opacity-60"
+        aria-disabled={disabled || undefined}
+        className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors ${
+          disabled
+            ? "cursor-not-allowed opacity-60"
+            : "cursor-pointer hover:bg-hover"
+        }`}
       >
         {icon && <Icon icon={icon} size={18} className="text-subtle" />}
         <span className="flex min-w-0 flex-col gap-0.5">
@@ -79,14 +101,26 @@ export function Collapse({
         {trailing && (
           <span className="ml-auto flex items-center gap-2">{trailing}</span>
         )}
+        {headerAction && (
+          // Interactive actions — clicks/keys here act on their own and never
+          // toggle the panel.
+          // biome-ignore lint/a11y/noStaticElementInteractions: intentionally stops the row's toggle
+          <span
+            className={`flex shrink-0 items-center gap-1.5 ${trailing ? "" : "ml-auto"}`}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            {headerAction}
+          </span>
+        )}
         <Icon
           icon="chevronDown"
           size={16}
           className={`shrink-0 text-subtle transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
-          } ${trailing ? "" : "ml-auto"}`}
+          } ${trailing || headerAction ? "" : "ml-auto"}`}
         />
-      </button>
+      </div>
       <div
         id={contentId}
         className={`grid transition-[grid-template-rows] duration-200 ease-out ${

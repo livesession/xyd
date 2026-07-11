@@ -11,12 +11,15 @@ import { Badge } from "@xyd-js/components/writer";
 
 export interface ApiRefPropertiesProps {
   properties: DefinitionProperty[];
+  /** Start the (top-level) nested property groups expanded — used by the SDK-type
+   * view so a type's fields show under its root instead of behind "Show properties". */
+  defaultExpanded?: boolean;
 }
 
 // TODO: in the future configurable
 const HIDE_INTERNAL = true;
 
-export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
+export function ApiRefProperties({ properties, defaultExpanded }: ApiRefPropertiesProps) {
   return (
     <ul className={cn.ApiRefPropertiesUlHost}>
       {filterProperties(properties)?.map((property, i) => {
@@ -50,6 +53,7 @@ export function ApiRefProperties({ properties }: ApiRefPropertiesProps) {
               <SubProperties
                 parent={property}
                 properties={propertyProperties}
+                defaultExpanded={defaultExpanded}
               />
             ) : null}
           </atlas-apiref-prop>
@@ -194,10 +198,12 @@ interface SubPropertiesProps {
   parent: DefinitionProperty;
 
   properties: DefinitionProperty[];
+
+  defaultExpanded?: boolean;
 }
 
-function SubProperties({ parent, properties }: SubPropertiesProps) {
-  const [expanded, setExpanded] = useState(false);
+function SubProperties({ parent, properties, defaultExpanded }: SubPropertiesProps) {
+  const [expanded, setExpanded] = useState(defaultExpanded ?? false);
 
   // Get the actual properties to display
   const foundProperties = filterProperties(properties || []);

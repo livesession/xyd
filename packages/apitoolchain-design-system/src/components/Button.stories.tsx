@@ -3,13 +3,20 @@ import { ICON_NAMES } from "../icons";
 import { Button } from "./Button";
 
 const meta: Meta<typeof Button> = {
-  title: "Design System/Button",
+  title: "Components/Button",
   component: Button,
   parameters: { layout: "centered" },
   argTypes: {
     variant: {
       control: "inline-radio",
-      options: ["primary", "secondary", "ghost", "warning", "danger"],
+      options: [
+        "primary",
+        "secondary",
+        "ghost",
+        "warning",
+        "danger",
+        "danger-ghost",
+      ],
     },
     size: { control: "inline-radio", options: ["sm", "md"] },
     icon: { control: "select", options: ["", ...ICON_NAMES] },
@@ -45,11 +52,17 @@ export const Danger: Story = {
   args: { children: "Delete", variant: "danger" },
 };
 
+/** Ghost, tinted danger — a subtle destructive action (red text + icon), e.g. a
+ * Remove with the trash glyph. */
+export const DangerGhost: Story = {
+  args: { children: "Remove", variant: "danger-ghost", icon: "trash" },
+};
+
 export const WithIcon: Story = {
   args: { children: "New project", icon: "plus" },
 };
 
-/** A trailing icon — e.g. a chevron for a dropdown trigger (this is what Menu
+/** A trailing icon — e.g. a chevron for a dropdown trigger (this is what Dropdown
  * uses under the hood). */
 export const WithIconRight: Story = {
   args: { children: "Options", iconRight: "chevronDown", variant: "secondary" },

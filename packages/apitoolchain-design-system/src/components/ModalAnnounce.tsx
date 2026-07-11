@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useId, useState } from "react";
-import { Icon } from "../icons";
+import { Icon, type IconName } from "../icons";
 import { ButtonCTA } from "./ButtonCTA";
 
 export interface ModalAnnounceStep {
@@ -140,3 +140,35 @@ export function ModalAnnounce({
     </div>
   );
 }
+
+/** Semantic disc color for {@link ModalAnnounce.HeroIcon}. */
+export type HeroIconTone = "blue" | "green" | "pink" | "neutral";
+
+const HERO_TONE: Record<HeroIconTone, string> = {
+  blue: "bg-blue/10 text-blue",
+  green: "bg-green/10 text-green",
+  pink: "bg-pink/10 text-pink",
+  neutral: "bg-surface-muted text-subtle",
+};
+
+export interface HeroIconProps {
+  icon: IconName;
+  /** Disc color. Default `blue`. */
+  tone?: HeroIconTone;
+}
+
+/**
+ * A big centered icon on a tinted disc — a stand-in for a hero illustration,
+ * dropped into a step's `media`. Exposed as `ModalAnnounce.HeroIcon`.
+ */
+function HeroIcon({ icon, tone = "blue" }: HeroIconProps) {
+  return (
+    <div
+      className={`flex h-24 w-24 items-center justify-center rounded-tile ${HERO_TONE[tone]}`}
+    >
+      <Icon icon={icon} size={44} />
+    </div>
+  );
+}
+
+ModalAnnounce.HeroIcon = HeroIcon;

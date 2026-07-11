@@ -5,7 +5,7 @@ import type { ClientOptions } from './core/request';
 import { Apis } from './resources/apis';
 
 /** The apitoolchain registry api API client. */
-export class Client extends APIClient {
+export class ApitoolchainRegistryApiNode extends APIClient {
   readonly apis: Apis;
 
   constructor(options: ClientOptions = {}) {

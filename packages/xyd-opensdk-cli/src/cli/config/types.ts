@@ -17,6 +17,9 @@ export interface ResolvedTarget {
  * a future chain.json). A superset of the historical `OpensdkCliConfig`.
  */
 export interface ResolvedConfig {
+  /** Default spec path (resolved absolute against the config dir). Used by
+   * `generate` when `--spec` is omitted; `--spec` overrides it. */
+  spec?: string;
   /** Extra emitter plugins to register (from a JS/TS plugin bundle). */
   emitters?: Emitter[];
   /** Per-language emitter options, keyed by CANONICAL language id (go|python|node|ruby|java|dotnet). */

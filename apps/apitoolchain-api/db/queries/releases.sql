@@ -66,7 +66,8 @@ UPDATE repo_connections SET
   release_mode = $2,
   auto_release = $3,
   base_branch = $4,
-  prerelease = $5
+  prerelease = $5,
+  dist_tags = $6
 WHERE id = $1
 RETURNING *;
 
@@ -81,17 +82,16 @@ UPDATE repo_connections SET
 WHERE id = $1;
 
 -- name: ListReleaseConnectionsForApi :many
--- Auto-release connections for a given API — SDK targets of that API AND spec
+-- Auto-sync connections for a given API — SDK targets of that API AND spec
 -- connections pointing directly at it (the spec-version trigger fans to both).
+-- Both release-PR and direct-push modes react; the caller dispatches per mode.
 SELECT rc.* FROM repo_connections rc
 JOIN sdk_targets st ON st.id = rc.target_id
 WHERE rc.target_kind = 'sdk'
-  AND rc.release_mode = 'release'
   AND rc.auto_release = true
   AND st.api_id = $1
 UNION
 SELECT rc.* FROM repo_connections rc
 WHERE rc.target_kind = 'spec'
-  AND rc.release_mode = 'release'
   AND rc.auto_release = true
   AND rc.target_id = $1;

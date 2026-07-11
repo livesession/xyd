@@ -8,6 +8,7 @@ import {
   Mono,
 } from "@apitoolchain/design-system";
 import { useEffect, useState } from "react";
+import { DeleteConfirm } from "~/components/DeleteConfirm";
 import { SettingsHeader } from "~/components/SettingsHeader";
 import {
   addNamespace,
@@ -130,13 +131,17 @@ export default function SettingsNamespacesRoute() {
                       )}
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setNamespaces(removeNamespace(n.id))}
-                  >
-                    Remove
-                  </Button>
+                  <DeleteConfirm
+                    title="Remove namespace"
+                    description={`Remove the @${n.id} namespace?`}
+                    confirmLabel="Remove"
+                    onConfirm={() => setNamespaces(removeNamespace(n.id))}
+                    trigger={(open) => (
+                      <Button variant="ghost" size="sm" onClick={open}>
+                        Remove
+                      </Button>
+                    )}
+                  />
                 </div>
               ))}
             </div>

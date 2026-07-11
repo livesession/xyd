@@ -12,7 +12,7 @@
       "name": "LiveSession API",
       "ns": "livesession",
       "spec": "livesession",
-      "source": "github.com/livesession/livesession-openapi"
+      "source": "github.com/livesession/livesession-docs"
     }
   ],
   "sdks": [],

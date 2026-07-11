@@ -7,9 +7,12 @@ import type { ApitoolchainApiFormat, ApitoolchainEntryKind, ApitoolchainRegistry
 export class Apis extends APIResource {
   readonly distTags: ApisDistTags;
 
+  readonly versions: ApisVersions;
+
   constructor(client: APIClient) {
     super(client);
     this.distTags = new ApisDistTags(client);
+    this.versions = new ApisVersions(client);
   }
 
   list(query?: ApisListParams, options?: RequestOptions): Promise<ApitoolchainRegistryEntryCore[]> {
@@ -26,6 +29,14 @@ export class Apis extends APIResource {
     }
     return this._client.request<ApitoolchainRegistryEntryCore>({ method: "GET", path: `/apis/${apiId}` }, options);
   }
+
+  /** Rename an entry (display name + description). id/ns/format/kind immutable. */
+  update(apiId: string, body: ApisUpdateParams, options?: RequestOptions): Promise<ApitoolchainRegistryEntryCore> {
+    if (!apiId) {
+      throw new Error("missing required apiId parameter");
+    }
+    return this._client.request<ApitoolchainRegistryEntryCore>({ method: "PATCH", path: `/apis/${apiId}`, body }, options);
+  }
 }
 
 export class ApisDistTags extends APIResource {
@@ -38,12 +49,29 @@ export class ApisDistTags extends APIResource {
   }
 }
 
+export class ApisVersions extends APIResource {
+  /**
+   * Raw spec bytes for a version ref (concrete version | dist-tag | `current`).
+   * Non-JSON — served as-stored; the SDK returns the raw Response.
+   */
+  spec(apiId: string, ref: string, options?: RequestOptions): Promise<Response> {
+    if (!apiId) {
+      throw new Error("missing required apiId parameter");
+    }
+    if (!ref) {
+      throw new Error("missing required ref parameter");
+    }
+    return this._client.request<Response>({ method: "GET", path: `/apis/${apiId}/versions/${ref}/spec`, headers: { Accept: "*/*" }, raw: true }, options);
+  }
+}
+
 export interface ApisListParams {
   projectId?: string;
 }
 
 export interface ApisCreateParams {
   name: string;
+  id?: string;
   format?: ApitoolchainApiFormat;
   kind?: ApitoolchainEntryKind;
   ns?: string;
@@ -51,7 +79,13 @@ export interface ApisCreateParams {
   specText?: string;
   url?: string;
   version?: string;
+  distTag?: string;
   projectId?: string;
+}
+
+export interface ApisUpdateParams {
+  name?: string;
+  description?: string;
 }
 
 export interface ApisDistTagCreateParams {

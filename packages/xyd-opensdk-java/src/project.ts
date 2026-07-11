@@ -25,6 +25,11 @@ export interface JavaCtx {
   authName: string | null;
   /** The SDK identifier baked into the User-Agent, e.g. "petstore-java/1.2.0". */
   userAgent: string;
+  /**
+   * When set, a generated USAGE snippet reads the client base URL from this env
+   * var instead of the default (the snippet-run tier). Unset → default output.
+   */
+  baseUrlEnv: string | null;
 }
 
 export function resolveJavaOptions(spec: OpensdkSpecJson, ctx: EmitterContext): JavaCtx {
@@ -53,6 +58,7 @@ export function resolveJavaOptions(spec: OpensdkSpecJson, ctx: EmitterContext): 
     authKind: security?.kind ?? null,
     authName: security?.name ?? null,
     userAgent,
+    baseUrlEnv: options.baseUrlEnv ?? null,
   };
 }
 

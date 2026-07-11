@@ -1,0 +1,13 @@
+{
+  "call": "projects.users.roles.create",
+  "request": {
+    "method": "post",
+    "path": "/projects/{project_id}/users/{user_id}/roles",
+    "query": [],
+    "bodyFields": [
+      "role_id"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

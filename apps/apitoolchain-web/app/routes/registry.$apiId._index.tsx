@@ -1,4 +1,4 @@
-import { DescriptionList, Menu, Mono } from "@apitoolchain/design-system";
+import { DescriptionList, Dropdown, Mono } from "@apitoolchain/design-system";
 import { useState } from "react";
 import { useOutletContext } from "react-router";
 import { FORMAT } from "~/components/RegistryListPage";
@@ -14,8 +14,12 @@ export default function RegistryOverviewTab() {
   const { api, isSchema, tagsByVersion } =
     useOutletContext<RegistryDetailContext>();
   const current = api.versions.find((v) => v.current);
-  // The version filter drives which version's details show.
-  const [versionSel, setVersionSel] = useState(current?.version ?? "");
+  // Which version's details to show. Defaults to — and FOLLOWS — the current
+  // version (so a newly-added version's details, incl. "Last updated", appear
+  // once the loader revalidates) until the user explicitly picks another. Don't
+  // seed it with the mount-time current, or the view stays pinned to the old
+  // version after a new one is registered.
+  const [versionSel, setVersionSel] = useState<string | null>(null);
   const shownVersion =
     api.versions.find((v) => v.version === versionSel) ?? current;
 
@@ -23,7 +27,7 @@ export default function RegistryOverviewTab() {
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2">
         <span className="text-sm text-subtle">Version</span>
-        <Menu
+        <Dropdown
           variant="select"
           icon="tags-outline"
           label={formatVersion(shownVersion?.version)}

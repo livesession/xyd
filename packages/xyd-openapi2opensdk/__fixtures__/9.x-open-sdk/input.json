@@ -1,0 +1,66 @@
+{
+  "openapi": "3.0.3",
+  "info": { "title": "Extensions Demo", "version": "1.0.0", "description": "Exercises x-open-sdk-* naming extensions." },
+  "servers": [{ "url": "https://api.demo.io/v1" }],
+  "components": {
+    "schemas": {
+      "Thing": {
+        "type": "object",
+        "description": "A thing.",
+        "required": ["id"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/things": {
+      "get": {
+        "operationId": "listThings",
+        "summary": "List things",
+        "x-open-sdk-group-name": "catalog",
+        "x-open-sdk-method-name": "browse",
+        "responses": {
+          "200": {
+            "description": "Things.",
+            "content": {
+              "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Thing" } } }
+            }
+          }
+        }
+      }
+    },
+    "/things/{thing_id}": {
+      "get": {
+        "operationId": "getThing",
+        "summary": "Retrieve a thing",
+        "x-open-sdk-method-name": "fetch",
+        "parameters": [{ "name": "thing_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": {
+          "200": {
+            "description": "The thing.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Thing" } } }
+          }
+        }
+      }
+    },
+    "/misc/ping": {
+      "get": {
+        "operationId": "ping",
+        "summary": "Health check",
+        "x-open-sdk-group-name": ["system", "health"],
+        "x-open-sdk-method-name": "check",
+        "responses": {
+          "200": {
+            "description": "OK.",
+            "content": {
+              "application/json": { "schema": { "type": "object", "properties": { "ok": { "type": "boolean" } } } }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,13 +1,19 @@
-import { Badge, Button, Menu } from "@apitoolchain/design-system";
+import { Badge, Button, Dropdown, Tooltip } from "@apitoolchain/design-system";
 import Editor from "@monaco-editor/react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Atlas, AtlasContext, prewarmReference } from "@xyd-js/atlas";
+import {
+  Atlas,
+  AtlasContext,
+  prewarmReference,
+  SdkLanguageProvider,
+} from "@xyd-js/atlas";
 import {
   Framework,
   FwSidebar,
   SidebarActiveProvider,
 } from "@xyd-js/framework/react";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { PlaygroundModal } from "./PlaygroundModal";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { useFetcher, useNavigate } from "react-router";
 import type { RegistryEntry } from "~/data";
@@ -25,7 +31,24 @@ const FrameworkC = Framework as Loose;
 const VARIANT_TOGGLES = [
   { key: "status", defaultValue: "200" },
   { key: "contentType", defaultValue: "application/json" },
+  // SDK-native types: one variant per language on the request/response type
+  // definitions (attachSdkTypes) — the selector picks the SDK language.
+  { key: "sdkLang", defaultValue: "go" },
 ];
+
+// The SDK languages for the type/signature switcher (order = the switcher);
+// `language` matches attachSdkTypes' sdkLang variant + signature keys.
+const SDK_LANGUAGES = [
+  { language: "go", title: "Go" },
+  { language: "python", title: "Python" },
+  { language: "typescript", title: "TypeScript" },
+  { language: "ruby", title: "Ruby" },
+  { language: "java", title: "Java" },
+  { language: "csharp", title: "C#" },
+];
+
+// The editor's "sync scroll" preference is persisted (opt-in, per developer).
+const SYNC_STORAGE_KEY = "atc-editor-sync";
 
 interface EditorAppProps {
   api: RegistryEntry;
@@ -34,12 +57,15 @@ interface EditorAppProps {
   specText: string;
   references: Loose[];
   groups: unknown[];
+  /** `canonical` → 1-based source line, so the editor can follow the preview. */
+  positions?: Record<string, number>;
   error?: string;
 }
 
 interface UniformResult {
   references: Loose[];
   groups: unknown[];
+  positions?: Record<string, number>;
   error?: string;
 }
 
@@ -57,9 +83,26 @@ export default function EditorApp(props: EditorAppProps) {
   const [references, setReferences] = useState<Loose[]>(props.references);
   const [groups, setGroups] = useState(props.groups);
   const [error, setError] = useState(props.error);
+  // The operation whose "Run request" was clicked → opens the playground modal.
+  const [playgroundRef, setPlaygroundRef] = useState<Loose | null>(null);
   // When set, forces the active endpoint (a deep-link restore or a sidebar
   // click) regardless of scroll position — released on the first manual scroll.
   const [pinnedIndex, setPinnedIndex] = useState<number | null>(null);
+  // `canonical` → 1-based source line, for scrolling Monaco to the operation the
+  // Atlas is showing.
+  const [positions, setPositions] = useState<Record<string, number>>(
+    props.positions ?? {},
+  );
+  // Opt-in: when on, the Monaco editor FOLLOWS the preview's scroll. One-way —
+  // scrolling/editing in Monaco never moves the preview. Persisted, default off.
+  const [syncEnabled, setSyncEnabled] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem(SYNC_STORAGE_KEY) === "1";
+  });
+  // The Monaco instance (+ namespace) once mounted — state so the reveal effect
+  // wires up as soon as it's ready.
+  const [editor, setEditor] = useState<Loose>(null);
+  const monacoRef = useRef<Loose>(null);
 
   const debounce = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   // The Atlas preview is the scroll container — the whole spec renders into it
@@ -74,8 +117,20 @@ export default function EditorApp(props: EditorAppProps) {
         syntaxHighlight: EDITOR_SETTINGS.theme.coder.syntaxHighlight,
         baseMatch: DOCS_PREFIX,
         variantToggles: VARIANT_TOGGLES,
-        // Code samples: a language dropdown + xyd's built-in language icons.
+        // Code samples: a language dropdown with xyd's own built-in language
+        // icons (java + csharp now live in xyd's coder langIconSet, so the SDK
+        // tabs render natively — no app-side override, and xyd docs get them too).
         codeSample: { languageSwitcher: "dropdown", languageIcons: true },
+        // SDK-native reference: the definitions show the SDK request/response
+        // TYPES and the header shows the method signature (per the shared language).
+        sdkTypes: {
+          enabled: true,
+          languages: SDK_LANGUAGES,
+          defaultLanguage: "go",
+        },
+        // "Run request" per operation → open the API playground modal (which mounts
+        // the apiatlas widget). setPlaygroundRef is a stable setter, so `[]` holds.
+        playground: { onTry: (ref: Loose) => setPlaygroundRef(ref) },
       }) as Loose,
     [],
   );
@@ -200,6 +255,31 @@ export default function EditorApp(props: EditorAppProps) {
     };
   }, []);
 
+  // Persist the sync preference so it survives reloads / version switches.
+  useEffect(() => {
+    window.localStorage.setItem(SYNC_STORAGE_KEY, syncEnabled ? "1" : "0");
+  }, [syncEnabled]);
+
+  // Capture the Monaco instance so the reveal effect can drive it imperatively.
+  function handleEditorMount(ed: Loose, monaco: Loose) {
+    monacoRef.current = monaco;
+    setEditor(ed);
+  }
+
+  // Sync (one-way): when on, the editor FOLLOWS the preview — reveal the
+  // scrolled-to endpoint's source line near the top. Scrolling/editing in Monaco
+  // never moves the preview, so this is the only sync direction (no feedback).
+  useEffect(() => {
+    if (!syncEnabled || !editor || !activeCanonical) return;
+    const line = positions[activeCanonical];
+    if (line == null) return;
+    const lineCount = editor.getModel?.()?.getLineCount?.() ?? line;
+    editor.revealLineNearTop?.(
+      Math.min(line, lineCount),
+      monacoRef.current?.editor?.ScrollType?.Smooth,
+    );
+  }, [activeCanonical, positions, syncEnabled, editor]);
+
   // Pre-warm the highlight cache for a window ABOVE + BELOW the visible range in
   // idle time, so fast scrolling lands on already-highlighted samples (no loader
   // flash). `prewarmReference` is cache-checked, so re-runs are cheap.
@@ -285,6 +365,7 @@ export default function EditorApp(props: EditorAppProps) {
     setError(undefined);
     setReferences(d.references);
     setGroups(d.groups);
+    setPositions(d.positions ?? {});
     // A re-convert rebuilds the reference list — a stale index would pin the
     // wrong endpoint, so drop the pin and let the spy re-derive.
     setPinnedIndex(null);
@@ -327,6 +408,13 @@ export default function EditorApp(props: EditorAppProps) {
 
   return (
     <div className="flex h-screen flex-col bg-surface-1">
+      <PlaygroundModal
+        reference={playgroundRef}
+        references={references}
+        specText={props.specText}
+        open={!!playgroundRef}
+        onClose={() => setPlaygroundRef(null)}
+      />
       <EditorTopBar
         api={props.api}
         apis={props.apis}
@@ -369,40 +457,70 @@ export default function EditorApp(props: EditorAppProps) {
         {/* Middle + right: resizable Monaco | Atlas split. */}
         <PanelGroup direction="horizontal" className="min-w-0 flex-1">
           <Panel defaultSize={40} minSize={25}>
-            <Editor
-              height="100%"
-              language={language}
-              defaultValue={props.specText}
-              onChange={onChange}
-              beforeMount={(monaco) => {
-                // Kill whole-document JSON validation — the built-in JSON worker
-                // re-validates the ENTIRE spec on every change, the main Monaco
-                // cost for big JSON specs. (YAML has no built-in worker here.)
-                monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-                  validate: false,
-                  enableSchemaRequest: false,
-                });
-              }}
-              options={{
-                minimap: { enabled: false },
-                fontSize: 12.5,
-                // Whole-doc wrap reflow is expensive on 1MB+ specs.
-                wordWrap: props.specText.length > 200_000 ? "off" : "on",
-                scrollBeyondLastLine: false,
-                automaticLayout: true,
-                tabSize: 2,
-                padding: { top: 12 },
-                // Turn off whole-document passes that don't earn their cost on a
-                // huge spec (Monaco already virtualizes the visible-line view).
-                folding: false,
-                bracketPairColorization: { enabled: false },
-                occurrencesHighlight: "off",
-                stickyScroll: { enabled: false },
-                guides: { indentation: false },
-                renderWhitespace: "none",
-                matchBrackets: "never",
-              }}
-            />
+            <div className="flex h-full flex-col">
+              {/* The Sync toggle lives IN the editor pane so it clearly governs
+                  THIS editor: when on, the editor follows the preview's scroll
+                  (one-way — scrolling/editing here never moves the preview). */}
+              <div className="flex h-9 shrink-0 items-center justify-between border-b border-line bg-surface px-2">
+                <span className="text-xs font-medium text-subtle">Source</span>
+                <Tooltip
+                  side="bottom"
+                  content={
+                    syncEnabled
+                      ? "This editor is following the preview's scroll — click to stop"
+                      : "Follow the preview's scroll in this editor"
+                  }
+                >
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    icon="bolt"
+                    // A trailing check is the on-state cue (ghost stays subtle).
+                    iconRight={syncEnabled ? "check" : undefined}
+                    onClick={() => setSyncEnabled((v) => !v)}
+                  >
+                    Sync scroll
+                  </Button>
+                </Tooltip>
+              </div>
+              <div className="min-h-0 flex-1">
+                <Editor
+                  height="100%"
+                  language={language}
+                  defaultValue={props.specText}
+                  onChange={onChange}
+                  onMount={handleEditorMount}
+                  beforeMount={(monaco) => {
+                    // Kill whole-document JSON validation — the built-in JSON worker
+                    // re-validates the ENTIRE spec on every change, the main Monaco
+                    // cost for big JSON specs. (YAML has no built-in worker here.)
+                    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+                      validate: false,
+                      enableSchemaRequest: false,
+                    });
+                  }}
+                  options={{
+                    minimap: { enabled: false },
+                    fontSize: 12.5,
+                    // Whole-doc wrap reflow is expensive on 1MB+ specs.
+                    wordWrap: props.specText.length > 200_000 ? "off" : "on",
+                    scrollBeyondLastLine: false,
+                    automaticLayout: true,
+                    tabSize: 2,
+                    padding: { top: 12 },
+                    // Turn off whole-document passes that don't earn their cost on a
+                    // huge spec (Monaco already virtualizes the visible-line view).
+                    folding: false,
+                    bracketPairColorization: { enabled: false },
+                    occurrencesHighlight: "off",
+                    stickyScroll: { enabled: false },
+                    guides: { indentation: false },
+                    renderWhitespace: "none",
+                    matchBrackets: "never",
+                  }}
+                />
+              </div>
+            </div>
           </Panel>
           <PanelResizeHandle className="w-px bg-line-soft transition-colors hover:bg-line" />
           <Panel defaultSize={60} minSize={25}>
@@ -412,35 +530,40 @@ export default function EditorApp(props: EditorAppProps) {
             >
               {references.length ? (
                 <AtlasContext.Provider value={atlasContext}>
-                  <div
-                    style={{
-                      position: "relative",
-                      width: "100%",
-                      height: virtualizer.getTotalSize(),
-                    }}
+                  <SdkLanguageProvider
+                    defaultLanguage="go"
+                    storageKey="apitoolchain:editor-language"
                   >
-                    {virtualItems.map((vi) => (
-                      <div
-                        key={vi.key}
-                        data-index={vi.index}
-                        ref={virtualizer.measureElement}
-                        className="px-6"
-                        style={{
-                          // Position by `top`, NOT `transform`: a transformed
-                          // ancestor becomes the containing block for
-                          // `position: sticky`, breaking the Atlas code samples'
-                          // stickiness (only the first row, at ~translateY(0),
-                          // would appear to work).
-                          position: "absolute",
-                          top: vi.start,
-                          left: 0,
-                          width: "100%",
-                        }}
-                      >
-                        <AtlasRow reference={references[vi.index]} />
-                      </div>
-                    ))}
-                  </div>
+                    <div
+                      style={{
+                        position: "relative",
+                        width: "100%",
+                        height: virtualizer.getTotalSize(),
+                      }}
+                    >
+                      {virtualItems.map((vi) => (
+                        <div
+                          key={vi.key}
+                          data-index={vi.index}
+                          ref={virtualizer.measureElement}
+                          className="px-6"
+                          style={{
+                            // Position by `top`, NOT `transform`: a transformed
+                            // ancestor becomes the containing block for
+                            // `position: sticky`, breaking the Atlas code samples'
+                            // stickiness (only the first row, at ~translateY(0),
+                            // would appear to work).
+                            position: "absolute",
+                            top: vi.start,
+                            left: 0,
+                            width: "100%",
+                          }}
+                        >
+                          <AtlasRow reference={references[vi.index]} />
+                        </div>
+                      ))}
+                    </div>
+                  </SdkLanguageProvider>
                 </AtlasContext.Provider>
               ) : (
                 <div className="flex h-full items-center justify-center text-sm text-subtle">
@@ -502,7 +625,7 @@ function EditorTopBar({
       )}
       <div className="ml-auto flex items-center gap-2">
         {/* API switcher — jump between the editors of every registered spec. */}
-        <Menu
+        <Dropdown
           variant="select"
           icon="registry"
           label={api.name}
@@ -514,7 +637,7 @@ function EditorTopBar({
             onSelect: () => onSwitchApi(a.id),
           }))}
         />
-        <Menu
+        <Dropdown
           variant="select"
           icon="tags-outline"
           label={version || "version"}

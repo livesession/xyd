@@ -4,7 +4,7 @@ import { Hint } from "./Hint";
 import { Input } from "./Input";
 
 const meta: Meta<typeof Hint> = {
-  title: "Design System/Hint",
+  title: "Components/Hint",
   component: Hint,
   parameters: { layout: "centered" },
   args: {

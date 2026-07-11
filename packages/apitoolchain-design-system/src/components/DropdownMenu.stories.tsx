@@ -15,7 +15,7 @@ const items = [
 ];
 
 const meta: Meta<typeof DropdownMenu> = {
-  title: "Design System/DropdownMenu",
+  title: "Components/DropdownMenu",
   component: DropdownMenu,
   parameters: { layout: "centered" },
   args: { items, align: "left" },
@@ -30,6 +30,15 @@ const meta: Meta<typeof DropdownMenu> = {
 
 export default meta;
 type Story = StoryObj<typeof DropdownMenu>;
+
+/** Just the open menu panel — the trigger is collapsed to zero size so only the
+ * item list shows. */
+export const Default: Story = {
+  args: {
+    defaultOpen: true,
+    trigger: <span aria-hidden className="block h-0 w-0" />,
+  },
+};
 
 /** The trigger can be ANY element. A standard button trigger: */
 export const ButtonTrigger: Story = {
@@ -69,5 +78,51 @@ export const TextTrigger: Story = {
         Switch environment ▾
       </span>
     ),
+  },
+};
+
+/**
+ * `maxHeight` caps a long list and scrolls its items instead of letting the
+ * panel run off-screen — for menus with many entries (e.g. an API's endpoints).
+ * A number is px; a string is raw CSS (`"60vh"`, `"min(360px,50vh)"`). Unset =
+ * the panel grows to fit every item.
+ */
+export const Overflow: Story = {
+  args: {
+    defaultOpen: true,
+    maxHeight: 240,
+    trigger: <span aria-hidden className="block h-0 w-0" />,
+    items: Array.from({ length: 28 }, (_, i) => ({
+      key: `ep-${i}`,
+      label: `${["GET", "POST", "DELETE"][i % 3]} /resource/${i}`,
+      icon: "bolt" as const,
+      active: i === 0,
+    })),
+  },
+  decorators: [
+    (Story) => (
+      <div className="flex min-h-[320px] items-start justify-center pt-8">
+        <Story />
+      </div>
+    ),
+  ],
+};
+
+/** The same overflow cap, driven from a real button trigger. */
+export const OverflowWithTrigger: Story = {
+  args: {
+    align: "right",
+    maxHeight: "min(360px, 50vh)",
+    trigger: (
+      <Button variant="secondary" iconRight="chevronDown">
+        GET /resource/0
+      </Button>
+    ),
+    items: Array.from({ length: 40 }, (_, i) => ({
+      key: `ep-${i}`,
+      label: `${["GET", "POST", "PATCH", "DELETE"][i % 4]} /resource/${i}`,
+      icon: "bolt" as const,
+      active: i === 0,
+    })),
   },
 };

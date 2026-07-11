@@ -1,0 +1,10 @@
+{
+  "call": "Beta.Threads.Runs.List",
+  "request": {
+    "method": "get",
+    "path": "/threads/{thread_id}/runs",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

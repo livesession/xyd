@@ -1,0 +1,11 @@
+{
+  "call": "VectorStores.Update",
+  "request": {
+    "method": "post",
+    "path": "/vector_stores/{vector_store_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

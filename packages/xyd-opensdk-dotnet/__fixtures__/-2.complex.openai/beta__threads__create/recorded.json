@@ -1,0 +1,11 @@
+{
+  "call": "Beta.Threads.Create",
+  "request": {
+    "method": "post",
+    "path": "/threads",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

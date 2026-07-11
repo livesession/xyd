@@ -3,7 +3,7 @@ import { Field } from "./Field";
 import { Input } from "./Input";
 
 const meta: Meta<typeof Field> = {
-  title: "Design System/Field",
+  title: "Components/Field",
   component: Field,
   parameters: { layout: "centered" },
   args: {
@@ -31,5 +31,26 @@ export const WithHint: Story = {
     htmlFor: "org-slug",
     hint: "Lowercase letters, numbers, and dashes only.",
     children: <Input id="org-slug" placeholder="acme-inc" />,
+  },
+};
+
+/** `required` renders a `*` right after the label. */
+export const Required: Story = {
+  args: {
+    label: "Repository name",
+    htmlFor: "repo-name",
+    required: true,
+    children: <Input id="repo-name" placeholder="my-sdk" />,
+  },
+};
+
+/** `required` composes with the `labelHint` info (ⓘ) tooltip. */
+export const RequiredWithLabelHint: Story = {
+  args: {
+    label: "Path prefix",
+    htmlFor: "path-prefix",
+    required: true,
+    labelHint: "Optional subdirectory — leave empty to push to the repo root.",
+    children: <Input id="path-prefix" placeholder="(repo root)" />,
   },
 };

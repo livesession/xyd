@@ -7,7 +7,7 @@
       "name": "LiveSession API",
       "ns": "livesession",
       "spec": "livesession",
-      "source": "github.com/livesession/livesession-openapi",
+      "source": "github.com/livesession/livesession-docs",
       "versions": ["1.0.0", "1.1.0", "2.0.0"]
     }
   ],

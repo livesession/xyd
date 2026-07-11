@@ -6,6 +6,8 @@ export interface FieldProps {
   hint?: string;
   /** An explanation revealed by an info (ⓘ) icon next to the label. */
   labelHint?: ReactNode;
+  /** Marks the field as required — renders a `*` after the label. */
+  required?: boolean;
   htmlFor?: string;
   children: ReactNode;
 }
@@ -15,6 +17,7 @@ export function Field({
   label,
   hint,
   labelHint,
+  required,
   htmlFor,
   children,
 }: FieldProps) {
@@ -23,6 +26,11 @@ export function Field({
       <div className="flex items-center gap-1.5">
         <label htmlFor={htmlFor} className="text-[13px] font-medium text-body">
           {label}
+          {required && (
+            <span aria-hidden className="ml-0.5 text-danger">
+              *
+            </span>
+          )}
         </label>
         {labelHint && <Hint>{labelHint}</Hint>}
       </div>

@@ -9,6 +9,11 @@ import { reactRouter } from "@react-router/dev/vite";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig, type Plugin } from "vite";
 import { apitoolchainViteDev } from "../../packages/apitoolchain-dev/src/vite";
+// The API-playground widget's shared CORS proxy, delivered as a prebuilt Vite
+// plugin (self-contained node dist copied from apiatlas — no source vendored).
+// Mounts POST /apiatlas-api/http/proxy so the widget can run requests against
+// real (CORS-blocked) APIs. Synced by scripts/sync-apiatlas-widget.sh.
+import { apiatlasWidgetProxy } from "./app/vendor/apiatlas-widget/vite-plugin.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 /** Built dist of a xyd workspace package (`../../packages/xyd-<name>/...`). */
@@ -67,6 +72,7 @@ export default defineConfig({
   plugins: [
     clientPathShim(),
     apitoolchainViteDev(),
+    apiatlasWidgetProxy(),
     tailwindcss(),
     reactRouter(),
   ],
@@ -121,6 +127,53 @@ export default defineConfig({
         find: /^@xyd-js\/theme-opener$/,
         replacement: xyd("xyd-theme-opener/dist/index.js"),
       },
+      // OpenSDK pipeline — SERVER-ONLY (the editor's SDK-usage examples run in
+      // the loader / resource route, never the client bundle). Aliased at their
+      // built dist like the rest of the xyd packages.
+      {
+        find: /^@xyd-js\/openapi2opensdk$/,
+        replacement: xyd("xyd-openapi2opensdk/dist/index.js"),
+      },
+      {
+        find: /^@xyd-js\/opensdk-core$/,
+        replacement: xyd("xyd-opensdk-core/dist/index.js"),
+      },
+      {
+        find: /^@xyd-js\/opensdk-cli$/,
+        replacement: xyd("xyd-opensdk-cli/dist/index.js"),
+      },
+      {
+        find: /^@xyd-js\/opensdk-framework$/,
+        replacement: xyd("xyd-opensdk-framework/dist/index.js"),
+      },
+      {
+        find: /^@xyd-js\/opensdk-go$/,
+        replacement: xyd("xyd-opensdk-go/dist/index.js"),
+      },
+      {
+        find: /^@xyd-js\/opensdk-node$/,
+        replacement: xyd("xyd-opensdk-node/dist/index.js"),
+      },
+      {
+        find: /^@xyd-js\/opensdk-python$/,
+        replacement: xyd("xyd-opensdk-python/dist/index.js"),
+      },
+      {
+        find: /^@xyd-js\/opensdk-ruby$/,
+        replacement: xyd("xyd-opensdk-ruby/dist/index.js"),
+      },
+      {
+        find: /^@xyd-js\/opensdk-java$/,
+        replacement: xyd("xyd-opensdk-java/dist/index.js"),
+      },
+      {
+        find: /^@xyd-js\/opensdk-dotnet$/,
+        replacement: xyd("xyd-opensdk-dotnet/dist/index.js"),
+      },
+      {
+        find: /^@xyd-js\/opensdk-uniform$/,
+        replacement: xyd("xyd-opensdk-uniform/dist/index.js"),
+      },
     ],
   },
   // `@apidevtools/json-schema-ref-parser` → `@jsdevtools/ono` → the `util`
@@ -152,6 +205,9 @@ export default defineConfig({
       // The dev widget (@apitoolchain/dev/widget) ships TS source too; only
       // its React export is pulled in (not the Node-side ./vite plugin).
       "@apitoolchain/dev",
+      // The sdk.json wizard ships TS source; its UI barrel (shiki + DS) is
+      // bundled for client + SSR. Its /preview subpath (@xyd-js/*) stays server.
+      "@apitoolchain/sdkjson-wizard",
     ],
   },
   optimizeDeps: {
@@ -162,6 +218,7 @@ export default defineConfig({
       "@apitoolchain/design-system",
       "@apitoolchain/filters",
       "@apitoolchain/dev",
+      "@apitoolchain/sdkjson-wizard",
     ],
   },
 });

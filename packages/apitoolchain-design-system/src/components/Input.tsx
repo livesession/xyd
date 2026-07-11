@@ -1,3 +1,5 @@
+import { Icon, type IconName } from "../icons";
+
 export interface InputProps {
   value?: string;
   defaultValue?: string;
@@ -10,6 +12,8 @@ export interface InputProps {
   autoComplete?: string;
   onChange?: (value: string) => void;
   disabled?: boolean;
+  /** Optional leading icon rendered inside the control, before the text. */
+  leadingIcon?: IconName;
 }
 
 /** A single-line text input. */
@@ -24,8 +28,9 @@ export function Input({
   autoComplete,
   onChange,
   disabled,
+  leadingIcon,
 }: InputProps) {
-  return (
+  const field = (
     <input
       id={id}
       name={name}
@@ -37,7 +42,20 @@ export function Input({
       required={required}
       autoComplete={autoComplete}
       onChange={(e) => onChange?.(e.target.value)}
-      className="w-full rounded-control border border-line bg-surface px-3 py-[9px] text-sm text-ink outline-none transition-colors focus:border-subtle disabled:bg-surface-muted"
+      className={`w-full rounded-control border border-line bg-surface py-[9px] text-sm text-ink outline-none transition-colors focus:border-subtle disabled:bg-surface-muted ${
+        leadingIcon ? "pr-3 pl-9" : "px-3"
+      }`}
     />
+  );
+  if (!leadingIcon) return field;
+  return (
+    <div className="relative">
+      <Icon
+        icon={leadingIcon}
+        size={16}
+        className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted"
+      />
+      {field}
+    </div>
   );
 }

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { StatTile } from "./StatTile";
 
 const meta: Meta<typeof StatTile> = {
-  title: "Design System/StatTile",
+  title: "Components/StatTile",
   component: StatTile,
   parameters: { layout: "centered" },
   argTypes: {

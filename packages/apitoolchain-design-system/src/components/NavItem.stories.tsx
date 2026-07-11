@@ -3,7 +3,7 @@ import { ICON_NAMES } from "../icons";
 import { NavItem } from "./NavItem";
 
 const meta: Meta<typeof NavItem> = {
-  title: "Design System/NavItem",
+  title: "Components/NavItem",
   component: NavItem,
   parameters: { layout: "centered", backgrounds: { default: "muted" } },
   argTypes: {

@@ -31,6 +31,8 @@
 @source "../../../packages/apitoolchain-auth-design-system/src";
 /* Same for the dev widget (@apitoolchain/dev/widget) — a linked source pkg. */
 @source "../../../packages/apitoolchain-dev/src";
+/* The sdk.json wizard — a linked source pkg whose JSX class strings need scanning. */
+@source "../../../packages/apitoolchain-sdkjson-wizard/src";
 
 /* The OpenAPI editor's preview pane is narrower than a full docs page, so xyd
    Atlas can overflow horizontally (long code samples, the language-tab row,
@@ -81,11 +83,12 @@
 
 /* Trigger: a compact button. */
 .apitoolchain-atlas-host [part="language-select-trigger"] {
-  gap: 5px;
-  margin: 8px 10px;
-  padding: 4px 6px;
-  border-radius: 7px;
+  gap: 4px;
+  margin: 10px 8px 2px 8px;
+  padding: 5px 6px;
+  border-radius: 6px;
   font-size: 11px;
+  line-height: 1.4;
 }
 .apitoolchain-atlas-host [part="language-select-trigger"]:hover {
   background: #e1e6ee;

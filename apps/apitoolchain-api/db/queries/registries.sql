@@ -43,9 +43,14 @@ RETURNING *;
 DELETE FROM registry_connections WHERE id = $1;
 
 -- name: MarkRegistryConnectionPublishing :exec
+-- Reset for a fresh publish: mark building, clear the last error + the publish log.
 UPDATE registry_connections
-SET last_publish_status = 'building', last_publish_error = ''
+SET last_publish_status = 'building', last_publish_error = '', publish_logs = ''
 WHERE id = $1;
+
+-- name: AppendRegistryConnectionPublishLog :exec
+-- Append a line to the connection's publish log (tailed live by the dashboard).
+UPDATE registry_connections SET publish_logs = publish_logs || $2 WHERE id = $1;
 
 -- name: MarkRegistryConnectionPublished :exec
 UPDATE registry_connections

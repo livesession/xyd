@@ -2,6 +2,7 @@ import { Button, StatusPill } from "@apitoolchain/design-system";
 import { useEffect, useRef } from "react";
 import { useFetcher } from "react-router";
 import type { Release, RepoConnection } from "~/data";
+import { DeleteConfirm } from "./DeleteConfirm";
 import {
   ReleaseSettingsFields,
   useReleaseSettings,
@@ -138,21 +139,25 @@ function RemoveConnection({
           Disconnect this repo. Generated files already pushed stay in the repo.
         </span>
       </div>
-      <disconnect.Form method="post" action={actionPath}>
-        <input type="hidden" name="intent" value="disconnect-repo" />
-        <input type="hidden" name="id" value={connection.id} />
-        <Button
-          type="submit"
-          variant="danger"
-          size="sm"
-          disabled={removing}
-          onClick={() => {
-            removed.current = true;
-          }}
-        >
-          {removing ? "Removing…" : "Remove"}
-        </Button>
-      </disconnect.Form>
+      <DeleteConfirm
+        title="Remove connection"
+        description={`Disconnect ${connection.repo}? Files already pushed stay in the repo — it just stops syncing.`}
+        confirmLabel="Remove"
+        confirming={removing}
+        busyLabel="Removing…"
+        onConfirm={() => {
+          removed.current = true;
+          disconnect.submit(
+            { intent: "disconnect-repo", id: connection.id },
+            { method: "post", action: actionPath },
+          );
+        }}
+        trigger={(open) => (
+          <Button variant="danger" size="sm" onClick={open} disabled={removing}>
+            Remove
+          </Button>
+        )}
+      />
     </div>
   );
 }

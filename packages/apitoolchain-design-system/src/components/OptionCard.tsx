@@ -7,10 +7,14 @@ export interface OptionCardProps {
   media?: ReactNode;
   onClick?: () => void;
   disabled?: boolean;
+  /** Renders a selected state (accent border) — for card-based single choices. */
+  selected?: boolean;
 }
 
+// Border-color + bg are set per-state below (not here) so the selected style
+// isn't overridden by a competing base utility of the same property.
 const BASE =
-  "flex flex-col items-start gap-3 rounded-control border border-transparent bg-surface-muted p-4 text-left transition-colors";
+  "flex flex-col items-start gap-3 rounded-control border p-4 text-left transition-colors";
 
 /**
  * A vertical choice card: a media row on top, then a title + description.
@@ -22,6 +26,7 @@ export function OptionCard({
   media,
   onClick,
   disabled,
+  selected,
 }: OptionCardProps) {
   const body = (
     <>
@@ -37,7 +42,9 @@ export function OptionCard({
   if (disabled || !onClick) {
     return (
       <div
-        className={`${BASE} ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
+        className={`${BASE} border-transparent bg-surface-muted ${
+          disabled ? "cursor-not-allowed opacity-60" : ""
+        }`}
       >
         {body}
       </div>
@@ -47,7 +54,12 @@ export function OptionCard({
     <button
       type="button"
       onClick={onClick}
-      className={`${BASE} cursor-pointer hover:bg-hover`}
+      aria-pressed={selected}
+      className={`${BASE} cursor-pointer ${
+        selected
+          ? "border-blue bg-hover"
+          : "border-transparent bg-surface-muted hover:bg-hover"
+      }`}
     >
       {body}
     </button>

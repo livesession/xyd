@@ -4,7 +4,7 @@ import type { IconName } from "../icons";
 import { ButtonFilter } from "./ButtonFilter";
 
 const meta: Meta<typeof ButtonFilter> = {
-  title: "Design System/ButtonFilter",
+  title: "Components/ButtonFilter",
   component: ButtonFilter,
   parameters: { layout: "padded" },
   args: { children: "Filter" },

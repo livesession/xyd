@@ -3,7 +3,7 @@ import { ICON_NAMES } from "../icons";
 import { ChecklistItem } from "./ChecklistItem";
 
 const meta: Meta<typeof ChecklistItem> = {
-  title: "Design System/ChecklistItem",
+  title: "Components/ChecklistItem",
   component: ChecklistItem,
   parameters: { layout: "centered" },
   argTypes: {

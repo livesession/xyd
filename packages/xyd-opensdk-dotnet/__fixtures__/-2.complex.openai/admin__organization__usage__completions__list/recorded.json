@@ -1,0 +1,12 @@
+{
+  "call": "Admin.Organization.Usage.Completions.List",
+  "request": {
+    "method": "get",
+    "path": "/organization/usage/completions",
+    "query": [
+      "start_time"
+    ],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

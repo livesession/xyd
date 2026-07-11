@@ -7,7 +7,11 @@ import {
   writeFileSync,
 } from "node:fs";
 import { resolve } from "node:path";
-import { type ApplyCtx, applyProfile } from "./apply-profile";
+import {
+  type ApplyCtx,
+  applyProfile,
+  backdateSeededData,
+} from "./apply-profile";
 import type { DevProfile } from "./profiles";
 
 /**
@@ -75,6 +79,21 @@ async function waitGenerationDone(
     }
     if (building === "" || building === "0") return;
     await sleep(1000);
+  }
+}
+
+/** Count registered apis — used to refuse snapshotting an empty (failed) apply.
+ * Returns -1 on a probe error so a psql hiccup never blocks a real snapshot. */
+function countApis(pgId: string): number {
+  try {
+    const n = execFileSync(
+      "docker",
+      ["exec", pgId, "psql", ...PG, "-tAc", "SELECT count(*) FROM apis"],
+      { env: PG_ENV, encoding: "utf8" },
+    ).trim();
+    return Number(n) || 0;
+  } catch {
+    return -1;
   }
 }
 
@@ -175,6 +194,9 @@ export async function applyOrRestore(
         snapCtx.log("upgrading restored schema to current…");
         await snapCtx.migrate();
       }
+      // Re-anchor the seeded timestamps to now so a restore doesn't read as one
+      // stale blob (and a pre-backdating snapshot still gets a real history).
+      backdateSeededData(applyCtx.pgId, snapCtx.log);
       snapCtx.log("snapshot restored — up in seconds.");
       return;
     } catch (e) {
@@ -197,6 +219,16 @@ export async function applyOrRestore(
   }
   snapCtx.log(`building "${profile.id}" (first run; will snapshot it)…`);
   await applyProfile(profile, applyCtx);
+  // Anti-poison: never cache an empty result. If the profile declares apis but
+  // none landed (e.g. a storage/registry outage failed every register), skip the
+  // snapshot so a future load retries a fresh apply instead of restoring — and
+  // masking — the emptiness.
+  if (profile.apis.length > 0 && countApis(snapCtx.pgId) === 0) {
+    snapCtx.log(
+      `NOT snapshotting "${profile.id}": 0 apis registered (apply failed?) — next load retries fresh.`,
+    );
+    return;
+  }
   try {
     snapCtx.log(`snapshotting "${profile.id}"…`);
     await buildSnapshot(profile.id, snapCtx);

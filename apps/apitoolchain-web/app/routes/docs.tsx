@@ -8,7 +8,8 @@ import {
   PageHeader,
   StatusPill,
 } from "@apitoolchain/design-system";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { AnnounceModal } from "~/components/AnnounceModal";
 import { type DocsProject, listApis, listDocsProjects } from "~/data";
 import { docsFilterSchema } from "~/data/filters";
 import { useUrlFilters } from "~/hooks/useUrlFilters";
@@ -37,6 +38,7 @@ const CELL_LINK =
 
 export default function DocsRoute({ loaderData }: Route.ComponentProps) {
   const { rows, apis } = loaderData;
+  const [announce, setAnnounce] = useState(false);
 
   const themes = [...new Set(rows.map((d) => d.theme))].sort();
   const facetKey = `${apis.map((a) => a.id).join(",")}|${themes.join(",")}`;
@@ -107,7 +109,11 @@ export default function DocsRoute({ loaderData }: Route.ComponentProps) {
       <PageHeader
         title="Docs"
         actions={
-          <ButtonCTA variant="primary" icon="plus">
+          <ButtonCTA
+            variant="primary"
+            icon="plus"
+            onClick={() => setAnnounce(true)}
+          >
             New docs site
           </ButtonCTA>
         }
@@ -124,12 +130,24 @@ export default function DocsRoute({ loaderData }: Route.ComponentProps) {
             title="No docs sites match"
             description="Create a docs site to publish reference + guides, or clear the filters above."
             action={
-              <ButtonCTA variant="primary" icon="plus">
+              <ButtonCTA
+                variant="primary"
+                icon="plus"
+                onClick={() => setAnnounce(true)}
+              >
                 New docs site
               </ButtonCTA>
             }
           />
         }
+      />
+      <AnnounceModal
+        open={announce}
+        onClose={() => setAnnounce(false)}
+        feature="Docs sites"
+        icon="docs"
+        tone="blue"
+        description="Publish a branded docs site straight from your API — reference, guides, and search, built and deployed for you. We're putting the finishing touches on it."
       />
     </>
   );

@@ -3,7 +3,7 @@ import { Icon } from "../icons";
 import { OptionCard } from "./OptionCard";
 
 const meta: Meta<typeof OptionCard> = {
-  title: "Design System/OptionCard",
+  title: "Components/OptionCard",
   component: OptionCard,
   parameters: { layout: "padded" },
   args: {

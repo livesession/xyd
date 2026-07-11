@@ -86,7 +86,7 @@ function SyncChip({
 
 /**
  * The registry-detail layout: PageHeader (breadcrumb, title, sync chip, tabs) +
- * a right-side Actions/At-a-glance panel + the shared modals. Each tab is its
+ * a right-side Actions/Meta panel + the shared modals. Each tab is its
  * own route file rendered through `<Outlet>`; they read shared data via the
  * `RegistryDetailContext` outlet context.
  */
@@ -248,6 +248,19 @@ export default function RegistryDetailLayout({
         title={api.name}
         description={api.description}
         leadingActions={syncChip}
+        actions={
+          isSchema ? undefined : (
+            <Button
+              variant="secondary"
+              size="sm"
+              icon="docs"
+              href={`/editor/${api.id}`}
+              newTab
+            >
+              Open editor ↗
+            </Button>
+          )
+        }
         tabs={
           <Tabs
             linkComponent={RouterLink}
@@ -294,6 +307,7 @@ export default function RegistryDetailLayout({
                 href: `${base}/repository`,
                 count: connections.length,
               },
+              { key: "settings", label: "Settings", href: `${base}/settings` },
             ]}
           />
         }
@@ -340,16 +354,6 @@ export default function RegistryDetailLayout({
                 Generate SDKs
               </Button>
             )}
-            {!isSchema && (
-              <Button
-                variant="secondary"
-                icon="docs"
-                href={`/editor/${api.id}`}
-                newTab
-              >
-                Open editor ↗
-              </Button>
-            )}
             {/* Repo connections live at the bottom of Actions: "Connect a repo"
                 before any exist, then the connected repo(s) as plain buttons. */}
             {connections.length === 0 ? (
@@ -383,7 +387,7 @@ export default function RegistryDetailLayout({
             )}
           </RightPanelSection>
 
-          <RightPanelSection title="At a glance">
+          <RightPanelSection title="Meta">
             <div className="flex flex-col divide-y divide-line-soft rounded-control border border-line bg-surface text-sm">
               <Glance
                 label="Current version"
@@ -427,6 +431,7 @@ export default function RegistryDetailLayout({
           namespace: api.namespace,
           format: api.format,
         }}
+        distTagOptions={api.distTags.map((t) => t.tag)}
       />
       {!isSchema && (
         <GenerateSdkModal
@@ -442,6 +447,7 @@ export default function RegistryDetailLayout({
         providers={providers}
         actionPath={base}
         targetKind="spec"
+        distTagOptions={api.distTags.map((t) => t.tag)}
       />
     </>
   );

@@ -5,7 +5,7 @@ import { Badge } from "./Badge";
 import { ToggleTile } from "./ToggleTile";
 
 const meta: Meta<typeof ToggleTile> = {
-  title: "Design System/ToggleTile",
+  title: "Components/ToggleTile",
   component: ToggleTile,
   parameters: { layout: "padded" },
   args: { label: "TypeScript", checked: true },

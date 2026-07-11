@@ -8,7 +8,8 @@ export type ButtonVariant =
   | "secondary"
   | "ghost"
   | "warning"
-  | "danger";
+  | "danger"
+  | "danger-ghost";
 export type ButtonSize = "sm" | "md";
 
 export interface ButtonProps {
@@ -39,6 +40,9 @@ const VARIANT: Record<ButtonVariant, string> = {
   warning:
     "border-transparent bg-amber-btn text-white hover:bg-amber-btn-hover",
   danger: "border-transparent bg-danger text-white hover:opacity-90",
+  // Ghost, but tinted danger — a subtle destructive action (red text + icon).
+  "danger-ghost":
+    "border-transparent bg-transparent text-danger hover:bg-danger-bg",
 };
 
 const SIZE: Record<ButtonSize, string> = {

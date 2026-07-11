@@ -115,7 +115,7 @@ export function ConnectRegistryModal({
         </p>
       ) : (
         <div className="flex flex-col gap-4">
-          <Field label="Registry" htmlFor="cr-registry">
+          <Field label="Registry" htmlFor="cr-registry" required>
             <Select
               id="cr-registry"
               value={registryId}

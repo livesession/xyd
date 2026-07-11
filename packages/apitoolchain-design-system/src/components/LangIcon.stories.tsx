@@ -18,7 +18,7 @@ const NAMES: LangIconName[] = [
 ];
 
 const meta: Meta<typeof LangIcon> = {
-  title: "Design System/LangIcon",
+  title: "Components/LangIcon",
   component: LangIcon,
   parameters: { layout: "centered" },
   argTypes: {

@@ -3,7 +3,7 @@ import { ICON_NAMES } from "../icons";
 import { Badge, StatusPill } from "./Badge";
 
 const meta: Meta<typeof Badge> = {
-  title: "Design System/Badge",
+  title: "Components/Badge",
   component: Badge,
   parameters: { layout: "centered" },
   argTypes: {

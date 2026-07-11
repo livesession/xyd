@@ -4,7 +4,7 @@ import { Button } from "./Button";
 import { EmptyState } from "./EmptyState";
 
 const meta: Meta<typeof EmptyState> = {
-  title: "Design System/EmptyState",
+  title: "Components/EmptyState",
   component: EmptyState,
   parameters: { layout: "padded" },
   argTypes: {

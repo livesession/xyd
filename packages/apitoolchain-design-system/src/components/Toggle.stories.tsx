@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Toggle } from "./Toggle";
 
 const meta: Meta<typeof Toggle> = {
-  title: "Design System/Toggle",
+  title: "Components/Toggle",
   component: Toggle,
   parameters: { layout: "centered" },
   argTypes: {

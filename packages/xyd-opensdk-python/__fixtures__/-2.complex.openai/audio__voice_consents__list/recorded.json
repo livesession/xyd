@@ -1,0 +1,10 @@
+{
+  "call": "audio.voice_consents.list",
+  "request": {
+    "method": "get",
+    "path": "/audio/voice_consents",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

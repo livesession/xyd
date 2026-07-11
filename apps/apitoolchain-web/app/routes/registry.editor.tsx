@@ -12,11 +12,17 @@ import coderCss from "../../../../packages/xyd-components/dist/index.css?url";
 // `links()`, so it never affects the rest of the app. Relative path — xyd themes
 // aren't installable here; the `@layer` order is pinned globally in app.css.
 import openerCss from "../../../../packages/xyd-theme-opener/dist/index.css?url";
+// Same reason as coderCss: the SDK-native reference styles (operation-header
+// signature + language select) live in @xyd-js/atlas, but the theme bundle
+// predates them — pull the freshly-built Atlas CSS so the net-new sdk-header
+// rules apply (loaded AFTER the theme so the fresh Atlas wins any shared rule).
+import atlasCss from "../../../../packages/xyd-atlas/dist/index.css?url";
 import type { Route } from "./+types/registry.editor";
 
 export const links: Route.LinksFunction = () => [
   { rel: "stylesheet", href: coderCss },
   { rel: "stylesheet", href: openerCss },
+  { rel: "stylesheet", href: atlasCss },
 ];
 
 export function meta() {
@@ -43,9 +49,20 @@ export async function loader({ params }: Route.LoaderArgs) {
     throw redirect(`/editor/${api.id}/${encodeURIComponent(version)}`);
   }
   const spec = await fetchSpecRaw(api.id, version);
-  // Pre-compute the sidebar + references server-side for the first paint.
-  const { references, groups, error } = await specTextToUniform(spec.text);
-  return { api, apis, version, specText: spec.text, references, groups, error };
+  // Pre-compute the sidebar + references (+ source line positions) server-side.
+  const { references, groups, error, positions } = await specTextToUniform(
+    spec.text,
+  );
+  return {
+    api,
+    apis,
+    version,
+    specText: spec.text,
+    references,
+    groups,
+    error,
+    positions,
+  };
 }
 
 // The editor body (Monaco + xyd Atlas + the xyd docs runtime) is browser-only —

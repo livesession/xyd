@@ -1,6 +1,8 @@
 import {
   Badge,
   Button,
+  Combobox,
+  type ComboboxOption,
   Field,
   type IconName,
   Input,
@@ -37,6 +39,7 @@ export function ConnectRepoModal({
   providers,
   actionPath,
   targetKind = "sdk",
+  distTagOptions = [],
 }: {
   open: boolean;
   onClose: () => void;
@@ -44,6 +47,8 @@ export function ConnectRepoModal({
   actionPath: string;
   /** What's being connected — drives copy (e.g. the new-repo name placeholder). */
   targetKind?: "spec" | "sdk";
+  /** The API's currently-available dist-tags, offered in the release filter. */
+  distTagOptions?: string[];
 }) {
   const submit = useFetcher();
   const repos = useFetcher(); // GET /git/repos?providerId=…
@@ -57,6 +62,17 @@ export function ConnectRepoModal({
   // New connections default to PR-based release mode (auto-release on).
   const [releaseMode, setReleaseMode] = useState("release");
   const [autoRelease, setAutoRelease] = useState(true);
+  // Which published dist-tags trigger a release (default `latest`).
+  const [distTags, setDistTags] = useState<string[]>(["latest"]);
+  const tagOptions: ComboboxOption[] = [
+    {
+      value: "*",
+      label: "All dist-tags",
+      exclusive: true,
+      icon: "tags-outline",
+    },
+    ...[...new Set(["latest", ...distTagOptions])].map((t) => ({ value: t })),
+  ];
 
   const submitting = submit.state !== "idle";
   const submitted = useRef(false);
@@ -74,6 +90,7 @@ export function ConnectRepoModal({
       setMakePrivate(false);
       setReleaseMode("release");
       setAutoRelease(true);
+      setDistTags(["latest"]);
       setDirty(false);
     }
   }, [open, providers]);
@@ -153,7 +170,10 @@ export function ConnectRepoModal({
         branch,
         prefix,
         releaseMode,
-        autoRelease: releaseMode === "release" && autoRelease ? "1" : "",
+        // Auto-sync + dist-tags apply to both modes (push commits straight to
+        // the branch; release opens a PR).
+        autoRelease: autoRelease ? "1" : "",
+        distTags: autoRelease ? distTags.join(",") || "latest" : "",
       },
       { method: "post", action: actionPath },
     );
@@ -163,7 +183,7 @@ export function ConnectRepoModal({
     <Field
       label="Path prefix"
       htmlFor="cr-prefix"
-      hint="Optional subdirectory — leave empty to push to the repo root."
+      labelHint="Optional subdirectory — leave empty to push to the repo root."
     >
       <Input
         id="cr-prefix"
@@ -186,14 +206,30 @@ export function ConnectRepoModal({
           setReleaseMode(v === "Release PRs" ? "release" : "push")
         }
       />
-      {releaseMode === "release" && (
-        <div className="mt-2 flex items-center gap-2 text-[13px] text-subtle">
-          <Toggle
-            checked={autoRelease}
-            onChange={setAutoRelease}
-            aria-label="Auto-release on new spec version"
-          />
-          Open/refresh a release PR on every new spec version
+      {/* Auto-sync + its dist-tag filter apply to both modes. */}
+      <div className="mt-2 flex items-center gap-2 text-[13px] text-subtle">
+        <Toggle
+          checked={autoRelease}
+          onChange={setAutoRelease}
+          aria-label="Auto-sync on new spec version"
+        />
+        {releaseMode === "release"
+          ? "Open/refresh a release PR on every new spec version"
+          : "Commit the regenerated SDK to the branch on every new spec version"}
+      </div>
+      {autoRelease && (
+        <div className="mt-3">
+          <Field
+            label="Dist-tags"
+            labelHint="Which published dist-tags trigger this. Default: latest. Pick “All”, check tags, or type your own."
+          >
+            <Combobox
+              value={distTags}
+              onChange={setDistTags}
+              options={tagOptions}
+              placeholder="latest"
+            />
+          </Field>
         </div>
       )}
     </Field>
@@ -237,7 +273,7 @@ export function ConnectRepoModal({
       ) : mode === null ? (
         // Step 1: pick a provider + a mode.
         <div className="flex flex-col gap-4">
-          <Field label="Provider" htmlFor="cr-provider">
+          <Field label="Provider" htmlFor="cr-provider" required>
             <Select
               id="cr-provider"
               value={providerId}
@@ -295,7 +331,7 @@ export function ConnectRepoModal({
 
           {mode === "existing" && (
             <>
-              <Field label="Repository" htmlFor="cr-repo">
+              <Field label="Repository" htmlFor="cr-repo" required>
                 <Select
                   id="cr-repo"
                   value={repo}
@@ -322,6 +358,7 @@ export function ConnectRepoModal({
                     label="Branch"
                     htmlFor="cr-branch"
                     hint="Where the files are pushed."
+                    required
                   >
                     <Select
                       id="cr-branch"
@@ -350,11 +387,7 @@ export function ConnectRepoModal({
 
           {mode === "create" && (
             <>
-              <Field
-                label="Repository name"
-                htmlFor="cr-name"
-                hint={`Created under ${provider?.connectedAs ?? "your account"}.`}
-              >
+              <Field label="Repository name" htmlFor="cr-name" required>
                 <Input
                   id="cr-name"
                   value={repo}
@@ -369,11 +402,7 @@ export function ConnectRepoModal({
                   onChange={(v) => setMakePrivate(v === "Private")}
                 />
               </Field>
-              <Field
-                label="Branch"
-                htmlFor="cr-cbranch"
-                hint="Initial branch for the new repo."
-              >
+              <Field label="Branch" htmlFor="cr-cbranch">
                 <Input
                   id="cr-cbranch"
                   value={branch}

@@ -3,7 +3,7 @@ import { Button } from "./Button";
 import { Section } from "./Section";
 
 const meta: Meta<typeof Section> = {
-  title: "Design System/Section",
+  title: "Components/Section",
   component: Section,
   parameters: { layout: "padded" },
   args: {

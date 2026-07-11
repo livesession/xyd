@@ -5,11 +5,13 @@ import {
   Input,
   Select,
 } from "@apitoolchain/design-system";
-import { Form, useNavigation } from "react-router";
+import { Form, useFetcher, useNavigation } from "react-router";
+import { DeleteConfirm } from "~/components/DeleteConfirm";
 import { SettingsHeader } from "~/components/SettingsHeader";
 import {
   inviteMember,
   listMembers,
+  type Member,
   removeMember,
   updateMemberRole,
 } from "~/data";
@@ -96,30 +98,52 @@ export default function MembersRoute({
 
         <div className="flex flex-col divide-y divide-line-soft overflow-hidden rounded-panel border border-line bg-surface">
           {members.map((m) => (
-            <div key={m.userId} className="flex items-center gap-3 px-4 py-3">
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-medium text-ink">
-                  {m.name || m.email}
-                </div>
-                <div className="truncate text-xs text-subtle">{m.email}</div>
-              </div>
-              <Badge tone={m.role === "owner" ? "accent" : "neutral"}>
-                {m.role}
-              </Badge>
-              <Form method="post">
-                <input type="hidden" name="intent" value="remove" />
-                <input type="hidden" name="userId" value={m.userId} />
-                <button
-                  type="submit"
-                  className="cursor-pointer border-none bg-transparent text-[13px] text-subtle hover:text-danger"
-                >
-                  Remove
-                </button>
-              </Form>
-            </div>
+            <MemberRow key={m.userId} member={m} />
           ))}
         </div>
       </div>
     </>
+  );
+}
+
+function MemberRow({ member }: { member: Member }) {
+  const del = useFetcher();
+  const removing = del.state !== "idle";
+  const res = del.data as { ok?: boolean; message?: string } | undefined;
+  return (
+    <div className="flex items-center gap-3 px-4 py-3">
+      <div className="min-w-0 flex-1">
+        <div className="truncate text-sm font-medium text-ink">
+          {member.name || member.email}
+        </div>
+        <div className="truncate text-xs text-subtle">{member.email}</div>
+      </div>
+      <Badge tone={member.role === "owner" ? "accent" : "neutral"}>
+        {member.role}
+      </Badge>
+      <DeleteConfirm
+        title="Remove member"
+        description={`Remove ${member.name || member.email} from this organization? They'll lose access to its projects, APIs, and SDKs.`}
+        confirmLabel="Remove"
+        confirming={removing}
+        busyLabel="Removing…"
+        error={res && res.ok === false ? res.message : undefined}
+        onConfirm={() =>
+          del.submit(
+            { intent: "remove", userId: member.userId },
+            { method: "post" },
+          )
+        }
+        trigger={(open) => (
+          <button
+            type="button"
+            onClick={open}
+            className="cursor-pointer border-none bg-transparent text-[13px] text-subtle hover:text-danger"
+          >
+            Remove
+          </button>
+        )}
+      />
+    </div>
   );
 }

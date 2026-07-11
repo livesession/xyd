@@ -4,7 +4,7 @@ import { Callout, type CalloutTone } from "./Callout";
 const TONES: CalloutTone[] = ["error", "warning", "success", "info"];
 
 const meta: Meta<typeof Callout> = {
-  title: "Design System/Callout",
+  title: "Components/Callout",
   component: Callout,
   parameters: { layout: "padded" },
   argTypes: {

@@ -30,4 +30,11 @@ export {
   goPublishAdapter,
 } from './publish';
 export type { PublishAdapter, PublishCtx, PublishRoundTripConfig } from './publish';
+export { listComplexCorpora, representativeMethods, CORPUS_SPECS } from './corpus';
+export type { ComplexCorpus, RepresentativeMethod, CorpusSpec } from './corpus';
 export { compileSmoke } from './compile-smoke';
+export { compileUsageSnippet, placeSnippet } from './usage-compile';
+export { recordSdkE2E, defineSdkE2E, apiKeyEnvFor } from './sdk-e2e';
+export type { ApiConfig, DriverAdapter, BuiltDriver } from './sdk-e2e';
+export { runUsageSnippet, SNIPPET_BASE_URL_ENV } from './snippet-run';
+export type { SnippetRunner, RunUsageSnippetConfig } from './snippet-run';

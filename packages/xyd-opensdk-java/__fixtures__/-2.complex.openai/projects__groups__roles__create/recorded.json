@@ -1,0 +1,13 @@
+{
+  "call": "projects.groups.roles.create",
+  "request": {
+    "method": "post",
+    "path": "/projects/{project_id}/groups/{group_id}/roles",
+    "query": [],
+    "bodyFields": [
+      "role_id"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

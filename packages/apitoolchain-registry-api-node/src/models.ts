@@ -42,6 +42,11 @@ export interface ApitoolchainDistTag {
 
 export interface ApitoolchainRegisterApiInput {
   name: string;
+  /**
+   * Explicit id/slug for the entry. Slugified server-side; defaults to a slug
+   * of `name`. Lets the display title (`name`) be decoupled from the stable id.
+   */
+  id?: string;
   format?: ApitoolchainApiFormat;
   /** `api` (default) or `schema` — classifies the uploaded document. */
   kind?: ApitoolchainEntryKind;
@@ -53,6 +58,12 @@ export interface ApitoolchainRegisterApiInput {
   url?: string;
   /** Explicit version label; defaults to the spec's info.version. */
   version?: string;
+  /**
+   * Dist-tag to publish this version under (default `latest`). `latest` makes
+   * it the current/default version; any other tag (`canary`, `beta`, …) is a
+   * side-channel — added without moving `latest`/current off the stable one.
+   */
+  distTag?: string;
   /**
    * The project the API belongs to. Set server-side by the platform gateway
    * from the caller's current project; defaults to the seeded project.
@@ -68,6 +79,17 @@ export interface ValidationError {
 export interface NotFoundError {
   code: "not_found";
   message: string;
+}
+
+/**
+ * Editable presentation metadata for an existing registry entry. The id/slug,
+ * namespace, format, and kind are IMMUTABLE — they're baked into URLs, the
+ * `apis/<ns>/<api>@<ver>` registry refs, and already-generated SDKs — so only
+ * the display name + description can change (a partial update; omit to keep).
+ */
+export interface ApitoolchainUpdateApiInput {
+  name?: string;
+  description?: string;
 }
 
 /** Set (create or move) a dist-tag to point at an existing version. */

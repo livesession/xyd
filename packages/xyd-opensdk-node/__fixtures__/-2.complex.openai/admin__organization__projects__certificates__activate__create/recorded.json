@@ -1,0 +1,13 @@
+{
+  "call": "admin.organization.projects.certificates.activate.create",
+  "request": {
+    "method": "post",
+    "path": "/organization/projects/{project_id}/certificates/activate",
+    "query": [],
+    "bodyFields": [
+      "certificate_ids"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

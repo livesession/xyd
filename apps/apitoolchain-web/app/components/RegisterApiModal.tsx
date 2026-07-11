@@ -1,7 +1,10 @@
 import {
   Button,
   Callout,
+  ComboboxMenu,
+  type ComboboxMenuOption,
   Field,
+  Icon,
   Input,
   Modal,
   Segmented,
@@ -95,6 +98,7 @@ export function RegisterApiModal({
   namespaces = [],
   defaultNamespace,
   newVersion,
+  distTagOptions = [],
 }: {
   open: boolean;
   onClose: () => void;
@@ -121,6 +125,9 @@ export function RegisterApiModal({
      * may be decoupled from the name, so it can't be re-derived from `name`). */
     id?: string;
   };
+  /** The API's currently-available dist-tags, offered when choosing one for the
+   * new version (alongside `latest`, a typed custom tag, and "No dist-tag"). */
+  distTagOptions?: string[];
 }) {
   const isSchema = kind === "schema";
   const noun = isSchema ? "schema" : "API";
@@ -145,6 +152,9 @@ export function RegisterApiModal({
   const [mode, setMode] = useState("Paste");
   const [specText, setSpecText] = useState("");
   const [url, setUrl] = useState("");
+  // Dist-tag this version publishes under. `latest` (default) makes it current;
+  // another tag (canary, beta…) adds it without moving latest/current.
+  const [distTag, setDistTag] = useState("latest");
 
   const submitting = fetcher.state !== "idle";
   const result = fetcher.data as RegisterApiResult | undefined;
@@ -160,6 +170,7 @@ export function RegisterApiModal({
   useEffect(() => {
     if (!open) return;
     setDirty(false);
+    setDistTag("latest");
     // Version-only: identity is inherited from the existing spec.
     if (newVersion) {
       setName(newVersion.name);
@@ -230,6 +241,9 @@ export function RegisterApiModal({
         ns,
         kind,
         format: isSchema ? "jsonschema" : format,
+        // "none" is a sentinel — register the version WITHOUT creating/moving a
+        // dist-tag. Anything else falls back to `latest`.
+        distTag: distTag === "none" ? "none" : distTag.trim() || "latest",
         ...(mode === "Paste" ? { specText } : { url }),
       },
       { method: "post", action: "/registry" },
@@ -273,14 +287,63 @@ export function RegisterApiModal({
     >
       <div className="flex flex-col gap-4">
         {versionOnly ? (
-          <div className="rounded-control border border-line bg-surface-muted px-3 py-2 text-[13px] text-subtle">
-            New version of <span className="font-medium text-ink">{name}</span>{" "}
-            in <span className="font-mono text-ink">@{ns}</span>
+          <div className="flex flex-col gap-3">
+            <div className="rounded-control border border-line bg-surface-muted px-3 py-2 text-[13px] text-subtle">
+              New version of{" "}
+              <span className="font-medium text-ink">{name}</span> in{" "}
+              <span className="font-mono text-ink">@{ns}</span>
+            </div>
+            <Field
+              label="Dist-tag"
+              hint="latest becomes the current version. Any other tag (canary, beta…) is added without moving latest. Choose “No dist-tag” to add the version untagged."
+            >
+              <ComboboxMenu
+                options={[
+                  {
+                    value: "none",
+                    label: "No dist-tag",
+                    exclusive: true,
+                    icon: "close",
+                  },
+                  ...[...new Set(["latest", ...distTagOptions])].map(
+                    (t) =>
+                      ({
+                        value: t,
+                        icon: "tags-outline",
+                      }) satisfies ComboboxMenuOption,
+                  ),
+                ]}
+                selected={[distTag]}
+                onSelect={setDistTag}
+                allowCustom
+                closeOnSelect
+                searchPlaceholder="Find or create a dist-tag…"
+              >
+                {({ toggle }) => (
+                  <button
+                    type="button"
+                    onClick={toggle}
+                    className="relative flex h-[38px] w-full cursor-pointer items-center rounded-control border border-line bg-surface pr-9 pl-3 text-left text-sm"
+                  >
+                    <span
+                      className={distTag === "none" ? "text-muted" : "text-ink"}
+                    >
+                      {distTag === "none" ? "No dist-tag" : distTag}
+                    </span>
+                    <Icon
+                      icon="chevronUpDown"
+                      size={14}
+                      className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted"
+                    />
+                  </button>
+                )}
+              </ComboboxMenu>
+            </Field>
           </div>
         ) : (
           <>
             <div className="flex flex-col gap-2">
-              <Field label="Name">
+              <Field label="Name" required>
                 <Input
                   value={name}
                   onChange={(v) => {
@@ -290,11 +353,11 @@ export function RegisterApiModal({
                   placeholder="Petstore"
                 />
               </Field>
-              {/* Project ID — decoupled from the title. Collapsed, it auto-
+              {/* Registry ID — decoupled from the title. Collapsed, it auto-
                   derives from the name; clicking Edit opens a normal field where
                   the id is set explicitly (and no longer follows the name). */}
               {idEditing ? (
-                <Field label="Project ID">
+                <Field label="Registry ID" required>
                   <Input
                     value={customId}
                     onChange={setCustomId}
@@ -303,7 +366,7 @@ export function RegisterApiModal({
                 </Field>
               ) : (
                 <div className="flex items-center gap-2 text-[13px]">
-                  <span className="text-subtle">Project ID:</span>
+                  <span className="text-subtle">Registry ID:</span>
                   <span className="font-mono text-ink">{projectId}</span>
                   <Button
                     variant="ghost"
@@ -322,6 +385,7 @@ export function RegisterApiModal({
             <div className={isSchema ? "" : "grid grid-cols-2 gap-4"}>
               <Field
                 label="Namespace"
+                required
                 hint={
                   isSchema ? "Groups related schemas." : "Groups related APIs."
                 }
@@ -367,7 +431,7 @@ export function RegisterApiModal({
           </>
         )}
 
-        <Field label={isSchema ? "Schema source" : "Spec source"}>
+        <Field label={isSchema ? "Schema source" : "Spec source"} required>
           <div className="flex flex-col gap-2">
             <Segmented
               options={["Paste", "URL"]}

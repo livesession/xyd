@@ -1,5 +1,6 @@
 import {
   Badge,
+  Button,
   ButtonCTA,
   type Column,
   EmptyState,
@@ -42,14 +43,17 @@ export async function action({ request }: Route.ActionArgs) {
   if (form.get("intent") === "generate-sdk") {
     const apiId = String(form.get("apiId") ?? "");
     const name = String(form.get("name") ?? "").trim() || undefined;
+    const id = String(form.get("id") ?? "").trim() || undefined;
     const version = String(form.get("version") ?? "").trim() || undefined;
     const langs = String(form.get("langs") ?? "")
       .split(",")
       .filter(Boolean) as SdkLanguage[];
-    const created = await createSdk({ apiId, name });
+    // A custom sdk.json (the "wizard" flow) applied to every target; empty in auto.
+    const sdkJson = String(form.get("sdkJson") ?? "").trim() || undefined;
+    const created = await createSdk({ apiId, name, id });
     if (!created.ok) return { ok: false as const, message: created.message };
     await Promise.all(
-      langs.map((l) => addSdkTarget(created.sdk.id, l, version)),
+      langs.map((l) => addSdkTarget(created.sdk.id, l, version, sdkJson)),
     );
     return { ok: true as const, sdkId: created.sdk.id };
   }
@@ -66,11 +70,21 @@ export default function SdksRoute({ loaderData }: Route.ComponentProps) {
   const schema = useMemo(() => sdkFilterSchema(namespaces), [nsKey]);
   const filter = useUrlFilters(schema);
 
+  // Prominent CTA when there's nothing yet (empty state); a plain button in the
+  // header once at least one SDK exists.
   const generateButton = (
     <ButtonCTA variant="primary" icon="sdk" onClick={() => setGenOpen(true)}>
       Generate SDKs
     </ButtonCTA>
   );
+  const headerButton =
+    sdks.length > 0 ? (
+      <Button variant="primary" icon="sdk" onClick={() => setGenOpen(true)}>
+        Generate SDKs
+      </Button>
+    ) : (
+      generateButton
+    );
 
   const columns: Column<Sdk>[] = [
     {
@@ -117,7 +131,7 @@ export default function SdksRoute({ loaderData }: Route.ComponentProps) {
     <>
       <PageHeader
         title="SDKs"
-        actions={generateButton}
+        actions={headerButton}
         tabs={
           <SdksTabs
             active="sdks"
@@ -152,6 +166,7 @@ export default function SdksRoute({ loaderData }: Route.ComponentProps) {
         open={genOpen}
         onClose={() => setGenOpen(false)}
         apis={apis}
+        existingSdkIds={sdks.map((s) => s.id)}
       />
     </>
   );

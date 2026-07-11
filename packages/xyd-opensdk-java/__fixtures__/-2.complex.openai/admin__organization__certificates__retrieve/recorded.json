@@ -1,0 +1,10 @@
+{
+  "call": "admin.organization.certificates.retrieve",
+  "request": {
+    "method": "get",
+    "path": "/organization/certificates/{certificate_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

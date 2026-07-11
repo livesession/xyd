@@ -1,0 +1,10 @@
+{
+  "call": "Skills.Versions.Delete",
+  "request": {
+    "method": "delete",
+    "path": "/skills/{skill_id}/versions/{version}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

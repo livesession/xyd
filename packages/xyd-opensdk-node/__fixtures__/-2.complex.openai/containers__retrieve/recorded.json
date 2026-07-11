@@ -1,0 +1,10 @@
+{
+  "call": "containers.retrieve",
+  "request": {
+    "method": "get",
+    "path": "/containers/{container_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

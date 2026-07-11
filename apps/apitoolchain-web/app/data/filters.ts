@@ -1,4 +1,5 @@
 import { defineFilterSchema, type FilterSchema } from "@apitoolchain/filters";
+import { formatVersion } from "~/version";
 
 /**
  * Filter schemas per surface. The field `key` doubles as the row property read
@@ -68,12 +69,21 @@ export function sdkFilterSchema(namespaces: string[]): FilterSchema {
 }
 
 export function sdkTargetFilterSchema(
+  sdks: { id: string; name: string }[],
   namespaces: string[],
   languages: string[],
 ): FilterSchema {
   return defineFilterSchema({
     table: "sdk_targets",
     fields: [
+      {
+        key: "sdkId",
+        label: "SDK",
+        column: "sdk_id",
+        type: "enum",
+        icon: "sdk",
+        values: sdks.map((s) => ({ value: s.id, label: s.name })),
+      },
       {
         key: "namespace",
         label: "Namespace",
@@ -129,11 +139,19 @@ export function sdkTargetDetailFilterSchema(languages: string[]): FilterSchema {
   });
 }
 
-/** Every version of every target for one SDK — faceted by language + version. */
-export function sdkVersionsFilterSchema(
-  languages: string[],
-  versions: string[],
-): FilterSchema {
+/** Every version of every target for one SDK — faceted by language, SDK version,
+ * API version, package version, dist-tag and status (all data-driven from the
+ * rows). The `key`s match `SdkTargetVersionRow` fields (tags is matched
+ * element-wise). */
+export function sdkVersionsFilterSchema(facets: {
+  languages: string[];
+  sdkVersions: string[];
+  apiVersions: string[];
+  versions: string[];
+  tags: string[];
+  statuses: string[];
+}): FilterSchema {
+  const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
   return defineFilterSchema({
     table: "sdk_targets",
     fields: [
@@ -143,7 +161,29 @@ export function sdkVersionsFilterSchema(
         column: "language",
         type: "enum",
         icon: "sdk",
-        values: languages.map((l) => ({ value: l, label: l })),
+        values: facets.languages.map((l) => ({ value: l, label: l })),
+      },
+      {
+        key: "sdkVersion",
+        label: "SDK version",
+        column: "sdk_version",
+        type: "enum",
+        icon: "sdk",
+        values: facets.sdkVersions.map((v) => ({
+          value: v,
+          label: formatVersion(v),
+        })),
+      },
+      {
+        key: "apiVersion",
+        label: "API version",
+        column: "api_version",
+        type: "enum",
+        icon: "registry",
+        values: facets.apiVersions.map((v) => ({
+          value: v,
+          label: formatVersion(v),
+        })),
       },
       {
         key: "version",
@@ -151,7 +191,28 @@ export function sdkVersionsFilterSchema(
         column: "version",
         type: "enum",
         icon: "tags-outline",
-        values: versions.map((v) => ({ value: v, label: v })),
+        values: facets.versions.map((v) => ({
+          value: v,
+          label: formatVersion(v),
+        })),
+      },
+      {
+        key: "tags",
+        label: "Dist-tag",
+        column: "tags",
+        type: "enum",
+        icon: "tags-outline",
+        values: facets.tags.map((t) => ({ value: t, label: t })),
+      },
+      {
+        // Filter on the DISPLAYED status (built / published / …), NOT the raw
+        // `status` ("ready") — so the options + matching agree with the pill.
+        key: "displayStatus",
+        label: "Status",
+        column: "displayStatus",
+        type: "enum",
+        icon: "check",
+        values: facets.statuses.map((s) => ({ value: s, label: cap(s) })),
       },
       {
         // Searches a combined string on each row (package + language + version).

@@ -19,6 +19,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
+    "gen:tokens": "bun scripts/gen-tokens.ts",
     "storybook": "storybook dev -p 6007",
     "build-storybook": "storybook build",
     "format": "bunx biome check --write ."
@@ -31,6 +32,7 @@
     "@apitoolchain/filters": "file:../apitoolchain-filters",
     "@biomejs/biome": "^2.5.2",
     "@eslint/js": "^10.0.1",
+    "@projectwallace/css-design-tokens": "^0.11.6",
     "@storybook/addon-essentials": "^8.4.7",
     "@storybook/addon-interactions": "^8.4.7",
     "@storybook/blocks": "^8.4.7",

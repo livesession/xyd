@@ -1,5 +1,6 @@
-import { Button, Callout } from "@apitoolchain/design-system";
+import { Button } from "@apitoolchain/design-system";
 import { useFetcher, useOutletContext } from "react-router";
+import { DeleteConfirm } from "~/components/DeleteConfirm";
 import type { SdkDetailContext } from "~/components/sdkDetailShared";
 
 export { sdkDetailAction as action } from "~/lib/sdkDetailAction";
@@ -9,17 +10,6 @@ export default function SdkSettingsTab() {
   const del = useFetcher();
   const deleting = del.state !== "idle";
   const delError = (del.data as { message?: string } | undefined)?.message;
-
-  function onDelete() {
-    if (
-      !window.confirm(
-        `Delete "${sdk.name}" and all its targets? This can't be undone.`,
-      ) ||
-      deleting
-    )
-      return;
-    del.submit({ intent: "delete" }, { method: "post", action: base });
-  }
 
   return (
     <div className="flex max-w-[640px] flex-col gap-3">
@@ -31,11 +21,25 @@ export default function SdkSettingsTab() {
             Permanently remove this SDK and every generated target.
           </div>
         </div>
-        <Button variant="danger" onClick={onDelete} disabled={deleting}>
-          {deleting ? "Deleting…" : "Delete"}
-        </Button>
+        <DeleteConfirm
+          title="Delete SDK"
+          description={`Permanently remove "${sdk.name}" and every generated target.`}
+          warning="This can't be undone."
+          confirmText={sdk.name}
+          confirmLabel="Delete SDK"
+          confirming={deleting}
+          busyLabel="Deleting…"
+          error={delError}
+          onConfirm={() =>
+            del.submit({ intent: "delete" }, { method: "post", action: base })
+          }
+          trigger={(open) => (
+            <Button variant="danger" onClick={open} disabled={deleting}>
+              {deleting ? "Deleting…" : "Delete"}
+            </Button>
+          )}
+        />
       </div>
-      {delError && <Callout tone="error">{delError}</Callout>}
     </div>
   );
 }

@@ -6,7 +6,7 @@ notifications, usage, and org/project context, and acts as the **gateway** for t
 registry (proxying `@apitoolchain/registry-api` and filling the rollup counts).
 Standalone **bun** service: **TypeSpec + @typespec/http-server-js**,
 **sqlc-gen-typescript** over Postgres, **flystorage** for artifacts, and the
-**@apitoolchain/xyd-bridge** for real opensdk SDK generation.
+**@xyd-js opensdk** packages (imported directly) for real SDK generation.
 
 ## Endpoints (the frontend contract — see `app/data/api.ts`)
 
@@ -32,3 +32,23 @@ deferred.
 
 See **../apitoolchain-registry-api/README.md** for the full run sequence and the
 shared docker-compose (Postgres + MinIO).
+
+## Layout (fastd-style)
+
+```
+openapi/v1/           API definition (TypeSpec): main.tsp + routes/<resource>/ + components/models/ + snippets/
+  __generated__/      emitted OpenAPI schema (openapi.yaml)
+api/
+  main.ts             gateway entry (router + owned routes + listen)
+  v1/                 handler source — index.ts + __kit/ (auth, mappers, errors, usage, release_config) + <resource>/
+  openapi/v1/         generated node server (TypeSpec http-server-js emitter)
+db/                   raw SQL — migrations/, queries/, scripts/{migrate,seed}.ts
+dbnode/               sqlc output split per resource: <resource>/{models,queries}.gen.ts + index.ts barrel; pool.ts
+genframework/         SDK/release/sync/publish pipeline (the reusable "generation" module)
+clients/              HTTP clients to sibling services (registry-api, gitproviderd)
+config.ts util.ts storage.ts   shared infra
+```
+
+`api/openapi/v1/` (node server), `openapi/v1/__generated__/openapi.yaml` (schema), and
+`dbnode/<resource>/*.gen.ts` (sqlc + split) are **generated + committed** — regenerate with `bun run gen`,
+never hand-edit.

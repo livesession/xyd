@@ -9,7 +9,8 @@ import {
   PageHeader,
   StatusPill,
 } from "@apitoolchain/design-system";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { AnnounceModal } from "~/components/AnnounceModal";
 import { RouterLink } from "~/components/RouterLink";
 import {
   listApis,
@@ -47,6 +48,7 @@ const TRANSPORT: Record<McpTransport, BadgeTone> = {
 
 export default function McpRoute({ loaderData }: Route.ComponentProps) {
   const { rows, apis } = loaderData;
+  const [announce, setAnnounce] = useState(false);
 
   const apiKey = apis.map((a) => a.id).join(",");
   // biome-ignore lint/correctness/useExhaustiveDependencies: recompute on the API SET, not array identity
@@ -112,7 +114,11 @@ export default function McpRoute({ loaderData }: Route.ComponentProps) {
       <PageHeader
         title="MCP"
         actions={
-          <ButtonCTA variant="primary" icon="plus">
+          <ButtonCTA
+            variant="primary"
+            icon="plus"
+            onClick={() => setAnnounce(true)}
+          >
             New MCP server
           </ButtonCTA>
         }
@@ -131,12 +137,24 @@ export default function McpRoute({ loaderData }: Route.ComponentProps) {
             title="No MCP servers match"
             description="Generate an MCP server from a registered API — or clear the filters above."
             action={
-              <ButtonCTA variant="primary" icon="plus">
+              <ButtonCTA
+                variant="primary"
+                icon="plus"
+                onClick={() => setAnnounce(true)}
+              >
                 New MCP server
               </ButtonCTA>
             }
           />
         }
+      />
+      <AnnounceModal
+        open={announce}
+        onClose={() => setAnnounce(false)}
+        feature="MCP servers"
+        icon="mcp"
+        tone="pink"
+        description="Spin up a hosted MCP server from any registered API — its tools, resources, and endpoint wired up automatically. We're putting the finishing touches on it."
       />
     </>
   );

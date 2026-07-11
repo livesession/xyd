@@ -78,6 +78,7 @@ export function SetDistTagModal({
       <div className="flex flex-col gap-4">
         <Field
           label="Tag"
+          required
           hint={
             existing
               ? `Moves @${cleanTag} from ${formatVersion(existing.version)}.`
@@ -87,7 +88,7 @@ export function SetDistTagModal({
           <Input value={tag} onChange={setTag} placeholder="canary" />
         </Field>
 
-        <Field label="Version">
+        <Field label="Version" required>
           <Select
             value={version}
             onChange={setVersion}

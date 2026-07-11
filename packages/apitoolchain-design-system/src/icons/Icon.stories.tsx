@@ -3,7 +3,7 @@ import { Icon } from "./Icon";
 import { ICON_NAMES } from "./registry";
 
 const meta: Meta<typeof Icon> = {
-  title: "Design System/Icon",
+  title: "Components/Icon",
   component: Icon,
   parameters: { layout: "centered" },
   argTypes: {
@@ -24,26 +24,6 @@ export const Tinted: Story = {
   render: (args) => (
     <div className="text-pink">
       <Icon {...args} />
-    </div>
-  ),
-};
-
-/** The full registry — every glyph available via `<Icon icon="..." />`. */
-export const Gallery: Story = {
-  parameters: { layout: "padded" },
-  render: () => (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-3 font-sans">
-      {ICON_NAMES.map((name) => (
-        <div
-          key={name}
-          className="flex flex-col items-center gap-2.5 rounded-panel border border-line px-2 py-4 text-ink"
-        >
-          <Icon icon={name} size={24} />
-          <span className="break-words text-center text-[11px] text-muted">
-            {name}
-          </span>
-        </div>
-      ))}
     </div>
   ),
 };

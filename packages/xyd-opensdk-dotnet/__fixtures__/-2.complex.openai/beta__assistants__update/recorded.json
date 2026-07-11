@@ -1,0 +1,11 @@
+{
+  "call": "Beta.Assistants.Update",
+  "request": {
+    "method": "post",
+    "path": "/assistants/{assistant_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

@@ -10,7 +10,7 @@ sql:
     queries: "db/queries"
     codegen:
       - plugin: ts
-        out: "src/db/generated"
+        out: "dbnode"
         options:
           runtime: node
           driver: pg

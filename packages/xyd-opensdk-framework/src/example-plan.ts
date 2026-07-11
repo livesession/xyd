@@ -34,6 +34,13 @@ export interface PlanExampleOptions {
   withOptional?: boolean;
   /** Example text for a bare string scalar at THIS level (not propagated into nested types). */
   stringHint?: string;
+  /**
+   * Prefer the spec's own `example`/`default` values and emit format-aware scalar
+   * samples (date-time, uuid, email, ...) instead of the neutral `0`/`'x'`. OFF by
+   * default so the generated SDK TEST goldens + MockServer responses stay stable;
+   * only the doc USAGE snippets (`generateUsage`) opt in.
+   */
+  realistic?: boolean;
 }
 
 /** The example call for one method — everything a test needs to invoke it. */
@@ -66,7 +73,7 @@ export function planExample(
 
   switch (ref.kind) {
     case 'scalar':
-      return scalarExample(ref, opts.stringHint);
+      return scalarExample(ref, opts.stringHint, opts.realistic);
     case 'array':
       return { kind: 'array', item: planExample(ref.items as TypeRef, types, dropHint(opts), seen, depth + 1) };
     case 'map':
@@ -80,19 +87,80 @@ export function planExample(
   }
 }
 
-function scalarExample(ref: TypeRef, stringHint?: string): ExampleValue {
+function scalarExample(ref: TypeRef, stringHint?: string, realistic?: boolean): ExampleValue {
   const fmt = (ref.format || '').toLowerCase();
   if (fmt === 'binary') return { kind: 'binary' };
   switch (ref.scalar) {
     case 'integer':
-      return { kind: 'integer', value: 0 };
+      return { kind: 'integer', value: realistic ? 1 : 0 };
     case 'number':
-      return { kind: 'number', value: 0 };
+      return { kind: 'number', value: realistic ? 1 : 0 };
     case 'boolean':
       return { kind: 'boolean', value: true };
     default:
-      return { kind: 'string', value: stringHint ?? 'x' };
+      return { kind: 'string', value: realistic ? realisticString(fmt, stringHint) : (stringHint ?? 'x') };
   }
+}
+
+/** A believable string sample for a known `format`, else the hint (a param name
+ * reads well, e.g. `After: "after"`) or a neutral `"string"`. `realistic` only. */
+function realisticString(fmt: string, hint?: string): string {
+  switch (fmt) {
+    case 'date-time':
+      return '2024-01-01T00:00:00Z';
+    case 'date':
+      return '2024-01-01';
+    case 'email':
+      return 'user@example.com';
+    case 'uri':
+    case 'url':
+      return 'https://example.com';
+    case 'uuid':
+      return '123e4567-e89b-12d3-a456-426614174000';
+    case 'hostname':
+      return 'example.com';
+    case 'ipv4':
+      return '192.0.2.1';
+    default:
+      return hint ?? 'string';
+  }
+}
+
+/**
+ * Coerce a spec `example`/`default` JSON literal into a neutral ExampleValue —
+ * ONLY for scalar/scalar-array shapes (a struct/enum/union literal would need the
+ * type to render correctly, so we return undefined and let planExample walk the
+ * type). Returns undefined when it can't safely coerce.
+ */
+function literalToExample(value: unknown): ExampleValue | undefined {
+  switch (typeof value) {
+    case 'string':
+      return { kind: 'string', value };
+    case 'boolean':
+      return { kind: 'boolean', value };
+    case 'number':
+      return Number.isInteger(value) ? { kind: 'integer', value } : { kind: 'number', value };
+  }
+  if (value === null) return { kind: 'null' };
+  if (Array.isArray(value) && value.length) {
+    const item = literalToExample(value[0]);
+    if (item) return { kind: 'array', item };
+  }
+  return undefined;
+}
+
+/** Under `realistic`, the spec's own example/default for a scalar/array-typed
+ * param or field (skips ref types — enum/struct/union render from the type).
+ * Exported so re-planning emitters (Go, .NET, which walk fields via `planExample`
+ * rather than `planMethodExample.fields`) can honor spec example/default too. */
+export function realisticLiteral(type: TypeRef | undefined, ...candidates: unknown[]): ExampleValue | undefined {
+  if (!type || (type.kind !== 'scalar' && type.kind !== 'array')) return undefined;
+  for (const candidate of candidates) {
+    if (candidate === undefined) continue;
+    const example = literalToExample(candidate);
+    if (example) return example;
+  }
+  return undefined;
 }
 
 function refExample(
@@ -132,7 +200,7 @@ function refExample(
 
 /** Example fields for a struct's field list; required-first, optionals only when withOptional. */
 export function exampleFields(
-  fields: { name: string; type: TypeRef; required?: boolean }[],
+  fields: { name: string; type: TypeRef; required?: boolean; default?: unknown }[],
   types: Map<string, NamedType>,
   opts: PlanExampleOptions,
   seen: Set<string> = new Set(),
@@ -142,19 +210,20 @@ export function exampleFields(
   const wanted = fields.filter((f) => f.required || opts.withOptional);
   // required first, then optional — deterministic, readable literals
   wanted.sort((a, b) => Number(!!b.required) - Number(!!a.required));
+  const nested: PlanExampleOptions = { withOptional: opts.withOptional, realistic: opts.realistic };
   for (const f of wanted) {
-    out.push({
-      name: f.name,
-      required: !!f.required,
-      value: planExample(f.type, types, { withOptional: opts.withOptional }, seen, depth),
-    });
+    // Field carries only `default` (no `example`); prefer it under `realistic`.
+    const value =
+      (opts.realistic ? realisticLiteral(f.type, f.default) : undefined) ??
+      planExample(f.type, types, nested, seen, depth);
+    out.push({ name: f.name, required: !!f.required, value });
   }
   return out;
 }
 
-/** Drop the per-level stringHint before recursing into nested types. */
+/** Drop the per-level stringHint before recursing into nested types (keep withOptional + realistic). */
 function dropHint(opts: PlanExampleOptions): PlanExampleOptions {
-  return opts.stringHint === undefined ? opts : { withOptional: opts.withOptional };
+  return opts.stringHint === undefined ? opts : { withOptional: opts.withOptional, realistic: opts.realistic };
 }
 
 /**
@@ -166,13 +235,16 @@ function dropHint(opts: PlanExampleOptions): PlanExampleOptions {
 export function planMethodExample(
   method: Method,
   types: Map<string, NamedType>,
-  opts: { withOptional?: boolean } = {},
+  opts: { withOptional?: boolean; realistic?: boolean } = {},
 ): MethodExample {
   const withOptional = !!opts.withOptional;
+  const realistic = !!opts.realistic;
 
   const pathArgs = (method.pathParams || []).map((param) => ({
     param,
-    value: planExample(param.type as TypeRef, types, { stringHint: param.name }),
+    value:
+      (realistic ? realisticLiteral(param.type as TypeRef, param.example, param.default) : undefined) ??
+      planExample(param.type as TypeRef, types, { stringHint: param.name, realistic }),
   }));
 
   const fields: ExampleField[] = [];
@@ -181,7 +253,10 @@ export function planMethodExample(
     fields.push({
       name: p.name,
       required: !!p.required,
-      value: planExample(p.type as TypeRef, types, { withOptional, stringHint: p.name }),
+      // A param carries both `example` and `default`; prefer them under `realistic`.
+      value:
+        (realistic ? realisticLiteral(p.type as TypeRef, p.example, p.default) : undefined) ??
+        planExample(p.type as TypeRef, types, { withOptional, stringHint: p.name, realistic }),
     });
   };
   for (const p of method.queryParams || []) addParam(p);
@@ -192,7 +267,7 @@ export function planMethodExample(
   if (bodyRef?.kind === 'ref' && bodyRef.name) {
     const named = types.get(bodyRef.name);
     if (named?.kind === 'struct') {
-      for (const f of exampleFields(named.fields || [], types, { withOptional })) fields.push(f);
+      for (const f of exampleFields(named.fields || [], types, { withOptional, realistic })) fields.push(f);
     }
   }
 

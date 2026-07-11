@@ -3,7 +3,7 @@ import { StatGrid } from "./StatGrid";
 import { StatTile } from "./StatTile";
 
 const meta: Meta<typeof StatGrid> = {
-  title: "Design System/StatGrid",
+  title: "Components/StatGrid",
   component: StatGrid,
   parameters: { layout: "padded" },
   argTypes: {

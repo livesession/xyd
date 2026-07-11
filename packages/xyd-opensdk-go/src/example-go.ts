@@ -9,14 +9,23 @@
 // emitter declares (param.Opt for optional scalars, plain for the rest), so the
 // whole spec compiles.
 import type { EnumValue, Field, Method, NamedType, OpensdkSpecJson, Param, TypeRef } from '@xyd-js/opensdk-core';
-import type { ExampleValue, GeneratedFile, OperationPlan } from '@xyd-js/opensdk-framework';
-import { planExample, planMethodExample, planOperation } from '@xyd-js/opensdk-framework';
+import type {
+  BodyEncoding,
+  ExampleValue,
+  GeneratedFile,
+  NeutralTypeField,
+  NeutralTypeReference,
+  OperationPlan,
+  RenderedTypeField,
+  RenderedTypeReference,
+} from '@xyd-js/opensdk-framework';
+import { planExample, planMethodExample, planOperation, planTypeReference, realisticLiteral, refSchemaName } from '@xyd-js/opensdk-framework';
 
 import { goType, isBinaryRef, isScalarRef } from './gotype';
 import { goFile, Imports } from './gowriter';
 import { goConstLiteral, goEnumConstName, isConstField } from './model';
-import { goMethodName, pascalCase, slug } from './naming';
-import { queryKind, resourceQualifier } from './service';
+import { goMethodName, goVar, pascalCase, slug } from './naming';
+import { planParams, queryKind, resourceQualifier } from './service';
 import type { GoCtx } from './service';
 
 /**
@@ -237,13 +246,15 @@ function bodyFieldList(method: Method, types: Map<string, NamedType>): Field[] {
 }
 
 /** One request-body field literal, matching bodyFieldLine's Go field type. */
-function bodyFieldExpr(f: Field, encoding: string, withOptional: boolean, ctx: GoExampleCtx): string {
+function bodyFieldExpr(f: Field, encoding: string, withOptional: boolean, ctx: GoExampleCtx, realistic: boolean): string {
   if (encoding === 'multipart' && isBinaryRef(f.type)) {
     ctx.imports.add('io');
     ctx.imports.add('bytes');
     return 'io.Reader(bytes.NewBuffer([]byte("Example data")))';
   }
-  const value = planExample(f.type as TypeRef, ctx.types, { withOptional });
+  const value =
+    (realistic ? realisticLiteral(f.type as TypeRef, f.default) : undefined) ??
+    planExample(f.type as TypeRef, ctx.types, { withOptional, realistic });
   // A binary field in a non-multipart body is a plain `string` field — renderRefValue
   // maps a binary TypeRef to a string literal, so no special-casing here.
   // Const fields stay plain scalars even when optional (bodyFieldLine) — never param.Opt.
@@ -255,9 +266,11 @@ function bodyFieldExpr(f: Field, encoding: string, withOptional: boolean, ctx: G
 }
 
 /** One query-param field literal, matching queryFieldLine's Go field type. */
-function queryFieldExpr(q: Param, withOptional: boolean, ctx: GoExampleCtx): string {
+function queryFieldExpr(q: Param, withOptional: boolean, ctx: GoExampleCtx, realistic: boolean): string {
   const kind = queryKind(q.type as TypeRef | undefined, ctx.types);
-  const value = planExample(q.type as TypeRef, ctx.types, { withOptional, stringHint: q.name });
+  const value =
+    (realistic ? realisticLiteral(q.type as TypeRef, q.example, q.default) : undefined) ??
+    planExample(q.type as TypeRef, ctx.types, { withOptional, stringHint: q.name, realistic });
   if (kind === 'array' || kind === 'map') return renderRefValue(q.type as TypeRef, value, ctx);
   if (kind === 'object') {
     const base = goType(q.type);
@@ -271,29 +284,37 @@ function queryFieldExpr(q: Param, withOptional: boolean, ctx: GoExampleCtx): str
 }
 
 /** One header-param field literal, matching headerFieldLine's Go field type. */
-function headerFieldExpr(h: Param, withOptional: boolean, ctx: GoExampleCtx): string {
-  const value = planExample(h.type as TypeRef, ctx.types, { withOptional, stringHint: h.name });
+function headerFieldExpr(h: Param, withOptional: boolean, ctx: GoExampleCtx, realistic: boolean): string {
+  const value =
+    (realistic ? realisticLiteral(h.type as TypeRef, h.example, h.default) : undefined) ??
+    planExample(h.type as TypeRef, ctx.types, { withOptional, stringHint: h.name, realistic });
   if (h.required) return renderRefValue(h.type as TypeRef, value, ctx);
   return `${paramQ(ctx)}.NewOpt[${goTypeQualified(h.type, ctx)}](${renderRefValue(h.type as TypeRef, value, ctx)})`;
 }
 
 /** The `Field: expr` lines of a params struct, in the emitted struct's order. */
-function paramFieldLiterals(method: Method, op: OperationPlan, withOptional: boolean, ctx: GoExampleCtx): string[] {
+function paramFieldLiterals(
+  method: Method,
+  op: OperationPlan,
+  withOptional: boolean,
+  ctx: GoExampleCtx,
+  realistic: boolean,
+): string[] {
   const encoding = op.encoding ?? 'json';
   const lits: string[] = [];
   if (op.hasBody) {
     for (const f of bodyFieldList(method, ctx.types)) {
       if (!f.required && !withOptional) continue;
-      lits.push(`${pascalCase(f.name)}: ${bodyFieldExpr(f, encoding, withOptional, ctx)}`);
+      lits.push(`${pascalCase(f.name)}: ${bodyFieldExpr(f, encoding, withOptional, ctx, realistic)}`);
     }
   }
   for (const q of method.queryParams || []) {
     if (!q.required && !withOptional) continue;
-    lits.push(`${pascalCase(q.name)}: ${queryFieldExpr(q, withOptional, ctx)}`);
+    lits.push(`${pascalCase(q.name)}: ${queryFieldExpr(q, withOptional, ctx, realistic)}`);
   }
   for (const h of method.headerParams || []) {
     if (!h.required && !withOptional) continue;
-    lits.push(`${pascalCase(h.name)}: ${headerFieldExpr(h, withOptional, ctx)}`);
+    lits.push(`${pascalCase(h.name)}: ${headerFieldExpr(h, withOptional, ctx, realistic)}`);
   }
   return lits;
 }
@@ -311,10 +332,11 @@ function paramsStructExpr(
   withOptional: boolean,
   methodName: string,
   ctx: GoExampleCtx,
+  realistic = false,
 ): ParamsExpr | null {
   if (!hasParamsStruct(method, op)) return null;
   const typeQ = `${ctx.pkgQ}.${resourceQualifier(segments)}${methodName}Params`;
-  const fieldLits = paramFieldLiterals(method, op, withOptional, ctx);
+  const fieldLits = paramFieldLiterals(method, op, withOptional, ctx, realistic);
   if (fieldLits.length === 0) return { text: `${typeQ}{}`, multiline: false };
   const body = fieldLits.map((l) => `\t${l},`).join('\n');
   return { text: `${typeQ}{\n${body}\n}`, multiline: true };
@@ -351,6 +373,96 @@ function methodHasResult(method: Method, op: OperationPlan): boolean {
 /** The `client.<Field>.<Sub>…` receiver chain — the generated client, exactly. */
 function clientChain(segments: string[]): string {
   return `client.${segments.map(pascalCase).join('.')}`;
+}
+
+// ---- type reference (Atlas SDK-types view) -------------------------------
+
+/** The params-struct Go field type — mirrors bodyFieldLine/queryFieldLine/
+ * headerFieldLine (service.ts), minus the Imports tracking (display string). */
+function goFieldTypeDisplay(f: NeutralTypeField, encoding: BodyEncoding | null, types: Map<string, NamedType>): string {
+  const base = goType(f.typeRef);
+  if (f.in === 'query') {
+    const kind = queryKind(f.typeRef, types);
+    if (kind === 'array' || kind === 'map') return base;
+    if (kind === 'object') return f.required || base === 'any' ? base : `*${base}`;
+    return f.required ? base : `param.Opt[${base}]`;
+  }
+  if (f.in === 'header') return f.required ? base : `param.Opt[${base}]`;
+  // body
+  if (encoding === 'multipart' && isBinaryRef(f.typeRef)) return 'io.Reader';
+  if (f.typeRef.const !== undefined) return base;
+  if (!f.required && isScalarRef(f.typeRef)) return `param.Opt[${base}]`;
+  return base;
+}
+
+function goRenderField(f: NeutralTypeField, encoding: BodyEncoding | null, types: Map<string, NamedType>): RenderedTypeField {
+  return {
+    name: pascalCase(f.logicalName),
+    langType: goFieldTypeDisplay(f, encoding, types),
+    required: f.required,
+    description: f.description,
+    deprecated: f.deprecated,
+    refTypeName: refSchemaName(f.typeRef),
+  };
+}
+
+/** The parenthesized Go return, name-stripped for a display signature
+ * (`(*Response, error)`) — mirrors returnSignature (service.ts). */
+function goReturnDisplay(method: Method, op: OperationPlan): string {
+  if (op.binaryContentType) return '(*http.Response, error)';
+  if (op.pageName) return `(*pagination.${op.pageName}[${goType(method.pagination?.itemType as TypeRef | undefined)}], error)`;
+  const ref = method.primaryResponse as TypeRef | undefined;
+  if (!ref || op.primaryResponse === 'none') return 'error';
+  if (op.primaryResponse === 'struct') return `(*${goType(ref)}, error)`;
+  return `(${goType(ref)}, error)`;
+}
+
+function goResponse(method: Method, op: OperationPlan, neutral: NeutralTypeReference, types: Map<string, NamedType>): RenderedTypeReference['response'] {
+  if (op.binaryContentType) return { langType: '*http.Response', note: `binary download (${op.binaryContentType})` };
+  const ref = neutral.response.typeRef;
+  if (!ref || op.primaryResponse === 'none') return { langType: 'error', note: 'no response body' };
+  const typeName = goType(ref);
+  const note = op.pageName ? `paginated (pagination.${op.pageName})` : undefined;
+  if (neutral.response.fields) {
+    return {
+      typeName,
+      note,
+      fields: neutral.response.fields.map((f) => ({
+        name: pascalCase(f.logicalName),
+        langType: goType(f.typeRef),
+        required: f.required,
+        description: f.description,
+        deprecated: f.deprecated,
+        refTypeName: refSchemaName(f.typeRef),
+      })),
+    };
+  }
+  return { typeName, langType: typeName, note };
+}
+
+/**
+ * The per-operation TYPE REFERENCE for Go: the method signature, the request
+ * params type's field rows, and the response type — the SDK-native view Atlas
+ * renders in place of the REST param definitions.
+ */
+export function generateGoTypeReference(method: Method, segments: string[], gctx: GoCtx): RenderedTypeReference {
+  const types = gctx.types;
+  const op = planOperation(method, types);
+  const neutral = planTypeReference(method, types);
+  const methodName = goMethodName(method.action);
+  const plan = planParams(segments, methodName, op.hasBody, op.paramGroups.query, op.paramGroups.header);
+
+  const requestFields = neutral.request.fields.map((f) => goRenderField(f, op.encoding, types));
+
+  const argNames = ['ctx', ...op.paramGroups.path.map((p) => goVar(p.name))];
+  if (plan) argNames.push(plan.argName);
+  const signature = `${clientChain(segments)}.${methodName}(${argNames.join(', ')}) ${goReturnDisplay(method, op)}`;
+
+  return {
+    signature,
+    request: { typeName: plan?.typeName, argName: plan?.argName, fields: requestFields },
+    response: goResponse(method, op, neutral, types),
+  };
 }
 
 /** The typed-error check block (one tab-indented), openai-go shaped. */
@@ -572,6 +684,53 @@ func CheckTestServer(t *testing.T, url string) bool {
 	return true
 }
 `;
+
+/**
+ * A single per-operation USAGE SNIPPET (docs): a self-contained `package main`
+ * that constructs the client and makes ONE required-only call — the same
+ * call-assembly the test suite uses, minus the mock/assert/guard scaffolding.
+ * `segments` is the resource-name chain the method hangs off (root→owner).
+ */
+export function generateGoUsage(method: Method, segments: string[], gctx: GoCtx): string {
+  const imports = new Imports();
+  imports.add('context');
+  imports.add(gctx.modulePath); // the ROOT package — the client constructor
+  const optionQ = imports.add(`${gctx.modulePath}/option`);
+  const ctx: GoExampleCtx = { types: gctx.types, modulePath: gctx.modulePath, pkgQ: gctx.pkg, optionQ, imports };
+
+  const op = planOperation(method, ctx.types);
+  // A doc usage snippet: ALL fields with realistic (spec example/default) values.
+  const plan = planMethodExample(method, ctx.types, { realistic: true, withOptional: true });
+  const methodName = goMethodName(method.action);
+  const pathArgExprs = plan.pathArgs.map((pa) => renderRefValue(pa.param.type as TypeRef, pa.value, ctx));
+  const params = paramsStructExpr(segments, method, op, true, methodName, ctx, true);
+  const { args, multiline } = callArgs(pathArgExprs, params);
+  const hasResult = methodHasResult(method, op);
+  const bind = hasResult ? 'result, err :=' : 'err :=';
+  const call = callStatement(bind, clientChain(segments), methodName, args, multiline);
+
+  if (hasResult) imports.add('fmt');
+  // Client-construction options. When `baseUrlEnv` is set (only during a snippet-run
+  // test) the client reads its base URL from that env var, so the snippet's request
+  // can be captured; unset → default output (byte-identical to the docs snippet).
+  const clientOpts = [`\t\t${ctx.optionQ}.WithAPIKey("My API Key"),`];
+  if (gctx.baseUrlEnv) {
+    const osQ = imports.add('os');
+    clientOpts.push(`\t\t${ctx.optionQ}.WithBaseURL(${osQ}.Getenv(${JSON.stringify(gctx.baseUrlEnv)})),`);
+  }
+  const body = [
+    `\tclient := ${ctx.pkgQ}.NewClient(`,
+    ...clientOpts,
+    `\t)`,
+    call,
+    `\tif err != nil {`,
+    `\t\tpanic(err.Error())`,
+    `\t}`,
+    ...(hasResult ? [`\tfmt.Printf("%+v\\n", result)`] : []),
+  ].join('\n');
+
+  return goFile('main', imports, [`func main() {\n${body}\n}`]);
+}
 
 /**
  * The SDK's OWN test suite: one external `package <pkg>_test` file per top-level

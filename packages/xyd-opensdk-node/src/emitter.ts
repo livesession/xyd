@@ -1,15 +1,16 @@
-import { type NamedType, type OpensdkSpecJson, type Resource, sdkBehavior, walkMethods } from '@xyd-js/opensdk-core';
+import { type Method, type NamedType, type OpensdkSpecJson, type Resource, sdkBehavior, walkMethods } from '@xyd-js/opensdk-core';
 import type { Emitter, EmitterContext, GeneratedFile } from '@xyd-js/opensdk-framework';
 import { generate, planOperation } from '@xyd-js/opensdk-framework';
 
+import { renderBusyboxFile } from './busybox';
 import { renderClientFile, renderRootIndexFile } from './client';
 import { renderModelsFile } from './model';
 import { slug } from './naming';
 import { packageJson, readme, resolveNodeOptions, tsconfigJson } from './project';
-import { renderResourceFile, renderResourcesIndexFile } from './resource';
+import { generateNodeTypeReference, renderResourceFile, renderResourcesIndexFile } from './resource';
 import type { NodeCtx } from './resource';
 import { errorClassNames, runtimeFiles } from './runtime';
-import { renderResourceTestFile, testSetupFile, testTsconfig, tsNodeShims } from './tests-node';
+import { generateNodeUsage, renderResourceTestFile, testSetupFile, testTsconfig, tsNodeShims } from './tests-node';
 import type { OpensdkNodeOptions } from './types';
 
 const resolve = (spec: OpensdkSpecJson, ctx: EmitterContext) =>
@@ -50,11 +51,15 @@ export const nodeEmitter: Emitter = {
   },
 
   generateClient(spec: OpensdkSpecJson, ctx: EmitterContext): GeneratedFile[] {
-    const { envVar, clientName, defaultExport } = resolve(spec, ctx);
-    return [
-      { path: 'src/index.ts', content: renderRootIndexFile(spec, errorClassNames(spec), clientName, defaultExport) },
-      { path: 'src/client.ts', content: renderClientFile(spec, envVar, clientName) },
+    const { envVar, clientName, defaultExport, busybox } = resolve(spec, ctx);
+    const files: GeneratedFile[] = [
+      { path: 'src/index.ts', content: renderRootIndexFile(spec, errorClassNames(spec), clientName, defaultExport, busybox) },
+      { path: 'src/client.ts', content: renderClientFile(spec, envVar, clientName, busybox) },
     ];
+    // The error-helper "busybox" — one shared definition, exposed per the
+    // configured style (index re-export for flat/namespace; client statics for static).
+    if (busybox) files.push({ path: 'src/busybox.ts', content: renderBusyboxFile() });
+    return files;
   },
 
   // models.ts is emitted even for an empty symbol table: the client/resources
@@ -102,6 +107,18 @@ export const nodeEmitter: Emitter = {
       files.push({ path: `tests/${slug(r.name)}.test.ts`, content: renderResourceTestFile(r, gctx) });
     }
     return files;
+  },
+
+  // A single per-operation doc USAGE SNIPPET: constructs the client and makes
+  // one required-only call (à la Fern/Speakeasy/Stainless). `chain` is the
+  // resource-name path (root→owner) the method hangs off.
+  generateUsage(method: Method, chain: string[], ctx: EmitterContext): string {
+    return generateNodeUsage(method, chain, ctx.spec, ctx.emitterOptions as OpensdkNodeOptions);
+  },
+
+  // The per-operation SDK type reference (signature + request/response types).
+  generateTypeReference(method: Method, chain: string[], ctx: EmitterContext) {
+    return generateNodeTypeReference(method, chain, nodeCtx(ctx));
   },
 };
 

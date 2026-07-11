@@ -61,7 +61,7 @@ const rows: Row[] = [
 ];
 
 const meta: Meta<typeof Table> = {
-  title: "Design System/Table",
+  title: "Components/Table",
   component: Table,
   parameters: { layout: "fullscreen" },
   decorators: [

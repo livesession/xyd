@@ -75,8 +75,11 @@ export interface Definition<
 
 export type DefinitionVariantOpenAPIMeta = Meta<"status" | "contentType" | "definitionDescription" | "required">;
 export type CommonDefinitionVariantMeta = Meta<"symbolName">;
+/** The SDK-language variant selector (opensdk): one variant per language, so a
+ * single toggle switches the request/response type view across all languages. */
+export type DefinitionVariantSdkMeta = Meta<"sdkLang">;
 
-export type DefinitionVariantMeta = CommonDefinitionVariantMeta | DefinitionVariantOpenAPIMeta
+export type DefinitionVariantMeta = CommonDefinitionVariantMeta | DefinitionVariantOpenAPIMeta | DefinitionVariantSdkMeta
 
 export interface DefinitionVariant<
     M extends DefinitionVariantMeta = DefinitionVariantMeta
@@ -143,6 +146,11 @@ export interface ExampleRoot {
 
 export interface ExampleGroup {
     description?: string;
+
+    /** Whether this group holds the REQUEST code samples (curl / SDK usage / …) or
+     * the RESPONSE body samples — lets the UI treat them differently (e.g. only
+     * request samples get a "run request" action). */
+    kind?: "request" | "response";
 
     examples: Example[];
 }
@@ -264,6 +272,17 @@ export interface OpenAPIReferenceContext extends BaseReferenceContext {
     componentSchema?: string
 
     servers?: string[]
+
+    /**
+     * SDK-native reference data (opensdk): the per-language method SIGNATURE shown
+     * in the operation header instead of the REST URL, plus the request/response
+     * type names. Attached by `@xyd-js/opensdk-uniform`'s `attachSdkTypes`.
+     */
+    sdk?: {
+        signatures?: Record<string, string>;
+        requestTypeName?: string;
+        responseTypeName?: string;
+    }
 }
 
 export type TypeDocReferenceContextMeta = Meta<"internal">

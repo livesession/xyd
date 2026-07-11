@@ -1,0 +1,10 @@
+{
+  "call": "Conversations.Items.Delete",
+  "request": {
+    "method": "delete",
+    "path": "/conversations/{conversation_id}/items/{item_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

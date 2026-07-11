@@ -180,6 +180,50 @@ export async function writeProject(
   return result;
 }
 
+/**
+ * The disk-less analog of {@link writeProject} for a FRESH project (no existing
+ * files on disk, so no merge + no prune): resolve a generated file map into a
+ * flat `{ relPath: content }` tree, INCLUDING the `.sdk/sdk.lock` manifest.
+ *
+ * For hosts that emit to a zip / a git commit rather than the filesystem (they
+ * can't call the fs-writing {@link writeProject}, but still want the identical
+ * SDK tree + regen lock). `skipIfExists`/`mergeJson` collapse to the generated
+ * content (there's nothing on disk to preserve or merge INTO yet); the lock
+ * records the same `path -> sha256(content)` ownership set writeProject would.
+ */
+export async function materializeProject(
+  files: ProjectFileMap,
+  options: WriteProjectOptions = {},
+): Promise<Record<string, string>> {
+  const { createHash } = await import('node:crypto');
+  const sha256 = (content: string) => createHash('sha256').update(content, 'utf8').digest('hex');
+
+  const out: Record<string, string> = {};
+  const manifestFiles: Record<string, string> = {};
+  for (const [rel, value] of Object.entries(files)) {
+    if (rel === SDK_LOCK_FILENAME) {
+      throw new Error(`materializeProject: the file map may not emit ${SDK_LOCK_FILENAME} (it owns it)`);
+    }
+    const entry: GeneratedFileEntry = typeof value === 'string' ? { content: value } : value;
+    // mergeJson has nothing to merge into on a fresh tree — canonicalize (the
+    // exact bytes writeProject would write), so the lock hash matches a later regen.
+    const content =
+      (entry.writeMode ?? 'overwrite') === 'mergeJson'
+        ? `${JSON.stringify(JSON.parse(entry.content), null, 2)}\n`
+        : entry.content;
+    out[rel] = content;
+    manifestFiles[rel] = sha256(content);
+  }
+
+  const manifest: ProjectManifest = {
+    schemaVersion: MANIFEST_SCHEMA_VERSION,
+    generator: options.generator ?? 'opensdk',
+    files: Object.fromEntries(Object.entries(manifestFiles).sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))),
+  };
+  out[SDK_LOCK_FILENAME] = `${JSON.stringify(manifest, null, 2)}\n`;
+  return out;
+}
+
 /** Parse + validate a previous manifest. Absent, malformed or newer-schema manifests are ignored (no prune). */
 function readManifest(raw: string | null): ProjectManifest | null {
   if (raw === null) return null;

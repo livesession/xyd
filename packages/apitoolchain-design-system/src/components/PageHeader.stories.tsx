@@ -6,7 +6,7 @@ import { PageHeader } from "./PageHeader";
 import { Tabs } from "./Tabs";
 
 const meta: Meta<typeof PageHeader> = {
-  title: "Design System/PageHeader",
+  title: "Components/PageHeader",
   component: PageHeader,
   parameters: { layout: "fullscreen" },
   argTypes: {

@@ -1,6 +1,7 @@
+import { walkMethods } from '@xyd-js/opensdk-core';
 import { describe, expect, it } from 'vitest';
 
-import { opensdkPython } from '../index';
+import { opensdkPython, pythonEmitter } from '../index';
 import { PY_SMOKE, pyBehaviorSmoke, pyCompileSmoke, readIR, testFixture } from './utils';
 
 const fixtures = [
@@ -9,6 +10,11 @@ const fixtures = [
     name: '2.wire',
     description:
       'wire correctness: multipart/form bodies, header params, wireName + explode query arrays, cursor pagination, binary download, idempotency-key injection',
+  },
+  {
+    name: '9.x-open-sdk',
+    description:
+      'x-open-sdk naming overrides: method/resource names from the IR action + resource tree (catalog.browse, system.health.check, things.fetch)',
   },
 ];
 
@@ -130,5 +136,41 @@ describe('opensdk-python sdk behavior', () => {
       'from ._transport import APIError, BadRequestError, ConflictError, InternalError, NotFoundError, PermissionDeniedError, RateLimitedError, UnauthorizedError, UnprocessableEntityError',
     );
     expect(init).toContain('"Client"');
+  });
+});
+
+// The OPTIONAL generateUsage capability: one self-contained, runnable-looking
+// doc snippet per operation — client construction + a single required-only call
+// (à la Fern/Speakeasy/Stainless). Mirrors the Go emitter's generateUsage test.
+describe('opensdk-python generateUsage', () => {
+  it('emits a client-init + one required-only call snippet for a method', () => {
+    const ir = readIR('9.x-open-sdk');
+    const types = new Map((ir.types || []).map((t: { name: string }) => [t.name, t]));
+    const ctx = { spec: ir, types, emitterOptions: {} };
+    const browse = walkMethods(ir).find((f) => f.method.action === 'browse');
+    if (!browse) throw new Error('browse method not found in 9.x-open-sdk fixture');
+
+    // biome-ignore lint/style/noNonNullAssertion: generateUsage is present on the emitter
+    const code = pythonEmitter.generateUsage!(browse.method, browse.path, ctx);
+
+    // client construction + the resource attribute chain + the browse call.
+    expect(code).toContain('from extensions_demo import Client');
+    expect(code).toContain('client = Client(');
+    expect(code).toContain('client.catalog.browse()');
+    // browse returns a primary response, so the result is captured + printed.
+    expect(code).toContain('result = client.catalog.browse()');
+    expect(code).toContain('print(result)');
+  });
+
+  it('snake_cases a nested resource chain (system.health.check)', () => {
+    const ir = readIR('9.x-open-sdk');
+    const types = new Map((ir.types || []).map((t: { name: string }) => [t.name, t]));
+    const ctx = { spec: ir, types, emitterOptions: {} };
+    const check = walkMethods(ir).find((f) => f.method.action === 'check');
+    if (!check) throw new Error('check method not found in 9.x-open-sdk fixture');
+
+    // biome-ignore lint/style/noNonNullAssertion: generateUsage is present on the emitter
+    const code = pythonEmitter.generateUsage!(check.method, check.path, ctx);
+    expect(code).toContain('client.system.health.check()');
   });
 });

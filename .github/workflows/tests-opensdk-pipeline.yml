@@ -6,11 +6,19 @@ name: tests:opensdk-pipeline
 #
 # The root vitest config (tests:unit) already runs each package's offline unit
 # tests (including the conformance surface diff, which reads the committed
-# oracle/surface.json). This job adds Go + Python toolchains so the gated layers
-# can run where the generated SDKs actually build and execute:
-#   - O2S_GO_SMOKE=1  — a sample of generated Go SDK projects `go build`/`go vet`
-#   - E2E_SDK / E2E_SDK_TESTS=1 — RUN each generated SDK's OWN test suite against
-#     a spec-shaped mock (Go `go test`, Python `pytest`).
+# oracle/surface.json, AND the always-on per-language e2e binding guard that
+# asserts expectedRequest(IR) == recorded.json for every op across the whole
+# spec). This job adds all six toolchains so the gated layers can run where the
+# generated SDKs actually build and execute:
+#   - O2S_<LANG>_SMOKE=1 — the whole merged SDK compiles (go build/vet, tsc,
+#     py_compile, ruby -c, javac, dotnet build) + each generateUsage snippet
+#     compiles (usage-e2e.test.ts).
+#   - E2E_SDK=1 — the real-SDK request tier: build the whole SDK + a driver that
+#     calls every generated client method, and diff the ACTUAL HTTP request
+#     (method/path/query/body/auth) against the committed recorded.json; also
+#     RUN each usage snippet against a recording server and diff its request.
+#   - E2E_SDK_TESTS=1 — RUN each generated SDK's OWN test suite against a
+#     spec-shaped mock (Go `go test`, Python `pytest`, …).
 # (SDK_ORACLE_REFRESH regenerates the oracle over the network and is NOT set.)
 
 on:
@@ -27,6 +35,7 @@ on:
       - 'packages/xyd-opensdk-ruby/**'
       - 'packages/xyd-opensdk-java/**'
       - 'packages/xyd-opensdk-dotnet/**'
+      - 'packages/xyd-opensdk-uniform/**'
       - 'packages/xyd-opensdk-chain/**'
       - 'packages/xyd-opensdk-cli/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
@@ -43,6 +52,7 @@ on:
       - 'packages/xyd-opensdk-ruby/**'
       - 'packages/xyd-opensdk-java/**'
       - 'packages/xyd-opensdk-dotnet/**'
+      - 'packages/xyd-opensdk-uniform/**'
       - 'packages/xyd-opensdk-chain/**'
       - 'packages/xyd-opensdk-cli/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
@@ -131,6 +141,7 @@ jobs:
         --filter "@xyd-js/opensdk-ruby..."
         --filter "@xyd-js/opensdk-java..."
         --filter "@xyd-js/opensdk-dotnet..."
+        --filter "@xyd-js/opensdk-uniform..."
         --filter "@xyd-js/opensdk-chain..."
         --filter "@xyd-js/opensdk-cli..."
         build
@@ -177,39 +188,57 @@ jobs:
     - name: Ensure pytest is available
       run: python3 -m pip install pytest
 
-    - name: Test @xyd-js/opensdk-python (golden trees + py_compile smoke + generated-test run)
+    - name: Test @xyd-js/opensdk-python (golden trees + py_compile smoke + e2e real request diff + snippet run + generated-test run)
       run: pnpm --filter @xyd-js/opensdk-python ci:test
       env:
         O2S_PY_SMOKE: '1'
+        E2E_SDK: '1'
         # RUN the generated Python SDK's own tests/test_<resource>.py against a
         # spec-shaped mock (openai-python/Prism style): the harness stands up a
         # venv + pytest and points TEST_API_BASE_URL at the mock, so the emitted
         # tests EXECUTE and PASS (not just py_compile).
         E2E_SDK_TESTS: '1'
 
-    - name: Test @xyd-js/opensdk-node (golden trees + tsc smoke + generated-test run)
+    - name: Test @xyd-js/opensdk-node (golden trees + tsc smoke + e2e real request diff + snippet run + generated-test run)
       run: pnpm --filter @xyd-js/opensdk-node ci:test
       env:
         O2S_NODE_SMOKE: '1'
+        E2E_SDK: '1'
         E2E_SDK_TESTS: '1'
 
-    - name: Test @xyd-js/opensdk-ruby (golden trees + ruby -c smoke + generated-test run)
+    - name: Test @xyd-js/opensdk-ruby (golden trees + ruby -c smoke + e2e real request diff + snippet run + generated-test run)
       run: pnpm --filter @xyd-js/opensdk-ruby ci:test
       env:
         O2S_RUBY_SMOKE: '1'
+        E2E_SDK: '1'
         E2E_SDK_TESTS: '1'
 
-    - name: Test @xyd-js/opensdk-java (golden trees + javac smoke + generated-test run)
+    - name: Test @xyd-js/opensdk-java (golden trees + javac smoke + e2e real request diff + snippet run + generated-test run)
       run: pnpm --filter @xyd-js/opensdk-java ci:test
       env:
         O2S_JAVA_SMOKE: '1'
+        E2E_SDK: '1'
         E2E_SDK_TESTS: '1'
 
-    - name: Test @xyd-js/opensdk-dotnet (golden trees + dotnet build smoke + generated-test run)
+    - name: Test @xyd-js/opensdk-dotnet (golden trees + dotnet build smoke + e2e real request diff + snippet run + generated-test run)
       run: pnpm --filter @xyd-js/opensdk-dotnet ci:test
       env:
         O2S_DOTNET_SMOKE: '1'
+        E2E_SDK: '1'
         E2E_SDK_TESTS: '1'
+
+    # Cross-language: render SDK usage examples into Uniform (Atlas tabs) + the
+    # gated per-language COMPILE of each generated snippet. All 6 toolchains are set
+    # up above, so the O2S_<LANG>_SMOKE compile tier runs for every language.
+    - name: Test @xyd-js/opensdk-uniform (Uniform render + usage-snippet compile per language)
+      run: pnpm --filter @xyd-js/opensdk-uniform ci:test
+      env:
+        O2S_GO_SMOKE: '1'
+        O2S_PY_SMOKE: '1'
+        O2S_NODE_SMOKE: '1'
+        O2S_RUBY_SMOKE: '1'
+        O2S_JAVA_SMOKE: '1'
+        O2S_DOTNET_SMOKE: '1'
 
     - name: Test @xyd-js/opensdk-cli (parse/generate/init + plugin config)
       run: pnpm --filter @xyd-js/opensdk-cli ci:test

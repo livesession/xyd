@@ -11,7 +11,7 @@ import type { ResolvedConfig, ResolvedTarget } from '../types';
 // schema is language-agnostic); this adapter just loads + normalizes them.
 
 /** Top-level keys that are NOT language sections. */
-const RESERVED_KEYS = new Set(['$schema', 'version', 'behavior', 'sdkName', 'grouping', 'publish']);
+const RESERVED_KEYS = new Set(['$schema', 'version', 'api', 'spec', 'sdk', 'behavior', 'sdkName', 'grouping', 'publish']);
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -42,7 +42,7 @@ export const sdkJsonSource: ConfigSource = {
     }
   },
 
-  normalize(raw): ResolvedConfig {
+  normalize(raw, ctx): ResolvedConfig {
     const doc = raw as SdkJson;
     const emitterOptions: Record<string, Record<string, unknown>> = {};
     const targets: Record<string, ResolvedTarget> = {};
@@ -68,6 +68,13 @@ export const sdkJsonSource: ConfigSource = {
       operationHints: doc.grouping?.operationHints,
       publish: doc.publish,
     };
+    // A predefined spec is resolved relative to this config file so `generate`
+    // works from any cwd; --spec still overrides it. `api` supersedes the legacy
+    // `spec` key (kept as a fallback for old sdk.json files).
+    const apiRef = doc.api ?? doc.spec;
+    if (apiRef) {
+      config.spec = path.isAbsolute(apiRef) ? apiRef : path.resolve(path.dirname(ctx.filePath), apiRef);
+    }
     if (Object.keys(emitterOptions).length) config.emitterOptions = emitterOptions;
     if (Object.keys(targets).length) config.targets = targets;
     return config;

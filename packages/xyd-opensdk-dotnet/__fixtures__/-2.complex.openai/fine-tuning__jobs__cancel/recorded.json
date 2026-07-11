@@ -1,0 +1,10 @@
+{
+  "call": "FineTuning.Jobs.Cancel",
+  "request": {
+    "method": "post",
+    "path": "/fine_tuning/jobs/{fine_tuning_job_id}/cancel",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

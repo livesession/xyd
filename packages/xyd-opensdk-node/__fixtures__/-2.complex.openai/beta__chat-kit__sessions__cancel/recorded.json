@@ -1,0 +1,10 @@
+{
+  "call": "beta.chatKit.sessions.cancel",
+  "request": {
+    "method": "post",
+    "path": "/chatkit/sessions/{session_id}/cancel",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

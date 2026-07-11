@@ -1,0 +1,10 @@
+{
+  "call": "beta.threads.messages.retrieve",
+  "request": {
+    "method": "get",
+    "path": "/threads/{thread_id}/messages/{message_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

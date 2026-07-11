@@ -31,9 +31,9 @@ export default function RegistrySdksTab() {
     },
     {
       key: "packageName",
-      header: "Package",
+      header: "Target",
       width: "auto",
-      render: (t) => <Mono>{t.packageName}</Mono>,
+      render: (t) => <Mono>{t.packageName || t.id}</Mono>,
     },
     {
       key: "status",

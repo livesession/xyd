@@ -1,0 +1,10 @@
+{
+  "call": "projects.users.roles.list",
+  "request": {
+    "method": "get",
+    "path": "/projects/{project_id}/users/{user_id}/roles",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

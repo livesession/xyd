@@ -1,0 +1,10 @@
+{
+  "call": "beta.threads.runs.steps.list",
+  "request": {
+    "method": "get",
+    "path": "/threads/{thread_id}/runs/{run_id}/steps",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

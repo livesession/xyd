@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { LiveSessionWordmark } from "./LiveSessionWordmark";
 
 const meta: Meta<typeof LiveSessionWordmark> = {
-  title: "Design System/LiveSessionWordmark",
+  title: "Components/LiveSessionWordmark",
   component: LiveSessionWordmark,
   parameters: { layout: "centered" },
 };

@@ -2,14 +2,17 @@
 
 import { APIResource } from '../core/resource';
 import type { APIClient, RequestOptions } from '../core/request';
-import type { ApitoolchainSdk, ApitoolchainSdkLanguage, ApitoolchainSdkTarget } from '../models';
+import type { ApitoolchainSdk, ApitoolchainSdkBuild, ApitoolchainSdkLanguage, ApitoolchainSdkTarget } from '../models';
 
 export class Sdks extends APIResource {
   readonly targets: SdksTargets;
 
+  readonly versions: SdksVersions;
+
   constructor(client: APIClient) {
     super(client);
     this.targets = new SdksTargets(client);
+    this.versions = new SdksVersions(client);
   }
 
   list(query?: SdkListParams, options?: RequestOptions): Promise<ApitoolchainSdk[]> {
@@ -33,6 +36,13 @@ export class Sdks extends APIResource {
     }
     return this._client.request<void>({ method: "DELETE", path: `/sdks/${id}` }, options);
   }
+
+  build(sdkId: string, body: SdkBuildParams, options?: RequestOptions): Promise<ApitoolchainSdkTarget[]> {
+    if (!sdkId) {
+      throw new Error("missing required sdkId parameter");
+    }
+    return this._client.request<ApitoolchainSdkTarget[]>({ method: "POST", path: `/sdks/${sdkId}/build`, body }, options);
+  }
 }
 
 export class SdksTargets extends APIResource {
@@ -51,6 +61,24 @@ export class SdksTargets extends APIResource {
   }
 }
 
+export class SdksVersions extends APIResource {
+  /** SDK version/build history (newest first). */
+  list(sdkId: string, options?: RequestOptions): Promise<ApitoolchainSdkBuild[]> {
+    if (!sdkId) {
+      throw new Error("missing required sdkId parameter");
+    }
+    return this._client.request<ApitoolchainSdkBuild[]>({ method: "GET", path: `/sdks/${sdkId}/versions` }, options);
+  }
+
+  /** Create a new SDK version: bump + rebuild every target, recorded as a build. */
+  create(sdkId: string, body: SdkVersionCreateParams, options?: RequestOptions): Promise<ApitoolchainSdkBuild> {
+    if (!sdkId) {
+      throw new Error("missing required sdkId parameter");
+    }
+    return this._client.request<ApitoolchainSdkBuild>({ method: "POST", path: `/sdks/${sdkId}/versions`, body }, options);
+  }
+}
+
 export interface SdkListParams {
   apiId?: string;
 }
@@ -58,11 +86,22 @@ export interface SdkListParams {
 export interface SdkCreateParams {
   apiId: string;
   name?: string;
+  id?: string;
   description?: string;
   ns?: string;
+}
+
+export interface SdkBuildParams {
+  apiVersion?: string;
 }
 
 export interface SdkTargetCreateParams {
   language: ApitoolchainSdkLanguage;
   packageName?: string;
+  version?: string;
+}
+
+export interface SdkVersionCreateParams {
+  version: string;
+  apiVersion?: string;
 }

@@ -3,7 +3,7 @@ import type { SdkLanguage } from "~/data";
 
 /** The languages our opensdk pipeline can generate (OpenAPI-only), in order. */
 export const SDK_LANGS: { value: SdkLanguage; label: string }[] = [
-  { value: "node", label: "TypeScript" },
+  { value: "node", label: "Node" },
   { value: "python", label: "Python" },
   { value: "go", label: "Go" },
   { value: "ruby", label: "Ruby" },
@@ -12,13 +12,23 @@ export const SDK_LANGS: { value: SdkLanguage; label: string }[] = [
 ];
 
 export const SDK_LANG_LABEL: Record<SdkLanguage, string> = {
-  node: "TypeScript",
+  node: "Node",
   python: "Python",
   go: "Go",
   ruby: "Ruby",
   java: "Java",
   dotnet: "C#",
 };
+
+/** Human display name for a target — the API title + language label (e.g.
+ * "LiveSession OpenAPI Python"). OUR name, decoupled from the URL slug/id and
+ * from the published package name (which lives on the publisher connection). */
+export function targetDisplayName(
+  apiTitle: string,
+  language: SdkLanguage,
+): string {
+  return `${apiTitle} ${SDK_LANG_LABEL[language]}`.trim();
+}
 
 /** Which design-system brand logo each SDK language maps to. */
 const LANG_ICON: Record<SdkLanguage, LangIconName> = {

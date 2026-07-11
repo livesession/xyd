@@ -6,6 +6,7 @@ import {
   setDistTag,
   setReleaseConfig,
   syncRepoConnection,
+  updateApi,
 } from "~/data";
 
 /**
@@ -24,6 +25,12 @@ export async function registryDetailAction({
   const form = await request.formData();
   const intent = form.get("intent");
   const apiId = params.apiId ?? "";
+  if (intent === "rename") {
+    return updateApi(apiId, {
+      name: String(form.get("name") ?? ""),
+      description: String(form.get("description") ?? ""),
+    });
+  }
   if (intent === "set-dist-tag") {
     return setDistTag(
       apiId,
@@ -43,6 +50,7 @@ export async function registryDetailAction({
       prefix: String(form.get("prefix") ?? ""),
       releaseMode: String(form.get("releaseMode") ?? "") || undefined,
       autoRelease: form.get("autoRelease") === "1",
+      distTags: String(form.get("distTags") ?? "") || undefined,
     });
   }
   if (intent === "release-config") {
@@ -51,6 +59,7 @@ export async function registryDetailAction({
       autoRelease: form.get("autoRelease") === "1",
       baseBranch: String(form.get("baseBranch") ?? "") || undefined,
       prerelease: form.get("prerelease") === "1",
+      distTags: String(form.get("distTags") ?? "") || undefined,
     });
   }
   if (intent === "prepare-release") {

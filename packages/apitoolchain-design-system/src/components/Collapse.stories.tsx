@@ -4,7 +4,7 @@ import { Collapse } from "./Collapse";
 import { Mono } from "./Mono";
 
 const meta: Meta<typeof Collapse> = {
-  title: "Design System/Collapse",
+  title: "Components/Collapse",
   component: Collapse,
   parameters: { layout: "padded" },
   decorators: [

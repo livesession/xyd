@@ -12,13 +12,13 @@
     },
     "registry-api": {
       "inputs": [
-        { "location": "../../apps/apitoolchain-registry-api/openapi/openapi.yaml" }
+        { "location": "../../apps/apitoolchain-registry-api/openapi/v1/__generated__/openapi.yaml" }
       ],
       "output": "./.chain/registry-api.openapi.json"
     },
     "api": {
       "inputs": [
-        { "location": "../../apps/apitoolchain-api/openapi/openapi.yaml" }
+        { "location": "../../apps/apitoolchain-api/openapi/v1/__generated__/openapi.yaml" }
       ],
       "output": "./.chain/api.openapi.json"
     }
@@ -38,7 +38,8 @@
       "sdkName": "registry-api",
       "options": {
         "packageName": "@apitoolchain/registry-api-node",
-        "tests": false
+        "tests": false,
+        "busybox": "flat"
       }
     },
     "api-node": {

@@ -8,3 +8,4 @@
 @import "@apitoolchain/design-system/theme.css";
 @source "../../../packages/apitoolchain-design-system/src";
 @source "../../../packages/apitoolchain-auth-design-system/src";
+@source "../../../packages/apitoolchain-sdkjson-wizard/src";

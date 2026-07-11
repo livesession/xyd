@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@apitoolchain/auth-design-system": "file:../../packages/apitoolchain-auth-design-system",
-    "@apitoolchain/design-system": "file:../../packages/apitoolchain-design-system"
+    "@apitoolchain/design-system": "file:../../packages/apitoolchain-design-system",
+    "@apitoolchain/sdkjson-wizard": "file:../../packages/apitoolchain-sdkjson-wizard"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.2",

@@ -3,13 +3,14 @@ import {
   Button,
   EmptyState,
   Field,
+  Icon,
   Input,
   Mono,
   Select,
 } from "@apitoolchain/design-system";
 import { useEffect, useRef, useState } from "react";
 import { useFetcher } from "react-router";
-import { SdkLangIcon } from "~/components/SdkLangIcon";
+import { DeleteConfirm } from "~/components/DeleteConfirm";
 import { SettingsHeader } from "~/components/SettingsHeader";
 import {
   connectPackageRegistry,
@@ -19,8 +20,8 @@ import {
   removePackageRegistry,
 } from "~/data";
 import {
+  REGISTRY_KIND_ICON,
   REGISTRY_KIND_LABEL,
-  REGISTRY_KIND_TO_LANG,
   REGISTRY_KINDS,
 } from "~/lib/registryKind";
 import type { Route } from "./+types/settings.publishing";
@@ -107,7 +108,7 @@ function ConnectRegistryForm() {
           value={kind}
           onChange={(v) => setKind(v as PackageRegistryKind)}
           options={KIND_OPTIONS}
-          leadingIcon={undefined}
+          leadingIcon={REGISTRY_KIND_ICON[kind]}
         />
       </Field>
       <Field
@@ -178,18 +179,29 @@ function RegistryRow({ registry }: { registry: PackageRegistry }) {
   return (
     <div className="flex items-center justify-between gap-3 rounded-control border border-line bg-surface px-4 py-3">
       <div className="flex min-w-0 items-center gap-2.5">
-        <SdkLangIcon language={REGISTRY_KIND_TO_LANG[registry.kind]} />
+        <Icon icon={REGISTRY_KIND_ICON[registry.kind]} size={18} />
         <span className="truncate font-medium text-ink">{registry.name}</span>
         <Badge tone="neutral">{REGISTRY_KIND_LABEL[registry.kind]}</Badge>
         <Mono tone="muted">{registry.url}</Mono>
       </div>
-      <fetcher.Form method="post">
-        <input type="hidden" name="intent" value="remove" />
-        <input type="hidden" name="id" value={registry.id} />
-        <Button type="submit" variant="ghost" size="sm" disabled={busy}>
-          {busy ? "Removing…" : "Remove"}
-        </Button>
-      </fetcher.Form>
+      <DeleteConfirm
+        title="Remove registry"
+        description={`Disconnect ${registry.name}? SDK targets publishing to it stop until it's reconnected.`}
+        confirmLabel="Remove"
+        confirming={busy}
+        busyLabel="Removing…"
+        onConfirm={() =>
+          fetcher.submit(
+            { intent: "remove", id: registry.id },
+            { method: "post" },
+          )
+        }
+        trigger={(open) => (
+          <Button variant="ghost" size="sm" onClick={open} disabled={busy}>
+            Remove
+          </Button>
+        )}
+      />
     </div>
   );
 }

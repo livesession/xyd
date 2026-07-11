@@ -1,5 +1,7 @@
 import {
   Button,
+  Combobox,
+  type ComboboxOption,
   Field,
   Input,
   Modal,
@@ -9,6 +11,15 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useFetcher } from "react-router";
 import type { RepoConnection } from "~/data";
+
+/** Parse a connection's comma-joined `dist_tags` into an array (default latest). */
+function parseDistTags(s?: string): string[] {
+  const tags = (s ?? "")
+    .split(",")
+    .map((t) => t.trim())
+    .filter(Boolean);
+  return tags.length ? tags : ["latest"];
+}
 
 /**
  * Per-connection release settings state + save, decoupled from any chrome so it
@@ -20,6 +31,7 @@ export function useReleaseSettings(
   connection: RepoConnection,
   actionPath: string,
   onSaved: () => void,
+  distTagOptions: string[] = [],
 ) {
   const submit = useFetcher();
   const [mode, setMode] = useState(
@@ -30,6 +42,9 @@ export function useReleaseSettings(
   );
   const [baseBranch, setBaseBranch] = useState(connection.baseBranch ?? "");
   const [prerelease, setPrerelease] = useState(connection.prerelease ?? false);
+  const [distTags, setDistTags] = useState<string[]>(
+    parseDistTags(connection.distTags),
+  );
 
   const submitting = submit.state !== "idle";
   const submitted = useRef(false);
@@ -42,6 +57,7 @@ export function useReleaseSettings(
     setAutoRelease(connection.autoRelease ?? true);
     setBaseBranch(connection.baseBranch ?? "");
     setPrerelease(connection.prerelease ?? false);
+    setDistTags(parseDistTags(connection.distTags));
   }, [connection.id]);
 
   useEffect(() => {
@@ -64,9 +80,13 @@ export function useReleaseSettings(
         intent: "release-config",
         id: connection.id,
         releaseMode: mode,
-        autoRelease: mode === "release" && autoRelease ? "1" : "",
+        // Auto-sync + its dist-tag filter apply to both modes (push commits
+        // straight to the branch; release opens a PR). Base-branch/prerelease
+        // are release-only.
+        autoRelease: autoRelease ? "1" : "",
         baseBranch,
         prerelease: mode === "release" && prerelease ? "1" : "",
+        distTags: autoRelease ? distTags.join(",") || "latest" : "",
       },
       { method: "post", action: actionPath },
     );
@@ -81,6 +101,9 @@ export function useReleaseSettings(
     setBaseBranch,
     prerelease,
     setPrerelease,
+    distTags,
+    setDistTags,
+    distTagOptions,
     save,
     submitting,
     error,
@@ -99,8 +122,20 @@ export function ReleaseSettingsFields({
   setBaseBranch,
   prerelease,
   setPrerelease,
+  distTags,
+  setDistTags,
+  distTagOptions,
   error,
 }: ReleaseSettings) {
+  const tagOptions: ComboboxOption[] = [
+    {
+      value: "*",
+      label: "All dist-tags",
+      exclusive: true,
+      icon: "tags-outline",
+    },
+    ...[...new Set(["latest", ...distTagOptions])].map((t) => ({ value: t })),
+  ];
   return (
     <div className="flex flex-col gap-4">
       <Field
@@ -113,16 +148,32 @@ export function ReleaseSettingsFields({
           onChange={(v) => setMode(v === "Release PRs" ? "release" : "push")}
         />
       </Field>
+      {/* Auto-sync + its dist-tag filter apply to both modes. */}
+      <div className="flex items-center gap-2 text-[13px] text-subtle">
+        <Toggle
+          checked={autoRelease}
+          onChange={setAutoRelease}
+          aria-label="Auto-sync on new spec version"
+        />
+        {mode === "release"
+          ? "Open/refresh a release PR on every new spec version"
+          : "Commit the regenerated SDK to the branch on every new spec version"}
+      </div>
+      {autoRelease && (
+        <Field
+          label="Dist-tags"
+          labelHint='Which published dist-tags trigger this. Default: latest. Pick "All", check tags, or type your own.'
+        >
+          <Combobox
+            value={distTags}
+            onChange={setDistTags}
+            options={tagOptions}
+            placeholder="latest"
+          />
+        </Field>
+      )}
       {mode === "release" && (
         <>
-          <div className="flex items-center gap-2 text-[13px] text-subtle">
-            <Toggle
-              checked={autoRelease}
-              onChange={setAutoRelease}
-              aria-label="Auto-release on new spec version"
-            />
-            Open/refresh a release PR on every new spec version
-          </div>
           <Field
             label="Base branch"
             htmlFor="rs-base"
@@ -164,13 +215,21 @@ export function ReleaseSettingsModal({
   onClose,
   connection,
   actionPath,
+  distTagOptions = [],
 }: {
   open: boolean;
   onClose: () => void;
   connection: RepoConnection;
   actionPath: string;
+  /** The API's currently-available dist-tags, offered in the release filter. */
+  distTagOptions?: string[];
 }) {
-  const settings = useReleaseSettings(connection, actionPath, onClose);
+  const settings = useReleaseSettings(
+    connection,
+    actionPath,
+    onClose,
+    distTagOptions,
+  );
   return (
     <Modal
       open={open}

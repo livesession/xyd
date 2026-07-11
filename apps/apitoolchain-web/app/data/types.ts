@@ -70,21 +70,58 @@ export interface Sdk {
   name: string;
   description: string;
   namespace: string;
+  /** Our SDK-level version — decoupled from the published per-target versions. */
+  version: string;
+  /** Registry reference for the SDK itself: `sdks/<ns>/<id>@<version>`. */
+  registryRef: string;
   targetCount: number;
   createdAt: string;
   updatedAt: string;
 }
 
+/** One SDK build = a produced SDK version (the Versions tab / build history).
+ * Regenerates every target from one API spec version; decoupled from each
+ * target's published package version. */
+export interface SdkBuild {
+  id: string;
+  sdkId: string;
+  /** The SDK version this build produced. */
+  version: string;
+  /** The API spec version every target was built from. */
+  apiVersion: string;
+  status: BuildStatus;
+  /** Point-in-time snapshot of the targets that went into the build. */
+  targets: SdkBuildTarget[];
+  /** Accumulated build log — step lines from each target generation. */
+  logs: string;
+  createdAt: string;
+}
+
+export interface SdkBuildTarget {
+  language: SdkLanguage;
+  packageName: string;
+}
+
 export interface SdkTarget {
   id: string;
+  /** Human display title, stored at creation ("<API> <language>") — decoupled
+   * from the slug `id` and the published package name. Optional: legacy targets
+   * / fixtures fall back to a derived name. */
+  name?: string;
   /** The parent SDK this target belongs to. */
   sdkId: string;
   apiId: string;
+  /** The API spec version this target was last built from — decoupled from the
+   * target's own package `version`. */
+  apiVersion: string;
   language: SdkLanguage;
   packageName: string;
   output: string;
   version: string;
   status: BuildStatus;
+  /** The target's own generation log — reset each build, appended live; tailed by
+   * the dashboard while (re)generating. Optional: fixtures/legacy omit it. */
+  buildLogs?: string;
   lastPublishedAt?: string;
   registryUrl?: string;
 }
@@ -183,6 +220,16 @@ export interface Member {
   role: string;
 }
 
+/** A workspace API key (its secret is only ever returned once, at creation). */
+export interface ApiKey {
+  id: string;
+  name: string;
+  /** Public prefix shown in the list (e.g. `atk_live_a1b2`). */
+  prefix: string;
+  createdAt: string;
+  lastUsedAt?: string;
+}
+
 /** A connected git-provider account (its token stays server-side). */
 export interface GitProvider {
   id: string;
@@ -218,6 +265,9 @@ export interface RepoConnection {
   autoRelease?: boolean;
   baseBranch?: string;
   prerelease?: boolean;
+  /** Comma-separated dist-tags this connection reacts to (default `latest`;
+   * `*` = all). */
+  distTags?: string;
   lastReleasedVersion?: string;
 }
 
@@ -249,6 +299,9 @@ export interface RegistryConnection {
   language: string;
   packageName: string;
   autoPublish: boolean;
+  /** The publisher's own log — reset each publish, appended live; tailed on the
+   * Publishing tab. Optional: fixtures/legacy omit it. */
+  publishLogs?: string;
   lastPublishedVersion?: string;
   lastPublishedAt?: string;
   lastPublishStatus?: BuildStatus;

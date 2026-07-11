@@ -1,0 +1,10 @@
+{
+  "call": "models.delete",
+  "request": {
+    "method": "delete",
+    "path": "/models/{model}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

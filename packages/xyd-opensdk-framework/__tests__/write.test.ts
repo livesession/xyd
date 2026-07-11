@@ -1,10 +1,11 @@
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { SDK_LOCK_FILENAME, deepMergeJson, writeProject } from '../src';
+import { SDK_LOCK_FILENAME, deepMergeJson, materializeProject, writeProject } from '../src';
 
 const tmpDirs: string[] = [];
 function tmpDir(): string {
@@ -187,6 +188,43 @@ describe('writeProject: guarded stale-prune', () => {
     const result = await writeProject({ 'a.go': 'a' }, out);
     expect(result.pruned).toEqual([]);
     expect(exists(out, 'stale.go')).toBe(true);
+  });
+});
+
+describe('materializeProject: disk-less file map + manifest', () => {
+  const sha256 = (s: string) => createHash('sha256').update(s, 'utf8').digest('hex');
+
+  it('returns the file map plus a deterministic .sdk/sdk.lock whose hashes match the emitted bytes', async () => {
+    const out = await materializeProject({ 'pkg/client.go': 'client', 'types.go': 'types' });
+
+    // Generated files pass through verbatim; the framework owns the manifest.
+    expect(out['pkg/client.go']).toBe('client');
+    expect(out['types.go']).toBe('types');
+
+    const m = JSON.parse(out[SDK_LOCK_FILENAME]);
+    expect(m.schemaVersion).toBe(1);
+    expect(m.generator).toBe('opensdk');
+    expect(Object.keys(m.files)).toEqual(['pkg/client.go', 'types.go']); // sorted
+    expect(m.files['types.go']).toBe(sha256('types')); // hash of the EMITTED content
+    expect(out[SDK_LOCK_FILENAME]).not.toMatch(/\d{4}-\d{2}-\d{2}T/); // no timestamps
+  });
+
+  it('records the generator name from options', async () => {
+    const out = await materializeProject({ 'a.go': 'a' }, { generator: 'go' });
+    expect(JSON.parse(out[SDK_LOCK_FILENAME]).generator).toBe('go');
+  });
+
+  it('canonicalizes mergeJson (no disk → pretty JSON + newline, the exact bytes a later writeProject regen would hash)', async () => {
+    const out = await materializeProject({
+      'pkg.json': { content: '{"a":1,"b":[1,2]}', writeMode: 'mergeJson' },
+    });
+    const canonical = `${JSON.stringify({ a: 1, b: [1, 2] }, null, 2)}\n`;
+    expect(out['pkg.json']).toBe(canonical);
+    expect(JSON.parse(out[SDK_LOCK_FILENAME]).files['pkg.json']).toBe(sha256(canonical));
+  });
+
+  it('rejects a file map that emits the manifest path itself', async () => {
+    await expect(materializeProject({ [SDK_LOCK_FILENAME]: '{}' })).rejects.toThrow(/owns it/);
   });
 });
 

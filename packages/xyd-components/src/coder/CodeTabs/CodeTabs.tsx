@@ -27,23 +27,35 @@ export function withCodeTabs(PreComponent) {
     const isSingle = props?.highlighted?.length === 1 && !props.description;
     const defaultValue =
       props.highlighted[0]?.meta || props.highlighted[0]?.lang;
-    const [activeTab, setActiveTab] = useState(defaultValue);
-    const {markdownFormat} = useContext(CodeContext);
+    const {markdownFormat, activeLang, onLangChange} = useContext(CodeContext);
+
+    // CONTROLLED mode: Atlas feeds a page-shared language + setter so every code
+    // sample stays on the same language (switching one switches all). Falls back
+    // to this sample's default when it doesn't have that language. Otherwise the
+    // tab state is local (uncontrolled — the standalone-component behaviour).
+    const controlled = activeLang != null && !!onLangChange;
+    const [localTab, setLocalTab] = useState(defaultValue);
+    const hasLang = (v?: string) =>
+      !!v && props.highlighted.some((h) => (h.meta || h.lang) === v);
+    const activeTab = controlled
+      ? (hasLang(activeLang) ? (activeLang as string) : defaultValue)
+      : localTab;
 
     const codeSampleAnalytics = useCodeSampleAnalytics();
     const ux = useUXEvents();
 
-    // Reset active tab when highlighted prop changes
+    // Reset the local tab when highlighted changes (uncontrolled only).
     useEffect(() => {
-      setActiveTab(defaultValue);
-    }, [defaultValue]);
+      if (!controlled) setLocalTab(defaultValue);
+    }, [defaultValue, controlled]);
 
     useEffect(() => {
       codeSampleAnalytics.setActiveTab(activeTab);
     }, []);
 
     function changeTab(value: string) {
-      setActiveTab(value);
+      if (controlled) onLangChange?.(value);
+      else setLocalTab(value);
       codeSampleAnalytics.setActiveTab(value);
       ux.docs.code.tab_change({ tab: value });
     }
@@ -100,7 +112,7 @@ interface LanguageTabSwitcherProps {
 }
 
 function $LanguageTabSwitcher(props: LanguageTabSwitcherProps) {
-  const { renderLanguage, languageSwitcher, languageIcons } =
+  const { renderLanguage, languageSwitcher, languageIcons, codeActions } =
     useContext(CodeContext);
   const isSingle = props?.highlighted?.length === 1 && !props.description;
 
@@ -189,6 +201,8 @@ function $LanguageTabSwitcher(props: LanguageTabSwitcherProps) {
             <CodeCopy text={codeblock.value} />
           </TabsPrimitive.Content>
         ))}
+        {/* Extra toolbar action(s) after copy — e.g. Atlas's run-request play. */}
+        {codeActions}
       </div>
     </xyd-codetabs-languages>
   );

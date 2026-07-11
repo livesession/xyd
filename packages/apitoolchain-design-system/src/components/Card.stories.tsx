@@ -3,7 +3,7 @@ import { ICON_NAMES } from "../icons";
 import { Card } from "./Card";
 
 const meta: Meta<typeof Card> = {
-  title: "Design System/Card",
+  title: "Components/Card",
   component: Card,
   parameters: { layout: "centered" },
   argTypes: {

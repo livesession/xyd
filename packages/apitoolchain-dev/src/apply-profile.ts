@@ -29,31 +29,51 @@ export interface ApplyCtx {
   log: (m: string) => void;
 }
 
-/** Shared spec keys → vendored app spec files (relative to `apps/`). Profiles
- * can also bundle their own spec via a folder-relative path (see resolveSpec). */
+/** Shared spec keys → their canonical OpenAPI source. Now the upstream raw
+ * GitHub URLs (fetched fresh on apply) instead of a vendored copy, so dev seeds
+ * track the real specs. A profile can also point `spec` straight at a URL, bundle
+ * its own `specs/*.yaml`, or inline the text (see resolveSpecText). */
 const SHARED_SPECS: Record<string, string> = {
-  livesession: "apitoolchain-registry-api/scripts/livesession-openapi.yaml",
+  livesession:
+    "https://raw.githubusercontent.com/livesession/livesession-docs/refs/heads/master/api/rest/openapi.yaml",
+  openai:
+    "https://raw.githubusercontent.com/openai/openai-openapi/refs/heads/main/openapi.yaml",
 };
 
-/** Resolve a profile's `spec` field to OpenAPI text: inline (has a newline) →
- * a path relative to the profile folder → a shared key. */
-function resolveSpecText(
+const isUrl = (s: string): boolean => /^https?:\/\//.test(s);
+
+/** GET an OpenAPI document as text (for URL-sourced specs). */
+async function fetchSpecText(url: string): Promise<string> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`fetch ${url} → HTTP ${res.status}`);
+  return res.text();
+}
+
+/** Resolve a profile's `spec` field to OpenAPI text, in order: inline (has a
+ * newline) → a URL (http/https, fetched) → a folder-relative path → a shared key
+ * (which is itself a URL or a vendored path). */
+async function resolveSpecText(
   spec: string,
   profileDir: string,
   apps: string,
-): string {
+): Promise<string> {
   if (/[\r\n]/.test(spec)) return spec;
+  if (isUrl(spec)) return fetchSpecText(spec);
   if (spec.startsWith(".") || spec.includes("/")) {
     return readFileSync(resolve(profileDir, spec), "utf8");
   }
   const shared = SHARED_SPECS[spec];
-  if (shared) return readFileSync(resolve(apps, shared), "utf8");
+  if (shared)
+    return isUrl(shared)
+      ? fetchSpecText(shared)
+      : readFileSync(resolve(apps, shared), "utf8");
   throw new Error(`unknown spec reference "${spec}"`);
 }
 
 /** Data tables wiped on every apply. Context (org/project) + git_providers (the
  * local Gitea) are deliberately KEPT so the provider stays connected. */
 const RESET_TABLES = [
+  "sdk_builds",
   "sdk_targets",
   "sdks",
   "repo_connections",
@@ -115,6 +135,52 @@ function resetTenant(pgId: string): void {
     "DELETE FROM memberships WHERE org_id = 'org_acme' AND user_id != 'usr_dev'; " +
       "DELETE FROM projects WHERE org_id = 'org_acme' AND id != 'prj_default';",
   );
+}
+
+/**
+ * Backdate the seeded rows into a believable history. Everything registers with
+ * `now()`, so a seed otherwise reads as one blob with the same "last updated"
+ * everywhere. This is pure SQL over the EXISTING rows (no dependency on the
+ * profile shape or insert order), so it works after BOTH a fresh apply and a
+ * snapshot restore — and re-anchors to `now()` each run, so even an old flat
+ * snapshot gets a fresh, spread-out history on restore.
+ *
+ * Per API: the current version is a few days old and each earlier version steps
+ * ~1–2.5 months further back (ordered by is_current then version; cadence varies
+ * per API via hashtext so no two look alike). The api row spans oldest→current.
+ * SDKs + targets get a created-a-while-ago / touched-recently spread. Best-effort
+ * — a failure just leaves the flat timestamps.
+ */
+export function backdateSeededData(
+  pgId: string,
+  log: (m: string) => void,
+): void {
+  const sql = `
+    UPDATE api_versions v SET updated_at = t.d, created_at = t.d FROM (
+      SELECT api_id, version,
+        now()
+          - (2 + (abs(hashtext(api_id)) % 20)) * interval '1 day'
+          - (row_number() OVER (PARTITION BY api_id ORDER BY is_current DESC, version DESC) - 1)
+            * (28 + (abs(hashtext(api_id)) % 45)) * interval '1 day'
+          - (abs(hashtext(api_id || version)) % 1440) * interval '1 minute' AS d
+      FROM api_versions
+    ) t WHERE v.api_id = t.api_id AND v.version = t.version;
+    UPDATE apis a SET
+      created_at = COALESCE((SELECT min(created_at) FROM api_versions x WHERE x.api_id = a.id), a.created_at),
+      updated_at = COALESCE((SELECT max(updated_at) FROM api_versions x WHERE x.api_id = a.id), a.updated_at);
+    UPDATE sdks SET
+      created_at = now() - (20 + (abs(hashtext(id)) % 55)) * interval '1 day',
+      updated_at = now() - (1 + (abs(hashtext(id)) % 13)) * interval '1 day';
+    UPDATE sdk_targets SET
+      created_at = now() - (18 + (abs(hashtext(id)) % 55)) * interval '1 day',
+      updated_at = now() - (1 + (abs(hashtext(id)) % 11)) * interval '1 day';
+  `;
+  try {
+    psql(pgId, sql);
+    log("  backdated seeded timestamps");
+  } catch (e) {
+    log(`  ! backdating skipped: ${(e as Error).message}`);
+  }
 }
 
 // The dev owner seeded by scripts/seed.ts — the applier authenticates as them so
@@ -370,33 +436,50 @@ export async function applyProfile(
   // 1. APIs → registry (spec lands in object storage via the real ingest path).
   const apiByName = new Map<string, { id: string; version: string }>();
   for (const api of profile.apis) {
-    const specText = resolveSpecText(api.spec, profile.dir, apps);
-    // Register the spec once per requested version (ascending) so the API ends
-    // up with a real version history; the last register becomes `current`.
-    // No `versions` → a single version from the spec's own info.version.
-    const labels = api.versions?.length ? api.versions : [undefined];
-    // biome-ignore lint/suspicious/noExplicitAny: loosely-typed JSON API.
-    let entry: any;
-    for (const version of labels) {
-      entry = await jpost(`${platUrl}/apis`, {
-        name: api.name,
-        ns: api.ns,
-        specText,
-        source: api.source ?? "",
-        ...(version ? { version } : {}),
-      });
-    }
-    const version =
+    // A single bad API (unreachable spec URL, a spec the registry rejects, …)
+    // must NOT abort the whole seed — log it and move on. Its SDKs then skip
+    // (missing from apiByName) with their own note.
+    try {
+      const specText = await resolveSpecText(api.spec, profile.dir, apps);
+      // Register the spec once per requested version (ascending) so the API ends
+      // up with a real version history; the last register becomes `current`.
+      // No `versions` → a single version from the spec's own info.version.
+      const labels = api.versions?.length ? api.versions : [undefined];
       // biome-ignore lint/suspicious/noExplicitAny: loosely-typed JSON API.
-      entry.versions?.find((v: any) => v.current)?.version ??
-      entry.versions?.[0]?.version ??
-      entry.currentVersion ??
-      "";
-    apiByName.set(api.name, { id: entry.id, version });
-    log(
-      `  api "${api.name}" → ${entry.id}${
-        api.versions?.length ? ` (${api.versions.length} versions)` : ""
-      }`,
+      let entry: any;
+      for (const version of labels) {
+        entry = await jpost(`${platUrl}/apis`, {
+          name: api.name,
+          ns: api.ns,
+          specText,
+          source: api.source ?? "",
+          ...(version ? { version } : {}),
+        });
+      }
+      const version =
+        // biome-ignore lint/suspicious/noExplicitAny: loosely-typed JSON API.
+        entry.versions?.find((v: any) => v.current)?.version ??
+        entry.versions?.[0]?.version ??
+        entry.currentVersion ??
+        "";
+      apiByName.set(api.name, { id: entry.id, version });
+      log(
+        `  api "${api.name}" → ${entry.id}${
+          api.versions?.length ? ` (${api.versions.length} versions)` : ""
+        }`,
+      );
+    } catch (e) {
+      log(`  ! api "${api.name}" failed: ${(e as Error).message}`);
+    }
+  }
+
+  // A single bad API is tolerated (logged above), but if the profile has APIs
+  // and EVERY one failed, the seed would be silently empty — surface that
+  // loudly instead so the picker shows the error (is the gateway up? are the
+  // spec sources reachable?).
+  if (profile.apis.length > 0 && apiByName.size === 0) {
+    throw new Error(
+      `all ${profile.apis.length} API registration(s) failed — see the log above`,
     );
   }
 
@@ -413,23 +496,32 @@ export async function applyProfile(
       log(`  ! sdk skipped — api "${sdk.api}" not in this profile`);
       continue;
     }
-    const created = await jpost(`${platUrl}/sdks`, {
-      apiId: api.id,
-      name: sdk.name,
-    });
-    for (const language of sdk.languages) {
-      const t = await jpost(`${platUrl}/sdks/${created.id}/targets`, {
-        language,
+    // One SDK's failure shouldn't sink the rest of the seed either.
+    try {
+      const created = await jpost(`${platUrl}/sdks`, {
+        apiId: api.id,
+        name: sdk.name,
       });
-      sdkTargets.push({
-        sdkId: created.id,
-        targetId: t.id,
-        language,
-        sdkName: created.name,
-      });
-      log(`  sdk "${created.name}" + ${language} → ${t.id}`);
+      for (const language of sdk.languages) {
+        const t = await jpost(`${platUrl}/sdks/${created.id}/targets`, {
+          language,
+        });
+        sdkTargets.push({
+          sdkId: created.id,
+          targetId: t.id,
+          language,
+          sdkName: created.name,
+        });
+        log(`  sdk "${created.name}" + ${language} → ${t.id}`);
+      }
+    } catch (e) {
+      log(`  ! sdk "${sdk.name}" failed: ${(e as Error).message}`);
     }
   }
+
+  // Backdate the seeded timestamps into a believable history (see
+  // backdateSeededData) — everything otherwise stamps `now()` at apply time.
+  backdateSeededData(pgId, log);
 
   // 2b. Publish generated SDK targets to the matching local dev registries
   // (independent of git connect). Best-effort — a missing registry/toolchain

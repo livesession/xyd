@@ -1,0 +1,10 @@
+{
+  "call": "Models.Retrieve",
+  "request": {
+    "method": "get",
+    "path": "/models/{model}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

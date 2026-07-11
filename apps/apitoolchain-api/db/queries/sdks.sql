@@ -12,6 +12,9 @@ INSERT INTO sdks (id, api_id, name, description, namespace, project_id)
 VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING *;
 
+-- name: UpdateSdkVersion :exec
+UPDATE sdks SET version = $2, updated_at = now() WHERE id = $1;
+
 -- name: DeleteSdk :exec
 DELETE FROM sdks WHERE id = $1;
 

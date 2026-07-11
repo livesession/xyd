@@ -14,6 +14,8 @@ export interface GoCtx {
   pkg: string;
   types: Map<string, NamedType>;
   behavior: ResolvedSdkBehavior;
+  /** When set, generateUsage reads the client base URL from this env var (snippet-run tests). */
+  baseUrlEnv?: string;
 }
 
 const HTTP_METHOD_CONST: Record<string, string> = {
@@ -231,7 +233,7 @@ function paginationPageType(method: Method, page: PageName | null, ctx: GoCtx, i
   return `${paginationQ}.${page}[${goType(method.pagination?.itemType as TypeRef | undefined)}]`;
 }
 
-function planParams(
+export function planParams(
   segments: string[],
   methodName: string,
   hasBody: boolean,

@@ -24,5 +24,5 @@ Outputs (all committed, source-exported):
 | Source spec | Package |
 |---|---|
 | `apitoolchain-gitprovider/openapi/__generated__/openapi.yaml` | `@apitoolchain/gitprovider-node` |
-| `apitoolchain-registry-api/openapi/openapi.yaml` | `@apitoolchain/registry-api-node` |
-| `apitoolchain-api/openapi/openapi.yaml` | `@apitoolchain/api-node` |
+| `apitoolchain-registry-api/openapi/v1/__generated__/openapi.yaml` | `@apitoolchain/registry-api-node` |
+| `apitoolchain-api/openapi/v1/__generated__/openapi.yaml` | `@apitoolchain/api-node` |

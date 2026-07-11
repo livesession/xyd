@@ -3,7 +3,7 @@ import { useState } from "react";
 import { RadioButtonCard } from "./RadioButtonCard";
 
 const meta: Meta<typeof RadioButtonCard> = {
-  title: "Design System/RadioButtonCard",
+  title: "Components/RadioButtonCard",
   component: RadioButtonCard,
   parameters: { layout: "padded" },
   argTypes: {

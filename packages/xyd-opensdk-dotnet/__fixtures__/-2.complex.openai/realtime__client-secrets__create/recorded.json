@@ -1,0 +1,11 @@
+{
+  "call": "Realtime.ClientSecrets.Create",
+  "request": {
+    "method": "post",
+    "path": "/realtime/client_secrets",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

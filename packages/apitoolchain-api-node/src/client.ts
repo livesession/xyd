@@ -2,6 +2,7 @@
 
 import { APIClient, readEnv } from './core/request';
 import type { ClientOptions } from './core/request';
+import { ApiKeys } from './resources/api-keys';
 import { Apis } from './resources/apis';
 import { Auth } from './resources/auth';
 import { Context } from './resources/context';
@@ -11,7 +12,9 @@ import { McpServers } from './resources/mcp-servers';
 import { Members } from './resources/members';
 import { Notifications } from './resources/notifications';
 import { Overview } from './resources/overview';
+import { PackageRegistries } from './resources/package-registries';
 import { Projects } from './resources/projects';
+import { RegistryConnections } from './resources/registry-connections';
 import { Releases } from './resources/releases';
 import { RepoConnections } from './resources/repo-connections';
 import { SdkTargets } from './resources/sdk-targets';
@@ -19,7 +22,8 @@ import { Sdks } from './resources/sdks';
 import { Usage } from './resources/usage';
 
 /** The apitoolchain platform api API client. */
-export class Client extends APIClient {
+export class ApitoolchainApiNode extends APIClient {
+  readonly apiKeys: ApiKeys;
   readonly apis: Apis;
   readonly auth: Auth;
   readonly context: Context;
@@ -29,7 +33,9 @@ export class Client extends APIClient {
   readonly members: Members;
   readonly notifications: Notifications;
   readonly overview: Overview;
+  readonly packageRegistries: PackageRegistries;
   readonly projects: Projects;
+  readonly registryConnections: RegistryConnections;
   readonly releases: Releases;
   readonly repoConnections: RepoConnections;
   readonly sdkTargets: SdkTargets;
@@ -38,6 +44,7 @@ export class Client extends APIClient {
 
   constructor(options: ClientOptions = {}) {
     super({ ...options, apiKey: options.apiKey ?? readEnv("APITOOLCHAIN_API_NODE_API_KEY") });
+    this.apiKeys = new ApiKeys(this);
     this.apis = new Apis(this);
     this.auth = new Auth(this);
     this.context = new Context(this);
@@ -47,7 +54,9 @@ export class Client extends APIClient {
     this.members = new Members(this);
     this.notifications = new Notifications(this);
     this.overview = new Overview(this);
+    this.packageRegistries = new PackageRegistries(this);
     this.projects = new Projects(this);
+    this.registryConnections = new RegistryConnections(this);
     this.releases = new Releases(this);
     this.repoConnections = new RepoConnections(this);
     this.sdkTargets = new SdkTargets(this);

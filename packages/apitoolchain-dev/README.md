@@ -8,12 +8,11 @@ Dev-only tooling for the apitoolchain backend. Not shipped; consumed by
 A **dev-only** Vite plugin (`apitoolchainViteDev`) that makes `bun run dev` in
 `apitoolchain-web` boot the whole backend. On dev-server start it:
 
-1. builds the xyd bridge (`@apitoolchain/xyd-bridge`) if its dist is missing,
-2. starts Postgres + MinIO in throwaway containers via **testcontainers**
+1. starts Postgres + MinIO in throwaway containers via **testcontainers**
    (random host ports — no clash with a local Postgres/MinIO),
-3. installs / migrates / seeds / starts `registry-api` + `platform-api` on free
+2. installs / migrates / seeds / starts `registry-api` + `platform-api` on free
    ports (the services `ensureBucket` themselves against MinIO),
-4. sets `APITOOLCHAIN_API_URL` so the SSR loaders hit the live platform-api.
+3. sets `APITOOLCHAIN_API_URL` so the SSR loaders hit the live platform-api.
 
 It only runs for the dev server (`apply` gated to `command === "serve"` and a
 non-production mode) — never during `vite build` / preview / production. On exit

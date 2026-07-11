@@ -1,4 +1,9 @@
-import { DescriptionList, Menu, Mono } from "@apitoolchain/design-system";
+import {
+  Collapse,
+  DescriptionList,
+  Dropdown,
+  Mono,
+} from "@apitoolchain/design-system";
 import { useState } from "react";
 import { useOutletContext } from "react-router";
 import { RouterLink } from "~/components/RouterLink";
@@ -28,8 +33,18 @@ function installCmd(language: SdkLanguage, pkg: string): string {
 }
 
 export default function SdkTargetOverviewTab() {
-  const { target, label, apiName, base, ready, versions, registryConnections } =
-    useOutletContext<SdkTargetContext>();
+  const {
+    target,
+    label,
+    apiName,
+    base,
+    ready,
+    sdkVersion,
+    versions,
+    registryConnections,
+    openPublish,
+    sdkJson,
+  } = useOutletContext<SdkTargetContext>();
   // Version selector — pick which build's details to show.
   const [versionSel, setVersionSel] = useState(
     versions[0]?.version ?? target.version,
@@ -41,7 +56,7 @@ export default function SdkTargetOverviewTab() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-2">
         <span className="text-sm text-subtle">Version</span>
-        <Menu
+        <Dropdown
           variant="select"
           icon="tags-outline"
           label={formatVersion(shownVersion?.version)}
@@ -68,20 +83,8 @@ export default function SdkTargetOverviewTab() {
             ),
           },
           {
-            label: "Package",
-            value: <Mono>{target.packageName || "—"}</Mono>,
-          },
-          {
-            label: "Version",
-            value: formatVersion(shownVersion?.version ?? target.version),
-          },
-          {
-            label: "Dist-tag",
-            value: <TagBadges tags={shownVersion?.tags ?? []} />,
-          },
-          {
-            label: "Output",
-            value: <Mono tone="muted">{target.output}</Mono>,
+            label: "SDK version",
+            value: formatVersion(sdkVersion),
           },
           {
             label: "API",
@@ -95,26 +98,55 @@ export default function SdkTargetOverviewTab() {
             ),
           },
           {
+            label: "API version",
+            value: formatVersion(target.apiVersion),
+          },
+          {
+            label: "Dist-tag",
+            value: <TagBadges tags={shownVersion?.tags ?? []} />,
+          },
+          {
+            label: "Output",
+            value: <Mono tone="muted">{target.output}</Mono>,
+          },
+          {
+            // The published package name lives on the publisher connection
+            // (decoupled from our internal target name). No publisher yet → a
+            // link to connect one, since the package name is set there.
+            label: "Package name",
+            value:
+              registryConnections.length > 0 ? (
+                <Mono>{registryConnections[0].packageName || "—"}</Mono>
+              ) : (
+                <button
+                  type="button"
+                  onClick={openPublish}
+                  className="cursor-pointer text-blue hover:underline"
+                >
+                  Connect a publisher
+                </button>
+              ),
+          },
+          {
             label: "Published",
             value: shownVersion?.publishedAt ?? "Not published",
           },
-          ...(shownVersion?.registryUrl
-            ? [
-                {
-                  label: "Registry",
-                  value: <Mono tone="muted">{shownVersion.registryUrl}</Mono>,
-                },
-              ]
-            : []),
         ]}
       />
       {ready && (
         <div className="flex flex-col gap-2">
-          <div className="text-sm font-semibold text-ink">Install</div>
+          <div className="text-sm font-semibold text-ink">Install snippet</div>
           {registryConnections.length > 0 ? (
             <div className="rounded-control border border-line bg-surface-muted px-3 py-2.5">
               <Mono>
-                {installCmd(target.language, target.packageName || label)}
+                {installCmd(
+                  target.language,
+                  // The PUBLISHED package name (per registry) — decoupled from
+                  // our internal target name, which may not be what's on npm/pypi.
+                  registryConnections[0].packageName ||
+                    target.packageName ||
+                    label,
+                )}
               </Mono>
             </div>
           ) : (
@@ -130,6 +162,19 @@ export default function SdkTargetOverviewTab() {
             </p>
           )}
         </div>
+      )}
+      {/* The regen config is an advanced detail — kept out of the way behind a
+          collapsed disclosure rather than dumped upfront. */}
+      {sdkJson && (
+        <Collapse
+          icon="settings"
+          title={<span className="font-medium text-ink">sdk.json</span>}
+          description="Regeneration config — a bare opensdk generate re-fetches the API and rebuilds this SDK."
+        >
+          <pre className="m-0 max-h-96 overflow-auto rounded-control border border-line bg-surface-muted px-3 py-2.5 font-mono text-[13px] leading-relaxed text-ink">
+            {sdkJson}
+          </pre>
+        </Collapse>
       )}
     </div>
   );

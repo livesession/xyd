@@ -6,8 +6,8 @@ export type BumpType = "major" | "minor" | "patch" | "none";
 
 /**
  * A single classified API change. Structurally identical to the OpenSDK
- * `IrChange` (from `diffIR` via `@apitoolchain/xyd-bridge`) — re-declared here
- * so this package has NO runtime dependency on the bridge and stays trivially
+ * `IrChange` (from `diffIR` in `@xyd-js/opensdk-core`) — re-declared here so
+ * this package has NO runtime dependency on opensdk and stays trivially
  * unit-testable. The gateway passes `diffIR(base, head).changes` straight in.
  */
 export interface ReleaseChange {

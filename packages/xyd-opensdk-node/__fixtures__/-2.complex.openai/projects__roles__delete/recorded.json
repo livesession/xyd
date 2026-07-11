@@ -1,0 +1,10 @@
+{
+  "call": "projects.roles.delete",
+  "request": {
+    "method": "delete",
+    "path": "/projects/{project_id}/roles/{role_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

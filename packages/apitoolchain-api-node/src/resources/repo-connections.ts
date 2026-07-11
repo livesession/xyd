@@ -54,6 +54,7 @@ export interface RepoConnectionCreateParams {
   releaseMode?: string;
   autoRelease?: boolean;
   baseBranch?: string;
+  distTags?: string;
 }
 
 export interface RepoConnectionReleaseConfigParams {
@@ -61,4 +62,5 @@ export interface RepoConnectionReleaseConfigParams {
   autoRelease: boolean;
   baseBranch?: string;
   prerelease?: boolean;
+  distTags?: string;
 }

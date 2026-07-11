@@ -61,7 +61,7 @@ interface StoryArgs {
 }
 
 const meta: Meta<StoryArgs> = {
-  title: "Design System/FilterComposer",
+  title: "Components/FilterComposer",
   parameters: { layout: "padded" },
   argTypes: {
     table: { control: "text", description: "FROM table" },

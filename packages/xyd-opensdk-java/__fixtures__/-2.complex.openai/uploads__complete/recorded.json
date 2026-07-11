@@ -1,0 +1,13 @@
+{
+  "call": "uploads.complete",
+  "request": {
+    "method": "post",
+    "path": "/uploads/{upload_id}/complete",
+    "query": [],
+    "bodyFields": [
+      "part_ids"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

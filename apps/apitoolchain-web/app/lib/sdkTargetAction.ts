@@ -44,6 +44,7 @@ export async function sdkTargetAction({
       prefix: String(form.get("prefix") ?? ""),
       releaseMode: String(form.get("releaseMode") ?? "") || undefined,
       autoRelease: form.get("autoRelease") === "1",
+      distTags: String(form.get("distTags") ?? "") || undefined,
     });
   }
   if (intent === "release-config") {
@@ -52,6 +53,7 @@ export async function sdkTargetAction({
       autoRelease: form.get("autoRelease") === "1",
       baseBranch: String(form.get("baseBranch") ?? "") || undefined,
       prerelease: form.get("prerelease") === "1",
+      distTags: String(form.get("distTags") ?? "") || undefined,
     });
   }
   if (intent === "prepare-release") {

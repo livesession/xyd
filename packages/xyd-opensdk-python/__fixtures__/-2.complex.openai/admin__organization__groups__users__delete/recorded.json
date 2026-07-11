@@ -1,0 +1,10 @@
+{
+  "call": "admin.organization.groups.users.delete",
+  "request": {
+    "method": "delete",
+    "path": "/organization/groups/{group_id}/users/{user_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

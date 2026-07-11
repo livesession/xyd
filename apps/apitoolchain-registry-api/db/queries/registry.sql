@@ -22,6 +22,13 @@ ON CONFLICT (id) DO UPDATE SET
 -- API in its original project.
 RETURNING *;
 
+-- name: UpdateApi :one
+-- Rename an entry: id/namespace/format/kind/source stay put — only presentation
+-- metadata changes. The handler merges partial input onto the current row.
+UPDATE apis SET name = $2, description = $3, updated_at = now()
+WHERE id = $1
+RETURNING *;
+
 -- name: ListVersions :many
 SELECT * FROM api_versions WHERE api_id = $1 ORDER BY created_at DESC;
 

@@ -3,7 +3,7 @@ import { Button } from "./Button";
 import { Tooltip } from "./Tooltip";
 
 const meta: Meta<typeof Tooltip> = {
-  title: "Design System/Tooltip",
+  title: "Components/Tooltip",
   component: Tooltip,
   parameters: { layout: "centered" },
   args: { content: "A short explanation shown on hover or keyboard focus." },

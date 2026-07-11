@@ -246,7 +246,7 @@ function spawnService(name: string, cwd: string, env: Env): ChildProcess {
   // `--watch` so backend edits (handlers, gen/*, mappers) hot-reload the running
   // service — otherwise a code fix looks "not applied" until the whole dev stack
   // is restarted.
-  const child = spawn("bun", ["--watch", "src/server.ts"], {
+  const child = spawn("bun", ["--watch", "api/main.ts"], {
     cwd,
     env: { ...process.env, ...env },
   });
@@ -376,12 +376,11 @@ async function ensureDeps(dir: string): Promise<void> {
  * Dev-only Vite plugin: boots the whole apitoolchain backend so running the
  * `apitoolchain-web` dev server alone brings up everything. On dev-server start
  * it:
- *   1. builds the xyd bridge (if its dist is missing),
- *   2. starts Postgres + MinIO in throwaway containers (testcontainers, random
+ *   1. starts Postgres + MinIO in throwaway containers (testcontainers, random
  *      host ports — no clashes with a local Postgres/MinIO),
- *   3. installs / migrates / seeds / starts registry-api + platform-api on free
+ *   2. installs / migrates / seeds / starts registry-api + platform-api on free
  *      ports (services `ensureBucket` themselves against MinIO),
- *   4. sets `APITOOLCHAIN_API_URL` so the SSR loaders hit the live platform-api.
+ *   3. sets `APITOOLCHAIN_API_URL` so the SSR loaders hit the live platform-api.
  * Tears everything down on shutdown (testcontainers' Ryuk reaps containers).
  * Skipped when `APITOOLCHAIN_API_URL` is already set (point at an external
  * backend) or `APITOOLCHAIN_STACK=off`.
@@ -416,15 +415,7 @@ export function apitoolchainViteDev(
     pkgs: string,
     log: (m: string) => void,
   ): Promise<string> {
-    // 1. xyd bridge (self-contained dist of the opensdk/openapi surface)
-    const bridge = resolve(pkgs, "apitoolchain-xyd-bridge");
-    if (!existsSync(resolve(bridge, "dist/index.js"))) {
-      log("building xyd bridge…");
-      await ensureDeps(bridge);
-      await run("bun", ["run", "build"], bridge);
-    }
-
-    // 2. containers (random host ports → no conflict with a local Postgres/MinIO)
+    // 1. containers (random host ports → no conflict with a local Postgres/MinIO)
     // Gitea comes up too when a Go toolchain is present, so SDK/spec → repo sync
     // can be tested fully locally with no external tokens.
     const gitEnabled = process.env.APITOOLCHAIN_GIT !== "off" && hasGo();
@@ -439,6 +430,12 @@ export function apitoolchainViteDev(
     // Clean up any leaked containers from a previous run before starting a new
     // stack, so restarts don't pile up Postgres/MinIO/Gitea instances.
     reapStaleContainers(log);
+    // MinIO gets a FIXED host port (env-overridable) so it survives the
+    // container .restart() a snapshot restore performs. A random port would
+    // change on restart, leaving the already-spawned registry-api/platform-api's
+    // baked S3_ENDPOINT_URL pointing at a dead port → ECONNREFUSED on every spec
+    // write (surfaces as "could not store spec bytes" → 422 on every register).
+    const minioPort = Number(process.env.ATC_MINIO_PORT || 9000);
     const containers = await Promise.all([
       new PostgreSqlContainer("postgres:16")
         .withDatabase("apitoolchain")
@@ -447,7 +444,7 @@ export function apitoolchainViteDev(
         .withLabels(DEV_LABELS)
         .start(),
       new GenericContainer("minio/minio:latest")
-        .withExposedPorts(9000)
+        .withExposedPorts({ container: 9000, host: minioPort })
         .withEnvironment({
           MINIO_ROOT_USER: "apitoolchain",
           MINIO_ROOT_PASSWORD: "apitoolchain-secret",
@@ -507,7 +504,7 @@ export function apitoolchainViteDev(
       S3_REGION: "us-east-1",
     };
 
-    // 3. registry-api
+    // 2. registry-api
     const regDir = resolve(apps, "apitoolchain-registry-api");
     const regPort = await freePort();
     const regUrl = `http://localhost:${regPort}`;
@@ -518,12 +515,12 @@ export function apitoolchainViteDev(
     };
     await ensureDeps(regDir);
     log("registry-api: migrate + seed…");
-    await run("bun", ["db/migrate.ts"], regDir, regEnv);
-    await run("bun", ["scripts/seed.ts"], regDir, regEnv);
+    await run("bun", ["db/scripts/migrate.ts"], regDir, regEnv);
+    await run("bun", ["db/scripts/seed.ts"], regDir, regEnv);
     registry = spawnService("registry-api", regDir, regEnv);
     await waitHealthz(`${regUrl}/healthz`, 20000);
 
-    // 4. platform-api (gateway → registry)
+    // 3. platform-api (gateway → registry)
     const platDir = resolve(apps, "apitoolchain-api");
     const platPort = await freePort();
     const platUrl = `http://localhost:${platPort}`;
@@ -535,6 +532,9 @@ export function apitoolchainViteDev(
       // The origin git providers POST release-PR webhooks to. In-container Gitea
       // reaches the host-port gateway via host.docker.internal (mapped above).
       PLATFORM_PUBLIC_URL: `http://host.docker.internal:${platPort}`,
+      // PLATFORM_REGISTRY_HOST is deliberately unset in dev: sdk.json's `spec`
+      // is then a clean host-less registry ref (`apis/<ns>/<api>@<ver>`) instead
+      // of an ephemeral localhost:port URL. Prod sets it to registry.<domain>.
     };
 
     // 4b. git provider service (Go) + Gitea seed — optional. The platform seed
@@ -566,8 +566,8 @@ export function apitoolchainViteDev(
 
     await ensureDeps(platDir);
     log("platform-api: migrate + seed…");
-    await run("bun", ["db/migrate.ts"], platDir, platEnv);
-    await run("bun", ["scripts/seed.ts"], platDir, platEnv);
+    await run("bun", ["db/scripts/migrate.ts"], platDir, platEnv);
+    await run("bun", ["db/scripts/seed.ts"], platDir, platEnv);
     platform = spawnService("platform-api", platDir, platEnv);
     await waitHealthz(`${platUrl}/healthz`, 20000);
 
@@ -594,8 +594,8 @@ export function apitoolchainViteDev(
     // reloads an OLD dump (schema + ledger); running this afterwards upgrades it
     // to the current schema so restored profiles never 500 on new columns.
     const migrate = async (): Promise<void> => {
-      await run("bun", ["db/migrate.ts"], regDir, regEnv);
-      await run("bun", ["db/migrate.ts"], platDir, platEnv);
+      await run("bun", ["db/scripts/migrate.ts"], regDir, regEnv);
+      await run("bun", ["db/scripts/migrate.ts"], platDir, platEnv);
     };
 
     stack = {
@@ -659,6 +659,10 @@ export function apitoolchainViteDev(
 
       // Dev profile picker API. Registered before boot so the picker can list
       // profiles immediately; applying waits until the stack is up.
+      // Serialize applies — two concurrent profile applies would interleave DB
+      // resets + writes (and one's in-flight SDK gen would fail against the
+      // other's wipe). A second request while one runs gets a clear 409.
+      let applyInFlight = false;
       server.middlewares.use((req, res, next) => {
         const url = req.url ?? "";
         if (!url.startsWith("/__atc-dev/")) return next();
@@ -678,6 +682,7 @@ export function apitoolchainViteDev(
           });
           req.on("end", async () => {
             res.setHeader("content-type", "application/json");
+            let owned = false;
             try {
               const body = JSON.parse(raw || "{}") as {
                 id?: string;
@@ -696,6 +701,18 @@ export function apitoolchainViteDev(
                 );
                 return;
               }
+              if (applyInFlight) {
+                res.statusCode = 409;
+                res.end(
+                  JSON.stringify({
+                    error:
+                      "an apply is already running — wait for it to finish",
+                  }),
+                );
+                return;
+              }
+              applyInFlight = true;
+              owned = true;
               const log = (m: string) => logger.info(`${tag} ${m}`);
               await applyOrRestore(
                 profile,
@@ -732,6 +749,8 @@ export function apitoolchainViteDev(
             } catch (e) {
               res.statusCode = 500;
               res.end(JSON.stringify({ error: (e as Error).message }));
+            } finally {
+              if (owned) applyInFlight = false;
             }
           });
           return;
@@ -780,10 +799,16 @@ export function apitoolchainViteDev(
         throw e;
       }
 
-      const stop = () => {
-        void teardown();
-      };
-      server.httpServer?.once("close", stop);
+      // NB: deliberately NOT tearing down on `server.httpServer` "close" — Vite
+      // fires that on every dev-server *restart* (a config-adjacent edit, an env
+      // change, a plugin-requested restart), not just on shutdown. Killing the
+      // gateway + containers there is the bug behind "TypeError: fetch failed /
+      // ECONNREFUSED in getMe after editing apitoolchain-web": the stack dies on
+      // restart, then the re-instantiated plugin sees APITOOLCHAIN_API_URL already
+      // set and skips re-booting, so the web keeps hitting a dead backend until a
+      // manual restart. The stack now PERSISTS across restarts (the running
+      // gateway is simply reused) and is reaped only on real process exit (below),
+      // by testcontainers' Ryuk, and by reapStaleContainers() on the next cold boot.
       process.once("exit", () => {
         registry?.kill();
         platform?.kill();

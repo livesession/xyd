@@ -1,0 +1,10 @@
+{
+  "call": "Admin.Organization.Roles.List",
+  "request": {
+    "method": "get",
+    "path": "/organization/roles",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,11 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { useState } from "react";
-import { Icon, type IconName } from "../icons";
 import { Button } from "./Button";
 import { ModalAnnounce, type ModalAnnounceStep } from "./ModalAnnounce";
 
 const meta: Meta<typeof ModalAnnounce> = {
-  title: "Design System/ModalAnnounce",
+  title: "Components/ModalAnnounce",
   component: ModalAnnounce,
   parameters: { layout: "centered" },
 };
@@ -13,35 +12,24 @@ const meta: Meta<typeof ModalAnnounce> = {
 export default meta;
 type Story = StoryObj<typeof ModalAnnounce>;
 
-/** A big centered icon on a tinted disc — a stand-in for a hero illustration. */
-function HeroIcon({ icon, tone }: { icon: IconName; tone: string }) {
-  return (
-    <div
-      className={`flex h-24 w-24 items-center justify-center rounded-tile ${tone}`}
-    >
-      <Icon icon={icon} size={44} />
-    </div>
-  );
-}
-
 const STEPS: ModalAnnounceStep[] = [
   {
     title: "We proactively block requests",
     description:
       "We identify suspicious requests and automatically block them. You can now see insights about this activity.",
-    media: <HeroIcon icon="shield" tone="bg-blue/10 text-blue" />,
+    media: <ModalAnnounce.HeroIcon icon="shield" tone="blue" />,
   },
   {
     title: "Generate SDKs in one click",
     description:
       "Ship typed client libraries for every language straight from a registered OpenAPI spec.",
-    media: <HeroIcon icon="sdk" tone="bg-green/10 text-green" />,
+    media: <ModalAnnounce.HeroIcon icon="sdk" tone="green" />,
   },
   {
     title: "Publish docs and MCP servers",
     description:
       "Turn the same spec into beautiful reference docs and an MCP server your agents can call.",
-    media: <HeroIcon icon="sparkle" tone="bg-pink/10 text-pink" />,
+    media: <ModalAnnounce.HeroIcon icon="sparkle" tone="pink" />,
   },
 ];
 

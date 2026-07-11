@@ -5,7 +5,7 @@ import { ModalSafeConfirm } from "./ModalSafeConfirm";
 import { Mono } from "./Mono";
 
 const meta: Meta<typeof ModalSafeConfirm> = {
-  title: "Design System/ModalSafeConfirm",
+  title: "Components/ModalSafeConfirm",
   component: ModalSafeConfirm,
   parameters: { layout: "centered" },
 };

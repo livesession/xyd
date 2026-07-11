@@ -48,22 +48,19 @@ tasks (`infra:apitoolchain`, `dev:apitoolchain-registry-api`,
 # 0. dev infra (Postgres on :5433, MinIO on :9000 / console :9001)
 (cd ../../packages/apitoolchain-dev && docker compose up -d)
 
-# 1. build the xyd bridge (bundles the opensdk/openapi surface to dist)
-cd ../../packages/apitoolchain-xyd-bridge && bun install && bun run build
-
-# 2. registry-api (this service)
+# 1. registry-api (this service)
 cd ../../apps/apitoolchain-registry-api
 bun install
-bun run gen        # tsp compile + sqlc generate  (→ generated/, src/db/generated/)
+bun run gen        # tsp compile + sqlc generate  (→ api/openapi/v1/, openapi/v1/__generated__/, dbnode/)
 bun run migrate    # apply db/migrations
 bun run seed       # register a sample Petstore through the real ingest path
 bun run start      # http://localhost:8787
 
-# 3. platform-api (gateway + SDK generation)  — in another shell
+# 2. platform-api (gateway + SDK generation)  — in another shell
 cd ../apitoolchain-api
 bun install && bun run gen && bun run migrate && bun run seed && bun run start   # :8788
 
-# 4. the dashboard, pointed at the platform-api
+# 3. the dashboard, pointed at the platform-api
 cd ../apitoolchain-web
 APITOOLCHAIN_API_URL=http://localhost:8788 bun run dev
 ```
@@ -75,7 +72,23 @@ APITOOLCHAIN_API_URL=http://localhost:8788 bun run dev
   (`registry_migrations` / `platform_migrations`) and disjoint tables; the service
   boundary is enforced at the HTTP layer (platform-api never queries registry tables —
   it calls this service).
-- `generated/` (TypeSpec) and `src/db/generated/` (sqlc) are **generated + committed**;
+- `api/openapi/v1/` (TypeSpec node server), `openapi/v1/__generated__/openapi.yaml`
+  (OpenAPI schema), and `dbnode/<resource>/*.gen.ts` (sqlc + split) are **generated + committed**;
   regenerate with `bun run gen`, never hand-edit.
+
+## Layout (fastd-style)
+
+```
+openapi/v1/           API definition (TypeSpec): main.tsp + routes/ + components/models/ + snippets/
+  __generated__/      emitted OpenAPI schema (openapi.yaml)
+api/
+  main.ts             service entry (router + owned routes + listen)
+  v1/                 handler source — index.ts + __kit/ (mappers, errors) + apis/
+  openapi/v1/         generated node server (TypeSpec http-server-js emitter)
+db/                   raw SQL — migrations/, queries/, scripts/{migrate,seed}.ts
+dbnode/               sqlc output split per resource: <resource>/{models,queries}.gen.ts + index.ts barrel; pool.ts
+spec/                 spec ingestion (ingest.ts)
+config.ts util.ts storage.ts   shared infra
+```
 - Env: copy `.env.example`. `STORAGE_DRIVER=s3` points flystorage at MinIO in dev;
   `local` / a real S3 or GCS bucket are drop-in.

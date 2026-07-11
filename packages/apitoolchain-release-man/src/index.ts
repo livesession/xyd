@@ -3,7 +3,7 @@
  *
  * Spec-diff → semver bump, changelog / PR-body / RELEASES.md rendering, and the
  * `.apitoolchain/release.json` manifest. No DB/HTTP/IO deps: the gateway
- * computes `diffIR(base, head).changes` (via @apitoolchain/xyd-bridge) and pipes
+ * computes `diffIR(base, head).changes` (via @xyd-js/opensdk-core) and pipes
  * the change list through `prepareRelease`, then commits the rendered artifacts.
  */
 

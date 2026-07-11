@@ -138,7 +138,7 @@ const COLUMNS: Column<Api>[] = [
 ];
 
 const meta: Meta = {
-  title: "La/LaTable",
+  title: "LA/LaTable",
   parameters: { layout: "padded" },
 };
 

@@ -1,0 +1,10 @@
+{
+  "call": "Audio.VoiceConsents.Delete",
+  "request": {
+    "method": "delete",
+    "path": "/audio/voice_consents/{consent_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

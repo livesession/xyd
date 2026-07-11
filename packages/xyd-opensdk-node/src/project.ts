@@ -1,5 +1,6 @@
 import type { OpensdkSpecJson } from '@xyd-js/opensdk-core';
 
+import { type ResolvedBusybox, resolveBusybox } from './busybox';
 import { npmPackageName, pascalCase, screamingSnakeCase } from './naming';
 import type { OpensdkNodeOptions } from './types';
 
@@ -11,22 +12,28 @@ export interface ResolvedNodeOptions {
   clientName: string;
   /** `true` → default export (`import X from 'pkg'`); `false` → named export. */
   defaultExport: boolean;
+  /** The resolved error-helper "busybox" config, or `null` when disabled. */
+  busybox: ResolvedBusybox | null;
 }
 
 export function resolveNodeOptions(spec: OpensdkSpecJson, options: OpensdkNodeOptions): ResolvedNodeOptions {
   const pkg = options.packageName ?? npmPackageName(spec.info.title);
-  const exportName = options.exportName?.trim() || 'default';
-  const named = exportName !== 'default';
-  // A custom name (anything but the `package` sentinel) is used verbatim; else the
-  // symbol/class name is derived (PascalCase) from the package name —
-  // `@cloudinary/analysis` → `CloudinaryAnalysis`.
-  const clientName = named && exportName !== 'package' ? exportName : pascalCase(pkg);
+  // Named export iff `exportPackage` is set; otherwise a default export (the
+  // fallback, also when `exportDefault` is set). For the chosen option, a string
+  // is used verbatim as the symbol; `true`/unset → the PascalCase name derived
+  // from the package (`@cloudinary/analysis` → `CloudinaryAnalysis`).
+  const named =
+    options.exportPackage !== undefined && options.exportPackage !== false;
+  const nameOpt = named ? options.exportPackage : options.exportDefault;
+  const clientName =
+    (typeof nameOpt === 'string' ? nameOpt.trim() : '') || pascalCase(pkg);
   return {
     pkg,
     baseURL: options.baseURL ?? spec.servers?.[0] ?? '',
     envVar: options.envVar ?? spec.security?.find((s) => s.envVar)?.envVar ?? `${screamingSnakeCase(pkg)}_API_KEY`,
     clientName,
     defaultExport: !named,
+    busybox: resolveBusybox(options.busybox),
   };
 }
 

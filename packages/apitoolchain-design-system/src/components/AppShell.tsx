@@ -44,3 +44,40 @@ export function AppShell({ sidebar, topBar, children }: AppShellProps) {
     </RightPanelSlot.Provider>
   );
 }
+
+/** A vertical stack of {@link ContentSection}s within {@link AppShell}'s content. */
+export function ContentSections({ children }: { children: ReactNode }) {
+  return <div className="flex min-w-0 flex-col">{children}</div>;
+}
+
+export interface ContentSectionProps {
+  children: ReactNode;
+  /**
+   * Draw a full-bleed top rule — pulled out to the shell gutter (`-mx-12 … px-12`,
+   * like the PageHeader's bottom border) so it runs edge to edge, touching the
+   * sidebar on the left and the right rail on the right. Omit it on the first
+   * section; add it to each later one to set that band apart.
+   */
+  divided?: boolean;
+}
+
+/**
+ * A band of page content inside {@link AppShell}. Stack several in
+ * {@link ContentSections}; a `divided` band draws a full-bleed rule above itself
+ * so it reads as its own area — e.g. a page's details, then a "Targets" band
+ * under a line that touches the sidebar and the right rail.
+ */
+export function ContentSection({
+  children,
+  divided = false,
+}: ContentSectionProps) {
+  return (
+    <section
+      className={
+        divided ? "-mx-12 mt-9 border-t border-line px-12 pt-9" : undefined
+      }
+    >
+      {children}
+    </section>
+  );
+}

@@ -10,6 +10,7 @@ import {
   REGISTRY_CONNECTIONS,
   RELEASES,
   REPO_CONNECTIONS,
+  SDK_BUILDS,
   SDK_TARGETS,
   SDKS,
   TARGET_VERSIONS,
@@ -17,6 +18,7 @@ import {
 } from "./fixtures";
 import { SAMPLE_OPENAPI } from "./sample-openapi";
 import type {
+  ApiKey,
   DocsProject,
   GitProvider,
   GitProviderKind,
@@ -35,6 +37,7 @@ import type {
   RepoConnection,
   RepoTargetKind,
   Sdk,
+  SdkBuild,
   SdkLanguage,
   SdkTarget,
   TargetVersion,
@@ -215,6 +218,9 @@ export interface RegisterApiInput {
   kind?: RegistryEntry["kind"];
   specText?: string;
   url?: string;
+  /** Dist-tag to publish under (default `latest`). Non-`latest` tags (canary,
+   * beta…) add the version without moving `latest`/current. */
+  distTag?: string;
 }
 
 export type RegisterApiResult =
@@ -244,6 +250,39 @@ export async function registerApi(
     return {
       ok: false,
       message: body.message ?? `Registration failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, api: mapEntry(body) };
+}
+
+/**
+ * Rename a registry entry via the gateway `PATCH /apis/{id}` (display name +
+ * description only — the id/slug and namespace are immutable). Server-side; used
+ * by an action.
+ */
+export async function updateApi(
+  apiId: string,
+  input: { name?: string; description?: string },
+): Promise<RegisterApiResult> {
+  if (!apiBase()) {
+    return {
+      ok: false,
+      message: "Backend not configured — set APITOOLCHAIN_API_URL.",
+    };
+  }
+  const res = await apiFetch(`/apis/${encodeURIComponent(apiId)}`, {
+    method: "PATCH",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  const body = (await res.json()) as WireEntry & {
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number") {
+    return {
+      ok: false,
+      message: body.message ?? `Rename failed (HTTP ${res.status})`,
     };
   }
   return { ok: true, api: mapEntry(body) };
@@ -332,6 +371,22 @@ export async function fetchSdkArtifact(id: string): Promise<Response | null> {
   return res;
 }
 
+/**
+ * The generated `sdk.json` (regen config, with `spec` → the registry) for a
+ * built target — the gateway serves the copy it stored at build time (a direct
+ * read, no full-artifact download). Returns the raw JSON text, or undefined when
+ * the target isn't built yet (404). `sdk.json` is a real build artifact, so
+ * fixture mode (no build) has nothing to show — no synthetic sample.
+ */
+export async function getSdkTargetSdkJson(
+  id: string,
+): Promise<string | undefined> {
+  if (!apiBase()) return undefined;
+  const res = await apiFetch(`/sdk-targets/${encodeURIComponent(id)}/sdk.json`);
+  if (!res.ok) return undefined;
+  return res.text();
+}
+
 /** Delete an SDK target (from the detail danger zone). */
 export async function deleteSdkTarget(
   id: string,
@@ -361,6 +416,8 @@ const mapSdkEntity = (w: WireSdk): Sdk => ({
   name: w.name,
   description: w.description,
   namespace: w.ns,
+  version: w.version,
+  registryRef: w.registryRef,
   targetCount: w.targetCount,
   createdAt: ts(w.createdAt),
   updatedAt: ts(w.updatedAt),
@@ -397,6 +454,8 @@ export type CreateSdkResult =
 export async function createSdk(input: {
   apiId: string;
   name?: string;
+  /** Explicit id/slug (decoupled from `name`); slugified server-side. */
+  id?: string;
   description?: string;
 }): Promise<CreateSdkResult> {
   if (!apiBase()) return { ok: false, message: "Backend not configured." };
@@ -423,12 +482,18 @@ export async function addSdkTarget(
   sdkId: string,
   language: SdkLanguage,
   version?: string,
+  /** A serialized custom sdk.json (the wizard flow) — applied at generation. */
+  sdkJson?: string,
 ): Promise<{ ok: true; target: SdkTarget } | { ok: false; message: string }> {
   if (!apiBase()) return { ok: false, message: "Backend not configured." };
   const res = await apiFetch(`/sdks/${encodeURIComponent(sdkId)}/targets`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ language, ...(version ? { version } : {}) }),
+    body: JSON.stringify({
+      language,
+      ...(version ? { version } : {}),
+      ...(sdkJson ? { sdkJson } : {}),
+    }),
   });
   const body = (await res.json()) as SdkTarget & {
     message?: string;
@@ -441,6 +506,69 @@ export async function addSdkTarget(
     };
   }
   return { ok: true, target: mapSdk(body) };
+}
+
+/**
+ * Rebuild every target of an SDK from one API spec version (default: the API's
+ * current). Returns the now-`building` targets. Decoupled from each target's own
+ * package version.
+ */
+export async function buildSdk(
+  sdkId: string,
+  apiVersion?: string,
+): Promise<
+  { ok: true; targets: SdkTarget[] } | { ok: false; message: string }
+> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await apiFetch(`/sdks/${encodeURIComponent(sdkId)}/build`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(apiVersion ? { apiVersion } : {}),
+  });
+  const body = (await res.json()) as
+    | SdkTarget[]
+    | { message?: string; statusCode?: number };
+  if (!res.ok || !Array.isArray(body)) {
+    const err = body as { message?: string };
+    return {
+      ok: false,
+      message: err.message ?? `Build failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, targets: body.map(mapSdk) };
+}
+
+/** The SDK's build/version history (newest first) — `GET /sdks/{id}/versions`. */
+export async function listSdkBuilds(sdkId: string): Promise<SdkBuild[]> {
+  if (!apiBase()) return SDK_BUILDS.filter((b) => b.sdkId === sdkId);
+  return get<SdkBuild[]>(`/sdks/${encodeURIComponent(sdkId)}/versions`);
+}
+
+/**
+ * Create a new SDK version: bump the SDK version + rebuild every target from a
+ * chosen API spec version, recorded as a build — `POST /sdks/{id}/versions`.
+ */
+export async function createSdkVersion(
+  sdkId: string,
+  input: { version: string; apiVersion?: string },
+): Promise<{ ok: true; build: SdkBuild } | { ok: false; message: string }> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await apiFetch(`/sdks/${encodeURIComponent(sdkId)}/versions`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(input),
+  });
+  const body = (await res.json()) as SdkBuild & {
+    message?: string;
+    statusCode?: number;
+  };
+  if (!res.ok || typeof body.statusCode === "number") {
+    return {
+      ok: false,
+      message: body.message ?? `Create version failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, build: body };
 }
 
 export async function deleteSdk(
@@ -698,6 +826,62 @@ export async function listMembers(): Promise<Member[]> {
   return get<Member[]>("/members");
 }
 
+// ── API keys ─────────────────────────────────────────────────────────────────
+const mapApiKey = (w: ApiKey): ApiKey => ({
+  ...w,
+  createdAt: ts(w.createdAt),
+  lastUsedAt: tsOpt(w.lastUsedAt),
+});
+
+export async function listApiKeys(): Promise<ApiKey[]> {
+  if (!apiBase()) return [];
+  return (await get<ApiKey[]>("/api-keys")).map(mapApiKey);
+}
+
+/** Create a key — the secret is returned ONCE (show it, it can't be re-fetched). */
+export async function createApiKey(
+  name: string,
+): Promise<
+  { ok: true; key: ApiKey; secret: string } | { ok: false; message: string }
+> {
+  if (!apiBase()) return backendRequired;
+  const res = await apiFetch("/api-keys", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ name }),
+  });
+  const body = (await res.json().catch(() => ({}))) as {
+    key?: ApiKey;
+    secret?: string;
+    message?: string;
+    statusCode?: number;
+  };
+  if (
+    !res.ok ||
+    typeof body.statusCode === "number" ||
+    !body.key ||
+    !body.secret
+  ) {
+    return {
+      ok: false,
+      message: body.message ?? `Failed (HTTP ${res.status})`,
+    };
+  }
+  return { ok: true, key: mapApiKey(body.key), secret: body.secret };
+}
+
+export async function revokeApiKey(
+  id: string,
+): Promise<{ ok: boolean; message?: string }> {
+  if (!apiBase()) return backendRequired;
+  const res = await apiFetch(`/api-keys/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+  if (res.ok) return { ok: true };
+  const body = (await res.json().catch(() => ({}))) as { message?: string };
+  return { ok: false, message: body.message ?? `Failed (HTTP ${res.status})` };
+}
+
 async function memberMutation(
   path: string,
   init: RequestInit,
@@ -867,6 +1051,9 @@ export async function createRepoConnection(input: {
   releaseMode?: string;
   autoRelease?: boolean;
   baseBranch?: string;
+  /** Comma-separated dist-tags this connection reacts to (default `latest`;
+   * `*` = all). */
+  distTags?: string;
 }): Promise<
   { ok: true; connection: RepoConnection } | { ok: false; message: string }
 > {
@@ -1197,6 +1384,9 @@ export async function setReleaseConfig(
     autoRelease: boolean;
     baseBranch?: string;
     prerelease?: boolean;
+    /** Comma-separated dist-tags this connection reacts to (default `latest`;
+     * `*` = all). */
+    distTags?: string;
   },
 ): Promise<
   { ok: true; connection: RepoConnection } | { ok: false; message: string }

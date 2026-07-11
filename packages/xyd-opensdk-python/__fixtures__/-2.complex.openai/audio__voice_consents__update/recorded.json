@@ -1,0 +1,13 @@
+{
+  "call": "audio.voice_consents.update",
+  "request": {
+    "method": "post",
+    "path": "/audio/voice_consents/{consent_id}",
+    "query": [],
+    "bodyFields": [
+      "name"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

@@ -17,7 +17,18 @@ const preview: Preview = {
       ],
     },
     options: {
-      storySort: { method: "alphabetical" },
+      // Explicit top-level order (Design System first), alphabetical within.
+      storySort: {
+        method: "alphabetical",
+        order: [
+          "Design System",
+          ["Icons", "Design tokens", "*"],
+          "Components",
+          "Auth",
+          "LA",
+          "*",
+        ],
+      },
     },
   },
 };

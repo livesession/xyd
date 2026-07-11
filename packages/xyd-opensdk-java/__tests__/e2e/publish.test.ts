@@ -2,18 +2,25 @@ import path from 'node:path';
 
 import { describe, it } from 'vitest';
 
-import { adapterReady, javaPublishAdapter, publishRoundTrip } from '@xyd-js/opensdk-ci';
+import { adapterReady, javaPublishAdapter, listComplexCorpora, publishRoundTrip } from '@xyd-js/opensdk-ci';
 
 import { opensdkJava, publishJava } from '../../index';
 
 // PUBLISH e2e (gated E2E_SDK_PUBLISH=1 + `mvn` + PUBLISH_MAVEN_REPO): mvn-deploy
-// the openai SDK to a local file:// Maven repo, then compile a consumer that
-// resolves the artifact and imports the Client (compile proves consumability).
+// each complex-corpus SDK to a local file:// Maven repo, then compile a consumer
+// that resolves the artifact and imports the Client (compile proves consumability).
 const adapter = javaPublishAdapter();
-const FIXTURES = path.join(__dirname, '../../__fixtures__/-2.complex.openai');
 
-describe.runIf(adapterReady(adapter))('openai publish e2e (java → Maven file:// repo)', () => {
-  it('deploys, and a consumer resolves + compiles against the artifact', async () => {
-    await publishRoundTrip({ fixturesDir: FIXTURES, sdkName: 'openai', generate: opensdkJava, publish: publishJava, adapter });
-  }, 600000);
-});
+for (const corpus of listComplexCorpora(path.join(__dirname, '../../__fixtures__'))) {
+  describe.runIf(adapterReady(adapter))(`${corpus.name} publish e2e (java → Maven file:// repo)`, () => {
+    it('deploys, and a consumer resolves + compiles against the artifact', async () => {
+      await publishRoundTrip({
+        fixturesDir: corpus.dir,
+        sdkName: corpus.name,
+        generate: opensdkJava,
+        publish: publishJava,
+        adapter,
+      });
+    }, 600000);
+  });
+}

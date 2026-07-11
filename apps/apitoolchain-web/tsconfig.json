@@ -35,6 +35,34 @@
       ],
       "@xyd-js/theme-opener": [
         "../../packages/xyd-theme-opener/dist/index.d.ts"
+      ],
+      "@xyd-js/openapi2opensdk": [
+        "../../packages/xyd-openapi2opensdk/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-core": [
+        "../../packages/xyd-opensdk-core/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-framework": [
+        "../../packages/xyd-opensdk-framework/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-go": ["../../packages/xyd-opensdk-go/dist/index.d.ts"],
+      "@xyd-js/opensdk-node": [
+        "../../packages/xyd-opensdk-node/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-python": [
+        "../../packages/xyd-opensdk-python/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-ruby": [
+        "../../packages/xyd-opensdk-ruby/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-java": [
+        "../../packages/xyd-opensdk-java/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-dotnet": [
+        "../../packages/xyd-opensdk-dotnet/dist/index.d.ts"
+      ],
+      "@xyd-js/opensdk-uniform": [
+        "../../packages/xyd-opensdk-uniform/dist/index.d.ts"
       ]
     },
     "esModuleInterop": true,

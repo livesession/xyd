@@ -29,6 +29,8 @@ const VARIANT: Record<ButtonVariant, string> = {
   warning:
     "border-transparent bg-amber-btn text-white hover:bg-amber-btn-hover",
   danger: "border-transparent bg-danger text-white hover:opacity-90",
+  "danger-ghost":
+    "border-transparent bg-transparent text-danger hover:bg-danger-bg",
 };
 
 const SIZE: Record<ButtonCTASize, string> = {

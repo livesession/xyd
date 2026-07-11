@@ -36,7 +36,7 @@ const FILTERS: Def[] = [
 ];
 
 const meta: Meta<typeof FilterBar> = {
-  title: "Design System/FilterBar",
+  title: "Components/FilterBar",
   component: FilterBar,
   parameters: { layout: "padded" },
 };

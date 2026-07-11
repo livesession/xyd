@@ -4,7 +4,7 @@ import { DropdownMenu } from "./DropdownMenu";
 import { RightPanel, RightPanelSection } from "./RightPanel";
 
 const meta: Meta<typeof RightPanel> = {
-  title: "Design System/RightPanel",
+  title: "Components/RightPanel",
   component: RightPanel,
   parameters: { layout: "padded" },
 };
@@ -26,7 +26,7 @@ export const Default: Story = {
             Generate SDKs
           </Button>
         </RightPanelSection>
-        <RightPanelSection title="At a glance">
+        <RightPanelSection title="Meta">
           <div className="rounded-control border border-line bg-surface p-3 text-sm text-subtle">
             Some stats…
           </div>

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Mono } from "./Mono";
 
 const meta: Meta<typeof Mono> = {
-  title: "Design System/Mono",
+  title: "Components/Mono",
   component: Mono,
   parameters: { layout: "centered" },
   argTypes: {

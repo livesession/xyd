@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Search } from "./Search";
 
 const meta: Meta<typeof Search> = {
-  title: "Design System/Search",
+  title: "Components/Search",
   component: Search,
   parameters: { layout: "padded" },
   argTypes: { placeholder: { control: "text" } },

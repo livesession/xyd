@@ -1,7 +1,12 @@
 export type { ActivityItem, ActivityListProps } from "./ActivityList";
 export { ActivityList } from "./ActivityList";
-export type { AppShellProps } from "./AppShell";
-export { AppShell, RightPanelSlot } from "./AppShell";
+export type { AppShellProps, ContentSectionProps } from "./AppShell";
+export {
+  AppShell,
+  ContentSection,
+  ContentSections,
+  RightPanelSlot,
+} from "./AppShell";
 export type { BadgeProps, BadgeTone, StatusPillProps } from "./Badge";
 export { Badge, StatusPill } from "./Badge";
 export type { BreadcrumbItem, BreadcrumbProps } from "./Breadcrumb";
@@ -22,8 +27,14 @@ export type { ChecklistItemProps } from "./ChecklistItem";
 export { ChecklistItem } from "./ChecklistItem";
 export type { CollapseProps } from "./Collapse";
 export { Collapse } from "./Collapse";
+export type { ComboboxOption, ComboboxProps } from "./Combobox";
+export { Combobox } from "./Combobox";
+export type { ComboboxMenuOption, ComboboxMenuProps } from "./ComboboxMenu";
+export { ComboboxMenu } from "./ComboboxMenu";
 export type { DescriptionItem, DescriptionListProps } from "./DescriptionList";
 export { DescriptionList } from "./DescriptionList";
+export type { DropdownItem, DropdownProps } from "./Dropdown";
+export { Dropdown } from "./Dropdown";
 export type { DropdownMenuItem, DropdownMenuProps } from "./DropdownMenu";
 export { DropdownMenu } from "./DropdownMenu";
 export type { EmptyStateProps } from "./EmptyState";
@@ -49,11 +60,11 @@ export type { LiveSessionWordmarkProps } from "./LiveSessionWordmark";
 export { LiveSessionWordmark } from "./LiveSessionWordmark";
 export type { LogoProps } from "./Logo";
 export { Logo } from "./Logo";
-export type { MenuItem, MenuProps } from "./Menu";
-export { Menu } from "./Menu";
 export type { ModalProps } from "./Modal";
 export { Modal } from "./Modal";
 export type {
+  HeroIconProps,
+  HeroIconTone,
   ModalAnnounceProps,
   ModalAnnounceStep,
 } from "./ModalAnnounce";

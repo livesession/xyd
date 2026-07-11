@@ -1,0 +1,13 @@
+{
+  "call": "fineTuning.alpha.graders.validate.create",
+  "request": {
+    "method": "post",
+    "path": "/fine_tuning/alpha/graders/validate",
+    "query": [],
+    "bodyFields": [
+      "grader"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

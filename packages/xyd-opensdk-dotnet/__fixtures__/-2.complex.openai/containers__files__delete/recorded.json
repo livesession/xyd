@@ -1,0 +1,10 @@
+{
+  "call": "Containers.Files.Delete",
+  "request": {
+    "method": "delete",
+    "path": "/containers/{container_id}/files/{file_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

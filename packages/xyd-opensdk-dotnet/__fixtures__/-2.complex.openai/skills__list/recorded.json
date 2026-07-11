@@ -1,0 +1,10 @@
+{
+  "call": "Skills.List",
+  "request": {
+    "method": "get",
+    "path": "/skills",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

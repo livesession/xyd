@@ -9,13 +9,23 @@
 // language-neutral planner (planMethodExample / planExample) so the Java, Go
 // and Python suites exercise identical shapes.
 import type { Field, Method, NamedType, OpensdkSpecJson, Resource, TypeRef } from '@xyd-js/opensdk-core';
-import type { ExampleValue, GeneratedFile, MethodExample } from '@xyd-js/opensdk-framework';
-import { planMethodExample } from '@xyd-js/opensdk-framework';
+import type {
+  ExampleValue,
+  GeneratedFile,
+  MethodExample,
+  NeutralTypeField,
+  NeutralTypeReference,
+  OperationPlan,
+  RenderedTypeField,
+  RenderedTypeReference,
+} from '@xyd-js/opensdk-framework';
+import { planMethodExample, planOperation, planTypeReference, refSchemaName } from '@xyd-js/opensdk-framework';
 
-import { constLiteral, isConstField } from './javatype';
+import { constLiteral, isConstField, javaType } from './javatype';
 import { javaFile } from './javawriter';
 import { camelCase, javaMethodName, pascalCase, resourceQualifier, screamingSnakeCase, serviceTypeName } from './naming';
 import type { JavaCtx } from './project';
+import { planParams, returnPlan } from './service';
 
 const MOCK_BASE_URL = 'http://localhost:4010';
 
@@ -228,6 +238,145 @@ export function renderJavaExample(value: ExampleValue, ctx: JavaCtx): string {
     default:
       return 'null';
   }
+}
+
+/**
+ * Whether the method returns a value (drives `var result = ...` vs a bare call)
+ * — mirrors service.ts `returnPlan`: a binary download, a paginated page, or a
+ * primary response other than `none` yields a result.
+ */
+function methodHasResult(method: Method, op: OperationPlan): boolean {
+  return (
+    op.binaryContentType != null ||
+    op.pageName != null ||
+    (method.primaryResponse != null && op.primaryResponse !== 'none')
+  );
+}
+
+/**
+ * A single per-operation USAGE SNIPPET (docs): a self-contained, runnable-looking
+ * `Example` class whose `main` constructs the client and makes ONE required-only
+ * call (à la Fern/Speakeasy/Stainless), mirroring the Go/Python emitters. Reuses
+ * the same client accessor-chain builder + params-builder assembly the test suite
+ * uses, minus the mock/assert/guard scaffolding. `segments` is the resource-name
+ * chain the method hangs off (root→owner).
+ */
+export function generateJavaUsage(method: Method, segments: string[], ctx: JavaCtx): string {
+  const op = planOperation(method, ctx.types);
+  const methodName = javaMethodName(method.action);
+  const pascalMethod = pascalCase(methodName);
+  const chain = clientChain(segments);
+  const constNames = new Set(constBodyFieldNames(method, ctx));
+
+  // A doc usage snippet: ALL fields with realistic (spec example/default) values.
+  // (Nested request-body objects still render `new X()` — generated Java models
+  // are decode-only POJOs with no builder/setters; see renderJavaExample.)
+  const example = planMethodExample(method, ctx.types, { realistic: true, withOptional: true });
+  const pathArgs = example.pathArgs.map((pa) => renderJavaExample(pa.value, ctx));
+  const params = methodHasParams(method, ctx)
+    ? renderParamsBuilder(segments, method, pascalMethod, example, constNames, ctx)
+    : null;
+  const call = callExpr(chain, methodName, pathArgs, params);
+
+  const envVar = ctx.envVar ?? `${screamingSnakeCase(ctx.pkg)}_API_KEY`;
+  const keyExpr = `System.getenv(${JSON.stringify(envVar)})`;
+  const hasResult = methodHasResult(method, op);
+
+  const callLine = hasResult ? `    var result = ${call};` : `    ${call};`;
+  const printLine = hasResult ? '\n    System.out.println(result);' : '';
+  // Client construction: normally the default base URL. When `baseUrlEnv` is set
+  // (the snippet-run tier), also read the base URL from that env var so the
+  // snippet can target a recording server. Only alters output when set — default
+  // snippet output stays BYTE-IDENTICAL.
+  const builderExpr = ctx.baseUrlEnv
+    ? `Client.builder().apiKey(${keyExpr}).baseUrl(System.getenv(${JSON.stringify(ctx.baseUrlEnv)})).build()`
+    : `Client.builder().apiKey(${keyExpr}).build()`;
+  const body =
+    `public final class Example {\n` +
+    `  public static void main(String[] args) {\n` +
+    `    Client client = ${builderExpr};\n` +
+    `${callLine}${printLine}\n` +
+    `  }\n}`;
+  return javaFile(ctx.fullPackage, [], body);
+}
+
+// ---- type reference (Atlas SDK-types view) -------------------------------
+
+/** The params-class FIELD type as a consumer sees it — mirrors paramsFile2's
+ * accessor return type (optional fields surface as `Optional<T>`, required as
+ * the bare `javaType`); a display string, no Imports tracking. */
+function javaFieldTypeDisplay(f: NeutralTypeField, types: Map<string, NamedType>): string {
+  const base = javaType(f.typeRef, types);
+  return f.required ? base : `Optional<${base}>`;
+}
+
+function javaRenderField(f: NeutralTypeField, types: Map<string, NamedType>): RenderedTypeField {
+  return {
+    name: camelCase(f.logicalName),
+    langType: javaFieldTypeDisplay(f, types),
+    required: f.required,
+    description: f.description,
+    deprecated: f.deprecated,
+    refTypeName: refSchemaName(f.typeRef),
+  };
+}
+
+function javaResponse(
+  method: Method,
+  op: OperationPlan,
+  neutral: NeutralTypeReference,
+  ctx: JavaCtx,
+): RenderedTypeReference['response'] {
+  if (op.binaryContentType) return { langType: 'byte[]', note: `binary download (${op.binaryContentType})` };
+  const ref = neutral.response.typeRef;
+  if (!ref || op.primaryResponse === 'none') return { langType: 'void', note: 'no response body' };
+  const typeName = javaType(ref, ctx.types);
+  const note = op.pageName ? `paginated (${op.pageName})` : undefined;
+  if (neutral.response.fields) {
+    return {
+      typeName,
+      note,
+      fields: neutral.response.fields.map((rf) => ({
+        name: camelCase(rf.logicalName),
+        langType: javaType(rf.typeRef, ctx.types),
+        required: rf.required,
+        description: rf.description,
+        deprecated: rf.deprecated,
+        refTypeName: refSchemaName(rf.typeRef),
+      })),
+    };
+  }
+  return { typeName, langType: typeName, note };
+}
+
+/**
+ * The per-operation TYPE REFERENCE for Java: the call signature, the request
+ * params class's field rows, and the response type — the SDK-native view Atlas
+ * renders in place of the REST param definitions. Mirrors the Go emitter's
+ * generateGoTypeReference, using this emitter's own method-name / params-class
+ * / return-type primitives.
+ */
+export function generateJavaTypeReference(method: Method, segments: string[], ctx: JavaCtx): RenderedTypeReference {
+  const types = ctx.types;
+  const op = planOperation(method, types);
+  const neutral = planTypeReference(method, types);
+  const methodName = javaMethodName(method.action);
+  const params = planParams(segments, method, op, ctx);
+
+  const requestFields = neutral.request.fields.map((f) => javaRenderField(f, types));
+
+  // Signature: `client.pets().create(params) -> Pet` — the accessor-chain
+  // receiver + method + arg names (path args, then a `params` arg when present),
+  // and the emitter's own return type (returnPlan.type).
+  const argNames = op.paramGroups.path.map((p) => camelCase(p.name));
+  if (params) argNames.push('params');
+  const signature = `${clientChain(segments)}.${methodName}(${argNames.join(', ')}) -> ${returnPlan(method, op, ctx).type}`;
+
+  return {
+    signature,
+    request: { typeName: params?.className, argName: params ? 'params' : undefined, fields: requestFields },
+    response: javaResponse(method, op, neutral, ctx),
+  };
 }
 
 /** Whether an example element renders to a self-typed literal (safe inside List.of / Map.of). */

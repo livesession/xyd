@@ -1,5 +1,11 @@
 import { redirect } from "react-router";
-import { addSdkTarget, deleteSdk, type SdkLanguage } from "~/data";
+import {
+  addSdkTarget,
+  buildSdk,
+  createSdkVersion,
+  deleteSdk,
+  type SdkLanguage,
+} from "~/data";
 
 /**
  * The shared action for the SDK-detail tab tree (layout + every tab re-exports
@@ -31,6 +37,22 @@ export async function sdkDetailAction({
       return { ok: false as const, message: failed.message };
     }
     return { ok: true as const };
+  }
+  if (intent === "build-sdk") {
+    const apiVersion = String(form.get("apiVersion") ?? "");
+    const res = await buildSdk(sdkId, apiVersion || undefined);
+    if (res.ok) return { ok: true as const };
+    return { ok: false as const, message: res.message };
+  }
+  if (intent === "create-version") {
+    const version = String(form.get("version") ?? "").trim();
+    const apiVersion = String(form.get("apiVersion") ?? "");
+    const res = await createSdkVersion(sdkId, {
+      version,
+      apiVersion: apiVersion || undefined,
+    });
+    if (res.ok) return { ok: true as const };
+    return { ok: false as const, message: res.message };
   }
   return { ok: false as const, message: "Unknown action" };
 }

@@ -1,4 +1,5 @@
-import { type ReactNode, useId } from "react";
+import { type ReactNode, useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 export type TooltipSide = "top" | "bottom" | "left" | "right";
 
@@ -11,32 +12,100 @@ export interface TooltipProps {
   side?: TooltipSide;
 }
 
-const SIDE: Record<TooltipSide, string> = {
-  top: "bottom-full left-1/2 -translate-x-1/2 mb-1.5",
-  bottom: "top-full left-1/2 -translate-x-1/2 mt-1.5",
-  left: "right-full top-1/2 -translate-y-1/2 mr-1.5",
-  right: "left-full top-1/2 -translate-y-1/2 ml-1.5",
-};
+/** Fixed-position placement (left/top + transform) for the bubble, per side. */
+function place(
+  side: TooltipSide,
+  r: DOMRect,
+): { left: number; top: number; transform: string } {
+  switch (side) {
+    case "bottom":
+      return {
+        left: r.left + r.width / 2,
+        top: r.bottom + 6,
+        transform: "translate(-50%, 0)",
+      };
+    case "left":
+      return {
+        left: r.left - 6,
+        top: r.top + r.height / 2,
+        transform: "translate(-100%, -50%)",
+      };
+    case "right":
+      return {
+        left: r.right + 6,
+        top: r.top + r.height / 2,
+        transform: "translate(0, -50%)",
+      };
+    default:
+      return {
+        left: r.left + r.width / 2,
+        top: r.top - 6,
+        transform: "translate(-50%, -100%)",
+      };
+  }
+}
 
 /**
  * A general tooltip: wrap any trigger and pass `content`. Reveals on hover and
- * on keyboard focus of the trigger (`group-focus-within`) — pure CSS, no JS. The
- * bubble is `pointer-events-none` so it never eats the trigger's interactions.
+ * on keyboard focus. The bubble is portaled to `<body>` with fixed positioning
+ * so an ancestor's overflow (e.g. a modal) can never clip it, and it's
+ * `pointer-events-none` so it never eats the trigger's interactions.
  */
 export function Tooltip({ content, children, side = "top" }: TooltipProps) {
   const id = useId();
+  const triggerRef = useRef<HTMLSpanElement | null>(null);
+  const [rect, setRect] = useState<DOMRect | null>(null);
+
+  const show = () =>
+    setRect(triggerRef.current?.getBoundingClientRect() ?? null);
+  const hide = () => setRect(null);
+
+  // While shown, keep the bubble pinned to the trigger through scroll/resize.
+  useEffect(() => {
+    if (!rect) return;
+    const track = () =>
+      setRect(triggerRef.current?.getBoundingClientRect() ?? null);
+    window.addEventListener("scroll", track, true);
+    window.addEventListener("resize", track);
+    return () => {
+      window.removeEventListener("scroll", track, true);
+      window.removeEventListener("resize", track);
+    };
+  }, [rect]);
+
+  const pos = rect ? place(side, rect) : null;
+
   return (
-    <span className="group relative inline-flex">
-      <span aria-describedby={id} className="inline-flex">
+    <>
+      <span
+        ref={triggerRef}
+        aria-describedby={rect ? id : undefined}
+        className="inline-flex"
+        onMouseEnter={show}
+        onMouseLeave={hide}
+        onFocus={show}
+        onBlur={hide}
+      >
         {children}
       </span>
-      <span
-        role="tooltip"
-        id={id}
-        className={`pointer-events-none absolute z-50 w-max max-w-[240px] whitespace-normal rounded-control bg-ink px-2 py-1 text-xs leading-snug text-surface opacity-0 shadow-md transition-opacity duration-100 group-hover:opacity-100 group-focus-within:opacity-100 ${SIDE[side]}`}
-      >
-        {content}
-      </span>
-    </span>
+      {pos &&
+        createPortal(
+          <span
+            role="tooltip"
+            id={id}
+            style={{
+              position: "fixed",
+              left: pos.left,
+              top: pos.top,
+              transform: pos.transform,
+              zIndex: 80,
+            }}
+            className="pointer-events-none w-max max-w-[240px] whitespace-normal rounded-control bg-ink px-2 py-1 text-xs leading-snug text-surface shadow-md"
+          >
+            {content}
+          </span>,
+          document.body,
+        )}
+    </>
   );
 }

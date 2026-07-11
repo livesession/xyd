@@ -39,11 +39,18 @@ export interface DropdownMenuProps {
    * re-opening on later re-renders.
    */
   defaultOpen?: boolean;
+  /**
+   * Cap the panel height and scroll its items when they'd exceed it — for long
+   * lists (e.g. an API's many endpoints) that would otherwise run off-screen. A
+   * number is px; a string is raw CSS (e.g. `"60vh"`, `"min(360px,50vh)"`).
+   * Unset = the panel grows to fit every item.
+   */
+  maxHeight?: number | string;
 }
 
 /**
  * A headless-ish dropdown: bring your own trigger, get a positioned item panel
- * with click-outside + Escape close (SSR-guarded). {@link Menu} and
+ * with click-outside + Escape close (SSR-guarded). {@link Dropdown} and
  * {@link ButtonGroup} are thin compositions over this.
  */
 export function DropdownMenu({
@@ -55,6 +62,7 @@ export function DropdownMenu({
   linkComponent,
   closeOnSelect = true,
   defaultOpen = false,
+  maxHeight,
 }: DropdownMenuProps) {
   const [open, setOpen] = useState(defaultOpen);
   const ref = useRef<HTMLDivElement | null>(null);
@@ -97,7 +105,8 @@ export function DropdownMenu({
       </div>
       {open && (
         <div
-          className={`absolute z-40 min-w-[220px] rounded-tile border border-line bg-surface p-1.5 shadow-card-hover ${sideCls} ${align === "right" ? "right-0" : "left-0"}`}
+          className={`absolute z-40 min-w-[220px] rounded-tile border border-line bg-surface p-1.5 shadow-card-hover ${sideCls} ${align === "right" ? "right-0" : "left-0"} ${maxHeight != null ? "overflow-y-auto overscroll-contain" : ""}`}
+          style={maxHeight != null ? { maxHeight } : undefined}
         >
           {items.map((it) =>
             it.kind === "separator" ? (

@@ -6,7 +6,7 @@ import { Input } from "./Input";
 import { Modal } from "./Modal";
 
 const meta: Meta<typeof Modal> = {
-  title: "Design System/Modal",
+  title: "Components/Modal",
   component: Modal,
   parameters: { layout: "centered" },
   argTypes: {
