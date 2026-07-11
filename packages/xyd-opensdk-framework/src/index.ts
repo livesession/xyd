@@ -16,7 +16,15 @@ export type {
 } from './types';
 export { registerEmitter, getEmitter, applyConfig, resolveLanguage, languageAliases } from './registry';
 export { generate, generateFileMap } from './orchestrator';
-export { writeProject, materializeProject, deepMergeJson, SDK_LOCK_FILENAME } from './write';
+export {
+  writeProject,
+  materializeProject,
+  deepMergeJson,
+  parseSdkIgnore,
+  isSdkIgnored,
+  SDK_LOCK_FILENAME,
+  SDK_IGNORE_FILENAME,
+} from './write';
 export type { ProjectManifest, WriteProjectOptions, WriteProjectResult } from './write';
 export { planOperation } from './operation-plan';
 export type {

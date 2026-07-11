@@ -12,6 +12,18 @@ import type { GeneratedFileEntry, ProjectFileMap, WriteMode } from './types';
  */
 export const SDK_LOCK_FILENAME = '.sdk/sdk.lock';
 
+/**
+ * A user-authored, gitignore-style ignore file at the SDK root. Any generated
+ * path it matches is treated as USER-OWNED: writeProject never overwrites it,
+ * never prunes it, and — when the freshly generated output would DIFFER from the
+ * on-disk file — reports it in {@link WriteProjectResult.conflicts} so the caller
+ * can warn. (Distinct from a per-file `writeMode: 'skipIfExists'`, which the
+ * emitter sets; `.sdkignore` is the hand-off knob a consumer edits, and it wins
+ * over any writeMode.) A path that doesn't exist yet is still generated once —
+ * "never overwrite" only protects a file the user actually has.
+ */
+export const SDK_IGNORE_FILENAME = '.sdkignore';
+
 const MANIFEST_SCHEMA_VERSION = 1;
 
 export interface ProjectManifest {
@@ -40,12 +52,20 @@ export interface WriteProjectResult {
   pruned: string[];
   /** Stale but locally-modified orphans KEPT on disk — the caller's warning list. */
   keptModified: string[];
+  /** `.sdkignore`-matched files whose existing on-disk content DIFFERS from the freshly
+   * generated output — kept as-is (never overwritten), surfaced for a warning. */
+  conflicts: string[];
 }
 
 /**
  * Write a generated file map to disk (the only fs-touching entry point) with
  * the full regen lifecycle:
  *
+ *  0. `.sdkignore` — a user-authored, gitignore-style file at the SDK root marks
+ *     paths as user-owned. A matched path is NEVER overwritten or pruned (only
+ *     bootstrapped if missing); when the generated output would differ from the
+ *     on-disk file it is reported in `conflicts` (a warning) instead. Wins over
+ *     any per-file writeMode;
  *  1. per-file write semantics — plain strings / 'overwrite' entries replace,
  *     'skipIfExists' never clobbers an existing file, 'mergeJson' deep-merges
  *     the generated JSON INTO the existing file's JSON (existing user keys
@@ -80,10 +100,19 @@ export async function writeProject(
     }
   };
 
-  const result: WriteProjectResult = { written: [], skipped: [], unchanged: [], pruned: [], keptModified: [] };
+  const result: WriteProjectResult = { written: [], skipped: [], unchanged: [], pruned: [], keptModified: [], conflicts: [] };
   /** rel path -> sha256 of the PRISTINE generated content (the prune guard's "safe to delete" fingerprint). */
   const manifestFiles: Record<string, string> = {};
   const previous = readManifest(await readIfExists(path.join(outDir, SDK_LOCK_FILENAME)));
+  // User-owned protection list (gitignore-style). Read once; empty when absent.
+  const ignore = parseSdkIgnore(await readIfExists(path.join(outDir, SDK_IGNORE_FILENAME)));
+  const canonicalJson = (content: string): string => {
+    try {
+      return `${JSON.stringify(JSON.parse(content), null, 2)}\n`;
+    } catch {
+      return content;
+    }
+  };
 
   // Sorted for deterministic write order (and a deterministic result/manifest).
   const entries = Object.entries(files)
@@ -97,6 +126,24 @@ export async function writeProject(
     const full = path.join(outDir, rel);
     const mode: WriteMode = entry.writeMode ?? 'overwrite';
     const existing = await readIfExists(full);
+
+    // `.sdkignore` wins over any writeMode: the path is user-owned. Never
+    // overwrite an existing one; only bootstrap it if it's missing.
+    if (ignore.length > 0 && isSdkIgnored(rel, ignore)) {
+      const candidate = mode === 'mergeJson' ? canonicalJson(entry.content) : entry.content;
+      manifestFiles[rel] = sha256(candidate);
+      if (existing === null) {
+        await fs.mkdir(path.dirname(full), { recursive: true });
+        await fs.writeFile(full, candidate, 'utf8');
+        result.written.push(rel);
+      } else if (existing === candidate) {
+        result.unchanged.push(rel);
+      } else {
+        // Generated output differs from the user's file — keep theirs, warn.
+        result.conflicts.push(rel);
+      }
+      continue;
+    }
 
     let target = entry.content;
     let pristineHash = sha256(entry.content);
@@ -144,9 +191,11 @@ export async function writeProject(
   // Guarded stale-prune — only with a previous manifest (first adoption never deletes).
   if (previous) {
     const stale = Object.keys(previous.files)
-      .filter((rel) => !(rel in files) && rel !== SDK_LOCK_FILENAME)
+      .filter((rel) => !(rel in files) && rel !== SDK_LOCK_FILENAME && rel !== SDK_IGNORE_FILENAME)
       .sort();
     for (const rel of stale) {
+      // A `.sdkignore`-matched path is user-owned — never prune it.
+      if (ignore.length > 0 && isSdkIgnored(rel, ignore)) continue;
       const full = path.join(outDir, rel);
       const onDisk = await readIfExists(full);
       if (onDisk === null) continue; // already gone
@@ -244,6 +293,77 @@ function readManifest(raw: string | null): ProjectManifest | null {
   } catch {
     return null;
   }
+}
+
+/**
+ * Parse a `.sdkignore` file into its pattern lines. Blank lines and `#` comments
+ * are dropped; order is preserved (a later `!negation` un-ignores an earlier
+ * match). A null/absent file yields an empty list (nothing protected).
+ */
+export function parseSdkIgnore(content: string | null): string[] {
+  if (!content) return [];
+  return content
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0 && !line.startsWith('#'));
+}
+
+/**
+ * gitignore-style match of a project-relative POSIX path against `.sdkignore`
+ * patterns. Supported (the common subset):
+ * - a bare name (`README.md`, `docs`) matches at ANY depth;
+ * - a pattern with a `/` (`src/config.go`, `/LICENSE`) is anchored at the SDK root;
+ * - `*`/`?` match within a path segment, `**` matches across segments;
+ * - a trailing `/` marks a directory (matches it and everything under it);
+ * - a leading `!` negates (re-includes); the LAST matching pattern wins.
+ * A matched name also covers everything beneath it (so `internal` protects
+ * `internal/**`).
+ */
+export function isSdkIgnored(rel: string, patterns: string[]): boolean {
+  const relPath = rel.replace(/\\/g, '/').replace(/^\/+/, '');
+  let ignored = false;
+  for (const raw of patterns) {
+    let pattern = raw;
+    let negate = false;
+    if (pattern.startsWith('!')) {
+      negate = true;
+      pattern = pattern.slice(1);
+    }
+    if (!pattern) continue;
+    if (ignorePatternMatches(relPath, pattern)) ignored = !negate;
+  }
+  return ignored;
+}
+
+/** Match one (non-negated) gitignore pattern against a normalized rel path. */
+function ignorePatternMatches(relPath: string, pattern: string): boolean {
+  let pat = pattern.replace(/\/+$/, ''); // drop a trailing dir slash (dir semantics handled by the suffix below)
+  if (pat.startsWith('/')) pat = pat.slice(1);
+  const anchored = pat.includes('/'); // a mid/lead slash anchors at the root; else match at any depth
+  const body = ignoreGlobToRegExp(pat);
+  const prefix = anchored ? '^' : '^(?:.*/)?';
+  return new RegExp(`${prefix}${body}(?:/.*)?$`).test(relPath);
+}
+
+/** Convert a glob body to a regex body: `**`→`.*`, `*`→`[^/]*`, `?`→`[^/]`, else escaped literal. */
+function ignoreGlobToRegExp(glob: string): string {
+  let out = '';
+  for (let i = 0; i < glob.length; i++) {
+    const c = glob[i];
+    if (c === '*') {
+      if (glob[i + 1] === '*') {
+        out += '.*';
+        i++;
+      } else {
+        out += '[^/]*';
+      }
+    } else if (c === '?') {
+      out += '[^/]';
+    } else {
+      out += c.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+    }
+  }
+  return out;
 }
 
 /**

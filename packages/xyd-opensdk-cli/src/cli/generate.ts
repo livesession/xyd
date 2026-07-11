@@ -44,8 +44,15 @@ async function emitToDisk(
     for (const p of Object.keys(files).sort()) console.log(p);
     return;
   }
-  await writeProject(files, output);
+  const result = await writeProject(files, output);
   console.log(`Generated ${Object.keys(files).length} files in ${output}`);
+  // .sdkignore conflicts + kept-modified orphans: never silently overwritten/lost.
+  for (const rel of result.conflicts) {
+    console.warn(`  ⚠ .sdkignore: kept your ${rel} — generated output differs (not overwritten)`);
+  }
+  for (const rel of result.keptModified) {
+    console.warn(`  ⚠ kept locally-modified ${rel} — no longer generated, not pruned`);
+  }
 }
 
 /** `opensdk generate --lang <x>` — single target. Behavior is threaded through the converter. */

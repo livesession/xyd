@@ -5,7 +5,15 @@ import path from 'node:path';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { SDK_LOCK_FILENAME, deepMergeJson, materializeProject, writeProject } from '../src';
+import {
+  SDK_IGNORE_FILENAME,
+  SDK_LOCK_FILENAME,
+  deepMergeJson,
+  isSdkIgnored,
+  materializeProject,
+  parseSdkIgnore,
+  writeProject,
+} from '../src';
 
 const tmpDirs: string[] = [];
 function tmpDir(): string {
@@ -35,6 +43,7 @@ describe('writeProject: basics + manifest', () => {
       unchanged: [],
       pruned: [],
       keptModified: [],
+      conflicts: [],
     });
 
     const m = manifest(out);
@@ -188,6 +197,114 @@ describe('writeProject: guarded stale-prune', () => {
     const result = await writeProject({ 'a.go': 'a' }, out);
     expect(result.pruned).toEqual([]);
     expect(exists(out, 'stale.go')).toBe(true);
+  });
+});
+
+describe('writeProject: .sdkignore (user-owned protection)', () => {
+  const ignore = (dir: string, body: string) => fs.writeFileSync(path.join(dir, SDK_IGNORE_FILENAME), body);
+
+  it('never overwrites an ignored existing file, and reports the conflict', async () => {
+    const out = tmpDir();
+    fs.writeFileSync(path.join(out, 'client.go'), 'my hand-tuned client');
+    ignore(out, 'client.go\n');
+
+    const result = await writeProject({ 'client.go': 'GENERATED client', 'types.go': 'types' }, out);
+
+    expect(read(out, 'client.go')).toBe('my hand-tuned client'); // kept
+    expect(read(out, 'types.go')).toBe('types'); // non-ignored still written
+    expect(result.conflicts).toEqual(['client.go']);
+    expect(result.written).toEqual(['types.go']);
+  });
+
+  it('wins over writeMode: an ignored overwrite/mergeJson file is left alone', async () => {
+    const out = tmpDir();
+    fs.writeFileSync(path.join(out, 'package.json'), '{"name":"mine"}');
+    ignore(out, 'package.json\n');
+
+    const result = await writeProject(
+      { 'package.json': { content: '{"name":"generated","version":"1.0.0"}', writeMode: 'mergeJson' } },
+      out,
+    );
+    expect(read(out, 'package.json')).toBe('{"name":"mine"}'); // not merged, not touched
+    expect(result.conflicts).toEqual(['package.json']);
+  });
+
+  it('reports no conflict when the ignored file already matches the generated output', async () => {
+    const out = tmpDir();
+    fs.writeFileSync(path.join(out, 'client.go'), 'same');
+    ignore(out, 'client.go\n');
+
+    const result = await writeProject({ 'client.go': 'same' }, out);
+    expect(result.conflicts).toEqual([]);
+    expect(result.unchanged).toEqual(['client.go']);
+  });
+
+  it('still bootstraps an ignored file that does not exist yet ("never overwrite", not "never generate")', async () => {
+    const out = tmpDir();
+    ignore(out, 'client.go\n');
+
+    const result = await writeProject({ 'client.go': 'generated' }, out);
+    expect(read(out, 'client.go')).toBe('generated');
+    expect(result.written).toEqual(['client.go']);
+    expect(result.conflicts).toEqual([]);
+  });
+
+  it('honors glob patterns (protects every match)', async () => {
+    const out = tmpDir();
+    fs.mkdirSync(path.join(out, 'docs'), { recursive: true });
+    fs.writeFileSync(path.join(out, 'docs', 'guide.md'), 'user docs');
+    fs.writeFileSync(path.join(out, 'README.md'), 'user readme');
+    ignore(out, '*.md\n');
+
+    const result = await writeProject(
+      { 'docs/guide.md': 'gen guide', 'README.md': 'gen readme', 'main.go': 'main' },
+      out,
+    );
+    expect(read(out, 'docs/guide.md')).toBe('user docs');
+    expect(read(out, 'README.md')).toBe('user readme');
+    expect(read(out, 'main.go')).toBe('main');
+    expect(result.conflicts).toEqual(['README.md', 'docs/guide.md']); // sorted
+    expect(result.written).toEqual(['main.go']);
+  });
+
+  it('protects an ignored file from the guarded stale-prune', async () => {
+    const out = tmpDir();
+    ignore(out, 'extra.go\n');
+    // Bootstrap it, then the emitter stops producing it — a normal file would be pruned.
+    await writeProject({ 'a.go': 'a', 'extra.go': 'extra' }, out);
+    const result = await writeProject({ 'a.go': 'a' }, out);
+
+    expect(result.pruned).toEqual([]);
+    expect(exists(out, 'extra.go')).toBe(true);
+  });
+});
+
+describe('isSdkIgnored / parseSdkIgnore', () => {
+  it('parseSdkIgnore drops blanks + comments, keeps order', () => {
+    expect(parseSdkIgnore('# a comment\n\nclient.go\n  README.md  \n')).toEqual(['client.go', 'README.md']);
+    expect(parseSdkIgnore(null)).toEqual([]);
+  });
+
+  it('matches gitignore-style patterns', () => {
+    // bare name → any depth
+    expect(isSdkIgnored('client.go', ['client.go'])).toBe(true);
+    expect(isSdkIgnored('pkg/client.go', ['client.go'])).toBe(true);
+    expect(isSdkIgnored('client.go', ['other.go'])).toBe(false);
+    // anchored (has a slash) → root only
+    expect(isSdkIgnored('src/config.go', ['src/config.go'])).toBe(true);
+    expect(isSdkIgnored('deep/src/config.go', ['src/config.go'])).toBe(false);
+    expect(isSdkIgnored('LICENSE', ['/LICENSE'])).toBe(true);
+    // globs
+    expect(isSdkIgnored('README.md', ['*.md'])).toBe(true);
+    expect(isSdkIgnored('a/b/notes.md', ['*.md'])).toBe(true);
+    expect(isSdkIgnored('main.go', ['*.md'])).toBe(false);
+    expect(isSdkIgnored('internal/vendor/x.go', ['internal/**'])).toBe(true);
+    // directory + its contents
+    expect(isSdkIgnored('docs', ['docs/'])).toBe(true);
+    expect(isSdkIgnored('docs/api/x.md', ['docs/'])).toBe(true);
+    // negation (last match wins)
+    expect(isSdkIgnored('README.md', ['*.md', '!README.md'])).toBe(false);
+    expect(isSdkIgnored('other.md', ['*.md', '!README.md'])).toBe(true);
   });
 });
 
