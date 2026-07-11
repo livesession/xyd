@@ -1,11 +1,13 @@
 import {
   Button,
   Callout,
+  type Column,
   EmptyState,
   Field,
   Input,
   Modal,
   Mono,
+  Table,
 } from "@apitoolchain/design-system";
 import { useEffect, useRef, useState } from "react";
 import { useFetcher } from "react-router";
@@ -43,7 +45,7 @@ export default function SettingsKeysRoute({
   return (
     <>
       <SettingsHeader active="keys" />
-      <div className="flex max-w-[680px] flex-col gap-6">
+      <div className="flex max-w-4xl flex-col gap-6">
         <div className="flex items-start justify-between gap-4">
           <p className="max-w-[46ch] text-sm text-subtle">
             API keys authenticate requests to the apitoolchain API — CI,
@@ -68,10 +70,8 @@ export default function SettingsKeysRoute({
             description="Create a key to call the apitoolchain API from CI or your scripts."
           />
         ) : (
-          <div className="flex flex-col divide-y divide-line-soft rounded-panel border border-line bg-surface">
-            {keys.map((k) => (
-              <ApiKeyRow key={k.id} apiKey={k} />
-            ))}
+          <div className="overflow-hidden rounded-panel border border-line">
+            <Table columns={KEY_COLUMNS} rows={keys} getRowKey={(k) => k.id} />
           </div>
         )}
       </div>
@@ -84,44 +84,66 @@ export default function SettingsKeysRoute({
   );
 }
 
-function ApiKeyRow({ apiKey }: { apiKey: ApiKey }) {
+const KEY_COLUMNS: Column<ApiKey>[] = [
+  {
+    key: "name",
+    header: "Name",
+    width: "wide",
+    render: (k) => <span className="font-medium text-ink">{k.name}</span>,
+  },
+  {
+    key: "key",
+    header: "Key",
+    width: "lg",
+    render: (k) => <Mono tone="muted">{k.prefix}••••</Mono>,
+  },
+  {
+    key: "created",
+    header: "Created",
+    width: "md",
+    render: (k) => <span className="text-subtle">{k.createdAt}</span>,
+  },
+  {
+    key: "lastUsed",
+    header: "Last used",
+    width: "md",
+    render: (k) => (
+      <span className="text-subtle">{k.lastUsedAt ?? "Never used"}</span>
+    ),
+  },
+  {
+    key: "actions",
+    header: "",
+    width: "sm",
+    align: "right",
+    render: (k) => <RevokeCell apiKey={k} />,
+  },
+];
+
+/** The Revoke action cell — its own component so the delete fetcher/state is
+ * per-row (a Table `render` can't hold hooks itself). */
+function RevokeCell({ apiKey }: { apiKey: ApiKey }) {
   const del = useFetcher();
   const removing = del.state !== "idle";
   const res = del.data as { ok?: boolean; message?: string } | undefined;
   return (
-    <div className="flex items-center gap-3 px-4 py-3">
-      <div className="min-w-0 flex-1">
-        <div className="text-sm font-medium text-ink">{apiKey.name}</div>
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-subtle">
-          <Mono tone="muted">{apiKey.prefix}••••</Mono>
-          <span>·</span>
-          <span>Created {apiKey.createdAt}</span>
-          <span>·</span>
-          <span>
-            {apiKey.lastUsedAt
-              ? `Last used ${apiKey.lastUsedAt}`
-              : "Never used"}
-          </span>
-        </div>
-      </div>
-      <DeleteConfirm
-        title="Revoke API key"
-        description={`Revoke "${apiKey.name}"? Anything using this key stops working immediately.`}
-        warning="This can't be undone."
-        confirmLabel="Revoke"
-        confirming={removing}
-        busyLabel="Revoking…"
-        error={res && res.ok === false ? res.message : undefined}
-        onConfirm={() =>
-          del.submit({ intent: "revoke", id: apiKey.id }, { method: "post" })
-        }
-        trigger={(open) => (
-          <Button variant="ghost" size="sm" onClick={open}>
-            Revoke
-          </Button>
-        )}
-      />
-    </div>
+    <DeleteConfirm
+      title="Revoke API key"
+      description={`Revoke "${apiKey.name}"? Anything using this key stops working immediately.`}
+      warning="This can't be undone."
+      confirmLabel="Revoke"
+      confirming={removing}
+      busyLabel="Revoking…"
+      error={res && res.ok === false ? res.message : undefined}
+      onConfirm={() =>
+        del.submit({ intent: "revoke", id: apiKey.id }, { method: "post" })
+      }
+      trigger={(open) => (
+        <Button variant="ghost" size="sm" onClick={open}>
+          Revoke
+        </Button>
+      )}
+    />
   );
 }
 
