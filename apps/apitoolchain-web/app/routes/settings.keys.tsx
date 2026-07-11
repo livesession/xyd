@@ -70,9 +70,7 @@ export default function SettingsKeysRoute({
             description="Create a key to call the apitoolchain API from CI or your scripts."
           />
         ) : (
-          <div className="overflow-hidden rounded-panel border border-line">
-            <Table columns={KEY_COLUMNS} rows={keys} getRowKey={(k) => k.id} />
-          </div>
+          <Table columns={KEY_COLUMNS} rows={keys} getRowKey={(k) => k.id} />
         )}
       </div>
 
