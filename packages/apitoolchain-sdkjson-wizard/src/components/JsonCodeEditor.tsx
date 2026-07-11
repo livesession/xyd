@@ -155,10 +155,12 @@ export function JsonCodeEditor({
   }, [value]);
 
   return (
+    // Content-sized: grows with the JSON (a short config stays short) up to a
+    // viewport cap, then scrolls — not a fixed tall box with empty space below.
     <div
       ref={host}
       className={`overflow-auto rounded-control border border-line bg-surface-muted ${
-        className ?? "min-h-[320px] h-[calc(100vh-13rem)]"
+        className ?? "min-h-[160px] max-h-[calc(100vh-13rem)]"
       }`}
     />
   );
