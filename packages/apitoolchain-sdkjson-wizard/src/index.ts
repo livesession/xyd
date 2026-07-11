@@ -24,4 +24,9 @@ export type {
   SdkJson,
   SdkLanguage,
 } from "./model/types";
-export { LANGUAGE_META, SDK_LANGUAGES } from "./model/types";
+export {
+  LANGUAGE_META,
+  normalizeSdkJsonSections,
+  SDK_LANGUAGES,
+  SECTION_KEY_ALIASES,
+} from "./model/types";

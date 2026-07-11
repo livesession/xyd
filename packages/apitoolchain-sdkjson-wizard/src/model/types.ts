@@ -38,6 +38,42 @@ export const LANGUAGE_META: Record<
   dotnet: { label: "C#", sectionKey: "csharp", highlight: "csharp" },
 };
 
+/** Every opensdk language-section key alias → the wizard's CANONICAL section key
+ * (the emitter's primary alias). Mirrors the sdk.schema.json patternProperties.
+ * A built sdk.json can key the section by the language id (e.g. `node`, from an
+ * auto-generated build); the wizard reads/edits/validates the canonical key. */
+export const SECTION_KEY_ALIASES: Record<string, string> = {
+  typescript: "typescript",
+  ts: "typescript",
+  javascript: "typescript",
+  js: "typescript",
+  node: "typescript",
+  go: "go",
+  golang: "go",
+  python: "python",
+  py: "python",
+  ruby: "ruby",
+  rb: "ruby",
+  java: "java",
+  csharp: "csharp",
+  cs: "csharp",
+  "c#": "csharp",
+  dotnet: "csharp",
+  ".net": "csharp",
+};
+
+/** Rename any aliased language section (e.g. `node` → `typescript`) to its
+ * canonical key so the wizard's form/preview/schema all read it consistently.
+ * Global keys ($schema/version/api/…) are untouched. */
+export function normalizeSdkJsonSections(sdk: SdkJson): SdkJson {
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(sdk)) {
+    const canonical = SECTION_KEY_ALIASES[k.toLowerCase()];
+    out[canonical ?? k] = v;
+  }
+  return out as SdkJson;
+}
+
 // ── behavior (the 9 runtime policies, all optional — deep-merged over defaults) ──
 
 export interface RetryPolicy {

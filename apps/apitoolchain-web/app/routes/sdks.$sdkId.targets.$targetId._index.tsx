@@ -100,10 +100,6 @@ export default function SdkTargetOverviewTab() {
             value: <TagBadges tags={shownVersion?.tags ?? []} />,
           },
           {
-            label: "Output",
-            value: <Mono tone="muted">{target.output}</Mono>,
-          },
-          {
             // The published package name lives on the publisher connection
             // (decoupled from our internal target name). No publisher yet → a
             // link to connect one, since the package name is set there.

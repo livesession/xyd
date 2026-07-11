@@ -1,6 +1,7 @@
 import { Button, Callout } from "@apitoolchain/design-system";
 import {
   createFetchPreview,
+  normalizeSdkJsonSections,
   type SdkJson,
   SdkJsonWizard,
 } from "@apitoolchain/sdkjson-wizard";
@@ -22,11 +23,14 @@ export default function SdkTargetConfigurationTab() {
   const { target, base, label, sdkJson } = useOutletContext<SdkTargetContext>();
   const fetcher = useFetcher();
 
-  // Seed from the current built sdk.json (what the Overview shows). Fall back to
-  // a minimal object if it's missing/unparseable.
+  // Seed from the current built sdk.json (what the Overview shows). Normalize the
+  // section key to canonical (a built sdk.json keys node's section by "node", the
+  // language id — the wizard reads/edits/validates "typescript"). Fall back to a
+  // minimal object if it's missing/unparseable.
   const seed = useMemo<SdkJson>(() => {
     try {
-      if (sdkJson) return JSON.parse(sdkJson) as SdkJson;
+      if (sdkJson)
+        return normalizeSdkJsonSections(JSON.parse(sdkJson) as SdkJson);
     } catch {
       // ignore — fall through to the minimal seed
     }
