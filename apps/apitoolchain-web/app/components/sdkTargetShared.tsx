@@ -33,7 +33,7 @@ export type SdkTargetContext = {
   providers: GitProvider[];
   /** The generated `sdk.json` (raw JSON text) — undefined until the SDK builds. */
   sdkJson?: string;
-  /** Open the shared "Connect a repo" modal (owned by the layout). */
+  /** Open the shared "Connect repo" modal (owned by the layout). */
   openConnect: () => void;
   /** Open the shared "Connect a registry" modal (owned by the layout). */
   openPublish: () => void;

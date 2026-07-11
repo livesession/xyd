@@ -354,7 +354,7 @@ export default function RegistryDetailLayout({
                 Generate SDKs
               </Button>
             )}
-            {/* Repo connections live at the bottom of Actions: "Connect a repo"
+            {/* Repo connections live at the bottom of Actions: "Connect repo"
                 before any exist, then the connected repo(s) as plain buttons. */}
             {connections.length === 0 ? (
               <Button
@@ -362,7 +362,7 @@ export default function RegistryDetailLayout({
                 icon="git"
                 onClick={() => setConnectOpen(true)}
               >
-                Connect a repo
+                Connect repo
               </Button>
             ) : (
               connections.map((c) => {

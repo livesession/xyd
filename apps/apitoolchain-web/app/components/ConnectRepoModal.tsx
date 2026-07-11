@@ -240,7 +240,7 @@ export function ConnectRepoModal({
       open={open}
       onClose={onClose}
       size="sm"
-      title="Connect a repo"
+      title="Connect repo"
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>

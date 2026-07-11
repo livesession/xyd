@@ -39,7 +39,7 @@ export type RegistryDetailContext = {
   releasesByConn: Record<string, Release[]>;
   /** version → the dist-tags pointing at it. */
   tagsByVersion: Map<string, string[]>;
-  /** Open the shared "Connect a repo" modal (owned by the parent). */
+  /** Open the shared "Connect repo" modal (owned by the parent). */
   openConnect: () => void;
   /** Open the shared "Generate SDKs" modal (owned by the parent). */
   openGen: () => void;
