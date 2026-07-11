@@ -26,8 +26,9 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 RETURNING *;
 
 -- name: MarkSdkTargetReady :exec
+-- A successful build applies the current sdk_json, so clear the pending flag.
 UPDATE sdk_targets
-SET status = 'ready', artifact_ref = $2, package_name = $3, version = $4, updated_at = now()
+SET status = 'ready', artifact_ref = $2, package_name = $3, version = $4, config_pending = false, updated_at = now()
 WHERE id = $1;
 
 -- name: MarkSdkTargetBuilding :exec
@@ -53,8 +54,8 @@ WHERE id = $1;
 
 -- name: UpdateSdkTargetSdkJson :exec
 -- Persist an edited sdk.json config override (the regen config); applied on the
--- next rebuild of this target.
-UPDATE sdk_targets SET sdk_json = $2, updated_at = now() WHERE id = $1;
+-- next rebuild of this target. Flags the config as pending (unbuilt) until then.
+UPDATE sdk_targets SET sdk_json = $2, config_pending = true, updated_at = now() WHERE id = $1;
 
 -- name: DeleteSdkTarget :exec
 DELETE FROM sdk_targets WHERE id = $1;

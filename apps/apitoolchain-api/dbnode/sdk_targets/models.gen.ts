@@ -24,6 +24,7 @@ export interface ListSdkTargetsRow {
     name: string;
     buildLogs: string;
     sdkJson: string;
+    configPending: boolean;
 }
 
 export interface ListSdkTargetsByApiArgs {
@@ -50,6 +51,7 @@ export interface ListSdkTargetsByApiRow {
     name: string;
     buildLogs: string;
     sdkJson: string;
+    configPending: boolean;
 }
 
 export interface ListSdkTargetsBySdkArgs {
@@ -76,6 +78,7 @@ export interface ListSdkTargetsBySdkRow {
     name: string;
     buildLogs: string;
     sdkJson: string;
+    configPending: boolean;
 }
 
 export interface GetSdkTargetArgs {
@@ -102,6 +105,7 @@ export interface GetSdkTargetRow {
     name: string;
     buildLogs: string;
     sdkJson: string;
+    configPending: boolean;
 }
 
 export interface ResolveSdkTargetByRefArgs {
@@ -130,6 +134,7 @@ export interface ResolveSdkTargetByRefRow {
     name: string;
     buildLogs: string;
     sdkJson: string;
+    configPending: boolean;
 }
 
 export interface InsertSdkTargetArgs {
@@ -167,6 +172,7 @@ export interface InsertSdkTargetRow {
     name: string;
     buildLogs: string;
     sdkJson: string;
+    configPending: boolean;
 }
 
 export interface MarkSdkTargetReadyArgs {

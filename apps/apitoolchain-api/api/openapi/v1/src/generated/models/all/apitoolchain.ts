@@ -240,6 +240,13 @@ export interface SdkTarget {
    * empty when the target used the auto-derived config.
    */
   sdkJson?: string;
+
+  /**
+   * The saved sdk.json config has UNBUILT changes — set when the config is edited
+   * (the wizard "Save"), cleared when a build applies it. Drives the persistent
+   * "pending changes, waiting for a build" status in the UI.
+   */
+  configPending: boolean;
 }
 
 export enum SdkLanguage {

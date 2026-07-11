@@ -103,6 +103,7 @@ type SdkRow = {
   lastPublishedAt: Date | null;
   registryUrl: string | null;
   sdkJson: string;
+  configPending: boolean;
 };
 type SdkProjectRow = {
   id: string;
@@ -176,6 +177,7 @@ export function toSdkTarget(r: SdkRow): SdkTarget {
     lastPublishedAt: iso(r.lastPublishedAt),
     registryUrl: r.registryUrl ?? undefined,
     sdkJson: r.sdkJson || undefined,
+    configPending: r.configPending,
   };
 }
 

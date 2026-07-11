@@ -2332,6 +2332,7 @@ export const openApiDocument = {
           "version",
           "status",
           "buildLogs",
+          "configPending",
         ],
         properties: {
           id: { type: "string" },
@@ -2366,6 +2367,11 @@ export const openApiDocument = {
             type: "string",
             description:
               'The custom sdk.json applied at generation (the "wizard" config), serialized;\nempty when the target used the auto-derived config.',
+          },
+          configPending: {
+            type: "boolean",
+            description:
+              'The saved sdk.json config has UNBUILT changes — set when the config is edited\n(the wizard "Save"), cleared when a build applies it. Drives the persistent\n"pending changes, waiting for a build" status in the UI.',
           },
         },
       },

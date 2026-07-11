@@ -25,7 +25,7 @@ interface Client {
     query: (config: QueryArrayConfig) => Promise<QueryArrayResult>;
 }
 export const listSdkTargetsQuery = `-- name: ListSdkTargets :many
-SELECT id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at, sdk_id, project_id, name, build_logs, sdk_json FROM sdk_targets WHERE project_id = $1 ORDER BY created_at DESC`;
+SELECT id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at, sdk_id, project_id, name, build_logs, sdk_json, config_pending FROM sdk_targets WHERE project_id = $1 ORDER BY created_at DESC`;
 
 export async function listSdkTargets(client: Client, args: ListSdkTargetsArgs): Promise<ListSdkTargetsRow[]> {
     const result = await client.query({
@@ -53,13 +53,14 @@ export async function listSdkTargets(client: Client, args: ListSdkTargetsArgs): 
             projectId: row[15],
             name: row[16],
             buildLogs: row[17],
-            sdkJson: row[18]
+            sdkJson: row[18],
+            configPending: row[19]
         };
     });
 }
 
 export const listSdkTargetsByApiQuery = `-- name: ListSdkTargetsByApi :many
-SELECT id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at, sdk_id, project_id, name, build_logs, sdk_json FROM sdk_targets WHERE api_id = $1 ORDER BY created_at DESC`;
+SELECT id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at, sdk_id, project_id, name, build_logs, sdk_json, config_pending FROM sdk_targets WHERE api_id = $1 ORDER BY created_at DESC`;
 
 export async function listSdkTargetsByApi(client: Client, args: ListSdkTargetsByApiArgs): Promise<ListSdkTargetsByApiRow[]> {
     const result = await client.query({
@@ -87,13 +88,14 @@ export async function listSdkTargetsByApi(client: Client, args: ListSdkTargetsBy
             projectId: row[15],
             name: row[16],
             buildLogs: row[17],
-            sdkJson: row[18]
+            sdkJson: row[18],
+            configPending: row[19]
         };
     });
 }
 
 export const listSdkTargetsBySdkQuery = `-- name: ListSdkTargetsBySdk :many
-SELECT id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at, sdk_id, project_id, name, build_logs, sdk_json FROM sdk_targets WHERE sdk_id = $1 ORDER BY created_at DESC`;
+SELECT id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at, sdk_id, project_id, name, build_logs, sdk_json, config_pending FROM sdk_targets WHERE sdk_id = $1 ORDER BY created_at DESC`;
 
 export async function listSdkTargetsBySdk(client: Client, args: ListSdkTargetsBySdkArgs): Promise<ListSdkTargetsBySdkRow[]> {
     const result = await client.query({
@@ -121,13 +123,14 @@ export async function listSdkTargetsBySdk(client: Client, args: ListSdkTargetsBy
             projectId: row[15],
             name: row[16],
             buildLogs: row[17],
-            sdkJson: row[18]
+            sdkJson: row[18],
+            configPending: row[19]
         };
     });
 }
 
 export const getSdkTargetQuery = `-- name: GetSdkTarget :one
-SELECT id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at, sdk_id, project_id, name, build_logs, sdk_json FROM sdk_targets WHERE id = $1`;
+SELECT id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at, sdk_id, project_id, name, build_logs, sdk_json, config_pending FROM sdk_targets WHERE id = $1`;
 
 export async function getSdkTarget(client: Client, args: GetSdkTargetArgs): Promise<GetSdkTargetRow | null> {
     const result = await client.query({
@@ -158,12 +161,13 @@ export async function getSdkTarget(client: Client, args: GetSdkTargetArgs): Prom
         projectId: row[15],
         name: row[16],
         buildLogs: row[17],
-        sdkJson: row[18]
+        sdkJson: row[18],
+        configPending: row[19]
     };
 }
 
 export const resolveSdkTargetByRefQuery = `-- name: ResolveSdkTargetByRef :one
-SELECT t.id, t.api_id, t.api_version, t.language, t.package_name, t.output, t.version, t.status, t.artifact_ref, t.error_message, t.last_published_at, t.registry_url, t.created_at, t.updated_at, t.sdk_id, t.project_id, t.name, t.build_logs, t.sdk_json FROM sdk_targets t
+SELECT t.id, t.api_id, t.api_version, t.language, t.package_name, t.output, t.version, t.status, t.artifact_ref, t.error_message, t.last_published_at, t.registry_url, t.created_at, t.updated_at, t.sdk_id, t.project_id, t.name, t.build_logs, t.sdk_json, t.config_pending FROM sdk_targets t
 JOIN sdks s ON t.sdk_id = s.id
 WHERE s.namespace = $1 AND t.package_name = $2 AND t.version = $3
   AND t.artifact_ref IS NOT NULL
@@ -199,14 +203,15 @@ export async function resolveSdkTargetByRef(client: Client, args: ResolveSdkTarg
         projectId: row[15],
         name: row[16],
         buildLogs: row[17],
-        sdkJson: row[18]
+        sdkJson: row[18],
+        configPending: row[19]
     };
 }
 
 export const insertSdkTargetQuery = `-- name: InsertSdkTarget :one
 INSERT INTO sdk_targets (id, sdk_id, api_id, api_version, language, name, package_name, output, version, status, project_id, sdk_json)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-RETURNING id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at, sdk_id, project_id, name, build_logs, sdk_json`;
+RETURNING id, api_id, api_version, language, package_name, output, version, status, artifact_ref, error_message, last_published_at, registry_url, created_at, updated_at, sdk_id, project_id, name, build_logs, sdk_json, config_pending`;
 
 export async function insertSdkTarget(client: Client, args: InsertSdkTargetArgs): Promise<InsertSdkTargetRow | null> {
     const result = await client.query({
@@ -237,13 +242,14 @@ export async function insertSdkTarget(client: Client, args: InsertSdkTargetArgs)
         projectId: row[15],
         name: row[16],
         buildLogs: row[17],
-        sdkJson: row[18]
+        sdkJson: row[18],
+        configPending: row[19]
     };
 }
 
 export const markSdkTargetReadyQuery = `-- name: MarkSdkTargetReady :exec
 UPDATE sdk_targets
-SET status = 'ready', artifact_ref = $2, package_name = $3, version = $4, updated_at = now()
+SET status = 'ready', artifact_ref = $2, package_name = $3, version = $4, config_pending = false, updated_at = now()
 WHERE id = $1`;
 
 export async function markSdkTargetReady(client: Client, args: MarkSdkTargetReadyArgs): Promise<void> {
@@ -305,7 +311,7 @@ export async function markSdkTargetPublished(client: Client, args: MarkSdkTarget
 }
 
 export const updateSdkTargetSdkJsonQuery = `-- name: UpdateSdkTargetSdkJson :exec
-UPDATE sdk_targets SET sdk_json = $2, updated_at = now() WHERE id = $1`;
+UPDATE sdk_targets SET sdk_json = $2, config_pending = true, updated_at = now() WHERE id = $1`;
 
 export async function updateSdkTargetSdkJson(client: Client, args: UpdateSdkTargetSdkJsonArgs): Promise<void> {
     await client.query({
