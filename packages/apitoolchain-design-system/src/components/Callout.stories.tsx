@@ -42,3 +42,16 @@ export const AllTones: Story = {
     </div>
   ),
 };
+
+/**
+ * Pass `onClose` to make a callout dismissible — a close (×) button appears when
+ * you hover the callout (or focus it with the keyboard). For transient banners
+ * like a "Saved" confirmation. Hover the callout below to reveal the button.
+ */
+export const Dismissible: Story = {
+  args: {
+    tone: "success",
+    children: "Saved — applies the next time this SDK is rebuilt.",
+    onClose: () => {},
+  },
+};
