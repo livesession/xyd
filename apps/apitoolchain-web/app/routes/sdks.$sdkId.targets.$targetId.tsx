@@ -203,6 +203,11 @@ export default function SdkTargetLayout({ loaderData }: Route.ComponentProps) {
                 count: registryConnections.length,
                 href: `${base}/publishing`,
               },
+              {
+                key: "configuration",
+                label: "Configuration",
+                href: `${base}/configuration`,
+              },
               { key: "settings", label: "Settings", href: `${base}/settings` },
             ]}
           />

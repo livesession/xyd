@@ -10,6 +10,7 @@ import {
   removeRepoConnection,
   setReleaseConfig,
   syncRepoConnection,
+  updateSdkTargetSdkJson,
 } from "~/data";
 
 /**
@@ -31,6 +32,15 @@ export async function sdkTargetAction({
     const res = await deleteSdkTarget(targetId);
     if (res.ok) return redirect(`/sdks/${params.sdkId ?? ""}`);
     return { ok: false as const, message: res.message ?? "Delete failed." };
+  }
+  if (intent === "save-config") {
+    const res = await updateSdkTargetSdkJson(
+      targetId,
+      String(form.get("sdkJson") ?? ""),
+    );
+    return res.ok
+      ? { ok: true as const }
+      : { ok: false as const, message: res.message ?? "Save failed." };
   }
   if (intent === "connect-repo") {
     return createRepoConnection({

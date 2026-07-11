@@ -130,6 +130,30 @@ async function serveSdkJson(
   }
 }
 
+// Owned route (PUT): persist an edited sdk.json config override to the target
+// (the regen config); applied on the next rebuild. Mirrors serveSdkJson's path.
+async function saveSdkJson(
+  req: http.IncomingMessage,
+  res: http.ServerResponse,
+  targetId: string,
+): Promise<void> {
+  const row = await sdkQ.getSdkTarget(pool, { id: targetId });
+  if (!row) {
+    res.writeHead(404, { "content-type": "text/plain" }).end("target not found");
+    return;
+  }
+  try {
+    const chunks: Buffer[] = [];
+    for await (const c of req) chunks.push(c as Buffer);
+    const body = Buffer.concat(chunks).toString("utf8");
+    JSON.parse(body); // reject non-JSON — never persist garbage
+    await sdkQ.updateSdkTargetSdkJson(pool, { id: targetId, sdkJson: body });
+    res.writeHead(204).end();
+  } catch {
+    res.writeHead(400, { "content-type": "text/plain" }).end("invalid sdk.json");
+  }
+}
+
 // Owned route: raw spec bytes for the web OpenAPI editor. Proxies the
 // lower-layer registry-api's raw-spec route (which lives outside the TypeSpec
 // router), so the editor can load the actual stored OpenAPI for an api+version.
@@ -278,6 +302,10 @@ const server = http.createServer((req, res) => {
   const sj = url.match(SDKJSON_RE);
   if (sj && req.method === "GET") {
     void serveSdkJson(res, decodeURIComponent(sj[1]));
+    return;
+  }
+  if (sj && req.method === "PUT") {
+    void saveSdkJson(req, res, decodeURIComponent(sj[1]));
     return;
   }
   const sp = url.match(SPEC_RE);

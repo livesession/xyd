@@ -18,6 +18,7 @@ import type {
   AppendSdkTargetBuildLogArgs,
   MarkSdkTargetErrorArgs,
   MarkSdkTargetPublishedArgs,
+  UpdateSdkTargetSdkJsonArgs,
   DeleteSdkTargetArgs,
 } from "./models.gen";
 interface Client {
@@ -299,6 +300,17 @@ export async function markSdkTargetPublished(client: Client, args: MarkSdkTarget
     await client.query({
         text: markSdkTargetPublishedQuery,
         values: [args.id, args.registryUrl],
+        rowMode: "array"
+    });
+}
+
+export const updateSdkTargetSdkJsonQuery = `-- name: UpdateSdkTargetSdkJson :exec
+UPDATE sdk_targets SET sdk_json = $2, updated_at = now() WHERE id = $1`;
+
+export async function updateSdkTargetSdkJson(client: Client, args: UpdateSdkTargetSdkJsonArgs): Promise<void> {
+    await client.query({
+        text: updateSdkTargetSdkJsonQuery,
+        values: [args.id, args.sdkJson],
         rowMode: "array"
     });
 }

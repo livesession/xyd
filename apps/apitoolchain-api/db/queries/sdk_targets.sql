@@ -51,5 +51,10 @@ UPDATE sdk_targets
 SET registry_url = $2, last_published_at = now(), updated_at = now()
 WHERE id = $1;
 
+-- name: UpdateSdkTargetSdkJson :exec
+-- Persist an edited sdk.json config override (the regen config); applied on the
+-- next rebuild of this target.
+UPDATE sdk_targets SET sdk_json = $2, updated_at = now() WHERE id = $1;
+
 -- name: DeleteSdkTarget :exec
 DELETE FROM sdk_targets WHERE id = $1;

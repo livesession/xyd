@@ -387,6 +387,25 @@ export async function getSdkTargetSdkJson(
   return res.text();
 }
 
+/** Persist an edited sdk.json config to the target (applied on the next rebuild). */
+export async function updateSdkTargetSdkJson(
+  id: string,
+  sdkJson: string,
+): Promise<{ ok: boolean; message?: string }> {
+  if (!apiBase()) return { ok: false, message: "Backend not configured." };
+  const res = await apiFetch(
+    `/sdk-targets/${encodeURIComponent(id)}/sdk.json`,
+    {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: sdkJson,
+    },
+  );
+  if (res.ok) return { ok: true };
+  const text = await res.text().catch(() => "");
+  return { ok: false, message: text || `Save failed (${res.status})` };
+}
+
 /** Delete an SDK target (from the detail danger zone). */
 export async function deleteSdkTarget(
   id: string,

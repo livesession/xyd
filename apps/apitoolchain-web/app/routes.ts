@@ -47,6 +47,10 @@ export default [
           "publishing",
           "routes/sdks.$sdkId.targets.$targetId.publishing.tsx",
         ),
+        route(
+          "configuration",
+          "routes/sdks.$sdkId.targets.$targetId.configuration.tsx",
+        ),
         route("settings", "routes/sdks.$sdkId.targets.$targetId.settings.tsx"),
       ],
     ),

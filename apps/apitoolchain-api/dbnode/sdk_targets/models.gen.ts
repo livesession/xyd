@@ -196,6 +196,11 @@ export interface MarkSdkTargetPublishedArgs {
     registryUrl: string | null;
 }
 
+export interface UpdateSdkTargetSdkJsonArgs {
+    id: string;
+    sdkJson: string;
+}
+
 export interface DeleteSdkTargetArgs {
     id: string;
 }
