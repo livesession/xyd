@@ -131,9 +131,9 @@ export function SdkJsonWizard({
   // when diffBase === "initial", so the diff is cumulative from the start.
   const initialByLang = useRef<Partial<Record<SdkLanguage, Baseline>>>({});
   const [previous, setPrevious] = useState<Baseline | null>(null);
-  // Put the default editor's mode first in the toggle (web opens JSON-first).
-  const editOptions =
-    defaultEditMode === "json" ? ["JSON", "Form"] : ["Form", "JSON"];
+  // Form is always first in the toggle; defaultEditMode only decides which is
+  // selected on open (it drives `editMode`, not the option order).
+  const editOptions = ["Form", "JSON"];
   // Page-sticky positioning applies only outside the contained (fill) layout.
   const pin = !fill && sticky;
 

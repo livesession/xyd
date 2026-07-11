@@ -5,7 +5,7 @@ import {
   type SdkJson,
   SdkJsonWizard,
 } from "@apitoolchain/sdkjson-wizard";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useFetcher, useOutletContext } from "react-router";
 import type { SdkTargetContext } from "~/components/sdkTargetShared";
 
@@ -38,15 +38,34 @@ export default function SdkTargetConfigurationTab() {
   }, [sdkJson]);
 
   const [value, setValue] = useState<SdkJson>(seed);
+  // The last PERSISTED config — what `value` is compared against to know if there
+  // are unsaved edits. Starts at the seed (nothing to save on open).
+  const [savedValue, setSavedValue] = useState<SdkJson>(seed);
   const saving = fetcher.state !== "idle";
   const result = fetcher.data as { ok: boolean; message?: string } | undefined;
 
+  const dirty = useMemo(
+    () => JSON.stringify(value) !== JSON.stringify(savedValue),
+    [value, savedValue],
+  );
+
+  // Remember what we submitted so a successful save adopts exactly that as the new
+  // baseline (flipping `dirty` back to false, even if the user kept typing).
+  const pendingSave = useRef<SdkJson | null>(null);
   const save = () => {
+    pendingSave.current = value;
     const fd = new FormData();
     fd.set("intent", "save-config");
     fd.set("sdkJson", JSON.stringify(value, null, 2));
     fetcher.submit(fd, { method: "post", action: base });
   };
+
+  useEffect(() => {
+    if (fetcher.state === "idle" && result?.ok && pendingSave.current) {
+      setSavedValue(pendingSave.current);
+      pendingSave.current = null;
+    }
+  }, [fetcher.state, result]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -60,9 +79,25 @@ export default function SdkTargetConfigurationTab() {
             apply on the next rebuild.
           </p>
         </div>
-        <Button variant="primary" icon="sdk" onClick={save} disabled={saving}>
-          {saving ? "Saving…" : "Save"}
-        </Button>
+        <div className="flex flex-shrink-0 items-center gap-3">
+          {dirty && (
+            <span className="inline-flex items-center gap-1.5 text-sm text-subtle">
+              <span
+                className="h-1.5 w-1.5 rounded-full"
+                style={{ backgroundColor: "#f59e0b" }}
+              />
+              Unsaved changes
+            </span>
+          )}
+          <Button
+            variant="primary"
+            icon="sdk"
+            onClick={save}
+            disabled={saving || !dirty}
+          >
+            {saving ? "Saving…" : "Save"}
+          </Button>
+        </div>
       </div>
 
       {result && !result.ok && (
@@ -70,7 +105,8 @@ export default function SdkTargetConfigurationTab() {
           {result.message ?? "Could not save the configuration."}
         </Callout>
       )}
-      {result?.ok && !saving && (
+      {/* Clear the "Saved" banner as soon as there are new unsaved edits. */}
+      {result?.ok && !saving && !dirty && (
         <Callout tone="success">
           Saved — applies the next time this SDK is rebuilt.
         </Callout>
@@ -82,6 +118,10 @@ export default function SdkTargetConfigurationTab() {
         languages={[target.language]}
         generatePreview={fetchPreview}
         defaultEditMode="json"
+        // Diff the Changes panel against the first generation (state 0), so it
+        // shows the cumulative effect of the config vs the pristine SDK — not
+        // just the delta from the previous keystroke (matches GenerateSdkModal).
+        diffBase="initial"
         // Identity is fixed by the SDK/target — hide it from the Form (it stays
         // in the JSON config, read-only).
         readOnlyFields={["$schema", "version", "sdkName", "api", "sdk"]}
