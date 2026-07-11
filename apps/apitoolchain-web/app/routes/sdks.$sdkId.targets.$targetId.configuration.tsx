@@ -41,6 +41,8 @@ export default function SdkTargetConfigurationTab() {
   // The last PERSISTED config — what `value` is compared against to know if there
   // are unsaved edits. Starts at the seed (nothing to save on open).
   const [savedValue, setSavedValue] = useState<SdkJson>(seed);
+  // The "Saved" banner is dismissible (× on hover); a fresh save re-shows it.
+  const [savedDismissed, setSavedDismissed] = useState(false);
   const saving = fetcher.state !== "idle";
   const result = fetcher.data as { ok: boolean; message?: string } | undefined;
 
@@ -53,6 +55,7 @@ export default function SdkTargetConfigurationTab() {
   // baseline (flipping `dirty` back to false, even if the user kept typing).
   const pendingSave = useRef<SdkJson | null>(null);
   const save = () => {
+    setSavedDismissed(false);
     pendingSave.current = value;
     const fd = new FormData();
     fd.set("intent", "save-config");
@@ -105,9 +108,9 @@ export default function SdkTargetConfigurationTab() {
           {result.message ?? "Could not save the configuration."}
         </Callout>
       )}
-      {/* Clear the "Saved" banner as soon as there are new unsaved edits. */}
-      {result?.ok && !saving && !dirty && (
-        <Callout tone="success">
+      {/* Clear the "Saved" banner on new unsaved edits, or when dismissed (×). */}
+      {result?.ok && !saving && !dirty && !savedDismissed && (
+        <Callout tone="success" onClose={() => setSavedDismissed(true)}>
           Saved — applies the next time this SDK is rebuilt.
         </Callout>
       )}
