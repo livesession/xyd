@@ -113,8 +113,14 @@ const KEY_COLUMNS: Column<ApiKey>[] = [
     key: "actions",
     header: "",
     width: "sm",
-    align: "right",
-    render: (k) => <RevokeCell apiKey={k} />,
+    // Right-align the button with flex, NOT the column's `align: "right"` — that
+    // puts `text-right` on the cell, which the (non-portaled) confirm Modal
+    // rendered inside it would inherit, right-aligning its text.
+    render: (k) => (
+      <div className="flex justify-end">
+        <RevokeCell apiKey={k} />
+      </div>
+    ),
   },
 ];
 
