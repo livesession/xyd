@@ -387,7 +387,8 @@ export async function getSdkTargetSdkJson(
   return res.text();
 }
 
-/** Persist an edited sdk.json config to the target (applied on the next rebuild). */
+/** Persist an edited sdk.json config to the target (applied when a new version is
+ * built — a built version is immutable). */
 export async function updateSdkTargetSdkJson(
   id: string,
   sdkJson: string,

@@ -5,10 +5,10 @@ import type { ApiVersion } from "~/data";
 import { formatVersion } from "~/version";
 
 /**
- * Build (regenerate) every target of an SDK from one API spec version. The
- * chosen API version is decoupled from each target's own package version — this
- * only changes the source spec they're generated from. Posts `intent=build-sdk`
- * to the SDK-detail action.
+ * Retry a FAILED build: re-run generation of the SDK's targets from an API spec
+ * version, in place. A successful version is immutable, so this is only for
+ * recovering a build that errored — config/spec changes ship as a New version.
+ * Posts `intent=build-sdk` to the SDK-detail action.
  */
 export function BuildSdkModal({
   open,
@@ -57,7 +57,7 @@ export function BuildSdkModal({
       open={open}
       onClose={onClose}
       size="sm"
-      title="Build SDK"
+      title="Retry build"
       footer={
         <>
           <Button variant="secondary" onClick={onClose}>
@@ -69,16 +69,16 @@ export function BuildSdkModal({
             onClick={build}
             disabled={submitting || apiVersions.length === 0}
           >
-            {submitting ? "Building…" : "Build"}
+            {submitting ? "Building…" : "Retry build"}
           </Button>
         </>
       }
     >
       <div className="flex flex-col gap-4">
         <p className="text-[13px] text-subtle">
-          Regenerate every target of this SDK from an API spec version. Each
-          target's own package version is unaffected — only the source spec
-          changes.
+          Re-run generation of this SDK's targets from an API spec version — for
+          recovering a build that failed. It doesn't bump the version; to apply
+          config or spec changes, create a New version instead.
         </p>
         <Field label="API version" required>
           <Select

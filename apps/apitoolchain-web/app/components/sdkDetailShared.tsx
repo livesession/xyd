@@ -66,6 +66,4 @@ export type SdkDetailContext = {
   currentApiVersion: string;
   /** Open the shared "Add target" modal (owned by the layout). */
   openAdd: () => void;
-  /** Open the shared "Build" modal (owned by the layout). */
-  openBuild: () => void;
 };

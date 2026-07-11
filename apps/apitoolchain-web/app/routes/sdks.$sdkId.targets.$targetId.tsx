@@ -182,15 +182,16 @@ export default function SdkTargetLayout({ loaderData }: Route.ComponentProps) {
         leadingActions={
           <div className="flex items-center gap-2">
             <StatusPill status={sdkBuildStatus(target)} />
-            {/* Persistent across every tab: the saved config has unbuilt changes.
-                Links to the Configuration tab where they can be reviewed + built. */}
+            {/* Persistent across every tab: the saved config isn't in a built
+                version yet. Links to the Configuration tab (→ create a new
+                version to apply it — a built version is immutable). */}
             {target.configPending && (
               <RouterLink
                 href={`${base}/configuration`}
                 className="no-underline"
               >
                 <Badge tone="warning" icon="alert">
-                  Changes pending build
+                  Config changed
                 </Badge>
               </RouterLink>
             )}

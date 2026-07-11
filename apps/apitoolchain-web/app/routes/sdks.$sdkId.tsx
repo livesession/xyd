@@ -7,8 +7,8 @@ import {
   Tabs,
 } from "@apitoolchain/design-system";
 import { toQuery } from "@apitoolchain/filters";
-import { useState } from "react";
-import { Outlet, useLocation } from "react-router";
+import { useEffect, useState } from "react";
+import { Outlet, useLocation, useSearchParams } from "react-router";
 import { AddTargetModal } from "~/components/AddTargetModal";
 import { BuildSdkModal } from "~/components/BuildSdkModal";
 import { NewVersionModal } from "~/components/NewVersionModal";
@@ -126,6 +126,21 @@ export default function SdkDetailLayout({ loaderData }: Route.ComponentProps) {
   const [addOpen, setAddOpen] = useState(false);
   const [buildOpen, setBuildOpen] = useState(false);
   const [newVersionOpen, setNewVersionOpen] = useState(false);
+  // A built version is immutable, so a plain rebuild only makes sense to retry a
+  // FAILED build — otherwise config changes ship as a NEW version.
+  const hasFailedBuild = targets.some((t) => t.status === "error");
+
+  // Deep-link: `/sdks/:id?new-version` opens the New version modal — the way to
+  // apply a saved config change (e.g. from a target's "pending config" banner).
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    if (!searchParams.has("new-version")) return;
+    setNewVersionOpen(true);
+    // Strip the param so a refresh / back-nav doesn't reopen the modal.
+    const next = new URLSearchParams(searchParams);
+    next.delete("new-version");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const { pathname } = useLocation();
   const activeTab =
@@ -141,7 +156,6 @@ export default function SdkDetailLayout({ loaderData }: Route.ComponentProps) {
     apiDistTags,
     currentApiVersion,
     openAdd: () => setAddOpen(true),
-    openBuild: () => setBuildOpen(true),
   };
 
   return (
@@ -199,14 +213,17 @@ export default function SdkDetailLayout({ loaderData }: Route.ComponentProps) {
 
         <RightPanel placement="content-right">
           <RightPanelSection title="Actions">
-            <Button
-              variant="secondary"
-              icon="sdk"
-              onClick={() => setBuildOpen(true)}
-              disabled={targets.length === 0}
-            >
-              Build
-            </Button>
+            {/* Rebuild only makes sense to retry a FAILED build — a successful
+                version is immutable; config changes ship as a New version. */}
+            {hasFailedBuild && (
+              <Button
+                variant="secondary"
+                icon="sdk"
+                onClick={() => setBuildOpen(true)}
+              >
+                Retry build
+              </Button>
+            )}
             <Button
               variant="secondary"
               icon="plus"

@@ -18,7 +18,8 @@ const fetchPreview = createFetchPreview("/api/sdk-preview");
 /**
  * The target's regeneration config as a live sdk.json wizard, scoped to THIS
  * target's language. Seeded from the current built sdk.json; "Save" persists the
- * edited config to the target (applied on the next rebuild).
+ * edited config to the target — applied when a new version is built (a built
+ * version is immutable).
  */
 export default function SdkTargetConfigurationTab() {
   const { target, sdkId, base, label, sdkJson } =
@@ -78,7 +79,7 @@ export default function SdkTargetConfigurationTab() {
           </h2>
           <p className="m-0 mt-1 text-sm text-subtle">
             The {label} sdk.json this SDK is regenerated from. Saved changes
-            apply on the next rebuild.
+            apply when you create a new version.
           </p>
         </div>
         <div className="flex flex-shrink-0 items-center gap-3">
@@ -110,16 +111,17 @@ export default function SdkTargetConfigurationTab() {
       {/* Persistent pending state (from the backend, survives refresh + shows on
           every tab): the saved config isn't applied until the SDK is rebuilt. */}
       {target.configPending && (
-        <Callout tone="warning" icon="alert" title="Saved — pending next build">
+        <Callout tone="warning" icon="alert" title="Saved — not in a build yet">
           <p className="m-0">
-            This config isn't applied yet. The live {label} SDK keeps its
-            current build until it's rebuilt — then these changes take effect.
+            SDK versions are immutable, so this config applies when you create a
+            new version — the live {label} SDK keeps its current build until
+            then.
           </p>
           <RouterLink
-            href={`/sdks/${sdkId}`}
+            href={`/sdks/${sdkId}?new-version`}
             className="mt-1.5 inline-block font-medium text-current underline-offset-2 hover:underline"
           >
-            Build the SDK to apply →
+            Create a new version to apply →
           </RouterLink>
         </Callout>
       )}
