@@ -28,13 +28,19 @@ CREATE INDEX sdk_target_versions_target_created_idx
 -- current state, so history isn't empty for targets that predate this table.
 -- The old (non-version-keyed) artifact key is preserved as-is — new builds write
 -- version-keyed keys and never touch it.
+-- The immutable version dimension is the parent SDK's version (what the pipeline
+-- keys new builds on), so seed each existing target's row from `sdks.version`,
+-- falling back to the target's own package version when the SDK has none.
 INSERT INTO sdk_target_versions
   (id, target_id, version, api_version, package_name, sdk_json, artifact_ref,
    status, registry_url, published_at, project_id, created_at)
 SELECT
-  t.id || ':' || t.version, t.id, t.version, t.api_version, t.package_name,
-  t.sdk_json, COALESCE(t.artifact_ref, ''), t.status, t.registry_url,
-  t.last_published_at, t.project_id, t.updated_at
+  t.id || ':' || COALESCE(NULLIF(s.version, ''), t.version),
+  t.id,
+  COALESCE(NULLIF(s.version, ''), t.version),
+  t.api_version, t.package_name, t.sdk_json, COALESCE(t.artifact_ref, ''),
+  t.status, t.registry_url, t.last_published_at, t.project_id, t.updated_at
 FROM sdk_targets t
+JOIN sdks s ON t.sdk_id = s.id
 WHERE t.version <> '' AND t.artifact_ref IS NOT NULL
 ON CONFLICT (target_id, version) DO NOTHING;

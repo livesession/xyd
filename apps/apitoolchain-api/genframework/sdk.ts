@@ -489,11 +489,17 @@ export async function runSdkGeneration(opts: {
       zip.file(path, content);
     const buf = await zip.generateAsync({ type: "nodebuffer" });
 
-    const key = sdkArtifactKey(targetId, ver);
+    // The immutable version's identity is the SDK version the user bumps (what
+    // "New version" changes) — NOT the emitter's package version `ver`, which is
+    // derived from the API spec and can be identical across SDK versions. Keying
+    // on it makes each new SDK version a DISTINCT record + artifact that never
+    // upserts (overwrites) a previous one. Falls back to `ver` when unset.
+    const buildVersion = sdkVersion || ver;
+    const key = sdkArtifactKey(targetId, buildVersion);
     await storage.write(key, buf, { mimeType: "application/zip" });
     // Also persist sdk.json on its own — served directly to the dashboard so it
     // never has to pull the whole artifact zip just to show the config.
-    await storage.write(sdkJsonKey(targetId, ver), sdkJson, {
+    await storage.write(sdkJsonKey(targetId, buildVersion), sdkJson, {
       mimeType: "application/json",
     });
 
@@ -501,9 +507,9 @@ export async function runSdkGeneration(opts: {
     // the exact config it was built from) — never overwriting older versions.
     // A retry of the same version upserts that row (see the query).
     await targetVerQ.upsertSdkTargetVersion(pool, {
-      id: `${targetId}:${ver}`,
+      id: `${targetId}:${buildVersion}`,
       targetId,
-      version: ver,
+      version: buildVersion,
       apiVersion: version,
       packageName,
       sdkJson,
@@ -517,7 +523,7 @@ export async function runSdkGeneration(opts: {
       id: targetId,
       artifactRef: key,
       packageName,
-      version: ver,
+      version: buildVersion,
     });
     await log(`✓ ready — ${packageName}@${ver}`);
     await jobQ.updateJobStatus(pool, {
