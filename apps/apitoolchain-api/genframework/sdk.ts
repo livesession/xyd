@@ -14,6 +14,7 @@ import * as jobQ from "../dbnode/jobs";
 import * as notifQ from "../dbnode/notifications";
 import { pool } from "../dbnode/pool";
 import * as buildQ from "../dbnode/sdk_builds";
+import * as targetVerQ from "../dbnode/sdk_target_versions";
 import * as sdkQ from "../dbnode/sdk_targets";
 import { storage } from "../storage";
 import { randomId } from "../util";
@@ -367,13 +368,15 @@ export async function generateSdkFileMap(o: {
   };
 }
 
-/** Object-storage keys for a target's build outputs. */
-export const sdkArtifactKey = (targetId: string) =>
-  `artifacts/sdk/${targetId}/sdk.zip`;
+/** Object-storage keys for a target's build outputs, keyed by VERSION so a
+ * rebuild / new version never overwrites a previous version's artifacts (target
+ * versions are immutable). */
+export const sdkArtifactKey = (targetId: string, version: string) =>
+  `artifacts/sdk/${targetId}/${version}/sdk.zip`;
 /** The `sdk.json` stored STANDALONE (not just inside the zip) so the dashboard
  * can read it without downloading + unzipping the whole artifact. */
-export const sdkJsonKey = (targetId: string) =>
-  `artifacts/sdk/${targetId}/sdk.json`;
+export const sdkJsonKey = (targetId: string, version: string) =>
+  `artifacts/sdk/${targetId}/${version}/sdk.json`;
 
 /**
  * Wired SDK generation: RAW spec → OpenSDK IR → per-language file map → zip in
@@ -486,14 +489,30 @@ export async function runSdkGeneration(opts: {
       zip.file(path, content);
     const buf = await zip.generateAsync({ type: "nodebuffer" });
 
-    const key = sdkArtifactKey(targetId);
+    const key = sdkArtifactKey(targetId, ver);
     await storage.write(key, buf, { mimeType: "application/zip" });
     // Also persist sdk.json on its own — served directly to the dashboard so it
     // never has to pull the whole artifact zip just to show the config.
-    await storage.write(sdkJsonKey(targetId), sdkJson, {
+    await storage.write(sdkJsonKey(targetId, ver), sdkJson, {
       mimeType: "application/json",
     });
 
+    // Record this build as an IMMUTABLE per-target version (its own artifact +
+    // the exact config it was built from) — never overwriting older versions.
+    // A retry of the same version upserts that row (see the query).
+    await targetVerQ.upsertSdkTargetVersion(pool, {
+      id: `${targetId}:${ver}`,
+      targetId,
+      version: ver,
+      apiVersion: version,
+      packageName,
+      sdkJson,
+      artifactRef: key,
+      status: "ready",
+      projectId,
+    });
+
+    // The `sdk_targets` row is the "latest" pointer + clears config_pending.
     await sdkQ.markSdkTargetReady(pool, {
       id: targetId,
       artifactRef: key,

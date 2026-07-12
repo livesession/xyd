@@ -7,6 +7,7 @@ import * as gitQ from "../dbnode/git";
 import { pool } from "../dbnode/pool";
 import * as regQ from "../dbnode/registries";
 import * as releaseQ from "../dbnode/releases";
+import * as targetVerQ from "../dbnode/sdk_target_versions";
 import * as sdkQ from "../dbnode/sdk_targets";
 import { runPublishRelease } from "../genframework/release";
 import { sdkJsonKey } from "../genframework/sdk";
@@ -61,26 +62,74 @@ const ARTIFACT_RE = /^\/sdk-targets\/([^/]+)\/artifact(?:\?.*)?$/;
 async function serveArtifact(
   res: http.ServerResponse,
   targetId: string,
+  version?: string,
 ): Promise<void> {
-  const row = await sdkQ.getSdkTarget(pool, { id: targetId });
-  if (!row?.artifactRef) {
+  // A specific immutable version's artifact, else the target's latest.
+  let artifactRef: string | null | undefined;
+  let name = targetId;
+  if (version) {
+    const v = await targetVerQ.getSdkTargetVersion(pool, { targetId, version });
+    artifactRef = v?.artifactRef;
+    name = `${targetId}-${version}`;
+  } else {
+    const row = await sdkQ.getSdkTarget(pool, { id: targetId });
+    artifactRef = row?.artifactRef;
+    name = row?.version ? `${targetId}-${row.version}` : targetId;
+  }
+  if (!artifactRef) {
     res
       .writeHead(404, { "content-type": "text/plain" })
       .end("artifact not found");
     return;
   }
   try {
-    const buf = await storage.readToBuffer(row.artifactRef);
+    const buf = await storage.readToBuffer(artifactRef);
     res
       .writeHead(200, {
         "content-type": "application/zip",
-        "content-disposition": `attachment; filename="${targetId}.zip"`,
+        "content-disposition": `attachment; filename="${name}.zip"`,
       })
       .end(buf);
   } catch {
     res
       .writeHead(500, { "content-type": "text/plain" })
       .end("artifact read error");
+  }
+}
+
+/** Parse `?version=` off a raw request URL (for version-pinned artifact/config
+ * reads); undefined when absent. */
+function versionParam(url: string): string | undefined {
+  const q = url.indexOf("?");
+  if (q < 0) return undefined;
+  return new URLSearchParams(url.slice(q + 1)).get("version") ?? undefined;
+}
+
+// Owned route: the immutable per-target version history (each build → one row,
+// never overwritten) — what the target's Versions tab lists. `deriveTargetVersions`
+// on the web overlays dist-tags.
+const VERSIONS_RE = /^\/sdk-targets\/([^/]+)\/versions(?:\?.*)?$/;
+
+async function serveTargetVersions(
+  res: http.ServerResponse,
+  targetId: string,
+): Promise<void> {
+  try {
+    const rows = await targetVerQ.listSdkTargetVersions(pool, { targetId });
+    const out = rows.map((r) => ({
+      id: r.id,
+      targetId: r.targetId,
+      version: r.version,
+      status: r.status,
+      createdAt: r.createdAt ? r.createdAt.toISOString() : "",
+      publishedAt: r.publishedAt ? r.publishedAt.toISOString() : undefined,
+      registryUrl: r.registryUrl ?? undefined,
+    }));
+    res
+      .writeHead(200, { "content-type": "application/json" })
+      .end(JSON.stringify(out));
+  } catch {
+    res.writeHead(200, { "content-type": "application/json" }).end("[]");
   }
 }
 
@@ -92,26 +141,66 @@ const SDKJSON_RE = /^\/sdk-targets\/([^/]+)\/sdk\.json(?:\?.*)?$/;
 async function serveSdkJson(
   res: http.ServerResponse,
   targetId: string,
+  version?: string,
 ): Promise<void> {
   const row = await sdkQ.getSdkTarget(pool, { id: targetId });
-  if (!row?.artifactRef) {
+  if (!row) {
     res
       .writeHead(404, { "content-type": "text/plain" })
-      .end("sdk.json not found");
+      .end("target not found");
     return;
   }
   try {
-    // Preferred: the standalone sdk.json written at build time — a direct read,
-    // no full-artifact download + unzip.
-    const key = sdkJsonKey(targetId);
-    if (await storage.fileExists(key)) {
+    // A specific immutable version's BUILT config.
+    if (version) {
+      const v = await targetVerQ.getSdkTargetVersion(pool, {
+        targetId,
+        version,
+      });
+      if (v?.sdkJson) {
+        res
+          .writeHead(200, { "content-type": "application/json" })
+          .end(v.sdkJson);
+        return;
+      }
+      const key = sdkJsonKey(targetId, version);
+      if (await storage.fileExists(key)) {
+        res
+          .writeHead(200, { "content-type": "application/json" })
+          .end(await storage.readToBuffer(key));
+        return;
+      }
       res
-        .writeHead(200, { "content-type": "application/json" })
-        .end(await storage.readToBuffer(key));
+        .writeHead(404, { "content-type": "text/plain" })
+        .end("sdk.json not found for version");
       return;
     }
+    // Default (the config-tab seed): the current DRAFT config (last saved) if
+    // there is one, so the wizard shows the pending edits instead of reverting to
+    // the built config. Else fall back to the latest built version's sdk.json.
+    if (row.sdkJson) {
+      res
+        .writeHead(200, { "content-type": "application/json" })
+        .end(row.sdkJson);
+      return;
+    }
+    if (row.version) {
+      const key = sdkJsonKey(targetId, row.version);
+      if (await storage.fileExists(key)) {
+        res
+          .writeHead(200, { "content-type": "application/json" })
+          .end(await storage.readToBuffer(key));
+        return;
+      }
+    }
     // Fallback for artifacts built before the standalone copy existed: extract
-    // sdk.json from the zip.
+    // sdk.json from the latest artifact zip.
+    if (!row.artifactRef) {
+      res
+        .writeHead(404, { "content-type": "text/plain" })
+        .end("sdk.json not found");
+      return;
+    }
     const zip = await JSZip.loadAsync(
       await storage.readToBuffer(row.artifactRef),
     );
@@ -139,7 +228,9 @@ async function saveSdkJson(
 ): Promise<void> {
   const row = await sdkQ.getSdkTarget(pool, { id: targetId });
   if (!row) {
-    res.writeHead(404, { "content-type": "text/plain" }).end("target not found");
+    res
+      .writeHead(404, { "content-type": "text/plain" })
+      .end("target not found");
     return;
   }
   try {
@@ -150,7 +241,9 @@ async function saveSdkJson(
     await sdkQ.updateSdkTargetSdkJson(pool, { id: targetId, sdkJson: body });
     res.writeHead(204).end();
   } catch {
-    res.writeHead(400, { "content-type": "text/plain" }).end("invalid sdk.json");
+    res
+      .writeHead(400, { "content-type": "text/plain" })
+      .end("invalid sdk.json");
   }
 }
 
@@ -296,12 +389,17 @@ const server = http.createServer((req, res) => {
   }
   const m = url.match(ARTIFACT_RE);
   if (m && req.method === "GET") {
-    void serveArtifact(res, decodeURIComponent(m[1]));
+    void serveArtifact(res, decodeURIComponent(m[1]), versionParam(url));
+    return;
+  }
+  const tv = url.match(VERSIONS_RE);
+  if (tv && req.method === "GET") {
+    void serveTargetVersions(res, decodeURIComponent(tv[1]));
     return;
   }
   const sj = url.match(SDKJSON_RE);
   if (sj && req.method === "GET") {
-    void serveSdkJson(res, decodeURIComponent(sj[1]));
+    void serveSdkJson(res, decodeURIComponent(sj[1]), versionParam(url));
     return;
   }
   if (sj && req.method === "PUT") {
