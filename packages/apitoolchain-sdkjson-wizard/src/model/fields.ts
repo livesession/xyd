@@ -432,7 +432,7 @@ export const SECTIONS: SectionDef[] = [
         label: "Package version",
         control: "text",
         placeholder: "1.0.0",
-        hint: "Package version override (else spec.info.version).",
+        hint: "The registry/end-user package version — decoupled from the SDK version. Unset defaults to the SDK version.",
       },
     ],
   },

@@ -134,7 +134,13 @@ export interface SdkTarget {
 export interface TargetVersion {
   id: string;
   targetId: string;
+  /** The PACKAGE version — what ships to the registry for end users. Decoupled
+   * from the SDK version (below); set via the config's publish.version. */
   version: string;
+  /** The SDK-level version this build was cut under (decoupled from `version`). */
+  sdkVersion?: string;
+  /** The API spec version this version was built from. */
+  apiVersion?: string;
   status: BuildStatus;
   createdAt: string;
   publishedAt?: string;

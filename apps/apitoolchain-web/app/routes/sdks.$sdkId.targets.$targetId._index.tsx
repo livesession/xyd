@@ -49,7 +49,7 @@ export default function SdkTargetOverviewTab() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-2">
-        <span className="text-sm text-subtle">Version</span>
+        <span className="text-sm text-subtle">Package version</span>
         <Dropdown
           variant="select"
           icon="tags-outline"
@@ -78,7 +78,7 @@ export default function SdkTargetOverviewTab() {
           },
           {
             label: "SDK version",
-            value: formatVersion(sdkVersion),
+            value: formatVersion(shownVersion?.sdkVersion ?? sdkVersion),
           },
           {
             label: "API",
@@ -93,7 +93,7 @@ export default function SdkTargetOverviewTab() {
           },
           {
             label: "API version",
-            value: formatVersion(target.apiVersion),
+            value: formatVersion(shownVersion?.apiVersion ?? target.apiVersion),
           },
           {
             label: "Dist-tag",

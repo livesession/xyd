@@ -19,10 +19,21 @@ export default function SdkTargetVersionsTab() {
   const versionCols: Column<TargetVersion>[] = [
     {
       key: "version",
-      header: "Version",
+      // The registry/end-user version — decoupled from the SDK version (next col).
+      header: <span className="whitespace-nowrap">Package version</span>,
       width: "md",
       render: (v) => (
         <span className="font-medium text-ink">{formatVersion(v.version)}</span>
+      ),
+    },
+    {
+      key: "sdkVersion",
+      header: <span className="whitespace-nowrap">SDK version</span>,
+      width: "sm",
+      render: (v) => (
+        <span className="text-subtle">
+          {v.sdkVersion ? formatVersion(v.sdkVersion) : "—"}
+        </span>
       ),
     },
     {
