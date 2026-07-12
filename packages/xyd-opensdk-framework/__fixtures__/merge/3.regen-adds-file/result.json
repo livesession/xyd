@@ -1,0 +1,14 @@
+{
+  "written": [
+    "users.go"
+  ],
+  "unchanged": [
+    "client.go"
+  ],
+  "merged": [],
+  "mergeConflicts": [],
+  "conflicts": [],
+  "skipped": [],
+  "keptModified": [],
+  "pruned": []
+}

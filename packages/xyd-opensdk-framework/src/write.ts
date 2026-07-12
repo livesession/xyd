@@ -1,3 +1,5 @@
+import { isProbablyBinary, merge3 } from '@xyd-js/opensdk-merge';
+
 import type { GeneratedFileEntry, ProjectFileMap, WriteMode } from './types';
 
 /**
@@ -24,6 +26,17 @@ export const SDK_LOCK_FILENAME = '.sdk/sdk.lock';
  */
 export const SDK_IGNORE_FILENAME = '.sdkignore';
 
+/**
+ * Directory of content-addressed BASE snapshots — the previously-generated
+ * pristine content of each managed file, keyed by the same sha256 the lock
+ * records (`.sdk/base/<sha256>`). It's the missing 3-way-merge ancestor: with
+ * `{ merge: true }`, a regen 3-way merges the user's on-disk edits against the
+ * new generation using this base, so hand-edits to generated files survive.
+ * Content-addressed so unchanged files share one object;
+ * unreferenced objects are pruned each run. Only written when merge is enabled.
+ */
+export const SDK_BASE_DIR = '.sdk/base';
+
 const MANIFEST_SCHEMA_VERSION = 1;
 
 export interface ProjectManifest {
@@ -38,6 +51,15 @@ export interface ProjectManifest {
 export interface WriteProjectOptions {
   /** Generator name recorded in the manifest. Default: 'opensdk'. */
   generator?: string;
+  /**
+   * 3-way merge: preserve hand-edits to generated files across regeneration.
+   * When true, an `overwrite` file the user has modified is 3-way
+   * merged (base = the stored `.sdk/base/` snapshot, ours = on-disk, theirs =
+   * the new generation) instead of being clobbered; conflicts get git-style
+   * markers and are reported in `mergeConflicts`. Also writes the base snapshot
+   * so the next regen has an ancestor. Default: false (clobber, as before).
+   */
+  merge?: boolean;
 }
 
 /** Per-run summary of what writeProject did (rel paths, sorted by processing order). */
@@ -55,6 +77,12 @@ export interface WriteProjectResult {
   /** `.sdkignore`-matched files whose existing on-disk content DIFFERS from the freshly
    * generated output — kept as-is (never overwritten), surfaced for a warning. */
   conflicts: string[];
+  /** (merge mode) User-modified `overwrite` files 3-way merged CLEANLY with the new
+   * generation — the hand-edits and the generator's changes both landed. */
+  merged: string[];
+  /** (merge mode) User-modified files whose 3-way merge hit a conflict — written with
+   * `<<<<<<<` markers for the user to resolve; the caller's warning list. */
+  mergeConflicts: string[];
 }
 
 /**
@@ -77,6 +105,11 @@ export interface WriteProjectResult {
  *     matches the manifest (pristine generated output); locally-modified
  *     orphans are kept and returned in `keptModified`. First adoption (no
  *     previous manifest) never prunes — it just writes the baseline;
+ *  3b. `{ merge: true }` — a user-EDITED `overwrite` file is 3-way
+ *     merged (base = `.sdk/base/` snapshot, ours = on-disk, theirs = new gen)
+ *     instead of clobbered; clean merges go to `merged`, conflicts get
+ *     `<<<<<<<` markers and go to `mergeConflicts`. The pristine base snapshot
+ *     is (re)written + pruned so the next regen has an ancestor;
  *  4. lock — '.sdk/sdk.lock' records this run's ownership set.
  *
  * Backward-compatible: the historical `Record<path, contents>` input still
@@ -100,9 +133,21 @@ export async function writeProject(
     }
   };
 
-  const result: WriteProjectResult = { written: [], skipped: [], unchanged: [], pruned: [], keptModified: [], conflicts: [] };
+  const result: WriteProjectResult = {
+    written: [],
+    skipped: [],
+    unchanged: [],
+    pruned: [],
+    keptModified: [],
+    conflicts: [],
+    merged: [],
+    mergeConflicts: [],
+  };
   /** rel path -> sha256 of the PRISTINE generated content (the prune guard's "safe to delete" fingerprint). */
   const manifestFiles: Record<string, string> = {};
+  /** (merge mode) sha256 -> pristine generated content, staged into `.sdk/base/` at the end. */
+  const baseObjects = new Map<string, string>();
+  const readBaseObject = (sha: string) => readIfExists(path.join(outDir, SDK_BASE_DIR, sha));
   const previous = readManifest(await readIfExists(path.join(outDir, SDK_LOCK_FILENAME)));
   // User-owned protection list (gitignore-style). Read once; empty when absent.
   const ignore = parseSdkIgnore(await readIfExists(path.join(outDir, SDK_IGNORE_FILENAME)));
@@ -120,8 +165,8 @@ export async function writeProject(
     .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0));
 
   for (const [rel, entry] of entries) {
-    if (rel === SDK_LOCK_FILENAME) {
-      throw new Error(`writeProject: the file map may not emit ${SDK_LOCK_FILENAME} (writeProject owns it)`);
+    if (rel === SDK_LOCK_FILENAME || rel === SDK_IGNORE_FILENAME || rel.startsWith(`${SDK_BASE_DIR}/`)) {
+      throw new Error(`writeProject: the file map may not emit ${rel} (writeProject owns .sdk/)`);
     }
     const full = path.join(outDir, rel);
     const mode: WriteMode = entry.writeMode ?? 'overwrite';
@@ -179,6 +224,34 @@ export async function writeProject(
     }
 
     manifestFiles[rel] = pristineHash;
+
+    // Merge mode (`overwrite` files only): stage this run's pristine generated
+    // content as the next base, and — for a file the user has HAND-EDITED —
+    // 3-way merge against the stored base snapshot instead of clobbering it.
+    if (options.merge && mode === 'overwrite') {
+      baseObjects.set(pristineHash, target);
+      const prevSha = previous?.files[rel];
+      const modified = existing !== null && (!prevSha || sha256(existing) !== prevSha);
+      if (modified && existing !== target) {
+        const base = prevSha ? await readBaseObject(prevSha) : null;
+        if (base !== null && !isProbablyBinary(base) && !isProbablyBinary(existing) && !isProbablyBinary(target)) {
+          const m = merge3(base, existing, target, { labels: { ours: 'your edits', theirs: 'generated' } });
+          if (m.text === existing) {
+            result.unchanged.push(rel);
+          } else {
+            await fs.mkdir(path.dirname(full), { recursive: true });
+            await fs.writeFile(full, m.text, 'utf8');
+            (m.clean ? result.merged : result.mergeConflicts).push(rel);
+          }
+        } else {
+          // No base yet (first merge run) or binary content — never clobber the
+          // user's edits; seed the base so the NEXT regen can merge.
+          result.keptModified.push(rel);
+        }
+        continue;
+      }
+    }
+
     if (existing === target) {
       result.unchanged.push(rel);
       continue;
@@ -210,6 +283,33 @@ export async function writeProject(
       }
       result.pruned.push(rel);
       await removeEmptyParents(path.dirname(full), outDir);
+    }
+  }
+
+  // Base snapshot (merge mode): persist this run's pristine generated content
+  // content-addressed under `.sdk/base/<sha>` (idempotent write-if-absent), then
+  // prune objects no longer referenced by the current generation.
+  if (options.merge) {
+    const baseDir = path.join(outDir, SDK_BASE_DIR);
+    await fs.mkdir(baseDir, { recursive: true });
+    for (const [sha, content] of baseObjects) {
+      const objFull = path.join(baseDir, sha);
+      if ((await readIfExists(objFull)) === null) await fs.writeFile(objFull, content, 'utf8');
+    }
+    let names: string[] = [];
+    try {
+      names = await fs.readdir(baseDir);
+    } catch {
+      names = [];
+    }
+    for (const name of names) {
+      if (!baseObjects.has(name)) {
+        try {
+          await fs.unlink(path.join(baseDir, name));
+        } catch {
+          // racing deletion / permissions — keep going
+        }
+      }
     }
   }
 
@@ -250,8 +350,8 @@ export async function materializeProject(
   const out: Record<string, string> = {};
   const manifestFiles: Record<string, string> = {};
   for (const [rel, value] of Object.entries(files)) {
-    if (rel === SDK_LOCK_FILENAME) {
-      throw new Error(`materializeProject: the file map may not emit ${SDK_LOCK_FILENAME} (it owns it)`);
+    if (rel === SDK_LOCK_FILENAME || rel === SDK_IGNORE_FILENAME || rel.startsWith(`${SDK_BASE_DIR}/`)) {
+      throw new Error(`materializeProject: the file map may not emit ${rel} (it owns .sdk/)`);
     }
     const entry: GeneratedFileEntry = typeof value === 'string' ? { content: value } : value;
     // mergeJson has nothing to merge into on a fresh tree — canonicalize (the
@@ -261,7 +361,13 @@ export async function materializeProject(
         ? `${JSON.stringify(JSON.parse(entry.content), null, 2)}\n`
         : entry.content;
     out[rel] = content;
-    manifestFiles[rel] = sha256(content);
+    const hash = sha256(content);
+    manifestFiles[rel] = hash;
+    // Merge mode: carry the base snapshot into the tree so a later fs regen has
+    // a 3-way ancestor (only `overwrite` files are ever text-merged).
+    if (options.merge && (entry.writeMode ?? 'overwrite') === 'overwrite') {
+      out[`${SDK_BASE_DIR}/${hash}`] = content;
+    }
   }
 
   const manifest: ProjectManifest = {

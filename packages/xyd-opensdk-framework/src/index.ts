@@ -24,6 +24,7 @@ export {
   isSdkIgnored,
   SDK_LOCK_FILENAME,
   SDK_IGNORE_FILENAME,
+  SDK_BASE_DIR,
 } from './write';
 export type { ProjectManifest, WriteProjectOptions, WriteProjectResult } from './write';
 export { planOperation } from './operation-plan';

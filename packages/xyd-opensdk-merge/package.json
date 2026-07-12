@@ -1,7 +1,7 @@
 {
-  "name": "@xyd-js/opensdk-framework",
+  "name": "@xyd-js/opensdk-merge",
   "version": "0.1.0-build.0",
-  "description": "OpenSDK generation framework: the Emitter plugin contract, registry, orchestrator and project writer shared by every language emitter",
+  "description": "3-way merge primitive for OpenSDK regeneration: preserve hand-edits to generated files by merging base/ours/theirs with git-style conflict markers",
   "main": "./dist/index.js",
   "type": "module",
   "scripts": {
@@ -13,8 +13,7 @@
     "format": "bunx biome check --write src"
   },
   "dependencies": {
-    "@xyd-js/opensdk-core": "workspace:*",
-    "@xyd-js/opensdk-merge": "workspace:*"
+    "diff": "^5.2.2"
   },
   "devDependencies": {
     "@types/node": "^20.9.0",

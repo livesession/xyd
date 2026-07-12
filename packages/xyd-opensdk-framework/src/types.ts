@@ -100,7 +100,7 @@ export interface Emitter {
    * A single per-operation USAGE SNIPPET (optional) — a self-contained,
    * runnable-looking example that constructs the client and makes ONE call with
    * required-only example values (the artifact docs render, à la
-   * Fern/Speakeasy/Stainless: `client.pets.list(...)`). `chain` is the resource
+   * Speakeasy/Stainless: `client.pets.list(...)`). `chain` is the resource
    * name path (root→owner) the method hangs off, so the emitter can rebuild the
    * client attribute chain in its own casing. Reuses the shared example planner
    * (planMethodExample) so every language shows the same call shape. Pure.
