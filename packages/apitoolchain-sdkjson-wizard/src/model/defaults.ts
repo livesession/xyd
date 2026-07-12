@@ -101,7 +101,6 @@ export function seedSdkJson(opts: SeedSdkJsonOptions): SdkJson {
   const ns = opts.namespace || slug;
   const snake = slug.replace(/-/g, "_");
   const pascal = pascalCase(slug);
-  const pkgVersion = opts.version || "0.1.0";
   // Multi-repo: each language is its own repo → output at the repo root.
   const out = (dir: string) => (opts.repoMode === "multi" ? "." : dir);
 
@@ -141,7 +140,10 @@ export function seedSdkJson(opts: SeedSdkJsonOptions): SdkJson {
       retry: { maxRetries: 3 },
       timeout: { defaultTimeoutMs: 30000 },
     },
-    publish: { license: "MIT", version: pkgVersion },
+    // Deliberately NO `version` here: leaving publish.version unset lets the
+    // PACKAGE version default to the release version (and bump per "New version").
+    // Seeding it would PIN the manifest version and override every release.
+    publish: { license: "MIT" },
   };
   for (const lang of opts.languages) {
     const key = LANGUAGE_META[lang].sectionKey;
