@@ -4,6 +4,7 @@ export interface UpsertSdkTargetVersionArgs {
     id: string;
     targetId: string;
     version: string;
+    sdkVersion: string;
     apiVersion: string;
     packageName: string;
     sdkJson: string;
@@ -25,6 +26,7 @@ export interface UpsertSdkTargetVersionRow {
     publishedAt: Date | null;
     projectId: string;
     createdAt: Date;
+    sdkVersion: string;
 }
 
 export interface ListSdkTargetVersionsArgs {
@@ -44,6 +46,7 @@ export interface ListSdkTargetVersionsRow {
     publishedAt: Date | null;
     projectId: string;
     createdAt: Date;
+    sdkVersion: string;
 }
 
 export interface GetSdkTargetVersionArgs {
@@ -64,6 +67,7 @@ export interface GetSdkTargetVersionRow {
     publishedAt: Date | null;
     projectId: string;
     createdAt: Date;
+    sdkVersion: string;
 }
 
 export interface MarkSdkTargetVersionPublishedArgs {

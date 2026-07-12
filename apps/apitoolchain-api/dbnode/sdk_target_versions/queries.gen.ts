@@ -14,20 +14,21 @@ interface Client {
 }
 export const upsertSdkTargetVersionQuery = `-- name: UpsertSdkTargetVersion :one
 INSERT INTO sdk_target_versions
-  (id, target_id, version, api_version, package_name, sdk_json, artifact_ref, status, project_id)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+  (id, target_id, version, sdk_version, api_version, package_name, sdk_json, artifact_ref, status, project_id)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
 ON CONFLICT (target_id, version) DO UPDATE
-SET api_version = EXCLUDED.api_version,
+SET sdk_version = EXCLUDED.sdk_version,
+    api_version = EXCLUDED.api_version,
     package_name = EXCLUDED.package_name,
     sdk_json = EXCLUDED.sdk_json,
     artifact_ref = EXCLUDED.artifact_ref,
     status = EXCLUDED.status
-RETURNING id, target_id, version, api_version, package_name, sdk_json, artifact_ref, status, registry_url, published_at, project_id, created_at`;
+RETURNING id, target_id, version, api_version, package_name, sdk_json, artifact_ref, status, registry_url, published_at, project_id, created_at, sdk_version`;
 
 export async function upsertSdkTargetVersion(client: Client, args: UpsertSdkTargetVersionArgs): Promise<UpsertSdkTargetVersionRow | null> {
     const result = await client.query({
         text: upsertSdkTargetVersionQuery,
-        values: [args.id, args.targetId, args.version, args.apiVersion, args.packageName, args.sdkJson, args.artifactRef, args.status, args.projectId],
+        values: [args.id, args.targetId, args.version, args.sdkVersion, args.apiVersion, args.packageName, args.sdkJson, args.artifactRef, args.status, args.projectId],
         rowMode: "array"
     });
     if (result.rows.length !== 1) {
@@ -46,12 +47,13 @@ export async function upsertSdkTargetVersion(client: Client, args: UpsertSdkTarg
         registryUrl: row[8],
         publishedAt: row[9],
         projectId: row[10],
-        createdAt: row[11]
+        createdAt: row[11],
+        sdkVersion: row[12]
     };
 }
 
 export const listSdkTargetVersionsQuery = `-- name: ListSdkTargetVersions :many
-SELECT id, target_id, version, api_version, package_name, sdk_json, artifact_ref, status, registry_url, published_at, project_id, created_at FROM sdk_target_versions WHERE target_id = $1 ORDER BY created_at DESC`;
+SELECT id, target_id, version, api_version, package_name, sdk_json, artifact_ref, status, registry_url, published_at, project_id, created_at, sdk_version FROM sdk_target_versions WHERE target_id = $1 ORDER BY created_at DESC`;
 
 export async function listSdkTargetVersions(client: Client, args: ListSdkTargetVersionsArgs): Promise<ListSdkTargetVersionsRow[]> {
     const result = await client.query({
@@ -72,13 +74,14 @@ export async function listSdkTargetVersions(client: Client, args: ListSdkTargetV
             registryUrl: row[8],
             publishedAt: row[9],
             projectId: row[10],
-            createdAt: row[11]
+            createdAt: row[11],
+            sdkVersion: row[12]
         };
     });
 }
 
 export const getSdkTargetVersionQuery = `-- name: GetSdkTargetVersion :one
-SELECT id, target_id, version, api_version, package_name, sdk_json, artifact_ref, status, registry_url, published_at, project_id, created_at FROM sdk_target_versions WHERE target_id = $1 AND version = $2`;
+SELECT id, target_id, version, api_version, package_name, sdk_json, artifact_ref, status, registry_url, published_at, project_id, created_at, sdk_version FROM sdk_target_versions WHERE target_id = $1 AND version = $2`;
 
 export async function getSdkTargetVersion(client: Client, args: GetSdkTargetVersionArgs): Promise<GetSdkTargetVersionRow | null> {
     const result = await client.query({
@@ -102,7 +105,8 @@ export async function getSdkTargetVersion(client: Client, args: GetSdkTargetVers
         registryUrl: row[8],
         publishedAt: row[9],
         projectId: row[10],
-        createdAt: row[11]
+        createdAt: row[11],
+        sdkVersion: row[12]
     };
 }
 

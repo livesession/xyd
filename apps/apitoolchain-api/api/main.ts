@@ -120,6 +120,8 @@ async function serveTargetVersions(
       id: r.id,
       targetId: r.targetId,
       version: r.version,
+      sdkVersion: r.sdkVersion || undefined,
+      apiVersion: r.apiVersion || undefined,
       status: r.status,
       createdAt: r.createdAt ? r.createdAt.toISOString() : "",
       publishedAt: r.publishedAt ? r.publishedAt.toISOString() : undefined,

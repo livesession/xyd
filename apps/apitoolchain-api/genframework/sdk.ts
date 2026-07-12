@@ -489,17 +489,21 @@ export async function runSdkGeneration(opts: {
       zip.file(path, content);
     const buf = await zip.generateAsync({ type: "nodebuffer" });
 
-    // The immutable version's identity is the SDK version the user bumps (what
-    // "New version" changes) — NOT the emitter's package version `ver`, which is
-    // derived from the API spec and can be identical across SDK versions. Keying
-    // on it makes each new SDK version a DISTINCT record + artifact that never
-    // upserts (overwrites) a previous one. Falls back to `ver` when unset.
-    const buildVersion = sdkVersion || ver;
-    const key = sdkArtifactKey(targetId, buildVersion);
+    // The target's own version dimension is the PACKAGE version — what ships to
+    // the registry for END USERS — DECOUPLED from the SDK version. It's the
+    // config's `publish.version` when set, else it defaults to the SDK version so
+    // each release stays distinct (and never collides on the emitter's spec-
+    // derived `ver`, which can be constant across releases). The SDK version is
+    // kept on the record too so the UI can show the picked version's own.
+    const pubVersion = (
+      customSdkJson?.publish as { version?: string } | undefined
+    )?.version;
+    const packageVersion = pubVersion || sdkVersion || ver;
+    const key = sdkArtifactKey(targetId, packageVersion);
     await storage.write(key, buf, { mimeType: "application/zip" });
     // Also persist sdk.json on its own — served directly to the dashboard so it
     // never has to pull the whole artifact zip just to show the config.
-    await storage.write(sdkJsonKey(targetId, buildVersion), sdkJson, {
+    await storage.write(sdkJsonKey(targetId, packageVersion), sdkJson, {
       mimeType: "application/json",
     });
 
@@ -507,9 +511,10 @@ export async function runSdkGeneration(opts: {
     // the exact config it was built from) — never overwriting older versions.
     // A retry of the same version upserts that row (see the query).
     await targetVerQ.upsertSdkTargetVersion(pool, {
-      id: `${targetId}:${buildVersion}`,
+      id: `${targetId}:${packageVersion}`,
       targetId,
-      version: buildVersion,
+      version: packageVersion,
+      sdkVersion: sdkVersion || packageVersion,
       apiVersion: version,
       packageName,
       sdkJson,
@@ -523,7 +528,7 @@ export async function runSdkGeneration(opts: {
       id: targetId,
       artifactRef: key,
       packageName,
-      version: buildVersion,
+      version: packageVersion,
     });
     await log(`✓ ready — ${packageName}@${ver}`);
     await jobQ.updateJobStatus(pool, {
