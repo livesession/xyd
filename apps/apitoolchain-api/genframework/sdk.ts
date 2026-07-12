@@ -287,6 +287,12 @@ export async function generateSdkFileMap(o: {
   // The SDK's PACKAGE version must be valid semver — a spec `info.version` like
   // "v1" bakes an unpublishable version into the manifest (npm/gems reject it).
   ir.info.version = toSemver(ir.info.version ?? "");
+  // Bake the RELEASE version into the manifest (package.json version, go module,
+  // gemspec, .csproj, …) so the package's OWN versioning bumps per release — the
+  // spec's version is only a fallback. This is exactly the "package version" the
+  // dashboard shows, so the two always agree. A publish.version override (below)
+  // still wins.
+  if (o.sdkVersion) ir.info.version = toSemver(o.sdkVersion);
 
   // Custom publish identity → the manifest/README (author/license/version).
   if (config) {
@@ -490,15 +496,12 @@ export async function runSdkGeneration(opts: {
     const buf = await zip.generateAsync({ type: "nodebuffer" });
 
     // The target's own version dimension is the PACKAGE version — what ships to
-    // the registry for END USERS — DECOUPLED from the SDK version. It's the
-    // config's `publish.version` when set, else it defaults to the SDK version so
-    // each release stays distinct (and never collides on the emitter's spec-
-    // derived `ver`, which can be constant across releases). The SDK version is
-    // kept on the record too so the UI can show the picked version's own.
-    const pubVersion = (
-      customSdkJson?.publish as { version?: string } | undefined
-    )?.version;
-    const packageVersion = pubVersion || sdkVersion || ver;
+    // the registry for END USERS — DECOUPLED from the SDK version. `ver` IS the
+    // version baked into the generated manifest (package.json etc.): publish.version
+    // when set, else the release/SDK version, else the spec version. Using it
+    // verbatim keeps the dashboard's "Package version" identical to the code. The
+    // SDK version is kept on the record too so the UI can show the picked one.
+    const packageVersion = ver;
     const key = sdkArtifactKey(targetId, packageVersion);
     await storage.write(key, buf, { mimeType: "application/zip" });
     // Also persist sdk.json on its own — served directly to the dashboard so it
