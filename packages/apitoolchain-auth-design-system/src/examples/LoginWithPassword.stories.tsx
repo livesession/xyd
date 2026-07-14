@@ -32,7 +32,7 @@ export const Default: Story = {
         title={
           <>
             Build awesome APIs <br /> on the chain{" "}
-            <Logo size={42} className="inline-block align-middle" />
+                <Logo size={42} className="inline-block align-middle" />
           </>
         }
         subtitle="Register API specs, SDKs, docs, and MCP servers from one source of truth."
