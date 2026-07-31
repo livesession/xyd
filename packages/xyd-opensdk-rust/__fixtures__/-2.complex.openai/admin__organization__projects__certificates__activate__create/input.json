@@ -1,0 +1,324 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "ToggleCertificatesRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "certificate_ids",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "OrganizationProjectCertificateActivationResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.project.certificate.activation"
+          },
+          "required": true,
+          "description": "The project certificate activation result type."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "OrganizationProjectCertificate"
+            }
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "OrganizationProjectCertificate",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.project.certificate"
+          },
+          "required": true,
+          "description": "The object type, which is always `organization.project.certificate`."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true,
+          "description": "The name of the certificate."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the certificate was uploaded."
+        },
+        {
+          "name": "certificate_details",
+          "type": {
+            "kind": "ref",
+            "name": "OrganizationProjectCertificateCertificateDetails"
+          },
+          "required": true
+        },
+        {
+          "name": "active",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether the certificate is currently active at the project level."
+        }
+      ],
+      "description": "Represents an individual certificate configured at the project level."
+    },
+    {
+      "name": "OrganizationProjectCertificateCertificateDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "valid_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the certificate becomes valid."
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the certificate expires."
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "name": "admin",
+      "resources": [
+        {
+          "name": "organization",
+          "resources": [
+            {
+              "name": "projects",
+              "resources": [
+                {
+                  "name": "certificates",
+                  "resources": [
+                    {
+                      "name": "activate",
+                      "methods": [
+                        {
+                          "action": "create",
+                          "httpMethod": "post",
+                          "path": "/organization/projects/{project_id}/certificates/activate",
+                          "operationId": "activateProjectCertificates",
+                          "description": "Activate certificates at the project level.\n\nYou can atomically and idempotently activate up to 10 certificates at a time.\n",
+                          "pathParams": [
+                            {
+                              "name": "project_id",
+                              "type": {
+                                "kind": "scalar",
+                                "scalar": "string"
+                              },
+                              "required": true,
+                              "description": "The ID of the project."
+                            }
+                          ],
+                          "requestBody": {
+                            "contentType": "application/json",
+                            "type": {
+                              "kind": "ref",
+                              "name": "ToggleCertificatesRequest"
+                            },
+                            "required": true,
+                            "encoding": "json",
+                            "description": "The certificate activation payload."
+                          },
+                          "responses": [
+                            {
+                              "status": "200",
+                              "description": "Certificates activated successfully.",
+                              "contentType": "application/json",
+                              "type": {
+                                "kind": "ref",
+                                "name": "OrganizationProjectCertificateActivationResponse"
+                              }
+                            }
+                          ],
+                          "primaryResponse": {
+                            "kind": "ref",
+                            "name": "OrganizationProjectCertificateActivationResponse"
+                          },
+                          "security": [
+                            {
+                              "type": "http",
+                              "kind": "bearer",
+                              "schemeName": "AdminApiKeyAuth",
+                              "scheme": "bearer"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

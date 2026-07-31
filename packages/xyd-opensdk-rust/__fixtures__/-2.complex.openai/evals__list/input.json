@@ -1,0 +1,1251 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "EvalsListOrder",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "asc"
+        },
+        {
+          "value": "desc"
+        }
+      ]
+    },
+    {
+      "name": "EvalsListOrderBy",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "created_at"
+        },
+        {
+          "value": "updated_at"
+        }
+      ]
+    },
+    {
+      "name": "EvalList",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "list"
+          },
+          "required": true,
+          "default": "list",
+          "description": "The type of this object. It is always set to \"list\".\n"
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "Eval"
+            }
+          },
+          "required": true,
+          "description": "An array of eval objects.\n"
+        },
+        {
+          "name": "first_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier of the first eval in the data array."
+        },
+        {
+          "name": "last_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier of the last eval in the data array."
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Indicates whether there are more evals available."
+        }
+      ],
+      "description": "An object representing a list of evals.\n"
+    },
+    {
+      "name": "Eval",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "eval"
+          },
+          "required": true,
+          "default": "eval",
+          "description": "The object type."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Unique identifier for the evaluation."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the evaluation."
+        },
+        {
+          "name": "data_source_config",
+          "type": {
+            "kind": "ref",
+            "name": "EvalDataSourceConfig"
+          },
+          "required": true,
+          "description": "Configuration of data sources used in runs of the evaluation."
+        },
+        {
+          "name": "testing_criteria",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "EvalTestingCriteriaItem"
+            }
+          },
+          "required": true,
+          "default": "eval",
+          "description": "A list of testing criteria."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the eval was created."
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "ref",
+            "name": "Metadata"
+          },
+          "required": true
+        }
+      ],
+      "description": "An Eval object with a data source config and testing criteria.\nAn Eval represents a task to be done for your LLM integration.\nLike:\n - Improve the quality of my chatbot\n - See how well my chatbot handles customer support\n - Check if o4-mini is better at my usecase than gpt-4o\n"
+    },
+    {
+      "name": "EvalDataSourceConfig",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "EvalCustomDataSourceConfig"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalLogsDataSourceConfig"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalStoredCompletionsDataSourceConfig"
+        }
+      ],
+      "description": "Configuration of data sources used in runs of the evaluation."
+    },
+    {
+      "name": "EvalCustomDataSourceConfig",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "custom"
+          },
+          "required": true,
+          "default": "custom",
+          "description": "The type of data source. Always `custom`."
+        },
+        {
+          "name": "schema",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": true,
+          "description": "The json schema for the run data source items.\nLearn how to build JSON schemas [here](https://json-schema.org/).\n"
+        }
+      ],
+      "description": "A CustomDataSourceConfig which specifies the schema of your `item` and optionally `sample` namespaces.\nThe response schema defines the shape of the data that will be:\n- Used to define your testing criteria and\n- What data is required when creating a run\n"
+    },
+    {
+      "name": "EvalLogsDataSourceConfig",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "logs"
+          },
+          "required": true,
+          "default": "logs",
+          "description": "The type of data source. Always `logs`."
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "ref",
+            "name": "Metadata"
+          },
+          "required": false
+        },
+        {
+          "name": "schema",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": true,
+          "description": "The json schema for the run data source items.\nLearn how to build JSON schemas [here](https://json-schema.org/).\n"
+        }
+      ],
+      "description": "A LogsDataSourceConfig which specifies the metadata property of your logs query.\nThis is usually metadata like `usecase=chatbot` or `prompt-version=v2`, etc.\nThe schema returned by this data source config is used to defined what variables are available in your evals.\n`item` and `sample` are both defined when using this data source config.\n"
+    },
+    {
+      "name": "Metadata",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        "nullable": true
+      }
+    },
+    {
+      "name": "EvalStoredCompletionsDataSourceConfig",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "stored_completions"
+          },
+          "required": true,
+          "default": "stored_completions",
+          "description": "The type of data source. Always `stored_completions`."
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "ref",
+            "name": "Metadata"
+          },
+          "required": false
+        },
+        {
+          "name": "schema",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": true,
+          "description": "The json schema for the run data source items.\nLearn how to build JSON schemas [here](https://json-schema.org/).\n"
+        }
+      ],
+      "description": "Deprecated in favor of LogsDataSourceConfig.\n"
+    },
+    {
+      "name": "EvalTestingCriteriaItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "EvalGraderLabelModel"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalGraderStringCheck"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalGraderTextSimilarity"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalGraderPython"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalGraderScoreModel"
+        }
+      ]
+    },
+    {
+      "name": "EvalGraderLabelModel",
+      "kind": "alias",
+      "of": {
+        "kind": "ref",
+        "name": "GraderLabelModel"
+      }
+    },
+    {
+      "name": "GraderLabelModel",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "label_model"
+          },
+          "required": true,
+          "description": "The object type, which is always `label_model`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The model to use for the evaluation. Must support structured outputs."
+        },
+        {
+          "name": "input",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "EvalItem"
+            }
+          },
+          "required": true
+        },
+        {
+          "name": "labels",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "The labels to assign to each item in the evaluation."
+        },
+        {
+          "name": "passing_labels",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "The labels that indicate a passing result. Must be a subset of labels."
+        }
+      ],
+      "description": "A LabelModelGrader object which uses a model to assign labels to each item\nin the evaluation.\n"
+    },
+    {
+      "name": "EvalItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "role",
+          "type": {
+            "kind": "ref",
+            "name": "EvalItemRole"
+          },
+          "required": true,
+          "description": "The role of the message input. One of `user`, `assistant`, `system`, or\n`developer`.\n"
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "ref",
+            "name": "EvalItemContent"
+          },
+          "required": true
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "message"
+          },
+          "required": false,
+          "description": "The type of the message input. Always `message`.\n"
+        }
+      ],
+      "description": "A message input to the model with a role indicating instruction following\nhierarchy. Instructions given with the `developer` or `system` role take\nprecedence over instructions given with the `user` role. Messages with the\n`assistant` role are presumed to have been generated by the model in previous\ninteractions.\n"
+    },
+    {
+      "name": "EvalItemRole",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "user"
+        },
+        {
+          "value": "assistant"
+        },
+        {
+          "value": "system"
+        },
+        {
+          "value": "developer"
+        }
+      ],
+      "description": "The role of the message input. One of `user`, `assistant`, `system`, or\n`developer`.\n"
+    },
+    {
+      "name": "EvalItemContent",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "EvalItemContentItem"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalItemContentArray"
+        }
+      ],
+      "description": "Inputs to the model - can contain template strings. Supports text, output text, input images, and input audio, either as a single item or an array of items.\n"
+    },
+    {
+      "name": "EvalItemContentItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "EvalItemContentText"
+        },
+        {
+          "kind": "ref",
+          "name": "InputTextContent"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalItemContentOutputText"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalItemInputImage"
+        },
+        {
+          "kind": "ref",
+          "name": "InputAudio"
+        }
+      ],
+      "description": "A single content item: input text, output text, input image, or input audio.\n"
+    },
+    {
+      "name": "EvalItemContentText",
+      "kind": "alias",
+      "of": {
+        "kind": "scalar",
+        "scalar": "string"
+      }
+    },
+    {
+      "name": "InputTextContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_text"
+          },
+          "required": true,
+          "default": "input_text",
+          "description": "The type of the input item. Always `input_text`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text input to the model."
+        }
+      ],
+      "description": "A text input to the model."
+    },
+    {
+      "name": "EvalItemContentOutputText",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "output_text"
+          },
+          "required": true,
+          "description": "The type of the output text. Always `output_text`.\n"
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text output from the model.\n"
+        }
+      ],
+      "description": "A text output from the model.\n"
+    },
+    {
+      "name": "EvalItemInputImage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_image"
+          },
+          "required": true,
+          "description": "The type of the image input. Always `input_image`.\n"
+        },
+        {
+          "name": "image_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": true,
+          "description": "The URL of the image input.\n"
+        },
+        {
+          "name": "detail",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The detail level of the image to be sent to the model. One of `high`, `low`, or `auto`. Defaults to `auto`.\n"
+        }
+      ],
+      "description": "An image input block used within EvalItem content arrays."
+    },
+    {
+      "name": "InputAudio",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_audio"
+          },
+          "required": true,
+          "description": "The type of the input item. Always `input_audio`.\n"
+        },
+        {
+          "name": "input_audio",
+          "type": {
+            "kind": "ref",
+            "name": "InputAudioInputAudio"
+          },
+          "required": true
+        }
+      ],
+      "description": "An audio input to the model.\n"
+    },
+    {
+      "name": "InputAudioInputAudio",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Base64-encoded audio data.\n"
+        },
+        {
+          "name": "format",
+          "type": {
+            "kind": "ref",
+            "name": "InputAudioInputAudioFormat"
+          },
+          "required": true,
+          "description": "The format of the audio data. Currently supported formats are `mp3` and\n`wav`.\n"
+        }
+      ]
+    },
+    {
+      "name": "InputAudioInputAudioFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "mp3"
+        },
+        {
+          "value": "wav"
+        }
+      ],
+      "description": "The format of the audio data. Currently supported formats are `mp3` and\n`wav`.\n"
+    },
+    {
+      "name": "EvalItemContentArray",
+      "kind": "alias",
+      "of": {
+        "kind": "array",
+        "items": {
+          "kind": "ref",
+          "name": "EvalItemContentItem"
+        }
+      }
+    },
+    {
+      "name": "EvalGraderStringCheck",
+      "kind": "alias",
+      "of": {
+        "kind": "ref",
+        "name": "GraderStringCheck"
+      }
+    },
+    {
+      "name": "GraderStringCheck",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "string_check"
+          },
+          "required": true,
+          "description": "The object type, which is always `string_check`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "input",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The input text. This may include template strings."
+        },
+        {
+          "name": "reference",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The reference text. This may include template strings."
+        },
+        {
+          "name": "operation",
+          "type": {
+            "kind": "ref",
+            "name": "GraderStringCheckOperation"
+          },
+          "required": true,
+          "description": "The string check operation to perform. One of `eq`, `ne`, `like`, or `ilike`."
+        }
+      ],
+      "description": "A StringCheckGrader object that performs a string comparison between input and reference using a specified operation.\n"
+    },
+    {
+      "name": "GraderStringCheckOperation",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "eq"
+        },
+        {
+          "value": "ne"
+        },
+        {
+          "value": "like"
+        },
+        {
+          "value": "ilike"
+        }
+      ],
+      "description": "The string check operation to perform. One of `eq`, `ne`, `like`, or `ilike`."
+    },
+    {
+      "name": "EvalGraderTextSimilarity",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "text_similarity"
+          },
+          "required": true,
+          "default": "text_similarity",
+          "description": "The type of grader."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "input",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text being graded."
+        },
+        {
+          "name": "reference",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text being graded against."
+        },
+        {
+          "name": "evaluation_metric",
+          "type": {
+            "kind": "ref",
+            "name": "EvalGraderTextSimilarityEvaluationMetric"
+          },
+          "required": true,
+          "description": "The evaluation metric to use. One of `cosine`, `fuzzy_match`, `bleu`, \n`gleu`, `meteor`, `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, \nor `rouge_l`.\n"
+        },
+        {
+          "name": "pass_threshold",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The threshold for the score."
+        }
+      ]
+    },
+    {
+      "name": "EvalGraderTextSimilarityEvaluationMetric",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "cosine"
+        },
+        {
+          "value": "fuzzy_match"
+        },
+        {
+          "value": "bleu"
+        },
+        {
+          "value": "gleu"
+        },
+        {
+          "value": "meteor"
+        },
+        {
+          "value": "rouge_1"
+        },
+        {
+          "value": "rouge_2"
+        },
+        {
+          "value": "rouge_3"
+        },
+        {
+          "value": "rouge_4"
+        },
+        {
+          "value": "rouge_5"
+        },
+        {
+          "value": "rouge_l"
+        }
+      ],
+      "description": "The evaluation metric to use. One of `cosine`, `fuzzy_match`, `bleu`, \n`gleu`, `meteor`, `rouge_1`, `rouge_2`, `rouge_3`, `rouge_4`, `rouge_5`, \nor `rouge_l`.\n"
+    },
+    {
+      "name": "EvalGraderPython",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "python"
+          },
+          "required": true,
+          "description": "The object type, which is always `python`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "source",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The source code of the python script."
+        },
+        {
+          "name": "image_tag",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The image tag to use for the python script."
+        },
+        {
+          "name": "pass_threshold",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": false,
+          "description": "The threshold for the score."
+        }
+      ]
+    },
+    {
+      "name": "EvalGraderScoreModel",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "score_model"
+          },
+          "required": true,
+          "description": "The object type, which is always `score_model`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the grader."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The model to use for the evaluation."
+        },
+        {
+          "name": "sampling_params",
+          "type": {
+            "kind": "ref",
+            "name": "EvalGraderScoreModelSamplingParams"
+          },
+          "required": false,
+          "description": "The sampling parameters for the model."
+        },
+        {
+          "name": "input",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "EvalItem"
+            }
+          },
+          "required": true,
+          "description": "The input messages evaluated by the grader. Supports text, output text, input image, and input audio content blocks, and may include template strings.\n"
+        },
+        {
+          "name": "range",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "number"
+            }
+          },
+          "required": false,
+          "description": "The range of the score. Defaults to `[0, 1]`."
+        },
+        {
+          "name": "pass_threshold",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": false,
+          "description": "The threshold for the score."
+        }
+      ]
+    },
+    {
+      "name": "EvalGraderScoreModelSamplingParams",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "seed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "top_p",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "temperature",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "max_completions_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "reasoning_effort",
+          "type": {
+            "kind": "ref",
+            "name": "ReasoningEffort"
+          },
+          "required": false
+        }
+      ],
+      "description": "The sampling parameters for the model."
+    },
+    {
+      "name": "ReasoningEffort",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "none"
+        },
+        {
+          "value": "minimal"
+        },
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        },
+        {
+          "value": "xhigh"
+        }
+      ],
+      "description": "Constrains effort on reasoning for\n[reasoning models](https://platform.openai.com/docs/guides/reasoning).\nCurrently supported values are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing\nreasoning effort can result in faster responses and fewer tokens used\non reasoning in a response.\n\n- `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported for all reasoning values in gpt-5.1.\n- All models before `gpt-5.1` default to `medium` reasoning effort, and do not support `none`.\n- The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.\n- `xhigh` is supported for all models after `gpt-5.1-codex-max`.\n"
+    }
+  ],
+  "resources": [
+    {
+      "name": "evals",
+      "methods": [
+        {
+          "action": "list",
+          "httpMethod": "get",
+          "path": "/evals",
+          "operationId": "listEvals",
+          "description": "List evaluations for a project.\n",
+          "queryParams": [
+            {
+              "name": "after",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": false,
+              "description": "Identifier for the last eval from the previous pagination request."
+            },
+            {
+              "name": "limit",
+              "type": {
+                "kind": "scalar",
+                "scalar": "integer"
+              },
+              "required": false,
+              "description": "Number of evals to retrieve.",
+              "default": 20
+            },
+            {
+              "name": "order",
+              "type": {
+                "kind": "ref",
+                "name": "EvalsListOrder"
+              },
+              "required": false,
+              "description": "Sort order for evals by timestamp. Use `asc` for ascending order or `desc` for descending order.",
+              "default": "asc"
+            },
+            {
+              "name": "order_by",
+              "type": {
+                "kind": "ref",
+                "name": "EvalsListOrderBy"
+              },
+              "required": false,
+              "description": "Evals can be ordered by creation time or last updated time. Use\n`created_at` for creation time or `updated_at` for last updated time.\n",
+              "default": "created_at"
+            }
+          ],
+          "responses": [
+            {
+              "status": "200",
+              "description": "A list of evals",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "EvalList"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "EvalList"
+          },
+          "pagination": {
+            "style": "cursor",
+            "itemsField": "data",
+            "nextField": "has_more",
+            "itemType": {
+              "kind": "ref",
+              "name": "Eval"
+            },
+            "cursorParam": "after",
+            "limitParam": "limit"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

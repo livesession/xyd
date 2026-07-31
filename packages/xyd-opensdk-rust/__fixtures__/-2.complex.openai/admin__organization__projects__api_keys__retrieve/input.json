@@ -1,0 +1,400 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "ProjectApiKey",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.project.api_key"
+          },
+          "required": true,
+          "description": "The object type, which is always `organization.project.api_key`"
+        },
+        {
+          "name": "redacted_value",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The redacted value of the API key"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the API key"
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the API key was created"
+        },
+        {
+          "name": "last_used_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the API key was last used."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "owner",
+          "type": {
+            "kind": "ref",
+            "name": "ProjectApiKeyOwner"
+          },
+          "required": true
+        }
+      ],
+      "description": "Represents an individual API key in a project."
+    },
+    {
+      "name": "ProjectApiKeyOwner",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "ProjectApiKeyOwnerType"
+          },
+          "required": false,
+          "description": "`user` or `service_account`"
+        },
+        {
+          "name": "user",
+          "type": {
+            "kind": "ref",
+            "name": "ProjectApiKeyOwnerUser"
+          },
+          "required": false
+        },
+        {
+          "name": "service_account",
+          "type": {
+            "kind": "ref",
+            "name": "ProjectApiKeyOwnerServiceAccount"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "ProjectApiKeyOwnerType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "user"
+        },
+        {
+          "value": "service_account"
+        }
+      ],
+      "description": "`user` or `service_account`"
+    },
+    {
+      "name": "ProjectApiKeyOwnerUser",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "email",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The email address of the user."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the user."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the user was created."
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The user's project role."
+        }
+      ],
+      "description": "The user that owns a project API key."
+    },
+    {
+      "name": "ProjectApiKeyOwnerServiceAccount",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the service account."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the service account was created."
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The service account's project role."
+        }
+      ],
+      "description": "The service account that owns a project API key."
+    }
+  ],
+  "resources": [
+    {
+      "name": "admin",
+      "resources": [
+        {
+          "name": "organization",
+          "resources": [
+            {
+              "name": "projects",
+              "resources": [
+                {
+                  "name": "api-keys",
+                  "methods": [
+                    {
+                      "action": "retrieve",
+                      "httpMethod": "get",
+                      "path": "/organization/projects/{project_id}/api_keys/{api_key_id}",
+                      "operationId": "retrieve-project-api-key",
+                      "description": "Retrieves an API key in the project.",
+                      "pathParams": [
+                        {
+                          "name": "project_id",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": true,
+                          "description": "The ID of the project."
+                        },
+                        {
+                          "name": "api_key_id",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": true,
+                          "description": "The ID of the API key."
+                        }
+                      ],
+                      "responses": [
+                        {
+                          "status": "200",
+                          "description": "Project API key retrieved successfully.",
+                          "contentType": "application/json",
+                          "type": {
+                            "kind": "ref",
+                            "name": "ProjectApiKey"
+                          }
+                        }
+                      ],
+                      "primaryResponse": {
+                        "kind": "ref",
+                        "name": "ProjectApiKey"
+                      },
+                      "security": [
+                        {
+                          "type": "http",
+                          "kind": "bearer",
+                          "schemeName": "AdminApiKeyAuth",
+                          "scheme": "bearer"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

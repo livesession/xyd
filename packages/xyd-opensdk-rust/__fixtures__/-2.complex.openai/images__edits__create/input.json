@@ -1,0 +1,744 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "EditImageBodyJsonParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "model",
+          "type": {
+            "kind": "ref",
+            "name": "EditImageBodyJsonParamModel",
+            "nullable": true
+          },
+          "required": false,
+          "default": "gpt-image-1.5",
+          "description": "The model to use for image editing."
+        },
+        {
+          "name": "images",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ImageRefParam"
+            }
+          },
+          "required": true,
+          "description": "Input image references to edit.\nFor GPT image models, you can provide up to 16 images.\n"
+        },
+        {
+          "name": "mask",
+          "type": {
+            "kind": "ref",
+            "name": "ImageRefParam"
+          },
+          "required": false
+        },
+        {
+          "name": "prompt",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A text description of the desired image edit."
+        },
+        {
+          "name": "n",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false,
+          "default": 1,
+          "description": "The number of edited images to generate."
+        },
+        {
+          "name": "quality",
+          "type": {
+            "kind": "ref",
+            "name": "EditImageBodyJsonParamQuality",
+            "nullable": true
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Output quality for GPT image models.\n"
+        },
+        {
+          "name": "input_fidelity",
+          "type": {
+            "kind": "ref",
+            "name": "EditImageBodyJsonParamInputFidelity",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Controls fidelity to the original input image(s)."
+        },
+        {
+          "name": "size",
+          "type": {
+            "kind": "ref",
+            "name": "EditImageBodyJsonParamSize",
+            "nullable": true
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Requested output image size."
+        },
+        {
+          "name": "user",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "A unique identifier representing your end-user, which can help OpenAI\nmonitor and detect abuse.\n"
+        },
+        {
+          "name": "output_format",
+          "type": {
+            "kind": "ref",
+            "name": "EditImageBodyJsonParamOutputFormat",
+            "nullable": true
+          },
+          "required": false,
+          "default": "png",
+          "description": "Output image format. Supported for GPT image models."
+        },
+        {
+          "name": "output_compression",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Compression level for `jpeg` or `webp` output."
+        },
+        {
+          "name": "moderation",
+          "type": {
+            "kind": "ref",
+            "name": "EditImageBodyJsonParamModeration",
+            "nullable": true
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Moderation level for GPT image models."
+        },
+        {
+          "name": "background",
+          "type": {
+            "kind": "ref",
+            "name": "EditImageBodyJsonParamBackground",
+            "nullable": true
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Background behavior for generated image output."
+        },
+        {
+          "name": "stream",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false,
+          "default": false,
+          "description": "Stream partial image results as events."
+        },
+        {
+          "name": "partial_images",
+          "type": {
+            "kind": "ref",
+            "name": "PartialImages"
+          },
+          "required": false
+        }
+      ],
+      "description": "JSON request body for image edits.\n\nUse `images` (array of `ImageRefParam`) instead of multipart `image` uploads.\nYou can reference images via external URLs, data URLs, or uploaded file IDs.\nJSON edits support GPT image models only; DALL-E edits require multipart (`dall-e-2` only).\n"
+    },
+    {
+      "name": "EditImageBodyJsonParamModel",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "EditImageBodyJsonParamModelString"
+        }
+      ],
+      "description": "The model to use for image editing."
+    },
+    {
+      "name": "EditImageBodyJsonParamModelString",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "gpt-image-1.5"
+        },
+        {
+          "value": "gpt-image-1"
+        },
+        {
+          "value": "gpt-image-1-mini"
+        },
+        {
+          "value": "chatgpt-image-latest"
+        }
+      ]
+    },
+    {
+      "name": "ImageRefParam",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "any"
+        },
+        {
+          "kind": "any"
+        }
+      ],
+      "description": "Reference an input image by either URL or uploaded file ID.\nProvide exactly one of `image_url` or `file_id`.\n"
+    },
+    {
+      "name": "EditImageBodyJsonParamQuality",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        },
+        {
+          "value": "auto"
+        }
+      ]
+    },
+    {
+      "name": "EditImageBodyJsonParamInputFidelity",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "high"
+        },
+        {
+          "value": "low"
+        }
+      ]
+    },
+    {
+      "name": "EditImageBodyJsonParamSize",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "auto"
+        },
+        {
+          "value": "1024x1024"
+        },
+        {
+          "value": "1536x1024"
+        },
+        {
+          "value": "1024x1536"
+        }
+      ]
+    },
+    {
+      "name": "EditImageBodyJsonParamOutputFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "png"
+        },
+        {
+          "value": "jpeg"
+        },
+        {
+          "value": "webp"
+        }
+      ]
+    },
+    {
+      "name": "EditImageBodyJsonParamModeration",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "auto"
+        }
+      ]
+    },
+    {
+      "name": "EditImageBodyJsonParamBackground",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "transparent"
+        },
+        {
+          "value": "opaque"
+        },
+        {
+          "value": "auto"
+        }
+      ]
+    },
+    {
+      "name": "PartialImages",
+      "kind": "alias",
+      "of": {
+        "kind": "scalar",
+        "scalar": "integer",
+        "nullable": true
+      }
+    },
+    {
+      "name": "ImagesResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "created",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the image was created."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "Image"
+            }
+          },
+          "required": false,
+          "description": "The list of generated images."
+        },
+        {
+          "name": "background",
+          "type": {
+            "kind": "ref",
+            "name": "ImagesResponseBackground"
+          },
+          "required": false,
+          "description": "The background parameter used for the image generation. Either `transparent` or `opaque`."
+        },
+        {
+          "name": "output_format",
+          "type": {
+            "kind": "ref",
+            "name": "ImagesResponseOutputFormat"
+          },
+          "required": false,
+          "description": "The output format of the image generation. Either `png`, `webp`, or `jpeg`."
+        },
+        {
+          "name": "size",
+          "type": {
+            "kind": "ref",
+            "name": "ImagesResponseSize"
+          },
+          "required": false,
+          "description": "The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`."
+        },
+        {
+          "name": "quality",
+          "type": {
+            "kind": "ref",
+            "name": "ImagesResponseQuality"
+          },
+          "required": false,
+          "description": "The quality of the image generated. Either `low`, `medium`, or `high`."
+        },
+        {
+          "name": "usage",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenUsage"
+          },
+          "required": false
+        }
+      ],
+      "description": "The response from the image generation endpoint."
+    },
+    {
+      "name": "Image",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "b64_json",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The base64-encoded JSON of the generated image. Returned by default for the GPT image models, and only present if `response_format` is set to `b64_json` for `dall-e-2` and `dall-e-3`."
+        },
+        {
+          "name": "url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": false,
+          "description": "When using `dall-e-2` or `dall-e-3`, the URL of the generated image if `response_format` is set to `url` (default value). Unsupported for the GPT image models."
+        },
+        {
+          "name": "revised_prompt",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "For `dall-e-3` only, the revised prompt that was used to generate the image."
+        }
+      ],
+      "description": "Represents the content or the URL of an image generated by the OpenAI API."
+    },
+    {
+      "name": "ImagesResponseBackground",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "transparent"
+        },
+        {
+          "value": "opaque"
+        }
+      ],
+      "description": "The background parameter used for the image generation. Either `transparent` or `opaque`."
+    },
+    {
+      "name": "ImagesResponseOutputFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "png"
+        },
+        {
+          "value": "webp"
+        },
+        {
+          "value": "jpeg"
+        }
+      ],
+      "description": "The output format of the image generation. Either `png`, `webp`, or `jpeg`."
+    },
+    {
+      "name": "ImagesResponseSize",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "1024x1024"
+        },
+        {
+          "value": "1024x1536"
+        },
+        {
+          "value": "1536x1024"
+        }
+      ],
+      "description": "The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`."
+    },
+    {
+      "name": "ImagesResponseQuality",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        }
+      ],
+      "description": "The quality of the image generated. Either `low`, `medium`, or `high`."
+    },
+    {
+      "name": "ImageGenUsage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "input_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of tokens (images and text) in the input prompt."
+        },
+        {
+          "name": "total_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The total number of tokens (images and text) used for the image generation."
+        },
+        {
+          "name": "output_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of output tokens generated by the model."
+        },
+        {
+          "name": "output_tokens_details",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenOutputTokensDetails"
+          },
+          "required": false
+        },
+        {
+          "name": "input_tokens_details",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenInputUsageDetails"
+          },
+          "required": true
+        }
+      ],
+      "description": "For `gpt-image-1` only, the token usage information for the image generation."
+    },
+    {
+      "name": "ImageGenOutputTokensDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "image_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of image output tokens generated by the model."
+        },
+        {
+          "name": "text_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of text output tokens generated by the model."
+        }
+      ],
+      "description": "The output token details for the image generation."
+    },
+    {
+      "name": "ImageGenInputUsageDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "text_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of text tokens in the input prompt."
+        },
+        {
+          "name": "image_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of image tokens in the input prompt."
+        }
+      ],
+      "description": "The input tokens detailed information for the image generation."
+    }
+  ],
+  "resources": [
+    {
+      "name": "images",
+      "resources": [
+        {
+          "name": "edits",
+          "methods": [
+            {
+              "action": "create",
+              "httpMethod": "post",
+              "path": "/images/edits",
+              "operationId": "createImageEdit",
+              "description": "You can call this endpoint with either:\n\n- `multipart/form-data`: use binary uploads via `image` (and optional `mask`).\n- `application/json`: use `images` (and optional `mask`) as references with either `image_url` or `file_id`.\n\nNote that JSON requests use `images` (array) instead of the multipart `image` field.\n",
+              "requestBody": {
+                "contentType": "application/json",
+                "type": {
+                  "kind": "ref",
+                  "name": "EditImageBodyJsonParam"
+                },
+                "required": true,
+                "encoding": "json"
+              },
+              "responses": [
+                {
+                  "status": "200",
+                  "description": "OK",
+                  "contentType": "application/json",
+                  "type": {
+                    "kind": "ref",
+                    "name": "ImagesResponse"
+                  }
+                }
+              ],
+              "primaryResponse": {
+                "kind": "ref",
+                "name": "ImagesResponse"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

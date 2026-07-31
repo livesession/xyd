@@ -27,6 +27,7 @@ on:
       - 'packages/xyd-opensdk-ruby/**'
       - 'packages/xyd-opensdk-java/**'
       - 'packages/xyd-opensdk-dotnet/**'
+      - 'packages/xyd-opensdk-rust/**'
       - 'packages/xyd-opensdk-chain/**'
       - 'packages/xyd-opensdk-cli/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
@@ -43,6 +44,7 @@ on:
       - 'packages/xyd-opensdk-ruby/**'
       - 'packages/xyd-opensdk-java/**'
       - 'packages/xyd-opensdk-dotnet/**'
+      - 'packages/xyd-opensdk-rust/**'
       - 'packages/xyd-opensdk-chain/**'
       - 'packages/xyd-opensdk-cli/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
@@ -102,6 +104,19 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Setup cargo cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+        key: ${{ runner.os }}-cargo-opensdk-rust
+        restore-keys: |
+          ${{ runner.os }}-cargo-
+
     - name: Get pnpm store directory
       shell: bash
       run: |
@@ -131,6 +146,7 @@ jobs:
         --filter "@xyd-js/opensdk-ruby..."
         --filter "@xyd-js/opensdk-java..."
         --filter "@xyd-js/opensdk-dotnet..."
+        --filter "@xyd-js/opensdk-rust..."
         --filter "@xyd-js/opensdk-chain..."
         --filter "@xyd-js/opensdk-cli..."
         build
@@ -211,6 +227,14 @@ jobs:
         O2S_DOTNET_SMOKE: '1'
         E2E_SDK_TESTS: '1'
 
+    - name: Test @xyd-js/opensdk-rust (golden trees + cargo compile smoke + generated-test run)
+      run: pnpm --filter @xyd-js/opensdk-rust ci:test
+      env:
+        # cargo test --no-run compiles the generated crate + its integration tests;
+        # E2E_SDK_TESTS runs the emitted #[tokio::test] suite against a spec-shaped mock.
+        O2S_RUST_SMOKE: '1'
+        E2E_SDK_TESTS: '1'
+
     - name: Test @xyd-js/opensdk-cli (parse/generate/init + plugin config)
       run: pnpm --filter @xyd-js/opensdk-cli ci:test
 
@@ -252,14 +276,15 @@ jobs:
           echo "PUBLISH_NUGET_FEED=$RUNNER_TEMP/nuget-feed"
           echo "PUBLISH_MAVEN_REPO=$RUNNER_TEMP/maven-repo"
           echo "PUBLISH_GOPROXY_DIR=$RUNNER_TEMP/goproxy"
+          echo "PUBLISH_CARGO_REGISTRY=$RUNNER_TEMP/cargo-feed"
         } >> "$GITHUB_ENV"
-        mkdir -p "$RUNNER_TEMP/nuget-feed" "$RUNNER_TEMP/maven-repo" "$RUNNER_TEMP/goproxy"
+        mkdir -p "$RUNNER_TEMP/nuget-feed" "$RUNNER_TEMP/maven-repo" "$RUNNER_TEMP/goproxy" "$RUNNER_TEMP/cargo-feed"
 
     - name: Publish e2e (generate → publish → install → load, all languages)
       env:
         E2E_SDK_PUBLISH: '1'
       run: |
-        for pkg in node python ruby dotnet java go; do
+        for pkg in node python ruby dotnet java go rust; do
           echo "== publish e2e: $pkg =="
           pnpm --filter "@xyd-js/opensdk-$pkg" exec vitest run __tests__/e2e/publish.test.ts
         done

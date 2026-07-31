@@ -1,0 +1,594 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "Batch",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "batch"
+          },
+          "required": true,
+          "description": "The object type, which is always `batch`."
+        },
+        {
+          "name": "endpoint",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The OpenAI API endpoint used by the batch."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Model ID used to process the batch, like `gpt-5-2025-08-07`. OpenAI\noffers a wide range of models with different capabilities, performance\ncharacteristics, and price points. Refer to the [model\nguide](/docs/models) to browse and compare available models.\n"
+        },
+        {
+          "name": "errors",
+          "type": {
+            "kind": "ref",
+            "name": "BatchErrors"
+          },
+          "required": false
+        },
+        {
+          "name": "input_file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the input file for the batch."
+        },
+        {
+          "name": "completion_window",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The time frame within which the batch should be processed."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "BatchStatus"
+          },
+          "required": true,
+          "description": "The current status of the batch."
+        },
+        {
+          "name": "output_file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the file containing the outputs of successfully executed requests."
+        },
+        {
+          "name": "error_file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the file containing the outputs of requests with errors."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the batch was created."
+        },
+        {
+          "name": "in_progress_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch started processing."
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch will expire."
+        },
+        {
+          "name": "finalizing_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch started finalizing."
+        },
+        {
+          "name": "completed_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch was completed."
+        },
+        {
+          "name": "failed_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch failed."
+        },
+        {
+          "name": "expired_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch expired."
+        },
+        {
+          "name": "cancelling_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch started cancelling."
+        },
+        {
+          "name": "cancelled_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch was cancelled."
+        },
+        {
+          "name": "request_counts",
+          "type": {
+            "kind": "ref",
+            "name": "BatchRequestCounts"
+          },
+          "required": false,
+          "description": "The request counts for different statuses within the batch."
+        },
+        {
+          "name": "usage",
+          "type": {
+            "kind": "ref",
+            "name": "BatchUsage"
+          },
+          "required": false,
+          "description": "Represents token usage details including input tokens, output tokens, a\nbreakdown of output tokens, and the total tokens used. Only populated on\nbatches created after September 7, 2025.\n"
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "ref",
+            "name": "Metadata"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "BatchErrors",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The object type, which is always `list`."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "BatchErrorsDataItem"
+            }
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "BatchErrorsDataItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "code",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "An error code identifying the error type."
+        },
+        {
+          "name": "message",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "A human-readable message providing more details about the error."
+        },
+        {
+          "name": "param",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "line",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "BatchStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "validating"
+        },
+        {
+          "value": "failed"
+        },
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "finalizing"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "expired"
+        },
+        {
+          "value": "cancelling"
+        },
+        {
+          "value": "cancelled"
+        }
+      ],
+      "description": "The current status of the batch."
+    },
+    {
+      "name": "BatchRequestCounts",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "total",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Total number of requests in the batch."
+        },
+        {
+          "name": "completed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Number of requests that have been completed successfully."
+        },
+        {
+          "name": "failed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Number of requests that have failed."
+        }
+      ],
+      "description": "The request counts for different statuses within the batch."
+    },
+    {
+      "name": "BatchUsage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "input_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of input tokens."
+        },
+        {
+          "name": "input_tokens_details",
+          "type": {
+            "kind": "ref",
+            "name": "BatchUsageInputTokensDetails"
+          },
+          "required": true,
+          "description": "A detailed breakdown of the input tokens."
+        },
+        {
+          "name": "output_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of output tokens."
+        },
+        {
+          "name": "output_tokens_details",
+          "type": {
+            "kind": "ref",
+            "name": "BatchUsageOutputTokensDetails"
+          },
+          "required": true,
+          "description": "A detailed breakdown of the output tokens."
+        },
+        {
+          "name": "total_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The total number of tokens used."
+        }
+      ],
+      "description": "Represents token usage details including input tokens, output tokens, a\nbreakdown of output tokens, and the total tokens used. Only populated on\nbatches created after September 7, 2025.\n"
+    },
+    {
+      "name": "BatchUsageInputTokensDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "cached_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of tokens that were retrieved from the cache. [More on\nprompt caching](/docs/guides/prompt-caching).\n"
+        }
+      ],
+      "description": "A detailed breakdown of the input tokens."
+    },
+    {
+      "name": "BatchUsageOutputTokensDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "reasoning_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of reasoning tokens."
+        }
+      ],
+      "description": "A detailed breakdown of the output tokens."
+    },
+    {
+      "name": "Metadata",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        "nullable": true
+      }
+    }
+  ],
+  "resources": [
+    {
+      "name": "batches",
+      "methods": [
+        {
+          "action": "cancel",
+          "httpMethod": "post",
+          "path": "/batches/{batch_id}/cancel",
+          "operationId": "cancelBatch",
+          "description": "Cancels an in-progress batch. The batch will be in status `cancelling` for up to 10 minutes, before changing to `cancelled`, where it will have partial results (if any) available in the output file.",
+          "pathParams": [
+            {
+              "name": "batch_id",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": true,
+              "description": "The ID of the batch to cancel."
+            }
+          ],
+          "responses": [
+            {
+              "status": "200",
+              "description": "Batch is cancelling. Returns the cancelling batch's details.",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "Batch"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "Batch"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

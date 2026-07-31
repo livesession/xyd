@@ -1,0 +1,214 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "DeletedRoleAssignmentResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier for the deleted assignment, such as `group.role.deleted` or `user.role.deleted`."
+        },
+        {
+          "name": "deleted",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether the assignment was removed."
+        }
+      ],
+      "description": "Confirmation payload returned after unassigning a role."
+    }
+  ],
+  "resources": [
+    {
+      "name": "projects",
+      "resources": [
+        {
+          "name": "groups",
+          "resources": [
+            {
+              "name": "roles",
+              "methods": [
+                {
+                  "action": "delete",
+                  "httpMethod": "delete",
+                  "path": "/projects/{project_id}/groups/{group_id}/roles/{role_id}",
+                  "operationId": "unassign-project-group-role",
+                  "description": "Unassigns a project role from a group within a project.",
+                  "pathParams": [
+                    {
+                      "name": "project_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "The ID of the project to modify."
+                    },
+                    {
+                      "name": "group_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "The ID of the group whose project role assignment should be removed."
+                    },
+                    {
+                      "name": "role_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "The ID of the project role to remove from the group."
+                    }
+                  ],
+                  "responses": [
+                    {
+                      "status": "200",
+                      "description": "Project role unassigned from the group successfully.",
+                      "contentType": "application/json",
+                      "type": {
+                        "kind": "ref",
+                        "name": "DeletedRoleAssignmentResource"
+                      }
+                    }
+                  ],
+                  "primaryResponse": {
+                    "kind": "ref",
+                    "name": "DeletedRoleAssignmentResource"
+                  },
+                  "security": [
+                    {
+                      "type": "http",
+                      "kind": "bearer",
+                      "schemeName": "AdminApiKeyAuth",
+                      "scheme": "bearer"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

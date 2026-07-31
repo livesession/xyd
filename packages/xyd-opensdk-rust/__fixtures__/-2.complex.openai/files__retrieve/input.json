@@ -1,0 +1,295 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "OpenAiFile",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The file identifier, which can be referenced in the API endpoints."
+        },
+        {
+          "name": "bytes",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The size of the file, in bytes."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the file was created."
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the file will expire."
+        },
+        {
+          "name": "filename",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the file."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file"
+          },
+          "required": true,
+          "description": "The object type, which is always `file`."
+        },
+        {
+          "name": "purpose",
+          "type": {
+            "kind": "ref",
+            "name": "OpenAiFilePurpose"
+          },
+          "required": true,
+          "description": "The intended purpose of the file. Supported values are `assistants`, `assistants_output`, `batch`, `batch_output`, `fine-tune`, `fine-tune-results`, `vision`, and `user_data`."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "OpenAiFileStatus"
+          },
+          "required": true,
+          "deprecated": true,
+          "description": "Deprecated. The current status of the file, which can be either `uploaded`, `processed`, or `error`."
+        },
+        {
+          "name": "status_details",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "deprecated": true,
+          "description": "Deprecated. For details on why a fine-tuning training file failed validation, see the `error` field on `fine_tuning.job`."
+        }
+      ],
+      "description": "The `File` object represents a document that has been uploaded to OpenAI."
+    },
+    {
+      "name": "OpenAiFilePurpose",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "assistants"
+        },
+        {
+          "value": "assistants_output"
+        },
+        {
+          "value": "batch"
+        },
+        {
+          "value": "batch_output"
+        },
+        {
+          "value": "fine-tune"
+        },
+        {
+          "value": "fine-tune-results"
+        },
+        {
+          "value": "vision"
+        },
+        {
+          "value": "user_data"
+        }
+      ],
+      "description": "The intended purpose of the file. Supported values are `assistants`, `assistants_output`, `batch`, `batch_output`, `fine-tune`, `fine-tune-results`, `vision`, and `user_data`."
+    },
+    {
+      "name": "OpenAiFileStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "uploaded"
+        },
+        {
+          "value": "processed"
+        },
+        {
+          "value": "error"
+        }
+      ],
+      "description": "Deprecated. The current status of the file, which can be either `uploaded`, `processed`, or `error`."
+    }
+  ],
+  "resources": [
+    {
+      "name": "files",
+      "methods": [
+        {
+          "action": "retrieve",
+          "httpMethod": "get",
+          "path": "/files/{file_id}",
+          "operationId": "retrieveFile",
+          "description": "Returns information about a specific file.",
+          "pathParams": [
+            {
+              "name": "file_id",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": true,
+              "description": "The ID of the file to use for this request."
+            }
+          ],
+          "responses": [
+            {
+              "status": "200",
+              "description": "OK",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "OpenAiFile"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "OpenAiFile"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

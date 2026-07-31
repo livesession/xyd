@@ -25,6 +25,7 @@
     "@xyd-js/opensdk-ruby": "workspace:*",
     "@xyd-js/opensdk-java": "workspace:*",
     "@xyd-js/opensdk-dotnet": "workspace:*",
+    "@xyd-js/opensdk-rust": "workspace:*",
     "@xyd-js/opensdk-chain": "workspace:*",
     "commander": "^13.1.0"
   },
