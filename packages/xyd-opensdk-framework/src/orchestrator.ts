@@ -11,6 +11,7 @@ const HEADER_COMMENT_BY_EXT: Record<string, string> = {
   '.go': '// ',
   '.ts': '// ',
   '.js': '// ',
+  '.rs': '// ',
   '.py': '# ',
   '.rb': '# ',
   '.yaml': '# ',

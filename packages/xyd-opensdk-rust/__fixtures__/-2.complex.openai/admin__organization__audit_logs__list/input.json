@@ -1,0 +1,2602 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "AdminOrganizationAuditLogsListEffectiveAt",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "gt",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "Return only events whose `effective_at` (Unix seconds) is greater than this value."
+        },
+        {
+          "name": "gte",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "Return only events whose `effective_at` (Unix seconds) is greater than or equal to this value."
+        },
+        {
+          "name": "lt",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "Return only events whose `effective_at` (Unix seconds) is less than this value."
+        },
+        {
+          "name": "lte",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "Return only events whose `effective_at` (Unix seconds) is less than or equal to this value."
+        }
+      ]
+    },
+    {
+      "name": "AuditLogEventType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "api_key.created"
+        },
+        {
+          "value": "api_key.updated"
+        },
+        {
+          "value": "api_key.deleted"
+        },
+        {
+          "value": "certificate.created"
+        },
+        {
+          "value": "certificate.updated"
+        },
+        {
+          "value": "certificate.deleted"
+        },
+        {
+          "value": "certificates.activated"
+        },
+        {
+          "value": "certificates.deactivated"
+        },
+        {
+          "value": "checkpoint.permission.created"
+        },
+        {
+          "value": "checkpoint.permission.deleted"
+        },
+        {
+          "value": "external_key.registered"
+        },
+        {
+          "value": "external_key.removed"
+        },
+        {
+          "value": "group.created"
+        },
+        {
+          "value": "group.updated"
+        },
+        {
+          "value": "group.deleted"
+        },
+        {
+          "value": "invite.sent"
+        },
+        {
+          "value": "invite.accepted"
+        },
+        {
+          "value": "invite.deleted"
+        },
+        {
+          "value": "ip_allowlist.created"
+        },
+        {
+          "value": "ip_allowlist.updated"
+        },
+        {
+          "value": "ip_allowlist.deleted"
+        },
+        {
+          "value": "ip_allowlist.config.activated"
+        },
+        {
+          "value": "ip_allowlist.config.deactivated"
+        },
+        {
+          "value": "login.succeeded"
+        },
+        {
+          "value": "login.failed"
+        },
+        {
+          "value": "logout.succeeded"
+        },
+        {
+          "value": "logout.failed"
+        },
+        {
+          "value": "organization.updated"
+        },
+        {
+          "value": "project.created"
+        },
+        {
+          "value": "project.updated"
+        },
+        {
+          "value": "project.archived"
+        },
+        {
+          "value": "project.deleted"
+        },
+        {
+          "value": "rate_limit.updated"
+        },
+        {
+          "value": "rate_limit.deleted"
+        },
+        {
+          "value": "resource.deleted"
+        },
+        {
+          "value": "tunnel.created"
+        },
+        {
+          "value": "tunnel.updated"
+        },
+        {
+          "value": "tunnel.deleted"
+        },
+        {
+          "value": "role.created"
+        },
+        {
+          "value": "role.updated"
+        },
+        {
+          "value": "role.deleted"
+        },
+        {
+          "value": "role.assignment.created"
+        },
+        {
+          "value": "role.assignment.deleted"
+        },
+        {
+          "value": "scim.enabled"
+        },
+        {
+          "value": "scim.disabled"
+        },
+        {
+          "value": "service_account.created"
+        },
+        {
+          "value": "service_account.updated"
+        },
+        {
+          "value": "service_account.deleted"
+        },
+        {
+          "value": "user.added"
+        },
+        {
+          "value": "user.updated"
+        },
+        {
+          "value": "user.deleted"
+        }
+      ],
+      "description": "The event type."
+    },
+    {
+      "name": "ListAuditLogsResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "list"
+          },
+          "required": true
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "AuditLog"
+            }
+          },
+          "required": true
+        },
+        {
+          "name": "first_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "last_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "AuditLog",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of this log."
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogEventType"
+          },
+          "required": true
+        },
+        {
+          "name": "effective_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of the event."
+        },
+        {
+          "name": "project",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogProject"
+          },
+          "required": false,
+          "description": "The project that the action was scoped to. Absent for actions not scoped to projects. Note that any admin actions taken via Admin API keys are associated with the default project."
+        },
+        {
+          "name": "actor",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogActor",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "api_key.created",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogApiKeyCreated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "api_key.updated",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogApiKeyUpdated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "api_key.deleted",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogApiKeyDeleted"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "checkpoint.permission.created",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogCheckpointPermissionCreated"
+          },
+          "required": false,
+          "description": "The project and fine-tuned model checkpoint that the checkpoint permission was created for."
+        },
+        {
+          "name": "checkpoint.permission.deleted",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogCheckpointPermissionDeleted"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "external_key.registered",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogExternalKeyRegistered"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "external_key.removed",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogExternalKeyRemoved"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "group.created",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogGroupCreated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "group.updated",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogGroupUpdated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "group.deleted",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogGroupDeleted"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "scim.enabled",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogScimEnabled"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "scim.disabled",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogScimDisabled"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "invite.sent",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogInviteSent"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "invite.accepted",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogInviteAccepted"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "invite.deleted",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogInviteAccepted"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "ip_allowlist.created",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogIpAllowlistCreated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "ip_allowlist.updated",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogIpAllowlistUpdated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "ip_allowlist.deleted",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogIpAllowlistDeleted"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "ip_allowlist.config.activated",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogIpAllowlistConfigActivated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "ip_allowlist.config.deactivated",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogIpAllowlistConfigDeactivated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "login.succeeded",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": false,
+          "description": "This event has no additional fields beyond the standard audit log attributes."
+        },
+        {
+          "name": "login.failed",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogLoginFailed"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "logout.succeeded",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": false,
+          "description": "This event has no additional fields beyond the standard audit log attributes."
+        },
+        {
+          "name": "logout.failed",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogLoginFailed"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "organization.updated",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogOrganizationUpdated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "project.created",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogProjectCreated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "project.updated",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogProjectUpdated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "project.archived",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogProjectArchived"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "project.deleted",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogProjectArchived"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "rate_limit.updated",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogRateLimitUpdated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "rate_limit.deleted",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogRateLimitDeleted"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "role.created",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogRoleCreated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "role.updated",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogRoleUpdated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "role.deleted",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogRoleDeleted"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "role.assignment.created",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogRoleAssignmentCreated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "role.assignment.deleted",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogRoleAssignmentDeleted"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "service_account.created",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogServiceAccountCreated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "service_account.updated",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogServiceAccountUpdated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "service_account.deleted",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogServiceAccountDeleted"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "user.added",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogUserAdded"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "user.updated",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogUserUpdated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "user.deleted",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogUserDeleted"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "certificate.created",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogCertificateCreated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "certificate.updated",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogCertificateCreated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "certificate.deleted",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogCertificateDeleted"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "certificates.activated",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogCertificatesActivated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        },
+        {
+          "name": "certificates.deactivated",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogCertificatesActivated"
+          },
+          "required": false,
+          "description": "The details for events with this `type`."
+        }
+      ],
+      "description": "A log of a user action or configuration change within this organization."
+    },
+    {
+      "name": "AuditLogProject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The project ID."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The project title."
+        }
+      ],
+      "description": "The project that the action was scoped to. Absent for actions not scoped to projects. Note that any admin actions taken via Admin API keys are associated with the default project."
+    },
+    {
+      "name": "AuditLogActor",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogActorType"
+          },
+          "required": false,
+          "description": "The type of actor. Is either `session` or `api_key`."
+        },
+        {
+          "name": "session",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogActorSession"
+          },
+          "required": false
+        },
+        {
+          "name": "api_key",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogActorApiKey"
+          },
+          "required": false
+        }
+      ],
+      "description": "The actor who performed the audit logged action."
+    },
+    {
+      "name": "AuditLogActorType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "session"
+        },
+        {
+          "value": "api_key"
+        }
+      ],
+      "description": "The type of actor. Is either `session` or `api_key`."
+    },
+    {
+      "name": "AuditLogActorSession",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "user",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogActorUser"
+          },
+          "required": false
+        },
+        {
+          "name": "ip_address",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The IP address from which the action was performed."
+        }
+      ],
+      "description": "The session in which the audit logged action was performed."
+    },
+    {
+      "name": "AuditLogActorUser",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The user id."
+        },
+        {
+          "name": "email",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The user email."
+        }
+      ],
+      "description": "The user who performed the audit logged action."
+    },
+    {
+      "name": "AuditLogActorApiKey",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The tracking id of the API key."
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogActorApiKeyType"
+          },
+          "required": false,
+          "description": "The type of API key. Can be either `user` or `service_account`."
+        },
+        {
+          "name": "user",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogActorUser"
+          },
+          "required": false
+        },
+        {
+          "name": "service_account",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogActorServiceAccount"
+          },
+          "required": false
+        }
+      ],
+      "description": "The API Key used to perform the audit logged action."
+    },
+    {
+      "name": "AuditLogActorApiKeyType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "user"
+        },
+        {
+          "value": "service_account"
+        }
+      ],
+      "description": "The type of API key. Can be either `user` or `service_account`."
+    },
+    {
+      "name": "AuditLogActorServiceAccount",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The service account id."
+        }
+      ],
+      "description": "The service account that performed the audit logged action."
+    },
+    {
+      "name": "AuditLogApiKeyCreated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The tracking ID of the API key."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogApiKeyCreatedData"
+          },
+          "required": false,
+          "description": "The payload used to create the API key."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogApiKeyCreatedData",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "scopes",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "A list of scopes allowed for the API key, e.g. `[\"api.model.request\"]`"
+        }
+      ],
+      "description": "The payload used to create the API key."
+    },
+    {
+      "name": "AuditLogApiKeyUpdated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The tracking ID of the API key."
+        },
+        {
+          "name": "changes_requested",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogApiKeyCreatedData"
+          },
+          "required": false,
+          "description": "The payload used to update the API key."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogApiKeyDeleted",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The tracking ID of the API key."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogCheckpointPermissionCreated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the checkpoint permission."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogCheckpointPermissionCreatedData"
+          },
+          "required": false,
+          "description": "The payload used to create the checkpoint permission."
+        }
+      ],
+      "description": "The project and fine-tuned model checkpoint that the checkpoint permission was created for."
+    },
+    {
+      "name": "AuditLogCheckpointPermissionCreatedData",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "project_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the project that the checkpoint permission was created for."
+        },
+        {
+          "name": "fine_tuned_model_checkpoint",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the fine-tuned model checkpoint."
+        }
+      ],
+      "description": "The payload used to create the checkpoint permission."
+    },
+    {
+      "name": "AuditLogCheckpointPermissionDeleted",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the checkpoint permission."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogExternalKeyRegistered",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the external key configuration."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": false,
+          "description": "The configuration for the external key."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogExternalKeyRemoved",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the external key configuration."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogGroupCreated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the group."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogGroupCreatedData"
+          },
+          "required": false,
+          "description": "Information about the created group."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogGroupCreatedData",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "group_name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The group name."
+        }
+      ],
+      "description": "Information about the created group."
+    },
+    {
+      "name": "AuditLogGroupUpdated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the group."
+        },
+        {
+          "name": "changes_requested",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogGroupUpdatedChangesRequested"
+          },
+          "required": false,
+          "description": "The payload used to update the group."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogGroupUpdatedChangesRequested",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "group_name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The updated group name."
+        }
+      ],
+      "description": "The payload used to update the group."
+    },
+    {
+      "name": "AuditLogGroupDeleted",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the group."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogScimEnabled",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the SCIM was enabled for."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogScimDisabled",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the SCIM was disabled for."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogInviteSent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the invite."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogInviteSentData"
+          },
+          "required": false,
+          "description": "The payload used to create the invite."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogInviteSentData",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "email",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The email invited to the organization."
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The role the email was invited to be. Is either `owner` or `member`."
+        }
+      ],
+      "description": "The payload used to create the invite."
+    },
+    {
+      "name": "AuditLogInviteAccepted",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the invite."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogIpAllowlistCreated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the IP allowlist configuration."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The name of the IP allowlist configuration."
+        },
+        {
+          "name": "allowed_ips",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "The IP addresses or CIDR ranges included in the configuration."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogIpAllowlistUpdated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the IP allowlist configuration."
+        },
+        {
+          "name": "allowed_ips",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "The updated set of IP addresses or CIDR ranges in the configuration."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogIpAllowlistDeleted",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the IP allowlist configuration."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The name of the IP allowlist configuration."
+        },
+        {
+          "name": "allowed_ips",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "The IP addresses or CIDR ranges that were in the configuration."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogIpAllowlistConfigActivated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "configs",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "AuditLogIpAllowlistConfigActivatedConfigsItem"
+            }
+          },
+          "required": false,
+          "description": "The configurations that were activated."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogIpAllowlistConfigActivatedConfigsItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The ID of the IP allowlist configuration."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The name of the IP allowlist configuration."
+        }
+      ]
+    },
+    {
+      "name": "AuditLogIpAllowlistConfigDeactivated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "configs",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "AuditLogIpAllowlistConfigActivatedConfigsItem"
+            }
+          },
+          "required": false,
+          "description": "The configurations that were deactivated."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogLoginFailed",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "error_code",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The error code of the failure."
+        },
+        {
+          "name": "error_message",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The error message of the failure."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogOrganizationUpdated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The organization ID."
+        },
+        {
+          "name": "changes_requested",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogOrganizationUpdatedChangesRequested"
+          },
+          "required": false,
+          "description": "The payload used to update the organization settings."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogOrganizationUpdatedChangesRequested",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "title",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The organization title."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The organization description."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The organization name."
+        },
+        {
+          "name": "threads_ui_visibility",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Visibility of the threads page which shows messages created with the Assistants API and Playground. One of `ANY_ROLE`, `OWNERS`, or `NONE`."
+        },
+        {
+          "name": "usage_dashboard_visibility",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Visibility of the usage dashboard which shows activity and costs for your organization. One of `ANY_ROLE` or `OWNERS`."
+        },
+        {
+          "name": "api_call_logging",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "How your organization logs data from supported API calls. One of `disabled`, `enabled_per_call`, `enabled_for_all_projects`, or `enabled_for_selected_projects`"
+        },
+        {
+          "name": "api_call_logging_project_ids",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The list of project ids if api_call_logging is set to `enabled_for_selected_projects`"
+        }
+      ],
+      "description": "The payload used to update the organization settings."
+    },
+    {
+      "name": "AuditLogProjectCreated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The project ID."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogProjectCreatedData"
+          },
+          "required": false,
+          "description": "The payload used to create the project."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogProjectCreatedData",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The project name."
+        },
+        {
+          "name": "title",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The title of the project as seen on the dashboard."
+        }
+      ],
+      "description": "The payload used to create the project."
+    },
+    {
+      "name": "AuditLogProjectUpdated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The project ID."
+        },
+        {
+          "name": "changes_requested",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogProjectUpdatedChangesRequested"
+          },
+          "required": false,
+          "description": "The payload used to update the project."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogProjectUpdatedChangesRequested",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "title",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The title of the project as seen on the dashboard."
+        }
+      ],
+      "description": "The payload used to update the project."
+    },
+    {
+      "name": "AuditLogProjectArchived",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The project ID."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogRateLimitUpdated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The rate limit ID"
+        },
+        {
+          "name": "changes_requested",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogRateLimitUpdatedChangesRequested"
+          },
+          "required": false,
+          "description": "The payload used to update the rate limits."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogRateLimitUpdatedChangesRequested",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "max_requests_per_1_minute",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The maximum requests per minute."
+        },
+        {
+          "name": "max_tokens_per_1_minute",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The maximum tokens per minute."
+        },
+        {
+          "name": "max_images_per_1_minute",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The maximum images per minute. Only relevant for certain models."
+        },
+        {
+          "name": "max_audio_megabytes_per_1_minute",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The maximum audio megabytes per minute. Only relevant for certain models."
+        },
+        {
+          "name": "max_requests_per_1_day",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The maximum requests per day. Only relevant for certain models."
+        },
+        {
+          "name": "batch_1_day_max_input_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The maximum batch input tokens per day. Only relevant for certain models."
+        }
+      ],
+      "description": "The payload used to update the rate limits."
+    },
+    {
+      "name": "AuditLogRateLimitDeleted",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The rate limit ID"
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogRoleCreated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The role ID."
+        },
+        {
+          "name": "role_name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The name of the role."
+        },
+        {
+          "name": "permissions",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "The permissions granted by the role."
+        },
+        {
+          "name": "resource_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The type of resource the role belongs to."
+        },
+        {
+          "name": "resource_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The resource the role is scoped to."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogRoleUpdated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The role ID."
+        },
+        {
+          "name": "changes_requested",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogRoleUpdatedChangesRequested"
+          },
+          "required": false,
+          "description": "The payload used to update the role."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogRoleUpdatedChangesRequested",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "role_name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The updated role name, when provided."
+        },
+        {
+          "name": "resource_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The resource the role is scoped to."
+        },
+        {
+          "name": "resource_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The type of resource the role belongs to."
+        },
+        {
+          "name": "permissions_added",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "The permissions added to the role."
+        },
+        {
+          "name": "permissions_removed",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "The permissions removed from the role."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The updated role description, when provided."
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": false,
+          "description": "Additional metadata stored on the role."
+        }
+      ],
+      "description": "The payload used to update the role."
+    },
+    {
+      "name": "AuditLogRoleDeleted",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The role ID."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogRoleAssignmentCreated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The identifier of the role assignment."
+        },
+        {
+          "name": "principal_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The principal (user or group) that received the role."
+        },
+        {
+          "name": "principal_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The type of principal (user or group) that received the role."
+        },
+        {
+          "name": "resource_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The resource the role assignment is scoped to."
+        },
+        {
+          "name": "resource_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The type of resource the role assignment is scoped to."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogRoleAssignmentDeleted",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The identifier of the role assignment."
+        },
+        {
+          "name": "principal_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The principal (user or group) that had the role removed."
+        },
+        {
+          "name": "principal_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The type of principal (user or group) that had the role removed."
+        },
+        {
+          "name": "resource_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The resource the role assignment was scoped to."
+        },
+        {
+          "name": "resource_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The type of resource the role assignment was scoped to."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogServiceAccountCreated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The service account ID."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogServiceAccountCreatedData"
+          },
+          "required": false,
+          "description": "The payload used to create the service account."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogServiceAccountCreatedData",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The role of the service account. Is either `owner` or `member`."
+        }
+      ],
+      "description": "The payload used to create the service account."
+    },
+    {
+      "name": "AuditLogServiceAccountUpdated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The service account ID."
+        },
+        {
+          "name": "changes_requested",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogServiceAccountCreatedData"
+          },
+          "required": false,
+          "description": "The payload used to updated the service account."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogServiceAccountDeleted",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The service account ID."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogUserAdded",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The user ID."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogUserAddedData"
+          },
+          "required": false,
+          "description": "The payload used to add the user to the project."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogUserAddedData",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The role of the user. Is either `owner` or `member`."
+        }
+      ],
+      "description": "The payload used to add the user to the project."
+    },
+    {
+      "name": "AuditLogUserUpdated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The project ID."
+        },
+        {
+          "name": "changes_requested",
+          "type": {
+            "kind": "ref",
+            "name": "AuditLogUserAddedData"
+          },
+          "required": false,
+          "description": "The payload used to update the user."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogUserDeleted",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The user ID."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogCertificateCreated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The certificate ID."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The name of the certificate."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogCertificateDeleted",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The certificate ID."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The name of the certificate."
+        },
+        {
+          "name": "certificate",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The certificate content in PEM format."
+        }
+      ],
+      "description": "The details for events with this `type`."
+    },
+    {
+      "name": "AuditLogCertificatesActivated",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "certificates",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "AuditLogCertificateCreated"
+            }
+          },
+          "required": false
+        }
+      ],
+      "description": "The details for events with this `type`."
+    }
+  ],
+  "resources": [
+    {
+      "name": "admin",
+      "resources": [
+        {
+          "name": "organization",
+          "resources": [
+            {
+              "name": "audit-logs",
+              "methods": [
+                {
+                  "action": "list",
+                  "httpMethod": "get",
+                  "path": "/organization/audit_logs",
+                  "operationId": "list-audit-logs",
+                  "description": "List user actions and configuration changes within this organization.",
+                  "queryParams": [
+                    {
+                      "name": "effective_at",
+                      "type": {
+                        "kind": "ref",
+                        "name": "AdminOrganizationAuditLogsListEffectiveAt"
+                      },
+                      "required": false,
+                      "description": "Return only events whose `effective_at` (Unix seconds) is in this range."
+                    },
+                    {
+                      "name": "project_ids",
+                      "type": {
+                        "kind": "array",
+                        "items": {
+                          "kind": "scalar",
+                          "scalar": "string"
+                        }
+                      },
+                      "required": false,
+                      "wireName": "project_ids[]",
+                      "description": "Return only events for these projects."
+                    },
+                    {
+                      "name": "event_types",
+                      "type": {
+                        "kind": "array",
+                        "items": {
+                          "kind": "ref",
+                          "name": "AuditLogEventType"
+                        }
+                      },
+                      "required": false,
+                      "wireName": "event_types[]",
+                      "description": "Return only events with a `type` in one of these values. For example, `project.created`. For all options, see the documentation for the [audit log object](/docs/api-reference/audit-logs/object)."
+                    },
+                    {
+                      "name": "actor_ids",
+                      "type": {
+                        "kind": "array",
+                        "items": {
+                          "kind": "scalar",
+                          "scalar": "string"
+                        }
+                      },
+                      "required": false,
+                      "wireName": "actor_ids[]",
+                      "description": "Return only events performed by these actors. Can be a user ID, a service account ID, or an api key tracking ID."
+                    },
+                    {
+                      "name": "actor_emails",
+                      "type": {
+                        "kind": "array",
+                        "items": {
+                          "kind": "scalar",
+                          "scalar": "string"
+                        }
+                      },
+                      "required": false,
+                      "wireName": "actor_emails[]",
+                      "description": "Return only events performed by users with these emails."
+                    },
+                    {
+                      "name": "resource_ids",
+                      "type": {
+                        "kind": "array",
+                        "items": {
+                          "kind": "scalar",
+                          "scalar": "string"
+                        }
+                      },
+                      "required": false,
+                      "wireName": "resource_ids[]",
+                      "description": "Return only events performed on these targets. For example, a project ID updated."
+                    },
+                    {
+                      "name": "limit",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "integer"
+                      },
+                      "required": false,
+                      "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n",
+                      "default": 20
+                    },
+                    {
+                      "name": "after",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": false,
+                      "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+                    },
+                    {
+                      "name": "before",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": false,
+                      "description": "A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.\n"
+                    }
+                  ],
+                  "responses": [
+                    {
+                      "status": "200",
+                      "description": "Audit logs listed successfully.",
+                      "contentType": "application/json",
+                      "type": {
+                        "kind": "ref",
+                        "name": "ListAuditLogsResponse"
+                      }
+                    }
+                  ],
+                  "primaryResponse": {
+                    "kind": "ref",
+                    "name": "ListAuditLogsResponse"
+                  },
+                  "pagination": {
+                    "style": "cursor",
+                    "itemsField": "data",
+                    "nextField": "has_more",
+                    "itemType": {
+                      "kind": "ref",
+                      "name": "AuditLog"
+                    },
+                    "cursorParam": "after",
+                    "limitParam": "limit"
+                  },
+                  "security": [
+                    {
+                      "type": "http",
+                      "kind": "bearer",
+                      "schemeName": "AdminApiKeyAuth",
+                      "scheme": "bearer"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

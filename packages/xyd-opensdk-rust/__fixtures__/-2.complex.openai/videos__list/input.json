@@ -1,0 +1,477 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "OrderEnum",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "asc"
+        },
+        {
+          "value": "desc"
+        }
+      ]
+    },
+    {
+      "name": "VideoListResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "list"
+          },
+          "required": true,
+          "default": "list",
+          "description": "The type of object returned, must be `list`."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "VideoResource"
+            }
+          },
+          "required": true,
+          "description": "A list of items"
+        },
+        {
+          "name": "first_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "last_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether there are more items available."
+        }
+      ]
+    },
+    {
+      "name": "VideoResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Unique identifier for the video job."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "video"
+          },
+          "required": true,
+          "default": "video",
+          "description": "The object type, which is always `video`."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "ref",
+            "name": "VideoModel"
+          },
+          "required": true
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "VideoStatus"
+          },
+          "required": true
+        },
+        {
+          "name": "progress",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Approximate completion percentage for the generation task."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Unix timestamp (seconds) for when the job was created."
+        },
+        {
+          "name": "completed_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "prompt",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "size",
+          "type": {
+            "kind": "ref",
+            "name": "VideoSize"
+          },
+          "required": true
+        },
+        {
+          "name": "seconds",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Duration of the generated clip in seconds. For extensions, this is the stitched total duration."
+        },
+        {
+          "name": "remixed_from_video_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "error",
+          "type": {
+            "kind": "ref",
+            "name": "Error2",
+            "nullable": true
+          },
+          "required": true
+        }
+      ],
+      "description": "Structured information describing a generated video job."
+    },
+    {
+      "name": "VideoModel",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "VideoModelString"
+        }
+      ]
+    },
+    {
+      "name": "VideoModelString",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "sora-2"
+        },
+        {
+          "value": "sora-2-pro"
+        },
+        {
+          "value": "sora-2-2025-10-06"
+        },
+        {
+          "value": "sora-2-pro-2025-10-06"
+        },
+        {
+          "value": "sora-2-2025-12-08"
+        }
+      ]
+    },
+    {
+      "name": "VideoStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "queued"
+        },
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "failed"
+        }
+      ]
+    },
+    {
+      "name": "VideoSize",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "720x1280"
+        },
+        {
+          "value": "1280x720"
+        },
+        {
+          "value": "1024x1792"
+        },
+        {
+          "value": "1792x1024"
+        }
+      ]
+    },
+    {
+      "name": "Error2",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "code",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A machine-readable error code that was returned."
+        },
+        {
+          "name": "message",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A human-readable description of the error that was returned."
+        }
+      ],
+      "description": "An error that occurred while generating the response."
+    }
+  ],
+  "resources": [
+    {
+      "name": "videos",
+      "methods": [
+        {
+          "action": "list",
+          "httpMethod": "get",
+          "path": "/videos",
+          "operationId": "ListVideos",
+          "description": "List recently generated videos for the current project.",
+          "queryParams": [
+            {
+              "name": "limit",
+              "type": {
+                "kind": "scalar",
+                "scalar": "integer"
+              },
+              "required": false,
+              "description": "Number of items to retrieve"
+            },
+            {
+              "name": "order",
+              "type": {
+                "kind": "ref",
+                "name": "OrderEnum"
+              },
+              "required": false,
+              "description": "Sort order of results by timestamp. Use `asc` for ascending order or `desc` for descending order."
+            },
+            {
+              "name": "after",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": false,
+              "description": "Identifier for the last item from the previous pagination request"
+            }
+          ],
+          "responses": [
+            {
+              "status": "200",
+              "description": "Success",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "VideoListResource"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "VideoListResource"
+          },
+          "pagination": {
+            "style": "cursor",
+            "itemsField": "data",
+            "nextField": "has_more",
+            "itemType": {
+              "kind": "ref",
+              "name": "VideoResource"
+            },
+            "cursorParam": "after",
+            "limitParam": "limit"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

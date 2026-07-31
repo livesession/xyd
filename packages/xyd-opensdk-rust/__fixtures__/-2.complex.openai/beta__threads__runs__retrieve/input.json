@@ -1,0 +1,1181 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "RunObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "thread.run"
+          },
+          "required": true,
+          "description": "The object type, which is always `thread.run`."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was created."
+        },
+        {
+          "name": "thread_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the [thread](/docs/api-reference/threads) that was executed on as a part of this run."
+        },
+        {
+          "name": "assistant_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the [assistant](/docs/api-reference/assistants) used for execution of this run."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "RunObjectStatus"
+          },
+          "required": true,
+          "description": "The status of the run, which can be either `queued`, `in_progress`, `requires_action`, `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`."
+        },
+        {
+          "name": "required_action",
+          "type": {
+            "kind": "ref",
+            "name": "RunObjectRequiredAction",
+            "nullable": true
+          },
+          "required": true,
+          "nullable": true,
+          "description": "Details on the action required to continue the run. Will be `null` if no action is required."
+        },
+        {
+          "name": "last_error",
+          "type": {
+            "kind": "ref",
+            "name": "RunObjectLastError",
+            "nullable": true
+          },
+          "required": true,
+          "nullable": true,
+          "description": "The last error associated with this run. Will be `null` if there are no errors."
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": true,
+          "nullable": true,
+          "description": "The Unix timestamp (in seconds) for when the run will expire."
+        },
+        {
+          "name": "started_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": true,
+          "nullable": true,
+          "description": "The Unix timestamp (in seconds) for when the run was started."
+        },
+        {
+          "name": "cancelled_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": true,
+          "nullable": true,
+          "description": "The Unix timestamp (in seconds) for when the run was cancelled."
+        },
+        {
+          "name": "failed_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": true,
+          "nullable": true,
+          "description": "The Unix timestamp (in seconds) for when the run failed."
+        },
+        {
+          "name": "completed_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": true,
+          "nullable": true,
+          "description": "The Unix timestamp (in seconds) for when the run was completed."
+        },
+        {
+          "name": "incomplete_details",
+          "type": {
+            "kind": "ref",
+            "name": "RunObjectIncompleteDetails",
+            "nullable": true
+          },
+          "required": true,
+          "nullable": true,
+          "description": "Details on why the run is incomplete. Will be `null` if the run is not incomplete."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The model that the [assistant](/docs/api-reference/assistants) used for this run."
+        },
+        {
+          "name": "instructions",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The instructions that the [assistant](/docs/api-reference/assistants) used for this run."
+        },
+        {
+          "name": "tools",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "RunObjectToolsItem"
+            }
+          },
+          "required": true,
+          "default": [],
+          "description": "The list of tools that the [assistant](/docs/api-reference/assistants) used for this run."
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "ref",
+            "name": "Metadata"
+          },
+          "required": true
+        },
+        {
+          "name": "usage",
+          "type": {
+            "kind": "ref",
+            "name": "RunCompletionUsage"
+          },
+          "required": true
+        },
+        {
+          "name": "temperature",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "description": "The sampling temperature used for this run. If not set, defaults to 1."
+        },
+        {
+          "name": "top_p",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "description": "The nucleus sampling value used for this run. If not set, defaults to 1."
+        },
+        {
+          "name": "max_prompt_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": true,
+          "nullable": true,
+          "description": "The maximum number of prompt tokens specified to have been used over the course of the run.\n"
+        },
+        {
+          "name": "max_completion_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": true,
+          "nullable": true,
+          "description": "The maximum number of completion tokens specified to have been used over the course of the run.\n"
+        },
+        {
+          "name": "truncation_strategy",
+          "type": {
+            "kind": "ref",
+            "name": "TruncationObject",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "tool_choice",
+          "type": {
+            "kind": "ref",
+            "name": "AssistantsApiToolChoiceOption",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "parallel_tool_calls",
+          "type": {
+            "kind": "ref",
+            "name": "ParallelToolCalls"
+          },
+          "required": true
+        },
+        {
+          "name": "response_format",
+          "type": {
+            "kind": "ref",
+            "name": "AssistantsApiResponseFormatOption"
+          },
+          "required": true
+        }
+      ],
+      "description": "Represents an execution run on a [thread](/docs/api-reference/threads)."
+    },
+    {
+      "name": "RunObjectStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "queued"
+        },
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "requires_action"
+        },
+        {
+          "value": "cancelling"
+        },
+        {
+          "value": "cancelled"
+        },
+        {
+          "value": "failed"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "incomplete"
+        },
+        {
+          "value": "expired"
+        }
+      ],
+      "description": "The status of the run, which can be either `queued`, `in_progress`, `requires_action`, `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`."
+    },
+    {
+      "name": "RunObjectRequiredAction",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "submit_tool_outputs"
+          },
+          "required": true,
+          "description": "For now, this is always `submit_tool_outputs`."
+        },
+        {
+          "name": "submit_tool_outputs",
+          "type": {
+            "kind": "ref",
+            "name": "RunObjectRequiredActionSubmitToolOutputs"
+          },
+          "required": true,
+          "description": "Details on the tool outputs needed for this run to continue."
+        }
+      ],
+      "description": "Details on the action required to continue the run. Will be `null` if no action is required."
+    },
+    {
+      "name": "RunObjectRequiredActionSubmitToolOutputs",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "tool_calls",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "RunToolCallObject"
+            }
+          },
+          "required": true,
+          "description": "A list of the relevant tool calls."
+        }
+      ],
+      "description": "Details on the tool outputs needed for this run to continue."
+    },
+    {
+      "name": "RunToolCallObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the tool call. This ID must be referenced when you submit the tool outputs in using the [Submit tool outputs to run](/docs/api-reference/runs/submitToolOutputs) endpoint."
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "function"
+          },
+          "required": true,
+          "description": "The type of tool call the output is required for. For now, this is always `function`."
+        },
+        {
+          "name": "function",
+          "type": {
+            "kind": "ref",
+            "name": "RunToolCallObjectFunction"
+          },
+          "required": true,
+          "description": "The function definition."
+        }
+      ],
+      "description": "Tool call objects"
+    },
+    {
+      "name": "RunToolCallObjectFunction",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the function."
+        },
+        {
+          "name": "arguments",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The arguments that the model expects you to pass to the function."
+        }
+      ],
+      "description": "The function definition."
+    },
+    {
+      "name": "RunObjectLastError",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "code",
+          "type": {
+            "kind": "ref",
+            "name": "RunObjectLastErrorCode"
+          },
+          "required": true,
+          "description": "One of `server_error`, `rate_limit_exceeded`, or `invalid_prompt`."
+        },
+        {
+          "name": "message",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A human-readable description of the error."
+        }
+      ],
+      "description": "The last error associated with this run. Will be `null` if there are no errors."
+    },
+    {
+      "name": "RunObjectLastErrorCode",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "server_error"
+        },
+        {
+          "value": "rate_limit_exceeded"
+        },
+        {
+          "value": "invalid_prompt"
+        }
+      ],
+      "description": "One of `server_error`, `rate_limit_exceeded`, or `invalid_prompt`."
+    },
+    {
+      "name": "RunObjectIncompleteDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "reason",
+          "type": {
+            "kind": "ref",
+            "name": "RunObjectIncompleteDetailsReason"
+          },
+          "required": false,
+          "description": "The reason why the run is incomplete. This will point to which specific token limit was reached over the course of the run."
+        }
+      ],
+      "description": "Details on why the run is incomplete. Will be `null` if the run is not incomplete."
+    },
+    {
+      "name": "RunObjectIncompleteDetailsReason",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "max_completion_tokens"
+        },
+        {
+          "value": "max_prompt_tokens"
+        }
+      ],
+      "description": "The reason why the run is incomplete. This will point to which specific token limit was reached over the course of the run."
+    },
+    {
+      "name": "RunObjectToolsItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "AssistantToolsCode"
+        },
+        {
+          "kind": "ref",
+          "name": "AssistantToolsFileSearch"
+        },
+        {
+          "kind": "ref",
+          "name": "AssistantToolsFunction"
+        }
+      ]
+    },
+    {
+      "name": "AssistantToolsCode",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "code_interpreter"
+          },
+          "required": true,
+          "description": "The type of tool being defined: `code_interpreter`"
+        }
+      ]
+    },
+    {
+      "name": "AssistantToolsFileSearch",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file_search"
+          },
+          "required": true,
+          "description": "The type of tool being defined: `file_search`"
+        },
+        {
+          "name": "file_search",
+          "type": {
+            "kind": "ref",
+            "name": "AssistantToolsFileSearchFileSearch"
+          },
+          "required": false,
+          "description": "Overrides for the file search tool."
+        }
+      ]
+    },
+    {
+      "name": "AssistantToolsFileSearchFileSearch",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "max_num_results",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The maximum number of results the file search tool should output. The default is 20 for `gpt-4*` models and 5 for `gpt-3.5-turbo`. This number should be between 1 and 50 inclusive.\n\nNote that the file search tool may output fewer than `max_num_results` results. See the [file search tool documentation](/docs/assistants/tools/file-search#customizing-file-search-settings) for more information.\n"
+        },
+        {
+          "name": "ranking_options",
+          "type": {
+            "kind": "ref",
+            "name": "FileSearchRankingOptions"
+          },
+          "required": false
+        }
+      ],
+      "description": "Overrides for the file search tool."
+    },
+    {
+      "name": "FileSearchRankingOptions",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "ranker",
+          "type": {
+            "kind": "ref",
+            "name": "FileSearchRanker"
+          },
+          "required": false
+        },
+        {
+          "name": "score_threshold",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The score threshold for the file search. All values must be a floating point number between 0 and 1."
+        }
+      ],
+      "description": "The ranking options for the file search. If not specified, the file search tool will use the `auto` ranker and a score_threshold of 0.\n\nSee the [file search tool documentation](/docs/assistants/tools/file-search#customizing-file-search-settings) for more information.\n"
+    },
+    {
+      "name": "FileSearchRanker",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "auto"
+        },
+        {
+          "value": "default_2024_08_21"
+        }
+      ],
+      "description": "The ranker to use for the file search. If not specified will use the `auto` ranker."
+    },
+    {
+      "name": "AssistantToolsFunction",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "function"
+          },
+          "required": true,
+          "description": "The type of tool being defined: `function`"
+        },
+        {
+          "name": "function",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionObject"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "FunctionObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "A description of what the function does, used by the model to choose when and how to call the function."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64."
+        },
+        {
+          "name": "parameters",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionParameters"
+          },
+          "required": false
+        },
+        {
+          "name": "strict",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "FunctionParameters",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "any"
+        }
+      }
+    },
+    {
+      "name": "Metadata",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        "nullable": true
+      }
+    },
+    {
+      "name": "RunCompletionUsage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "completion_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Number of completion tokens used over the course of the run."
+        },
+        {
+          "name": "prompt_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Number of prompt tokens used over the course of the run."
+        },
+        {
+          "name": "total_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Total number of tokens used (prompt + completion)."
+        }
+      ],
+      "description": "Usage statistics related to the run. This value will be `null` if the run is not in a terminal state (i.e. `in_progress`, `queued`, etc.)."
+    },
+    {
+      "name": "TruncationObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "TruncationObjectType"
+          },
+          "required": true,
+          "description": "The truncation strategy to use for the thread. The default is `auto`. If set to `last_messages`, the thread will be truncated to the n most recent messages in the thread. When set to `auto`, messages in the middle of the thread will be dropped to fit the context length of the model, `max_prompt_tokens`."
+        },
+        {
+          "name": "last_messages",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "Controls for how a thread will be truncated prior to the run. Use this to control the initial context window of the run."
+    },
+    {
+      "name": "TruncationObjectType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "auto"
+        },
+        {
+          "value": "last_messages"
+        }
+      ],
+      "description": "The truncation strategy to use for the thread. The default is `auto`. If set to `last_messages`, the thread will be truncated to the n most recent messages in the thread. When set to `auto`, messages in the middle of the thread will be dropped to fit the context length of the model, `max_prompt_tokens`."
+    },
+    {
+      "name": "AssistantsApiToolChoiceOption",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "AssistantsApiToolChoiceOptionString"
+        },
+        {
+          "kind": "ref",
+          "name": "AssistantsNamedToolChoice"
+        }
+      ],
+      "description": "Controls which (if any) tool is called by the model.\n`none` means the model will not call any tools and instead generates a message.\n`auto` is the default value and means the model can pick between generating a message or calling one or more tools.\n`required` means the model must call one or more tools before responding to the user.\nSpecifying a particular tool like `{\"type\": \"file_search\"}` or `{\"type\": \"function\", \"function\": {\"name\": \"my_function\"}}` forces the model to call that tool.\n"
+    },
+    {
+      "name": "AssistantsApiToolChoiceOptionString",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "none"
+        },
+        {
+          "value": "auto"
+        },
+        {
+          "value": "required"
+        }
+      ],
+      "description": "`none` means the model will not call any tools and instead generates a message. `auto` means the model can pick between generating a message or calling one or more tools. `required` means the model must call one or more tools before responding to the user.\n"
+    },
+    {
+      "name": "AssistantsNamedToolChoice",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "AssistantsNamedToolChoiceType"
+          },
+          "required": true,
+          "description": "The type of the tool. If type is `function`, the function name must be set"
+        },
+        {
+          "name": "function",
+          "type": {
+            "kind": "ref",
+            "name": "AssistantsNamedToolChoiceFunction"
+          },
+          "required": false
+        }
+      ],
+      "description": "Specifies a tool the model should use. Use to force the model to call a specific tool."
+    },
+    {
+      "name": "AssistantsNamedToolChoiceType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "function"
+        },
+        {
+          "value": "code_interpreter"
+        },
+        {
+          "value": "file_search"
+        }
+      ],
+      "description": "The type of the tool. If type is `function`, the function name must be set"
+    },
+    {
+      "name": "AssistantsNamedToolChoiceFunction",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the function to call."
+        }
+      ]
+    },
+    {
+      "name": "ParallelToolCalls",
+      "kind": "alias",
+      "of": {
+        "kind": "scalar",
+        "scalar": "boolean"
+      }
+    },
+    {
+      "name": "AssistantsApiResponseFormatOption",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string",
+          "const": "auto"
+        },
+        {
+          "kind": "ref",
+          "name": "ResponseFormatText"
+        },
+        {
+          "kind": "ref",
+          "name": "ResponseFormatJsonObject"
+        },
+        {
+          "kind": "ref",
+          "name": "ResponseFormatJsonSchema"
+        }
+      ],
+      "description": "Specifies the format that the model must output. Compatible with [GPT-4o](/docs/models#gpt-4o), [GPT-4 Turbo](/docs/models#gpt-4-turbo-and-gpt-4), and all GPT-3.5 Turbo models since `gpt-3.5-turbo-1106`.\n\nSetting to `{ \"type\": \"json_schema\", \"json_schema\": {...} }` enables Structured Outputs which ensures the model will match your supplied JSON schema. Learn more in the [Structured Outputs guide](/docs/guides/structured-outputs).\n\nSetting to `{ \"type\": \"json_object\" }` enables JSON mode, which ensures the message the model generates is valid JSON.\n\n**Important:** when using JSON mode, you **must** also instruct the model to produce JSON yourself via a system or user message. Without this, the model may generate an unending stream of whitespace until the generation reaches the token limit, resulting in a long-running and seemingly \"stuck\" request. Also note that the message content may be partially cut off if `finish_reason=\"length\"`, which indicates the generation exceeded `max_tokens` or the conversation exceeded the max context length.\n"
+    },
+    {
+      "name": "ResponseFormatText",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "text"
+          },
+          "required": true,
+          "description": "The type of response format being defined. Always `text`."
+        }
+      ],
+      "description": "Default response format. Used to generate text responses.\n"
+    },
+    {
+      "name": "ResponseFormatJsonObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "json_object"
+          },
+          "required": true,
+          "description": "The type of response format being defined. Always `json_object`."
+        }
+      ],
+      "description": "JSON object response format. An older method of generating JSON responses.\nUsing `json_schema` is recommended for models that support it. Note that the\nmodel will not generate JSON without a system or user message instructing it\nto do so.\n"
+    },
+    {
+      "name": "ResponseFormatJsonSchema",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "json_schema"
+          },
+          "required": true,
+          "description": "The type of response format being defined. Always `json_schema`."
+        },
+        {
+          "name": "json_schema",
+          "type": {
+            "kind": "ref",
+            "name": "ResponseFormatJsonSchemaJsonSchema"
+          },
+          "required": true,
+          "description": "Structured Outputs configuration options, including a JSON Schema.\n"
+        }
+      ],
+      "description": "JSON Schema response format. Used to generate structured JSON responses.\nLearn more about [Structured Outputs](/docs/guides/structured-outputs).\n"
+    },
+    {
+      "name": "ResponseFormatJsonSchemaJsonSchema",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "A description of what the response format is for, used by the model to\ndetermine how to respond in the format.\n"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the response format. Must be a-z, A-Z, 0-9, or contain\nunderscores and dashes, with a maximum length of 64.\n"
+        },
+        {
+          "name": "schema",
+          "type": {
+            "kind": "ref",
+            "name": "ResponseFormatJsonSchemaSchema"
+          },
+          "required": false
+        },
+        {
+          "name": "strict",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "Structured Outputs configuration options, including a JSON Schema.\n"
+    },
+    {
+      "name": "ResponseFormatJsonSchemaSchema",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "any"
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "name": "beta",
+      "resources": [
+        {
+          "name": "threads",
+          "resources": [
+            {
+              "name": "runs",
+              "methods": [
+                {
+                  "action": "retrieve",
+                  "httpMethod": "get",
+                  "path": "/threads/{thread_id}/runs/{run_id}",
+                  "operationId": "getRun",
+                  "description": "Retrieves a run.",
+                  "pathParams": [
+                    {
+                      "name": "thread_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "The ID of the [thread](/docs/api-reference/threads) that was run."
+                    },
+                    {
+                      "name": "run_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "The ID of the run to retrieve."
+                    }
+                  ],
+                  "responses": [
+                    {
+                      "status": "200",
+                      "description": "OK",
+                      "contentType": "application/json",
+                      "type": {
+                        "kind": "ref",
+                        "name": "RunObject"
+                      }
+                    }
+                  ],
+                  "primaryResponse": {
+                    "kind": "ref",
+                    "name": "RunObject"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

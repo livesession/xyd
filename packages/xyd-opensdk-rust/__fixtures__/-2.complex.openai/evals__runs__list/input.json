@@ -1,0 +1,4579 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "EvalsRunsListOrder",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "asc"
+        },
+        {
+          "value": "desc"
+        }
+      ]
+    },
+    {
+      "name": "EvalsRunsListStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "queued"
+        },
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "canceled"
+        },
+        {
+          "value": "failed"
+        }
+      ]
+    },
+    {
+      "name": "EvalRunList",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "list"
+          },
+          "required": true,
+          "default": "list",
+          "description": "The type of this object. It is always set to \"list\".\n"
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "EvalRun"
+            }
+          },
+          "required": true,
+          "description": "An array of eval run objects.\n"
+        },
+        {
+          "name": "first_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier of the first eval run in the data array."
+        },
+        {
+          "name": "last_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier of the last eval run in the data array."
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Indicates whether there are more evals available."
+        }
+      ],
+      "description": "An object representing a list of runs for an evaluation.\n"
+    },
+    {
+      "name": "EvalRun",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "eval.run"
+          },
+          "required": true,
+          "default": "eval.run",
+          "description": "The type of the object. Always \"eval.run\"."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Unique identifier for the evaluation run."
+        },
+        {
+          "name": "eval_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier of the associated evaluation."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The status of the evaluation run."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The model that is evaluated, if applicable."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the evaluation run."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the evaluation run was created."
+        },
+        {
+          "name": "report_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": true,
+          "description": "The URL to the rendered evaluation run report on the UI dashboard."
+        },
+        {
+          "name": "result_counts",
+          "type": {
+            "kind": "ref",
+            "name": "EvalRunResultCounts"
+          },
+          "required": true,
+          "description": "Counters summarizing the outcomes of the evaluation run."
+        },
+        {
+          "name": "per_model_usage",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "EvalRunPerModelUsageItem"
+            }
+          },
+          "required": true,
+          "description": "Usage statistics for each model during the evaluation run."
+        },
+        {
+          "name": "per_testing_criteria_results",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "EvalRunPerTestingCriteriaResultsItem"
+            }
+          },
+          "required": true,
+          "description": "Results per testing criteria applied during the evaluation run."
+        },
+        {
+          "name": "data_source",
+          "type": {
+            "kind": "ref",
+            "name": "EvalRunDataSource"
+          },
+          "required": true,
+          "description": "Information about the run's data source."
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "ref",
+            "name": "Metadata"
+          },
+          "required": true
+        },
+        {
+          "name": "error",
+          "type": {
+            "kind": "ref",
+            "name": "EvalApiError"
+          },
+          "required": true
+        }
+      ],
+      "description": "A schema representing an evaluation run.\n"
+    },
+    {
+      "name": "EvalRunResultCounts",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "total",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Total number of executed output items."
+        },
+        {
+          "name": "errored",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Number of output items that resulted in an error."
+        },
+        {
+          "name": "failed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Number of output items that failed to pass the evaluation."
+        },
+        {
+          "name": "passed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Number of output items that passed the evaluation."
+        }
+      ],
+      "description": "Counters summarizing the outcomes of the evaluation run."
+    },
+    {
+      "name": "EvalRunPerModelUsageItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "model_name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the model."
+        },
+        {
+          "name": "invocation_count",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of invocations."
+        },
+        {
+          "name": "prompt_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of prompt tokens used."
+        },
+        {
+          "name": "completion_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of completion tokens generated."
+        },
+        {
+          "name": "total_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The total number of tokens used."
+        },
+        {
+          "name": "cached_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of tokens retrieved from cache."
+        }
+      ]
+    },
+    {
+      "name": "EvalRunPerTestingCriteriaResultsItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "testing_criteria",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A description of the testing criteria."
+        },
+        {
+          "name": "passed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Number of tests passed for this criteria."
+        },
+        {
+          "name": "failed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Number of tests failed for this criteria."
+        }
+      ]
+    },
+    {
+      "name": "EvalRunDataSource",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "CreateEvalJsonlRunDataSource"
+        },
+        {
+          "kind": "ref",
+          "name": "CreateEvalCompletionsRunDataSource"
+        },
+        {
+          "kind": "ref",
+          "name": "CreateEvalResponsesRunDataSource"
+        }
+      ],
+      "description": "Information about the run's data source."
+    },
+    {
+      "name": "CreateEvalJsonlRunDataSource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "jsonl"
+          },
+          "required": true,
+          "default": "jsonl",
+          "description": "The type of data source. Always `jsonl`."
+        },
+        {
+          "name": "source",
+          "type": {
+            "kind": "ref",
+            "name": "CreateEvalJsonlRunDataSourceSource"
+          },
+          "required": true,
+          "description": "Determines what populates the `item` namespace in the data source."
+        }
+      ],
+      "description": "A JsonlRunDataSource object with that specifies a JSONL file that matches the eval \n"
+    },
+    {
+      "name": "CreateEvalJsonlRunDataSourceSource",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "EvalJsonlFileContentSource"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalJsonlFileIdSource"
+        }
+      ],
+      "description": "Determines what populates the `item` namespace in the data source."
+    },
+    {
+      "name": "EvalJsonlFileContentSource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file_content"
+          },
+          "required": true,
+          "default": "file_content",
+          "description": "The type of jsonl source. Always `file_content`."
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "EvalJsonlFileContentSourceContentItem"
+            }
+          },
+          "required": true,
+          "description": "The content of the jsonl file."
+        }
+      ]
+    },
+    {
+      "name": "EvalJsonlFileContentSourceContentItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "item",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": true
+        },
+        {
+          "name": "sample",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            }
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "EvalJsonlFileIdSource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file_id"
+          },
+          "required": true,
+          "default": "file_id",
+          "description": "The type of jsonl source. Always `file_id`."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier of the file."
+        }
+      ]
+    },
+    {
+      "name": "CreateEvalCompletionsRunDataSource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "completions"
+          },
+          "required": true,
+          "default": "completions",
+          "description": "The type of run data source. Always `completions`."
+        },
+        {
+          "name": "input_messages",
+          "type": {
+            "kind": "ref",
+            "name": "CreateEvalCompletionsRunDataSourceInputMessages"
+          },
+          "required": false,
+          "description": "Used when sampling from a model. Dictates the structure of the messages passed into the model. Can either be a reference to a prebuilt trajectory (ie, `item.input_trajectory`), or a template with variable references to the `item` namespace."
+        },
+        {
+          "name": "sampling_params",
+          "type": {
+            "kind": "ref",
+            "name": "CreateEvalCompletionsRunDataSourceSamplingParams"
+          },
+          "required": false
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The name of the model to use for generating completions (e.g. \"o3-mini\")."
+        },
+        {
+          "name": "source",
+          "type": {
+            "kind": "ref",
+            "name": "CreateEvalCompletionsRunDataSourceSource"
+          },
+          "required": true,
+          "description": "Determines what populates the `item` namespace in this run's data source."
+        }
+      ],
+      "description": "A CompletionsRunDataSource object describing a model sampling configuration.\n"
+    },
+    {
+      "name": "CreateEvalCompletionsRunDataSourceInputMessages",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "CreateEvalCompletionsRunDataSourceInputMessagesTemplate"
+        },
+        {
+          "kind": "ref",
+          "name": "CreateEvalCompletionsRunDataSourceInputMessagesItemReference"
+        }
+      ],
+      "description": "Used when sampling from a model. Dictates the structure of the messages passed into the model. Can either be a reference to a prebuilt trajectory (ie, `item.input_trajectory`), or a template with variable references to the `item` namespace."
+    },
+    {
+      "name": "CreateEvalCompletionsRunDataSourceInputMessagesTemplate",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "template"
+          },
+          "required": true,
+          "description": "The type of input messages. Always `template`."
+        },
+        {
+          "name": "template",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CreateEvalCompletionsRunDataSourceInputMessagesTemplateTemplateItem"
+            }
+          },
+          "required": true,
+          "description": "A list of chat messages forming the prompt or context. May include variable references to the `item` namespace, ie {{item.name}}."
+        }
+      ]
+    },
+    {
+      "name": "CreateEvalCompletionsRunDataSourceInputMessagesTemplateTemplateItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "EasyInputMessage"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalItem"
+        }
+      ]
+    },
+    {
+      "name": "EasyInputMessage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "role",
+          "type": {
+            "kind": "ref",
+            "name": "EasyInputMessageRole"
+          },
+          "required": true,
+          "description": "The role of the message input. One of `user`, `assistant`, `system`, or\n`developer`.\n"
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "ref",
+            "name": "EasyInputMessageContent"
+          },
+          "required": true,
+          "description": "Text, image, or audio input to the model, used to generate a response.\nCan also contain previous assistant responses.\n"
+        },
+        {
+          "name": "phase",
+          "type": {
+            "kind": "ref",
+            "name": "MessagePhase",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "message"
+          },
+          "required": false,
+          "description": "The type of the message input. Always `message`.\n"
+        }
+      ],
+      "description": "A message input to the model with a role indicating instruction following\nhierarchy. Instructions given with the `developer` or `system` role take\nprecedence over instructions given with the `user` role. Messages with the\n`assistant` role are presumed to have been generated by the model in previous\ninteractions.\n"
+    },
+    {
+      "name": "EasyInputMessageRole",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "user"
+        },
+        {
+          "value": "assistant"
+        },
+        {
+          "value": "system"
+        },
+        {
+          "value": "developer"
+        }
+      ],
+      "description": "The role of the message input. One of `user`, `assistant`, `system`, or\n`developer`.\n"
+    },
+    {
+      "name": "EasyInputMessageContent",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "InputMessageContentList"
+        }
+      ],
+      "description": "Text, image, or audio input to the model, used to generate a response.\nCan also contain previous assistant responses.\n"
+    },
+    {
+      "name": "InputMessageContentList",
+      "kind": "alias",
+      "of": {
+        "kind": "array",
+        "items": {
+          "kind": "ref",
+          "name": "InputContent"
+        }
+      }
+    },
+    {
+      "name": "InputContent",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "InputTextContent"
+        },
+        {
+          "kind": "ref",
+          "name": "InputImageContent"
+        },
+        {
+          "kind": "ref",
+          "name": "InputFileContent"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "input_text": "InputTextContent",
+          "input_image": "InputImageContent",
+          "input_file": "InputFileContent"
+        }
+      }
+    },
+    {
+      "name": "InputTextContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_text"
+          },
+          "required": true,
+          "default": "input_text",
+          "description": "The type of the input item. Always `input_text`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text input to the model."
+        }
+      ],
+      "description": "A text input to the model."
+    },
+    {
+      "name": "InputImageContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_image"
+          },
+          "required": true,
+          "default": "input_image",
+          "description": "The type of the input item. Always `input_image`."
+        },
+        {
+          "name": "image_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "detail",
+          "type": {
+            "kind": "ref",
+            "name": "ImageDetail"
+          },
+          "required": true
+        }
+      ],
+      "description": "An image input to the model. Learn about [image inputs](/docs/guides/vision)."
+    },
+    {
+      "name": "ImageDetail",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "high"
+        },
+        {
+          "value": "auto"
+        },
+        {
+          "value": "original"
+        }
+      ]
+    },
+    {
+      "name": "InputFileContent",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_file"
+          },
+          "required": true,
+          "default": "input_file",
+          "description": "The type of the input item. Always `input_file`."
+        },
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "filename",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The name of the file to be sent to the model."
+        },
+        {
+          "name": "file_data",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The content of the file to be sent to the model.\n"
+        },
+        {
+          "name": "file_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": false,
+          "description": "The URL of the file to be sent to the model."
+        },
+        {
+          "name": "detail",
+          "type": {
+            "kind": "ref",
+            "name": "FileInputDetail"
+          },
+          "required": false
+        }
+      ],
+      "description": "A file input to the model."
+    },
+    {
+      "name": "FileInputDetail",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "high"
+        }
+      ]
+    },
+    {
+      "name": "MessagePhase",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "commentary"
+        },
+        {
+          "value": "final_answer"
+        }
+      ],
+      "description": "Labels an `assistant` message as intermediate commentary (`commentary`) or the final answer (`final_answer`).\nFor models like `gpt-5.3-codex` and beyond, when sending follow-up requests, preserve and resend\nphase on all assistant messages — dropping it can degrade performance. Not used for user messages.\n"
+    },
+    {
+      "name": "EvalItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "role",
+          "type": {
+            "kind": "ref",
+            "name": "EasyInputMessageRole"
+          },
+          "required": true,
+          "description": "The role of the message input. One of `user`, `assistant`, `system`, or\n`developer`.\n"
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "ref",
+            "name": "EvalItemContent"
+          },
+          "required": true
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "message"
+          },
+          "required": false,
+          "description": "The type of the message input. Always `message`.\n"
+        }
+      ],
+      "description": "A message input to the model with a role indicating instruction following\nhierarchy. Instructions given with the `developer` or `system` role take\nprecedence over instructions given with the `user` role. Messages with the\n`assistant` role are presumed to have been generated by the model in previous\ninteractions.\n"
+    },
+    {
+      "name": "EvalItemContent",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "EvalItemContentItem"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalItemContentArray"
+        }
+      ],
+      "description": "Inputs to the model - can contain template strings. Supports text, output text, input images, and input audio, either as a single item or an array of items.\n"
+    },
+    {
+      "name": "EvalItemContentItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "EvalItemContentText"
+        },
+        {
+          "kind": "ref",
+          "name": "InputTextContent"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalItemContentOutputText"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalItemInputImage"
+        },
+        {
+          "kind": "ref",
+          "name": "InputAudio"
+        }
+      ],
+      "description": "A single content item: input text, output text, input image, or input audio.\n"
+    },
+    {
+      "name": "EvalItemContentText",
+      "kind": "alias",
+      "of": {
+        "kind": "scalar",
+        "scalar": "string"
+      }
+    },
+    {
+      "name": "EvalItemContentOutputText",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "output_text"
+          },
+          "required": true,
+          "description": "The type of the output text. Always `output_text`.\n"
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The text output from the model.\n"
+        }
+      ],
+      "description": "A text output from the model.\n"
+    },
+    {
+      "name": "EvalItemInputImage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_image"
+          },
+          "required": true,
+          "description": "The type of the image input. Always `input_image`.\n"
+        },
+        {
+          "name": "image_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": true,
+          "description": "The URL of the image input.\n"
+        },
+        {
+          "name": "detail",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The detail level of the image to be sent to the model. One of `high`, `low`, or `auto`. Defaults to `auto`.\n"
+        }
+      ],
+      "description": "An image input block used within EvalItem content arrays."
+    },
+    {
+      "name": "InputAudio",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "input_audio"
+          },
+          "required": true,
+          "description": "The type of the input item. Always `input_audio`.\n"
+        },
+        {
+          "name": "input_audio",
+          "type": {
+            "kind": "ref",
+            "name": "InputAudioInputAudio"
+          },
+          "required": true
+        }
+      ],
+      "description": "An audio input to the model.\n"
+    },
+    {
+      "name": "InputAudioInputAudio",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Base64-encoded audio data.\n"
+        },
+        {
+          "name": "format",
+          "type": {
+            "kind": "ref",
+            "name": "InputAudioInputAudioFormat"
+          },
+          "required": true,
+          "description": "The format of the audio data. Currently supported formats are `mp3` and\n`wav`.\n"
+        }
+      ]
+    },
+    {
+      "name": "InputAudioInputAudioFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "mp3"
+        },
+        {
+          "value": "wav"
+        }
+      ],
+      "description": "The format of the audio data. Currently supported formats are `mp3` and\n`wav`.\n"
+    },
+    {
+      "name": "EvalItemContentArray",
+      "kind": "alias",
+      "of": {
+        "kind": "array",
+        "items": {
+          "kind": "ref",
+          "name": "EvalItemContentItem"
+        }
+      }
+    },
+    {
+      "name": "CreateEvalCompletionsRunDataSourceInputMessagesItemReference",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "item_reference"
+          },
+          "required": true,
+          "description": "The type of input messages. Always `item_reference`."
+        },
+        {
+          "name": "item_reference",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A reference to a variable in the `item` namespace. Ie, \"item.input_trajectory\""
+        }
+      ]
+    },
+    {
+      "name": "CreateEvalCompletionsRunDataSourceSamplingParams",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "reasoning_effort",
+          "type": {
+            "kind": "ref",
+            "name": "ReasoningEffort"
+          },
+          "required": false
+        },
+        {
+          "name": "temperature",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": false,
+          "default": 1,
+          "description": "A higher temperature increases randomness in the outputs."
+        },
+        {
+          "name": "max_completion_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The maximum number of tokens in the generated output."
+        },
+        {
+          "name": "top_p",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": false,
+          "default": 1,
+          "description": "An alternative to temperature for nucleus sampling; 1.0 includes all tokens."
+        },
+        {
+          "name": "seed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "default": 42,
+          "description": "A seed value to initialize the randomness, during sampling."
+        },
+        {
+          "name": "response_format",
+          "type": {
+            "kind": "ref",
+            "name": "CreateEvalCompletionsRunDataSourceSamplingParamsResponseFormat"
+          },
+          "required": false,
+          "description": "An object specifying the format that the model must output.\n\nSetting to `{ \"type\": \"json_schema\", \"json_schema\": {...} }` enables\nStructured Outputs which ensures the model will match your supplied JSON\nschema. Learn more in the [Structured Outputs\nguide](/docs/guides/structured-outputs).\n\nSetting to `{ \"type\": \"json_object\" }` enables the older JSON mode, which\nensures the message the model generates is valid JSON. Using `json_schema`\nis preferred for models that support it.\n"
+        },
+        {
+          "name": "tools",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ChatCompletionTool"
+            }
+          },
+          "required": false,
+          "description": "A list of tools the model may call. Currently, only functions are supported as a tool. Use this to provide a list of functions the model may generate JSON inputs for. A max of 128 functions are supported.\n"
+        }
+      ]
+    },
+    {
+      "name": "ReasoningEffort",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "none"
+        },
+        {
+          "value": "minimal"
+        },
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        },
+        {
+          "value": "xhigh"
+        }
+      ],
+      "description": "Constrains effort on reasoning for\n[reasoning models](https://platform.openai.com/docs/guides/reasoning).\nCurrently supported values are `none`, `minimal`, `low`, `medium`, `high`, and `xhigh`. Reducing\nreasoning effort can result in faster responses and fewer tokens used\non reasoning in a response.\n\n- `gpt-5.1` defaults to `none`, which does not perform reasoning. The supported reasoning values for `gpt-5.1` are `none`, `low`, `medium`, and `high`. Tool calls are supported for all reasoning values in gpt-5.1.\n- All models before `gpt-5.1` default to `medium` reasoning effort, and do not support `none`.\n- The `gpt-5-pro` model defaults to (and only supports) `high` reasoning effort.\n- `xhigh` is supported for all models after `gpt-5.1-codex-max`.\n"
+    },
+    {
+      "name": "CreateEvalCompletionsRunDataSourceSamplingParamsResponseFormat",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ResponseFormatText"
+        },
+        {
+          "kind": "ref",
+          "name": "ResponseFormatJsonSchema"
+        },
+        {
+          "kind": "ref",
+          "name": "ResponseFormatJsonObject"
+        }
+      ],
+      "description": "An object specifying the format that the model must output.\n\nSetting to `{ \"type\": \"json_schema\", \"json_schema\": {...} }` enables\nStructured Outputs which ensures the model will match your supplied JSON\nschema. Learn more in the [Structured Outputs\nguide](/docs/guides/structured-outputs).\n\nSetting to `{ \"type\": \"json_object\" }` enables the older JSON mode, which\nensures the message the model generates is valid JSON. Using `json_schema`\nis preferred for models that support it.\n"
+    },
+    {
+      "name": "ResponseFormatText",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "text"
+          },
+          "required": true,
+          "description": "The type of response format being defined. Always `text`."
+        }
+      ],
+      "description": "Default response format. Used to generate text responses.\n"
+    },
+    {
+      "name": "ResponseFormatJsonSchema",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "json_schema"
+          },
+          "required": true,
+          "description": "The type of response format being defined. Always `json_schema`."
+        },
+        {
+          "name": "json_schema",
+          "type": {
+            "kind": "ref",
+            "name": "ResponseFormatJsonSchemaJsonSchema"
+          },
+          "required": true,
+          "description": "Structured Outputs configuration options, including a JSON Schema.\n"
+        }
+      ],
+      "description": "JSON Schema response format. Used to generate structured JSON responses.\nLearn more about [Structured Outputs](/docs/guides/structured-outputs).\n"
+    },
+    {
+      "name": "ResponseFormatJsonSchemaJsonSchema",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "A description of what the response format is for, used by the model to\ndetermine how to respond in the format.\n"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the response format. Must be a-z, A-Z, 0-9, or contain\nunderscores and dashes, with a maximum length of 64.\n"
+        },
+        {
+          "name": "schema",
+          "type": {
+            "kind": "ref",
+            "name": "ResponseFormatJsonSchemaSchema"
+          },
+          "required": false
+        },
+        {
+          "name": "strict",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "Structured Outputs configuration options, including a JSON Schema.\n"
+    },
+    {
+      "name": "ResponseFormatJsonSchemaSchema",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "any"
+        }
+      }
+    },
+    {
+      "name": "ResponseFormatJsonObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "json_object"
+          },
+          "required": true,
+          "description": "The type of response format being defined. Always `json_object`."
+        }
+      ],
+      "description": "JSON object response format. An older method of generating JSON responses.\nUsing `json_schema` is recommended for models that support it. Note that the\nmodel will not generate JSON without a system or user message instructing it\nto do so.\n"
+    },
+    {
+      "name": "ChatCompletionTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "function"
+          },
+          "required": true,
+          "description": "The type of the tool. Currently, only `function` is supported."
+        },
+        {
+          "name": "function",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionObject"
+          },
+          "required": true
+        }
+      ],
+      "description": "A function tool that can be used to generate a response.\n"
+    },
+    {
+      "name": "FunctionObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "A description of what the function does, used by the model to choose when and how to call the function."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the function to be called. Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum length of 64."
+        },
+        {
+          "name": "parameters",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionParameters"
+          },
+          "required": false
+        },
+        {
+          "name": "strict",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "FunctionParameters",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "any"
+        }
+      }
+    },
+    {
+      "name": "CreateEvalCompletionsRunDataSourceSource",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "EvalJsonlFileContentSource"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalJsonlFileIdSource"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalStoredCompletionsSource"
+        }
+      ],
+      "description": "Determines what populates the `item` namespace in this run's data source."
+    },
+    {
+      "name": "EvalStoredCompletionsSource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "stored_completions"
+          },
+          "required": true,
+          "default": "stored_completions",
+          "description": "The type of source. Always `stored_completions`."
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "ref",
+            "name": "Metadata"
+          },
+          "required": false
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "created_after",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "created_before",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "limit",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A StoredCompletionsRunDataSource configuration describing a set of filters\n"
+    },
+    {
+      "name": "Metadata",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        "nullable": true
+      }
+    },
+    {
+      "name": "CreateEvalResponsesRunDataSource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "responses"
+          },
+          "required": true,
+          "default": "responses",
+          "description": "The type of run data source. Always `responses`."
+        },
+        {
+          "name": "input_messages",
+          "type": {
+            "kind": "ref",
+            "name": "CreateEvalResponsesRunDataSourceInputMessages"
+          },
+          "required": false,
+          "description": "Used when sampling from a model. Dictates the structure of the messages passed into the model. Can either be a reference to a prebuilt trajectory (ie, `item.input_trajectory`), or a template with variable references to the `item` namespace."
+        },
+        {
+          "name": "sampling_params",
+          "type": {
+            "kind": "ref",
+            "name": "CreateEvalResponsesRunDataSourceSamplingParams"
+          },
+          "required": false
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The name of the model to use for generating completions (e.g. \"o3-mini\")."
+        },
+        {
+          "name": "source",
+          "type": {
+            "kind": "ref",
+            "name": "CreateEvalResponsesRunDataSourceSource"
+          },
+          "required": true,
+          "description": "Determines what populates the `item` namespace in this run's data source."
+        }
+      ],
+      "description": "A ResponsesRunDataSource object describing a model sampling configuration.\n"
+    },
+    {
+      "name": "CreateEvalResponsesRunDataSourceInputMessages",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "CreateEvalResponsesRunDataSourceInputMessagesTemplate"
+        },
+        {
+          "kind": "ref",
+          "name": "CreateEvalResponsesRunDataSourceInputMessagesItemReference"
+        }
+      ],
+      "description": "Used when sampling from a model. Dictates the structure of the messages passed into the model. Can either be a reference to a prebuilt trajectory (ie, `item.input_trajectory`), or a template with variable references to the `item` namespace."
+    },
+    {
+      "name": "CreateEvalResponsesRunDataSourceInputMessagesTemplate",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "template"
+          },
+          "required": true,
+          "description": "The type of input messages. Always `template`."
+        },
+        {
+          "name": "template",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CreateEvalResponsesRunDataSourceInputMessagesTemplateTemplateItem"
+            }
+          },
+          "required": true,
+          "description": "A list of chat messages forming the prompt or context. May include variable references to the `item` namespace, ie {{item.name}}."
+        }
+      ]
+    },
+    {
+      "name": "CreateEvalResponsesRunDataSourceInputMessagesTemplateTemplateItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "CreateEvalResponsesRunDataSourceInputMessagesTemplateTemplateItemChatMessage"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalItem"
+        }
+      ]
+    },
+    {
+      "name": "CreateEvalResponsesRunDataSourceInputMessagesTemplateTemplateItemChatMessage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The role of the message (e.g. \"system\", \"assistant\", \"user\")."
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The content of the message."
+        }
+      ]
+    },
+    {
+      "name": "CreateEvalResponsesRunDataSourceInputMessagesItemReference",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "item_reference"
+          },
+          "required": true,
+          "description": "The type of input messages. Always `item_reference`."
+        },
+        {
+          "name": "item_reference",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A reference to a variable in the `item` namespace. Ie, \"item.name\""
+        }
+      ]
+    },
+    {
+      "name": "CreateEvalResponsesRunDataSourceSamplingParams",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "reasoning_effort",
+          "type": {
+            "kind": "ref",
+            "name": "ReasoningEffort"
+          },
+          "required": false
+        },
+        {
+          "name": "temperature",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": false,
+          "default": 1,
+          "description": "A higher temperature increases randomness in the outputs."
+        },
+        {
+          "name": "max_completion_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The maximum number of tokens in the generated output."
+        },
+        {
+          "name": "top_p",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": false,
+          "default": 1,
+          "description": "An alternative to temperature for nucleus sampling; 1.0 includes all tokens."
+        },
+        {
+          "name": "seed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "default": 42,
+          "description": "A seed value to initialize the randomness, during sampling."
+        },
+        {
+          "name": "tools",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "Tool"
+            }
+          },
+          "required": false,
+          "description": "An array of tools the model may call while generating a response. You\ncan specify which tool to use by setting the `tool_choice` parameter.\n\nThe two categories of tools you can provide the model are:\n\n- **Built-in tools**: Tools that are provided by OpenAI that extend the\n  model's capabilities, like [web search](/docs/guides/tools-web-search)\n  or [file search](/docs/guides/tools-file-search). Learn more about\n  [built-in tools](/docs/guides/tools).\n- **Function calls (custom tools)**: Functions that are defined by you,\n  enabling the model to call your own code. Learn more about\n  [function calling](/docs/guides/function-calling).\n"
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "ref",
+            "name": "CreateEvalResponsesRunDataSourceSamplingParamsText"
+          },
+          "required": false,
+          "description": "Configuration options for a text response from the model. Can be plain\ntext or structured JSON data. Learn more:\n- [Text inputs and outputs](/docs/guides/text)\n- [Structured Outputs](/docs/guides/structured-outputs)\n"
+        }
+      ]
+    },
+    {
+      "name": "Tool",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "FunctionTool"
+        },
+        {
+          "kind": "ref",
+          "name": "FileSearchTool"
+        },
+        {
+          "kind": "ref",
+          "name": "ComputerTool"
+        },
+        {
+          "kind": "ref",
+          "name": "ComputerUsePreviewTool"
+        },
+        {
+          "kind": "ref",
+          "name": "WebSearchTool"
+        },
+        {
+          "kind": "ref",
+          "name": "McpTool"
+        },
+        {
+          "kind": "ref",
+          "name": "CodeInterpreterTool"
+        },
+        {
+          "kind": "ref",
+          "name": "ImageGenTool"
+        },
+        {
+          "kind": "ref",
+          "name": "LocalShellToolParam"
+        },
+        {
+          "kind": "ref",
+          "name": "FunctionShellToolParam"
+        },
+        {
+          "kind": "ref",
+          "name": "CustomToolParam"
+        },
+        {
+          "kind": "ref",
+          "name": "NamespaceToolParam"
+        },
+        {
+          "kind": "ref",
+          "name": "ToolSearchToolParam"
+        },
+        {
+          "kind": "ref",
+          "name": "WebSearchPreviewTool"
+        },
+        {
+          "kind": "ref",
+          "name": "ApplyPatchToolParam"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "function": "FunctionTool",
+          "file_search": "FileSearchTool",
+          "computer": "ComputerTool",
+          "computer_use_preview": "ComputerUsePreviewTool",
+          "mcp": "McpTool",
+          "code_interpreter": "CodeInterpreterTool",
+          "image_generation": "ImageGenTool",
+          "local_shell": "LocalShellToolParam",
+          "shell": "FunctionShellToolParam",
+          "custom": "CustomToolParam",
+          "namespace": "NamespaceToolParam",
+          "tool_search": "ToolSearchToolParam",
+          "apply_patch": "ApplyPatchToolParam"
+        }
+      },
+      "description": "A tool that can be used to generate a response.\n"
+    },
+    {
+      "name": "FunctionTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "function"
+          },
+          "required": true,
+          "default": "function",
+          "description": "The type of the function tool. Always `function`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the function to call."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "parameters",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            },
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "strict",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "defer_loading",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "Whether this function is deferred and loaded via tool search."
+        }
+      ],
+      "description": "Defines a function in your own code the model can choose to call. Learn more about [function calling](https://platform.openai.com/docs/guides/function-calling)."
+    },
+    {
+      "name": "FileSearchTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "file_search"
+          },
+          "required": true,
+          "default": "file_search",
+          "description": "The type of the file search tool. Always `file_search`."
+        },
+        {
+          "name": "vector_store_ids",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "The IDs of the vector stores to search."
+        },
+        {
+          "name": "max_num_results",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The maximum number of results to return. This number should be between 1 and 50 inclusive."
+        },
+        {
+          "name": "ranking_options",
+          "type": {
+            "kind": "ref",
+            "name": "RankingOptions"
+          },
+          "required": false
+        },
+        {
+          "name": "filters",
+          "type": {
+            "kind": "ref",
+            "name": "Filters",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A tool that searches for relevant content from uploaded files. Learn more about the [file search tool](https://platform.openai.com/docs/guides/tools-file-search)."
+    },
+    {
+      "name": "RankingOptions",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "ranker",
+          "type": {
+            "kind": "ref",
+            "name": "RankerVersionType"
+          },
+          "required": false
+        },
+        {
+          "name": "score_threshold",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": false,
+          "description": "The score threshold for the file search, a number between 0 and 1. Numbers closer to 1 will attempt to return only the most relevant results, but may return fewer results."
+        },
+        {
+          "name": "hybrid_search",
+          "type": {
+            "kind": "ref",
+            "name": "HybridSearchOptions"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "RankerVersionType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "auto"
+        },
+        {
+          "value": "default-2024-11-15"
+        }
+      ]
+    },
+    {
+      "name": "HybridSearchOptions",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "embedding_weight",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The weight of the embedding in the reciprocal ranking fusion."
+        },
+        {
+          "name": "text_weight",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The weight of the text in the reciprocal ranking fusion."
+        }
+      ]
+    },
+    {
+      "name": "Filters",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ComparisonFilter"
+        },
+        {
+          "kind": "ref",
+          "name": "CompoundFilter"
+        }
+      ]
+    },
+    {
+      "name": "ComparisonFilter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "ComparisonFilterType"
+          },
+          "required": true,
+          "default": "eq",
+          "description": "Specifies the comparison operator: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `nin`.\n- `eq`: equals\n- `ne`: not equal\n- `gt`: greater than\n- `gte`: greater than or equal\n- `lt`: less than\n- `lte`: less than or equal\n- `in`: in\n- `nin`: not in\n"
+        },
+        {
+          "name": "key",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The key to compare against the value."
+        },
+        {
+          "name": "value",
+          "type": {
+            "kind": "ref",
+            "name": "ComparisonFilterValue"
+          },
+          "required": true,
+          "description": "The value to compare against the attribute key; supports string, number, or boolean types."
+        }
+      ],
+      "description": "A filter used to compare a specified attribute key to a given value using a defined comparison operation.\n"
+    },
+    {
+      "name": "ComparisonFilterType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "eq"
+        },
+        {
+          "value": "ne"
+        },
+        {
+          "value": "gt"
+        },
+        {
+          "value": "gte"
+        },
+        {
+          "value": "lt"
+        },
+        {
+          "value": "lte"
+        },
+        {
+          "value": "in"
+        },
+        {
+          "value": "nin"
+        }
+      ],
+      "description": "Specifies the comparison operator: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `nin`.\n- `eq`: equals\n- `ne`: not equal\n- `gt`: greater than\n- `gte`: greater than or equal\n- `lt`: less than\n- `lte`: less than or equal\n- `in`: in\n- `nin`: not in\n"
+    },
+    {
+      "name": "ComparisonFilterValue",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "number"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "boolean"
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "ref",
+            "name": "ComparisonFilterValueArrayItem"
+          }
+        }
+      ],
+      "description": "The value to compare against the attribute key; supports string, number, or boolean types."
+    },
+    {
+      "name": "ComparisonFilterValueArrayItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "number"
+        }
+      ]
+    },
+    {
+      "name": "CompoundFilter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "CompoundFilterType"
+          },
+          "required": true,
+          "description": "Type of operation: `and` or `or`."
+        },
+        {
+          "name": "filters",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CompoundFilterFiltersItem"
+            }
+          },
+          "required": true,
+          "description": "Array of filters to combine. Items can be `ComparisonFilter` or `CompoundFilter`."
+        }
+      ],
+      "description": "Combine multiple filters using `and` or `or`."
+    },
+    {
+      "name": "CompoundFilterType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "and"
+        },
+        {
+          "value": "or"
+        }
+      ],
+      "description": "Type of operation: `and` or `or`."
+    },
+    {
+      "name": "CompoundFilterFiltersItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ComparisonFilter"
+        },
+        {
+          "kind": "any"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type"
+      }
+    },
+    {
+      "name": "ComputerTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "computer"
+          },
+          "required": true,
+          "default": "computer",
+          "description": "The type of the computer tool. Always `computer`."
+        }
+      ],
+      "description": "A tool that controls a virtual computer. Learn more about the [computer tool](https://platform.openai.com/docs/guides/tools-computer-use)."
+    },
+    {
+      "name": "ComputerUsePreviewTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "computer_use_preview"
+          },
+          "required": true,
+          "default": "computer_use_preview",
+          "description": "The type of the computer use tool. Always `computer_use_preview`."
+        },
+        {
+          "name": "environment",
+          "type": {
+            "kind": "ref",
+            "name": "ComputerEnvironment"
+          },
+          "required": true
+        },
+        {
+          "name": "display_width",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The width of the computer display."
+        },
+        {
+          "name": "display_height",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The height of the computer display."
+        }
+      ],
+      "description": "A tool that controls a virtual computer. Learn more about the [computer tool](https://platform.openai.com/docs/guides/tools-computer-use)."
+    },
+    {
+      "name": "ComputerEnvironment",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "windows"
+        },
+        {
+          "value": "mac"
+        },
+        {
+          "value": "linux"
+        },
+        {
+          "value": "ubuntu"
+        },
+        {
+          "value": "browser"
+        }
+      ]
+    },
+    {
+      "name": "WebSearchTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "WebSearchToolType"
+          },
+          "required": true,
+          "default": "web_search",
+          "description": "The type of the web search tool. One of `web_search` or `web_search_2025_08_26`."
+        },
+        {
+          "name": "filters",
+          "type": {
+            "kind": "ref",
+            "name": "WebSearchToolFilters",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "user_location",
+          "type": {
+            "kind": "ref",
+            "name": "WebSearchApproximateLocation"
+          },
+          "required": false
+        },
+        {
+          "name": "search_context_size",
+          "type": {
+            "kind": "ref",
+            "name": "WebSearchToolSearchContextSize"
+          },
+          "required": false,
+          "default": "medium",
+          "description": "High level guidance for the amount of context window space to use for the search. One of `low`, `medium`, or `high`. `medium` is the default."
+        }
+      ],
+      "description": "Search the Internet for sources related to the prompt. Learn more about the\n[web search tool](/docs/guides/tools-web-search).\n"
+    },
+    {
+      "name": "WebSearchToolType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "web_search"
+        },
+        {
+          "value": "web_search_2025_08_26"
+        }
+      ],
+      "description": "The type of the web search tool. One of `web_search` or `web_search_2025_08_26`."
+    },
+    {
+      "name": "WebSearchToolFilters",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "allowed_domains",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            },
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "Filters for the search.\n"
+    },
+    {
+      "name": "WebSearchApproximateLocation",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "approximate"
+          },
+          "required": false,
+          "default": "approximate",
+          "description": "The type of location approximation. Always `approximate`."
+        },
+        {
+          "name": "country",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "region",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "city",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "timezone",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "The approximate location of the user.\n"
+    },
+    {
+      "name": "WebSearchToolSearchContextSize",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        }
+      ],
+      "description": "High level guidance for the amount of context window space to use for the search. One of `low`, `medium`, or `high`. `medium` is the default."
+    },
+    {
+      "name": "McpTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "mcp"
+          },
+          "required": true,
+          "description": "The type of the MCP tool. Always `mcp`."
+        },
+        {
+          "name": "server_label",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A label for this MCP server, used to identify it in tool calls.\n"
+        },
+        {
+          "name": "server_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": false,
+          "description": "The URL for the MCP server. One of `server_url` or `connector_id` must be\nprovided.\n"
+        },
+        {
+          "name": "connector_id",
+          "type": {
+            "kind": "ref",
+            "name": "McpToolConnectorId"
+          },
+          "required": false,
+          "description": "Identifier for service connectors, like those available in ChatGPT. One of\n`server_url` or `connector_id` must be provided. Learn more about service\nconnectors [here](/docs/guides/tools-remote-mcp#connectors).\n\nCurrently supported `connector_id` values are:\n\n- Dropbox: `connector_dropbox`\n- Gmail: `connector_gmail`\n- Google Calendar: `connector_googlecalendar`\n- Google Drive: `connector_googledrive`\n- Microsoft Teams: `connector_microsoftteams`\n- Outlook Calendar: `connector_outlookcalendar`\n- Outlook Email: `connector_outlookemail`\n- SharePoint: `connector_sharepoint`\n"
+        },
+        {
+          "name": "authorization",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "An OAuth access token that can be used with a remote MCP server, either\nwith a custom MCP server URL or a service connector. Your application\nmust handle the OAuth authorization flow and provide the token here.\n"
+        },
+        {
+          "name": "server_description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Optional description of the MCP server, used to provide more context.\n"
+        },
+        {
+          "name": "headers",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "scalar",
+              "scalar": "string"
+            },
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "allowed_tools",
+          "type": {
+            "kind": "ref",
+            "name": "McpToolAllowedTools",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "require_approval",
+          "type": {
+            "kind": "ref",
+            "name": "McpToolRequireApproval",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "defer_loading",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "Whether this MCP tool is deferred and discovered via tool search.\n"
+        }
+      ],
+      "description": "Give the model access to additional tools via remote Model Context Protocol\n(MCP) servers. [Learn more about MCP](/docs/guides/tools-remote-mcp).\n"
+    },
+    {
+      "name": "McpToolConnectorId",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "connector_dropbox"
+        },
+        {
+          "value": "connector_gmail"
+        },
+        {
+          "value": "connector_googlecalendar"
+        },
+        {
+          "value": "connector_googledrive"
+        },
+        {
+          "value": "connector_microsoftteams"
+        },
+        {
+          "value": "connector_outlookcalendar"
+        },
+        {
+          "value": "connector_outlookemail"
+        },
+        {
+          "value": "connector_sharepoint"
+        }
+      ],
+      "description": "Identifier for service connectors, like those available in ChatGPT. One of\n`server_url` or `connector_id` must be provided. Learn more about service\nconnectors [here](/docs/guides/tools-remote-mcp#connectors).\n\nCurrently supported `connector_id` values are:\n\n- Dropbox: `connector_dropbox`\n- Gmail: `connector_gmail`\n- Google Calendar: `connector_googlecalendar`\n- Google Drive: `connector_googledrive`\n- Microsoft Teams: `connector_microsoftteams`\n- Outlook Calendar: `connector_outlookcalendar`\n- Outlook Email: `connector_outlookemail`\n- SharePoint: `connector_sharepoint`\n"
+    },
+    {
+      "name": "McpToolAllowedTools",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "array",
+          "items": {
+            "kind": "scalar",
+            "scalar": "string"
+          }
+        },
+        {
+          "kind": "ref",
+          "name": "McpToolFilter"
+        }
+      ],
+      "description": "List of allowed tool names or a filter object.\n"
+    },
+    {
+      "name": "McpToolFilter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "tool_names",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "List of allowed tool names."
+        },
+        {
+          "name": "read_only",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "Indicates whether or not a tool modifies data or is read-only. If an\nMCP server is [annotated with `readOnlyHint`](https://modelcontextprotocol.io/specification/2025-06-18/schema#toolannotations-readonlyhint),\nit will match this filter.\n"
+        }
+      ],
+      "description": "A filter object to specify which tools are allowed.\n"
+    },
+    {
+      "name": "McpToolRequireApproval",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "McpToolRequireApprovalMcpToolApprovalFilter"
+        },
+        {
+          "kind": "ref",
+          "name": "McpToolRequireApprovalMcpToolApprovalSetting"
+        }
+      ],
+      "description": "Specify which of the MCP server's tools require approval."
+    },
+    {
+      "name": "McpToolRequireApprovalMcpToolApprovalFilter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "always",
+          "type": {
+            "kind": "ref",
+            "name": "McpToolFilter"
+          },
+          "required": false
+        },
+        {
+          "name": "never",
+          "type": {
+            "kind": "ref",
+            "name": "McpToolFilter"
+          },
+          "required": false
+        }
+      ],
+      "description": "Specify which of the MCP server's tools require approval. Can be\n`always`, `never`, or a filter object associated with tools\nthat require approval.\n"
+    },
+    {
+      "name": "McpToolRequireApprovalMcpToolApprovalSetting",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "always"
+        },
+        {
+          "value": "never"
+        }
+      ],
+      "description": "Specify a single approval policy for all tools. One of `always` or\n`never`. When set to `always`, all tools will require approval. When\nset to `never`, all tools will not require approval.\n"
+    },
+    {
+      "name": "CodeInterpreterTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "code_interpreter"
+          },
+          "required": true,
+          "description": "The type of the code interpreter tool. Always `code_interpreter`.\n"
+        },
+        {
+          "name": "container",
+          "type": {
+            "kind": "ref",
+            "name": "CodeInterpreterToolContainer"
+          },
+          "required": true,
+          "description": "The code interpreter container. Can be a container ID or an object that\nspecifies uploaded file IDs to make available to your code, along with an\noptional `memory_limit` setting.\n"
+        }
+      ],
+      "description": "A tool that runs Python code to help generate a response to a prompt.\n"
+    },
+    {
+      "name": "CodeInterpreterToolContainer",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "AutoCodeInterpreterToolParam"
+        }
+      ],
+      "description": "The code interpreter container. Can be a container ID or an object that\nspecifies uploaded file IDs to make available to your code, along with an\noptional `memory_limit` setting.\n"
+    },
+    {
+      "name": "AutoCodeInterpreterToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "auto"
+          },
+          "required": true,
+          "default": "auto",
+          "description": "Always `auto`."
+        },
+        {
+          "name": "file_ids",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "An optional list of uploaded files to make available to your code."
+        },
+        {
+          "name": "memory_limit",
+          "type": {
+            "kind": "ref",
+            "name": "ContainerMemoryLimit",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "network_policy",
+          "type": {
+            "kind": "ref",
+            "name": "AutoCodeInterpreterToolParamNetworkPolicy"
+          },
+          "required": false,
+          "description": "Network access policy for the container."
+        }
+      ],
+      "description": "Configuration for a code interpreter container. Optionally specify the IDs of the files to run the code on."
+    },
+    {
+      "name": "ContainerMemoryLimit",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "1g"
+        },
+        {
+          "value": "4g"
+        },
+        {
+          "value": "16g"
+        },
+        {
+          "value": "64g"
+        }
+      ]
+    },
+    {
+      "name": "AutoCodeInterpreterToolParamNetworkPolicy",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ContainerNetworkPolicyDisabledParam"
+        },
+        {
+          "kind": "ref",
+          "name": "ContainerNetworkPolicyAllowlistParam"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "disabled": "ContainerNetworkPolicyDisabledParam",
+          "allowlist": "ContainerNetworkPolicyAllowlistParam"
+        }
+      },
+      "description": "Network access policy for the container."
+    },
+    {
+      "name": "ContainerNetworkPolicyDisabledParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "disabled"
+          },
+          "required": true,
+          "default": "disabled",
+          "description": "Disable outbound network access. Always `disabled`."
+        }
+      ]
+    },
+    {
+      "name": "ContainerNetworkPolicyAllowlistParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "allowlist"
+          },
+          "required": true,
+          "default": "allowlist",
+          "description": "Allow outbound network access only to specified domains. Always `allowlist`."
+        },
+        {
+          "name": "allowed_domains",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "A list of allowed domains when type is `allowlist`."
+        },
+        {
+          "name": "domain_secrets",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ContainerNetworkPolicyDomainSecretParam"
+            }
+          },
+          "required": false,
+          "description": "Optional domain-scoped secrets for allowlisted domains."
+        }
+      ]
+    },
+    {
+      "name": "ContainerNetworkPolicyDomainSecretParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "domain",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The domain associated with the secret."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the secret to inject for the domain."
+        },
+        {
+          "name": "value",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The secret value to inject for the domain."
+        }
+      ]
+    },
+    {
+      "name": "ImageGenTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "image_generation"
+          },
+          "required": true,
+          "description": "The type of the image generation tool. Always `image_generation`.\n"
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenToolModel"
+          },
+          "required": false
+        },
+        {
+          "name": "quality",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenToolQuality"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "The quality of the generated image. One of `low`, `medium`, `high`,\nor `auto`. Default: `auto`.\n"
+        },
+        {
+          "name": "size",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenToolSize"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`, arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum supported resolution is `3840x2160`. The requested size must also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`."
+        },
+        {
+          "name": "output_format",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenToolOutputFormat"
+          },
+          "required": false,
+          "default": "png",
+          "description": "The output format of the generated image. One of `png`, `webp`, or\n`jpeg`. Default: `png`.\n"
+        },
+        {
+          "name": "output_compression",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "default": 100,
+          "description": "Compression level for the output image. Default: 100.\n"
+        },
+        {
+          "name": "moderation",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenToolModeration"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Moderation level for the generated image. Default: `auto`.\n"
+        },
+        {
+          "name": "background",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenToolBackground"
+          },
+          "required": false,
+          "default": "auto",
+          "description": "Background type for the generated image. One of `transparent`,\n`opaque`, or `auto`. Default: `auto`.\n"
+        },
+        {
+          "name": "input_fidelity",
+          "type": {
+            "kind": "ref",
+            "name": "InputFidelity",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "input_image_mask",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenToolInputImageMask"
+          },
+          "required": false,
+          "description": "Optional mask for inpainting. Contains `image_url`\n(string, optional) and `file_id` (string, optional).\n"
+        },
+        {
+          "name": "partial_images",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "default": 0,
+          "description": "Number of partial images to generate in streaming mode, from 0 (default value) to 3.\n"
+        },
+        {
+          "name": "action",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenActionEnum"
+          },
+          "required": false
+        }
+      ],
+      "description": "A tool that generates images using the GPT image models.\n"
+    },
+    {
+      "name": "ImageGenToolModel",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "ImageGenToolModelString"
+        }
+      ]
+    },
+    {
+      "name": "ImageGenToolModelString",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "gpt-image-1"
+        },
+        {
+          "value": "gpt-image-1-mini"
+        },
+        {
+          "value": "gpt-image-1.5"
+        }
+      ],
+      "description": "The image generation model to use. Default: `gpt-image-1`.\n"
+    },
+    {
+      "name": "ImageGenToolQuality",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        },
+        {
+          "value": "auto"
+        }
+      ],
+      "description": "The quality of the generated image. One of `low`, `medium`, `high`,\nor `auto`. Default: `auto`.\n"
+    },
+    {
+      "name": "ImageGenToolSize",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "ImageGenToolSizeString"
+        }
+      ],
+      "description": "The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`, arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum supported resolution is `3840x2160`. The requested size must also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`."
+    },
+    {
+      "name": "ImageGenToolSizeString",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "1024x1024"
+        },
+        {
+          "value": "1024x1536"
+        },
+        {
+          "value": "1536x1024"
+        },
+        {
+          "value": "auto"
+        }
+      ]
+    },
+    {
+      "name": "ImageGenToolOutputFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "png"
+        },
+        {
+          "value": "webp"
+        },
+        {
+          "value": "jpeg"
+        }
+      ],
+      "description": "The output format of the generated image. One of `png`, `webp`, or\n`jpeg`. Default: `png`.\n"
+    },
+    {
+      "name": "ImageGenToolModeration",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "auto"
+        },
+        {
+          "value": "low"
+        }
+      ],
+      "description": "Moderation level for the generated image. Default: `auto`.\n"
+    },
+    {
+      "name": "ImageGenToolBackground",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "transparent"
+        },
+        {
+          "value": "opaque"
+        },
+        {
+          "value": "auto"
+        }
+      ],
+      "description": "Background type for the generated image. One of `transparent`,\n`opaque`, or `auto`. Default: `auto`.\n"
+    },
+    {
+      "name": "InputFidelity",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "high"
+        },
+        {
+          "value": "low"
+        }
+      ],
+      "description": "Control how much effort the model will exert to match the style and features, especially facial features, of input images. This parameter is only supported for `gpt-image-1` and `gpt-image-1.5` and later models, unsupported for `gpt-image-1-mini`. Supports `high` and `low`. Defaults to `low`."
+    },
+    {
+      "name": "ImageGenToolInputImageMask",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "image_url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Base64-encoded mask image.\n"
+        },
+        {
+          "name": "file_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "File ID for the mask image.\n"
+        }
+      ],
+      "description": "Optional mask for inpainting. Contains `image_url`\n(string, optional) and `file_id` (string, optional).\n"
+    },
+    {
+      "name": "ImageGenActionEnum",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "generate"
+        },
+        {
+          "value": "edit"
+        },
+        {
+          "value": "auto"
+        }
+      ]
+    },
+    {
+      "name": "LocalShellToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "local_shell"
+          },
+          "required": true,
+          "default": "local_shell",
+          "description": "The type of the local shell tool. Always `local_shell`."
+        }
+      ],
+      "description": "A tool that allows the model to execute shell commands in a local environment."
+    },
+    {
+      "name": "FunctionShellToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "shell"
+          },
+          "required": true,
+          "default": "shell",
+          "description": "The type of the shell tool. Always `shell`."
+        },
+        {
+          "name": "environment",
+          "type": {
+            "kind": "ref",
+            "name": "FunctionShellToolParamEnvironment",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A tool that allows the model to execute shell commands."
+    },
+    {
+      "name": "FunctionShellToolParamEnvironment",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ContainerAutoParam"
+        },
+        {
+          "kind": "ref",
+          "name": "LocalEnvironmentParam"
+        },
+        {
+          "kind": "ref",
+          "name": "ContainerReferenceParam"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "container_auto": "ContainerAutoParam",
+          "local": "LocalEnvironmentParam",
+          "container_reference": "ContainerReferenceParam"
+        }
+      }
+    },
+    {
+      "name": "ContainerAutoParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "container_auto"
+          },
+          "required": true,
+          "default": "container_auto",
+          "description": "Automatically creates a container for this request"
+        },
+        {
+          "name": "file_ids",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "An optional list of uploaded files to make available to your code."
+        },
+        {
+          "name": "memory_limit",
+          "type": {
+            "kind": "ref",
+            "name": "ContainerMemoryLimit",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "network_policy",
+          "type": {
+            "kind": "ref",
+            "name": "AutoCodeInterpreterToolParamNetworkPolicy"
+          },
+          "required": false,
+          "description": "Network access policy for the container."
+        },
+        {
+          "name": "skills",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ContainerAutoParamSkillsItem"
+            }
+          },
+          "required": false,
+          "description": "An optional list of skills referenced by id or inline data."
+        }
+      ]
+    },
+    {
+      "name": "ContainerAutoParamSkillsItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "SkillReferenceParam"
+        },
+        {
+          "kind": "ref",
+          "name": "InlineSkillParam"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "skill_reference": "SkillReferenceParam",
+          "inline": "InlineSkillParam"
+        }
+      }
+    },
+    {
+      "name": "SkillReferenceParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "skill_reference"
+          },
+          "required": true,
+          "default": "skill_reference",
+          "description": "References a skill created with the /v1/skills endpoint."
+        },
+        {
+          "name": "skill_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the referenced skill."
+        },
+        {
+          "name": "version",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Optional skill version. Use a positive integer or 'latest'. Omit for default."
+        }
+      ]
+    },
+    {
+      "name": "InlineSkillParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "inline"
+          },
+          "required": true,
+          "default": "inline",
+          "description": "Defines an inline skill for this request."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the skill."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The description of the skill."
+        },
+        {
+          "name": "source",
+          "type": {
+            "kind": "ref",
+            "name": "InlineSkillSourceParam"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "InlineSkillSourceParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "base64"
+          },
+          "required": true,
+          "default": "base64",
+          "description": "The type of the inline skill source. Must be `base64`."
+        },
+        {
+          "name": "media_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "application/zip"
+          },
+          "required": true,
+          "default": "application/zip",
+          "description": "The media type of the inline skill payload. Must be `application/zip`."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Base64-encoded skill zip bundle."
+        }
+      ],
+      "description": "Inline skill payload"
+    },
+    {
+      "name": "LocalEnvironmentParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "local"
+          },
+          "required": true,
+          "default": "local",
+          "description": "Use a local computer environment."
+        },
+        {
+          "name": "skills",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "LocalSkillParam"
+            }
+          },
+          "required": false,
+          "description": "An optional list of skills."
+        }
+      ]
+    },
+    {
+      "name": "LocalSkillParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the skill."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The description of the skill."
+        },
+        {
+          "name": "path",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The path to the directory containing the skill."
+        }
+      ]
+    },
+    {
+      "name": "ContainerReferenceParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "container_reference"
+          },
+          "required": true,
+          "default": "container_reference",
+          "description": "References a container created with the /v1/containers endpoint"
+        },
+        {
+          "name": "container_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the referenced container."
+        }
+      ]
+    },
+    {
+      "name": "CustomToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "custom"
+          },
+          "required": true,
+          "default": "custom",
+          "description": "The type of the custom tool. Always `custom`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the custom tool, used to identify it in tool calls."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Optional description of the custom tool, used to provide more context."
+        },
+        {
+          "name": "format",
+          "type": {
+            "kind": "ref",
+            "name": "CustomToolParamFormat"
+          },
+          "required": false,
+          "description": "The input format for the custom tool. Default is unconstrained text."
+        },
+        {
+          "name": "defer_loading",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "Whether this tool should be deferred and discovered via tool search."
+        }
+      ],
+      "description": "A custom tool that processes input using a specified format. Learn more about   [custom tools](/docs/guides/function-calling#custom-tools)"
+    },
+    {
+      "name": "CustomToolParamFormat",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "CustomTextFormatParam"
+        },
+        {
+          "kind": "ref",
+          "name": "CustomGrammarFormatParam"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "text": "CustomTextFormatParam",
+          "grammar": "CustomGrammarFormatParam"
+        }
+      },
+      "description": "The input format for the custom tool. Default is unconstrained text."
+    },
+    {
+      "name": "CustomTextFormatParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "text"
+          },
+          "required": true,
+          "default": "text",
+          "description": "Unconstrained text format. Always `text`."
+        }
+      ],
+      "description": "Unconstrained free-form text."
+    },
+    {
+      "name": "CustomGrammarFormatParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "grammar"
+          },
+          "required": true,
+          "default": "grammar",
+          "description": "Grammar format. Always `grammar`."
+        },
+        {
+          "name": "syntax",
+          "type": {
+            "kind": "ref",
+            "name": "GrammarSyntax1"
+          },
+          "required": true
+        },
+        {
+          "name": "definition",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The grammar definition."
+        }
+      ],
+      "description": "A grammar defined by the user."
+    },
+    {
+      "name": "GrammarSyntax1",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "lark"
+        },
+        {
+          "value": "regex"
+        }
+      ]
+    },
+    {
+      "name": "NamespaceToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "namespace"
+          },
+          "required": true,
+          "default": "namespace",
+          "description": "The type of the tool. Always `namespace`."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The namespace name used in tool calls (for example, `crm`)."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A description of the namespace shown to the model."
+        },
+        {
+          "name": "tools",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "NamespaceToolParamToolsItem"
+            }
+          },
+          "required": true,
+          "description": "The function/custom tools available inside this namespace."
+        }
+      ],
+      "description": "Groups function/custom tools under a shared namespace."
+    },
+    {
+      "name": "NamespaceToolParamToolsItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "FunctionToolParam"
+        },
+        {
+          "kind": "ref",
+          "name": "CustomToolParam"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "function": "FunctionToolParam",
+          "custom": "CustomToolParam"
+        }
+      },
+      "description": "A function or custom tool that belongs to a namespace."
+    },
+    {
+      "name": "FunctionToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "parameters",
+          "type": {
+            "kind": "ref",
+            "name": "EmptyModelParam",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "strict",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "function"
+          },
+          "required": true,
+          "default": "function"
+        },
+        {
+          "name": "defer_loading",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "Whether this function should be deferred and discovered via tool search."
+        }
+      ]
+    },
+    {
+      "name": "EmptyModelParam",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "any"
+        }
+      }
+    },
+    {
+      "name": "ToolSearchToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "tool_search"
+          },
+          "required": true,
+          "default": "tool_search",
+          "description": "The type of the tool. Always `tool_search`."
+        },
+        {
+          "name": "execution",
+          "type": {
+            "kind": "ref",
+            "name": "ToolSearchExecutionType"
+          },
+          "required": false
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "parameters",
+          "type": {
+            "kind": "ref",
+            "name": "EmptyModelParam",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "Hosted or BYOT tool search configuration for deferred tools."
+    },
+    {
+      "name": "ToolSearchExecutionType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "server"
+        },
+        {
+          "value": "client"
+        }
+      ]
+    },
+    {
+      "name": "WebSearchPreviewTool",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "WebSearchPreviewToolType"
+          },
+          "required": true,
+          "default": "web_search_preview",
+          "description": "The type of the web search tool. One of `web_search_preview` or `web_search_preview_2025_03_11`."
+        },
+        {
+          "name": "user_location",
+          "type": {
+            "kind": "ref",
+            "name": "ApproximateLocation",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "search_context_size",
+          "type": {
+            "kind": "ref",
+            "name": "SearchContextSize"
+          },
+          "required": false
+        },
+        {
+          "name": "search_content_types",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "SearchContentType"
+            }
+          },
+          "required": false
+        }
+      ],
+      "description": "This tool searches the web for relevant results to use in a response. Learn more about the [web search tool](https://platform.openai.com/docs/guides/tools-web-search)."
+    },
+    {
+      "name": "WebSearchPreviewToolType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "web_search_preview"
+        },
+        {
+          "value": "web_search_preview_2025_03_11"
+        }
+      ],
+      "description": "The type of the web search tool. One of `web_search_preview` or `web_search_preview_2025_03_11`."
+    },
+    {
+      "name": "ApproximateLocation",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "approximate"
+          },
+          "required": true,
+          "default": "approximate",
+          "description": "The type of location approximation. Always `approximate`."
+        },
+        {
+          "name": "country",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "region",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "city",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "timezone",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "SearchContextSize",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        }
+      ]
+    },
+    {
+      "name": "SearchContentType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "text"
+        },
+        {
+          "value": "image"
+        }
+      ]
+    },
+    {
+      "name": "ApplyPatchToolParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "apply_patch"
+          },
+          "required": true,
+          "default": "apply_patch",
+          "description": "The type of the tool. Always `apply_patch`."
+        }
+      ],
+      "description": "Allows the assistant to create, delete, or update files using unified diffs."
+    },
+    {
+      "name": "CreateEvalResponsesRunDataSourceSamplingParamsText",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "format",
+          "type": {
+            "kind": "ref",
+            "name": "TextResponseFormatConfiguration"
+          },
+          "required": false
+        }
+      ],
+      "description": "Configuration options for a text response from the model. Can be plain\ntext or structured JSON data. Learn more:\n- [Text inputs and outputs](/docs/guides/text)\n- [Structured Outputs](/docs/guides/structured-outputs)\n"
+    },
+    {
+      "name": "TextResponseFormatConfiguration",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ResponseFormatText"
+        },
+        {
+          "kind": "ref",
+          "name": "TextResponseFormatJsonSchema"
+        },
+        {
+          "kind": "ref",
+          "name": "ResponseFormatJsonObject"
+        }
+      ],
+      "description": "An object specifying the format that the model must output.\n\nConfiguring `{ \"type\": \"json_schema\" }` enables Structured Outputs, \nwhich ensures the model will match your supplied JSON schema. Learn more in the \n[Structured Outputs guide](/docs/guides/structured-outputs).\n\nThe default format is `{ \"type\": \"text\" }` with no additional options.\n\n**Not recommended for gpt-4o and newer models:**\n\nSetting to `{ \"type\": \"json_object\" }` enables the older JSON mode, which\nensures the message the model generates is valid JSON. Using `json_schema`\nis preferred for models that support it.\n"
+    },
+    {
+      "name": "TextResponseFormatJsonSchema",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "json_schema"
+          },
+          "required": true,
+          "description": "The type of response format being defined. Always `json_schema`."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "A description of what the response format is for, used by the model to\ndetermine how to respond in the format.\n"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the response format. Must be a-z, A-Z, 0-9, or contain\nunderscores and dashes, with a maximum length of 64.\n"
+        },
+        {
+          "name": "schema",
+          "type": {
+            "kind": "ref",
+            "name": "ResponseFormatJsonSchemaSchema"
+          },
+          "required": true
+        },
+        {
+          "name": "strict",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "JSON Schema response format. Used to generate structured JSON responses.\nLearn more about [Structured Outputs](/docs/guides/structured-outputs).\n"
+    },
+    {
+      "name": "CreateEvalResponsesRunDataSourceSource",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "EvalJsonlFileContentSource"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalJsonlFileIdSource"
+        },
+        {
+          "kind": "ref",
+          "name": "EvalResponsesSource"
+        }
+      ],
+      "description": "Determines what populates the `item` namespace in this run's data source."
+    },
+    {
+      "name": "EvalResponsesSource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "responses"
+          },
+          "required": true,
+          "description": "The type of run data source. Always `responses`."
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "map",
+            "values": {
+              "kind": "any"
+            },
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "instructions_search",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "created_after",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "created_before",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "reasoning_effort",
+          "type": {
+            "kind": "ref",
+            "name": "ReasoningEffort",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "temperature",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "top_p",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "users",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            },
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "tools",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            },
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "A EvalResponsesSource object describing a run data source configuration.\n"
+    },
+    {
+      "name": "EvalApiError",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "code",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The error code."
+        },
+        {
+          "name": "message",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The error message."
+        }
+      ],
+      "description": "An object representing an error response from the Eval API.\n"
+    }
+  ],
+  "resources": [
+    {
+      "name": "evals",
+      "resources": [
+        {
+          "name": "runs",
+          "methods": [
+            {
+              "action": "list",
+              "httpMethod": "get",
+              "path": "/evals/{eval_id}/runs",
+              "operationId": "getEvalRuns",
+              "description": "Get a list of runs for an evaluation.\n",
+              "pathParams": [
+                {
+                  "name": "eval_id",
+                  "type": {
+                    "kind": "scalar",
+                    "scalar": "string"
+                  },
+                  "required": true,
+                  "description": "The ID of the evaluation to retrieve runs for."
+                }
+              ],
+              "queryParams": [
+                {
+                  "name": "after",
+                  "type": {
+                    "kind": "scalar",
+                    "scalar": "string"
+                  },
+                  "required": false,
+                  "description": "Identifier for the last run from the previous pagination request."
+                },
+                {
+                  "name": "limit",
+                  "type": {
+                    "kind": "scalar",
+                    "scalar": "integer"
+                  },
+                  "required": false,
+                  "description": "Number of runs to retrieve.",
+                  "default": 20
+                },
+                {
+                  "name": "order",
+                  "type": {
+                    "kind": "ref",
+                    "name": "EvalsRunsListOrder"
+                  },
+                  "required": false,
+                  "description": "Sort order for runs by timestamp. Use `asc` for ascending order or `desc` for descending order. Defaults to `asc`.",
+                  "default": "asc"
+                },
+                {
+                  "name": "status",
+                  "type": {
+                    "kind": "ref",
+                    "name": "EvalsRunsListStatus"
+                  },
+                  "required": false,
+                  "description": "Filter runs by status. One of `queued` | `in_progress` | `failed` | `completed` | `canceled`."
+                }
+              ],
+              "responses": [
+                {
+                  "status": "200",
+                  "description": "A list of runs for the evaluation",
+                  "contentType": "application/json",
+                  "type": {
+                    "kind": "ref",
+                    "name": "EvalRunList"
+                  }
+                }
+              ],
+              "primaryResponse": {
+                "kind": "ref",
+                "name": "EvalRunList"
+              },
+              "pagination": {
+                "style": "cursor",
+                "itemsField": "data",
+                "nextField": "has_more",
+                "itemType": {
+                  "kind": "ref",
+                  "name": "EvalRun"
+                },
+                "cursorParam": "after",
+                "limitParam": "limit"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

@@ -1,0 +1,342 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "AdminOrganizationProjectsGroupsListOrder",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "asc"
+        },
+        {
+          "value": "desc"
+        }
+      ]
+    },
+    {
+      "name": "ProjectGroupListResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "list"
+          },
+          "required": true,
+          "description": "Always `list`."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ProjectGroup"
+            }
+          },
+          "required": true,
+          "description": "Project group memberships returned in the current page."
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether additional project group memberships are available."
+        },
+        {
+          "name": "next",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true,
+          "description": "Cursor to fetch the next page of results, or `null` when there are no more results."
+        }
+      ],
+      "description": "Paginated list of groups that have access to a project."
+    },
+    {
+      "name": "ProjectGroup",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "project.group"
+          },
+          "required": true,
+          "description": "Always `project.group`."
+        },
+        {
+          "name": "project_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the project."
+        },
+        {
+          "name": "group_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier of the group that has access to the project."
+        },
+        {
+          "name": "group_name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Display name of the group."
+        },
+        {
+          "name": "group_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The type of the group."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the group was granted project access."
+        }
+      ],
+      "description": "Details about a group's membership in a project."
+    }
+  ],
+  "resources": [
+    {
+      "name": "admin",
+      "resources": [
+        {
+          "name": "organization",
+          "resources": [
+            {
+              "name": "projects",
+              "resources": [
+                {
+                  "name": "groups",
+                  "methods": [
+                    {
+                      "action": "list",
+                      "httpMethod": "get",
+                      "path": "/organization/projects/{project_id}/groups",
+                      "operationId": "list-project-groups",
+                      "description": "Lists the groups that have access to a project.",
+                      "pathParams": [
+                        {
+                          "name": "project_id",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": true,
+                          "description": "The ID of the project to inspect."
+                        }
+                      ],
+                      "queryParams": [
+                        {
+                          "name": "limit",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "integer"
+                          },
+                          "required": false,
+                          "description": "A limit on the number of project groups to return. Defaults to 20.",
+                          "default": 20
+                        },
+                        {
+                          "name": "after",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": false,
+                          "description": "Cursor for pagination. Provide the ID of the last group from the previous response to fetch the next page."
+                        },
+                        {
+                          "name": "order",
+                          "type": {
+                            "kind": "ref",
+                            "name": "AdminOrganizationProjectsGroupsListOrder"
+                          },
+                          "required": false,
+                          "description": "Sort order for the returned groups.",
+                          "default": "asc"
+                        }
+                      ],
+                      "responses": [
+                        {
+                          "status": "200",
+                          "description": "Project groups listed successfully.",
+                          "contentType": "application/json",
+                          "type": {
+                            "kind": "ref",
+                            "name": "ProjectGroupListResource"
+                          }
+                        }
+                      ],
+                      "primaryResponse": {
+                        "kind": "ref",
+                        "name": "ProjectGroupListResource"
+                      },
+                      "pagination": {
+                        "style": "cursor",
+                        "itemsField": "data",
+                        "nextField": "has_more",
+                        "itemType": {
+                          "kind": "ref",
+                          "name": "ProjectGroup"
+                        },
+                        "cursorParam": "after",
+                        "limitParam": "limit"
+                      },
+                      "security": [
+                        {
+                          "type": "http",
+                          "kind": "bearer",
+                          "schemeName": "AdminApiKeyAuth",
+                          "scheme": "bearer"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

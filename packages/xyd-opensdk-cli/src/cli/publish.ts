@@ -10,6 +10,7 @@ import { publishJava } from '@xyd-js/opensdk-java';
 import { publishNode } from '@xyd-js/opensdk-node';
 import { publishPython } from '@xyd-js/opensdk-python';
 import { publishRuby } from '@xyd-js/opensdk-ruby';
+import { publishRust } from '@xyd-js/opensdk-rust';
 
 import type { ResolvedConfig } from './config/types';
 
@@ -30,6 +31,7 @@ const PUBLISHERS: Record<string, (dir: string, opts: EmitterPublishOptions) => v
   ruby: publishRuby,
   java: publishJava,
   dotnet: publishDotnet,
+  rust: publishRust,
 };
 
 /** Package + publish ONE already-generated SDK at `dir` for `lang` via its emitter's publisher. */

@@ -307,6 +307,48 @@ export function javaPublishAdapter(): PublishAdapter {
 }
 
 /**
+ * Rust → local dir feed. Registry env: PUBLISH_CARGO_REGISTRY (a directory).
+ * crates.io has no trivial anonymous local registry, so this is reduced-fidelity
+ * (like the Go adapter): `publishRust` packages the crate and the consumer
+ * references it via a `path` dependency — proving the crate packages + compiles +
+ * links. Upgrading to a real sparse registry (ktra / cargo-http-registry) is a
+ * follow-up.
+ */
+export function rustPublishAdapter(): PublishAdapter {
+  return {
+    lang: 'rust',
+    registryEnv: 'PUBLISH_CARGO_REGISTRY',
+    toolchainProbe: 'cargo --version',
+    coord(dir) {
+      const toml = fs.readFileSync(path.join(dir, 'Cargo.toml'), 'utf8');
+      const name = toml.match(/^name\s*=\s*"([^"]+)"/m)?.[1] ?? 'sdk';
+      return { pkg: name };
+    },
+    consume(ctx) {
+      // A consumer crate that depends on the generated SDK via a path dependency
+      // — `cargo build` succeeding proves the crate compiles + links + exports its
+      // public API (Client).
+      const cargoToml = `[package]
+name = "consumer"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+${ctx.coord.pkg} = { path = ${JSON.stringify(ctx.projectDir)} }
+`;
+      fs.writeFileSync(path.join(ctx.consumerDir, 'Cargo.toml'), cargoToml);
+      const src = path.join(ctx.consumerDir, 'src');
+      fs.mkdirSync(src, { recursive: true });
+      fs.writeFileSync(
+        path.join(src, 'main.rs'),
+        `fn main() { let _ = ${ctx.coord.pkg.replace(/-/g, '_')}::Client::builder(); println!("ok"); }\n`,
+      );
+      run('cargo', ['build'], ctx.consumerDir);
+    },
+  };
+}
+
+/**
  * Go → file:// GOPROXY. Registry env: PUBLISH_GOPROXY_DIR (a directory the module
  * is tagged + staged into). Go has no registry: publish = git tag; the consumer
  * `go get`s the tagged version through a local proxy.

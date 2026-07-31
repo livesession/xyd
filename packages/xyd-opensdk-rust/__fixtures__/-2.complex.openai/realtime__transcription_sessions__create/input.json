@@ -1,0 +1,562 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "RealtimeTranscriptionSessionCreateRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "turn_detection",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranscriptionSessionCreateRequestTurnDetection"
+          },
+          "required": false,
+          "description": "Configuration for turn detection. Can be set to `null` to turn off. Server VAD means that the model will detect the start and end of speech based on audio volume and respond at the end of user speech.\n"
+        },
+        {
+          "name": "input_audio_noise_reduction",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranscriptionSessionCreateRequestInputAudioNoiseReduction"
+          },
+          "required": false,
+          "default": null,
+          "description": "Configuration for input audio noise reduction. This can be set to `null` to turn off.\nNoise reduction filters audio added to the input audio buffer before it is sent to VAD and the model.\nFiltering the audio can improve VAD and turn detection accuracy (reducing false positives) and model performance by improving perception of the input audio.\n"
+        },
+        {
+          "name": "input_audio_format",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranscriptionSessionCreateRequestInputAudioFormat"
+          },
+          "required": false,
+          "default": "pcm16",
+          "description": "The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.\nFor `pcm16`, input audio must be 16-bit PCM at a 24kHz sample rate,\nsingle channel (mono), and little-endian byte order.\n"
+        },
+        {
+          "name": "input_audio_transcription",
+          "type": {
+            "kind": "ref",
+            "name": "AudioTranscription"
+          },
+          "required": false
+        },
+        {
+          "name": "include",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string",
+              "const": "item.input_audio_transcription.logprobs"
+            }
+          },
+          "required": false,
+          "description": "The set of items to include in the transcription. Current available items are:\n`item.input_audio_transcription.logprobs`\n"
+        }
+      ],
+      "description": "Realtime transcription session object configuration."
+    },
+    {
+      "name": "RealtimeTranscriptionSessionCreateRequestTurnDetection",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "server_vad"
+          },
+          "required": false,
+          "description": "Type of turn detection. Only `server_vad` is currently supported for transcription sessions.\n"
+        },
+        {
+          "name": "threshold",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": false,
+          "description": "Activation threshold for VAD (0.0 to 1.0), this defaults to 0.5. A\nhigher threshold will require louder audio to activate the model, and\nthus might perform better in noisy environments.\n"
+        },
+        {
+          "name": "prefix_padding_ms",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "Amount of audio to include before the VAD detected speech (in\nmilliseconds). Defaults to 300ms.\n"
+        },
+        {
+          "name": "silence_duration_ms",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "Duration of silence to detect speech stop (in milliseconds). Defaults\nto 500ms. With shorter values the model will respond more quickly,\nbut may jump in on short pauses from the user.\n"
+        }
+      ],
+      "description": "Configuration for turn detection. Can be set to `null` to turn off. Server VAD means that the model will detect the start and end of speech based on audio volume and respond at the end of user speech.\n"
+    },
+    {
+      "name": "RealtimeTranscriptionSessionCreateRequestInputAudioNoiseReduction",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "NoiseReductionType"
+          },
+          "required": false
+        }
+      ],
+      "description": "Configuration for input audio noise reduction. This can be set to `null` to turn off.\nNoise reduction filters audio added to the input audio buffer before it is sent to VAD and the model.\nFiltering the audio can improve VAD and turn detection accuracy (reducing false positives) and model performance by improving perception of the input audio.\n"
+    },
+    {
+      "name": "NoiseReductionType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "near_field"
+        },
+        {
+          "value": "far_field"
+        }
+      ],
+      "description": "Type of noise reduction. `near_field` is for close-talking microphones such as headphones, `far_field` is for far-field microphones such as laptop or conference room microphones.\n"
+    },
+    {
+      "name": "RealtimeTranscriptionSessionCreateRequestInputAudioFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "pcm16"
+        },
+        {
+          "value": "g711_ulaw"
+        },
+        {
+          "value": "g711_alaw"
+        }
+      ],
+      "description": "The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.\nFor `pcm16`, input audio must be 16-bit PCM at a 24kHz sample rate,\nsingle channel (mono), and little-endian byte order.\n"
+    },
+    {
+      "name": "AudioTranscription",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "model",
+          "type": {
+            "kind": "ref",
+            "name": "AudioTranscriptionModel"
+          },
+          "required": false,
+          "description": "The model to use for transcription. Current options are `whisper-1`, `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-transcribe`, `gpt-4o-transcribe-diarize`, and `gpt-realtime-whisper`. Use `gpt-4o-transcribe-diarize` when you need diarization with speaker labels.\n"
+        },
+        {
+          "name": "language",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The language of the input audio. Supplying the input language in\n[ISO-639-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) (e.g. `en`) format\nwill improve accuracy and latency.\n"
+        },
+        {
+          "name": "prompt",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "An optional text to guide the model's style or continue a previous audio\nsegment.\nFor `whisper-1`, the [prompt is a list of keywords](/docs/guides/speech-to-text#prompting).\nFor `gpt-4o-transcribe` models (excluding `gpt-4o-transcribe-diarize`), the prompt is a free text string, for example \"expect words related to technology\".\nPrompt is not supported with `gpt-realtime-whisper` in GA Realtime sessions.\n"
+        },
+        {
+          "name": "delay",
+          "type": {
+            "kind": "ref",
+            "name": "AudioTranscriptionDelay"
+          },
+          "required": false,
+          "description": "Controls how long the model waits before emitting transcription text.\nHigher values can improve transcription accuracy at the cost of latency.\nOnly supported with `gpt-realtime-whisper` in GA Realtime sessions.\n"
+        }
+      ]
+    },
+    {
+      "name": "AudioTranscriptionModel",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "AudioTranscriptionModelString"
+        }
+      ],
+      "description": "The model to use for transcription. Current options are `whisper-1`, `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-transcribe`, `gpt-4o-transcribe-diarize`, and `gpt-realtime-whisper`. Use `gpt-4o-transcribe-diarize` when you need diarization with speaker labels.\n"
+    },
+    {
+      "name": "AudioTranscriptionModelString",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "whisper-1"
+        },
+        {
+          "value": "gpt-4o-mini-transcribe"
+        },
+        {
+          "value": "gpt-4o-mini-transcribe-2025-12-15"
+        },
+        {
+          "value": "gpt-4o-transcribe"
+        },
+        {
+          "value": "gpt-4o-transcribe-diarize"
+        },
+        {
+          "value": "gpt-realtime-whisper"
+        }
+      ]
+    },
+    {
+      "name": "AudioTranscriptionDelay",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "minimal"
+        },
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        },
+        {
+          "value": "xhigh"
+        }
+      ],
+      "description": "Controls how long the model waits before emitting transcription text.\nHigher values can improve transcription accuracy at the cost of latency.\nOnly supported with `gpt-realtime-whisper` in GA Realtime sessions.\n"
+    },
+    {
+      "name": "RealtimeTranscriptionSessionCreateResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "client_secret",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranscriptionSessionCreateResponseClientSecret"
+          },
+          "required": true,
+          "description": "Ephemeral key returned by the API. Only present when the session is\ncreated on the server via REST API.\n"
+        },
+        {
+          "name": "modalities",
+          "type": {
+            "kind": "any"
+          },
+          "required": false,
+          "description": "The set of modalities the model can respond with. To disable audio,\nset this to [\"text\"].\n"
+        },
+        {
+          "name": "input_audio_format",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.\n"
+        },
+        {
+          "name": "input_audio_transcription",
+          "type": {
+            "kind": "ref",
+            "name": "AudioTranscriptionResponse"
+          },
+          "required": false
+        },
+        {
+          "name": "turn_detection",
+          "type": {
+            "kind": "ref",
+            "name": "RealtimeTranscriptionSessionCreateResponseTurnDetection"
+          },
+          "required": false,
+          "description": "Configuration for turn detection. Can be set to `null` to turn off. Server\nVAD means that the model will detect the start and end of speech based on\naudio volume and respond at the end of user speech.\n"
+        }
+      ],
+      "description": "A new Realtime transcription session configuration.\n\nWhen a session is created on the server via REST API, the session object\nalso contains an ephemeral key. Default TTL for keys is 10 minutes. This\nproperty is not present when a session is updated via the WebSocket API.\n"
+    },
+    {
+      "name": "RealtimeTranscriptionSessionCreateResponseClientSecret",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "value",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Ephemeral key usable in client environments to authenticate connections\nto the Realtime API. Use this in client-side environments rather than\na standard API token, which should only be used server-side.\n"
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Timestamp for when the token expires. Currently, all tokens expire\nafter one minute.\n"
+        }
+      ],
+      "description": "Ephemeral key returned by the API. Only present when the session is\ncreated on the server via REST API.\n"
+    },
+    {
+      "name": "AudioTranscriptionResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "model",
+          "type": {
+            "kind": "ref",
+            "name": "AudioTranscriptionModel"
+          },
+          "required": false,
+          "description": "The model used for transcription. Current options are `whisper-1`, `gpt-4o-mini-transcribe`, `gpt-4o-mini-transcribe-2025-12-15`, `gpt-4o-transcribe`, `gpt-4o-transcribe-diarize`, and `gpt-realtime-whisper`.\n"
+        },
+        {
+          "name": "language",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The language of the input audio.\n"
+        },
+        {
+          "name": "prompt",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The prompt configured for input audio transcription, when present.\n"
+        }
+      ]
+    },
+    {
+      "name": "RealtimeTranscriptionSessionCreateResponseTurnDetection",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Type of turn detection, only `server_vad` is currently supported.\n"
+        },
+        {
+          "name": "threshold",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": false,
+          "description": "Activation threshold for VAD (0.0 to 1.0), this defaults to 0.5. A\nhigher threshold will require louder audio to activate the model, and\nthus might perform better in noisy environments.\n"
+        },
+        {
+          "name": "prefix_padding_ms",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "Amount of audio to include before the VAD detected speech (in\nmilliseconds). Defaults to 300ms.\n"
+        },
+        {
+          "name": "silence_duration_ms",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "Duration of silence to detect speech stop (in milliseconds). Defaults\nto 500ms. With shorter values the model will respond more quickly,\nbut may jump in on short pauses from the user.\n"
+        }
+      ],
+      "description": "Configuration for turn detection. Can be set to `null` to turn off. Server\nVAD means that the model will detect the start and end of speech based on\naudio volume and respond at the end of user speech.\n"
+    }
+  ],
+  "resources": [
+    {
+      "name": "realtime",
+      "resources": [
+        {
+          "name": "transcription-sessions",
+          "methods": [
+            {
+              "action": "create",
+              "httpMethod": "post",
+              "path": "/realtime/transcription_sessions",
+              "operationId": "create-realtime-transcription-session",
+              "description": "Create an ephemeral API token for use in client-side applications with the\nRealtime API specifically for realtime transcriptions. \nCan be configured with the same session parameters as the `transcription_session.update` client event.\n\nIt responds with a session object, plus a `client_secret` key which contains\na usable ephemeral API token that can be used to authenticate browser clients\nfor the Realtime API.\n\nReturns the created Realtime transcription session object, plus an ephemeral key.\n",
+              "requestBody": {
+                "contentType": "application/json",
+                "type": {
+                  "kind": "ref",
+                  "name": "RealtimeTranscriptionSessionCreateRequest"
+                },
+                "required": true,
+                "encoding": "json",
+                "description": "Create an ephemeral API key with the given session configuration."
+              },
+              "responses": [
+                {
+                  "status": "200",
+                  "description": "Session created successfully.",
+                  "contentType": "application/json",
+                  "type": {
+                    "kind": "ref",
+                    "name": "RealtimeTranscriptionSessionCreateResponse"
+                  }
+                }
+              ],
+              "primaryResponse": {
+                "kind": "ref",
+                "name": "RealtimeTranscriptionSessionCreateResponse"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}
