@@ -1,0 +1,789 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "CreateImageRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "prompt",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A text description of the desired image(s). The maximum length is 32000 characters for the GPT image models, 1000 characters for `dall-e-2` and 4000 characters for `dall-e-3`."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "ref",
+            "name": "CreateImageRequestModel",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": "dall-e-2",
+          "description": "The model to use for image generation. One of `dall-e-2`, `dall-e-3`, or a GPT image model (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`). Defaults to `dall-e-2` unless a parameter specific to the GPT image models is used."
+        },
+        {
+          "name": "n",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": 1,
+          "description": "The number of images to generate. Must be between 1 and 10. For `dall-e-3`, only `n=1` is supported."
+        },
+        {
+          "name": "quality",
+          "type": {
+            "kind": "ref",
+            "name": "CreateImageRequestQuality",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": "auto",
+          "description": "The quality of the image that will be generated.\n\n- `auto` (default value) will automatically select the best quality for the given model.\n- `high`, `medium` and `low` are supported for the GPT image models.\n- `hd` and `standard` are supported for `dall-e-3`.\n- `standard` is the only option for `dall-e-2`.\n"
+        },
+        {
+          "name": "response_format",
+          "type": {
+            "kind": "ref",
+            "name": "CreateImageRequestResponseFormat",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": "url",
+          "description": "The format in which generated images with `dall-e-2` and `dall-e-3` are returned. Must be one of `url` or `b64_json`. URLs are only valid for 60 minutes after the image has been generated. This parameter isn't supported for the GPT image models, which always return base64-encoded images."
+        },
+        {
+          "name": "output_format",
+          "type": {
+            "kind": "ref",
+            "name": "CreateImageRequestOutputFormat",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": "png",
+          "description": "The format in which the generated images are returned. This parameter is only supported for the GPT image models. Must be one of `png`, `jpeg`, or `webp`."
+        },
+        {
+          "name": "output_compression",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": 100,
+          "description": "The compression level (0-100%) for the generated images. This parameter is only supported for the GPT image models with the `webp` or `jpeg` output formats, and defaults to 100."
+        },
+        {
+          "name": "stream",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": false,
+          "description": "Generate the image in streaming mode. Defaults to `false`. See the\n[Image generation guide](/docs/guides/image-generation) for more information.\nThis parameter is only supported for the GPT image models.\n"
+        },
+        {
+          "name": "partial_images",
+          "type": {
+            "kind": "ref",
+            "name": "PartialImages"
+          },
+          "required": false
+        },
+        {
+          "name": "size",
+          "type": {
+            "kind": "ref",
+            "name": "CreateImageRequestSize",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": "auto",
+          "description": "The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`, arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum supported resolution is `3840x2160`. The requested size must also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`."
+        },
+        {
+          "name": "moderation",
+          "type": {
+            "kind": "ref",
+            "name": "CreateImageRequestModeration",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": "auto",
+          "description": "Control the content-moderation level for images generated by the GPT image models. Must be either `low` for less restrictive filtering or `auto` (default value)."
+        },
+        {
+          "name": "background",
+          "type": {
+            "kind": "ref",
+            "name": "CreateImageRequestBackground",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": "auto",
+          "description": "Allows to set transparency for the background of the generated image(s).\nThis parameter is only supported for the GPT image models. Must be one of\n`transparent`, `opaque` or `auto` (default value). When `auto` is used, the\nmodel will automatically determine the best background for the image.\n\nIf `transparent`, the output format needs to support transparency, so it\nshould be set to either `png` (default value) or `webp`.\n"
+        },
+        {
+          "name": "style",
+          "type": {
+            "kind": "ref",
+            "name": "CreateImageRequestStyle",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "default": "vivid",
+          "description": "The style of the generated images. This parameter is only supported for `dall-e-3`. Must be one of `vivid` or `natural`. Vivid causes the model to lean towards generating hyper-real and dramatic images. Natural causes the model to produce more natural, less hyper-real looking images."
+        },
+        {
+          "name": "user",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices#end-user-ids).\n"
+        }
+      ]
+    },
+    {
+      "name": "CreateImageRequestModel",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "CreateImageRequestModelString"
+        }
+      ],
+      "description": "The model to use for image generation. One of `dall-e-2`, `dall-e-3`, or a GPT image model (`gpt-image-1`, `gpt-image-1-mini`, `gpt-image-1.5`). Defaults to `dall-e-2` unless a parameter specific to the GPT image models is used."
+    },
+    {
+      "name": "CreateImageRequestModelString",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "gpt-image-1.5"
+        },
+        {
+          "value": "dall-e-2"
+        },
+        {
+          "value": "dall-e-3"
+        },
+        {
+          "value": "gpt-image-1"
+        },
+        {
+          "value": "gpt-image-1-mini"
+        }
+      ]
+    },
+    {
+      "name": "CreateImageRequestQuality",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "standard"
+        },
+        {
+          "value": "hd"
+        },
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        },
+        {
+          "value": "auto"
+        }
+      ],
+      "description": "The quality of the image that will be generated.\n\n- `auto` (default value) will automatically select the best quality for the given model.\n- `high`, `medium` and `low` are supported for the GPT image models.\n- `hd` and `standard` are supported for `dall-e-3`.\n- `standard` is the only option for `dall-e-2`.\n"
+    },
+    {
+      "name": "CreateImageRequestResponseFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "url"
+        },
+        {
+          "value": "b64_json"
+        }
+      ],
+      "description": "The format in which generated images with `dall-e-2` and `dall-e-3` are returned. Must be one of `url` or `b64_json`. URLs are only valid for 60 minutes after the image has been generated. This parameter isn't supported for the GPT image models, which always return base64-encoded images."
+    },
+    {
+      "name": "CreateImageRequestOutputFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "png"
+        },
+        {
+          "value": "jpeg"
+        },
+        {
+          "value": "webp"
+        }
+      ],
+      "description": "The format in which the generated images are returned. This parameter is only supported for the GPT image models. Must be one of `png`, `jpeg`, or `webp`."
+    },
+    {
+      "name": "PartialImages",
+      "kind": "alias",
+      "of": {
+        "kind": "scalar",
+        "scalar": "integer",
+        "nullable": true
+      }
+    },
+    {
+      "name": "CreateImageRequestSize",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "CreateImageRequestSizeString"
+        }
+      ],
+      "description": "The size of the generated images. For `gpt-image-2` and `gpt-image-2-2026-04-21`, arbitrary resolutions are supported as `WIDTHxHEIGHT` strings, for example `1536x864`. Width and height must both be divisible by 16 and the requested aspect ratio must be between 1:3 and 3:1. Resolutions above `2560x1440` are experimental, and the maximum supported resolution is `3840x2160`. The requested size must also satisfy the model's current pixel and edge limits. The standard sizes `1024x1024`, `1536x1024`, and `1024x1536` are supported by the GPT image models; `auto` is supported for models that allow automatic sizing. For `dall-e-2`, use one of `256x256`, `512x512`, or `1024x1024`. For `dall-e-3`, use one of `1024x1024`, `1792x1024`, or `1024x1792`."
+    },
+    {
+      "name": "CreateImageRequestSizeString",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "auto"
+        },
+        {
+          "value": "1024x1024"
+        },
+        {
+          "value": "1536x1024"
+        },
+        {
+          "value": "1024x1536"
+        },
+        {
+          "value": "256x256"
+        },
+        {
+          "value": "512x512"
+        },
+        {
+          "value": "1792x1024"
+        },
+        {
+          "value": "1024x1792"
+        }
+      ]
+    },
+    {
+      "name": "CreateImageRequestModeration",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "auto"
+        }
+      ],
+      "description": "Control the content-moderation level for images generated by the GPT image models. Must be either `low` for less restrictive filtering or `auto` (default value)."
+    },
+    {
+      "name": "CreateImageRequestBackground",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "transparent"
+        },
+        {
+          "value": "opaque"
+        },
+        {
+          "value": "auto"
+        }
+      ],
+      "description": "Allows to set transparency for the background of the generated image(s).\nThis parameter is only supported for the GPT image models. Must be one of\n`transparent`, `opaque` or `auto` (default value). When `auto` is used, the\nmodel will automatically determine the best background for the image.\n\nIf `transparent`, the output format needs to support transparency, so it\nshould be set to either `png` (default value) or `webp`.\n"
+    },
+    {
+      "name": "CreateImageRequestStyle",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "vivid"
+        },
+        {
+          "value": "natural"
+        }
+      ],
+      "description": "The style of the generated images. This parameter is only supported for `dall-e-3`. Must be one of `vivid` or `natural`. Vivid causes the model to lean towards generating hyper-real and dramatic images. Natural causes the model to produce more natural, less hyper-real looking images."
+    },
+    {
+      "name": "ImagesResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "created",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the image was created."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "Image"
+            }
+          },
+          "required": false,
+          "description": "The list of generated images."
+        },
+        {
+          "name": "background",
+          "type": {
+            "kind": "ref",
+            "name": "ImagesResponseBackground"
+          },
+          "required": false,
+          "description": "The background parameter used for the image generation. Either `transparent` or `opaque`."
+        },
+        {
+          "name": "output_format",
+          "type": {
+            "kind": "ref",
+            "name": "ImagesResponseOutputFormat"
+          },
+          "required": false,
+          "description": "The output format of the image generation. Either `png`, `webp`, or `jpeg`."
+        },
+        {
+          "name": "size",
+          "type": {
+            "kind": "ref",
+            "name": "ImagesResponseSize"
+          },
+          "required": false,
+          "description": "The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`."
+        },
+        {
+          "name": "quality",
+          "type": {
+            "kind": "ref",
+            "name": "ImagesResponseQuality"
+          },
+          "required": false,
+          "description": "The quality of the image generated. Either `low`, `medium`, or `high`."
+        },
+        {
+          "name": "usage",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenUsage"
+          },
+          "required": false
+        }
+      ],
+      "description": "The response from the image generation endpoint."
+    },
+    {
+      "name": "Image",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "b64_json",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The base64-encoded JSON of the generated image. Returned by default for the GPT image models, and only present if `response_format` is set to `b64_json` for `dall-e-2` and `dall-e-3`."
+        },
+        {
+          "name": "url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": false,
+          "description": "When using `dall-e-2` or `dall-e-3`, the URL of the generated image if `response_format` is set to `url` (default value). Unsupported for the GPT image models."
+        },
+        {
+          "name": "revised_prompt",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "For `dall-e-3` only, the revised prompt that was used to generate the image."
+        }
+      ],
+      "description": "Represents the content or the URL of an image generated by the OpenAI API."
+    },
+    {
+      "name": "ImagesResponseBackground",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "transparent"
+        },
+        {
+          "value": "opaque"
+        }
+      ],
+      "description": "The background parameter used for the image generation. Either `transparent` or `opaque`."
+    },
+    {
+      "name": "ImagesResponseOutputFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "png"
+        },
+        {
+          "value": "webp"
+        },
+        {
+          "value": "jpeg"
+        }
+      ],
+      "description": "The output format of the image generation. Either `png`, `webp`, or `jpeg`."
+    },
+    {
+      "name": "ImagesResponseSize",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "1024x1024"
+        },
+        {
+          "value": "1024x1536"
+        },
+        {
+          "value": "1536x1024"
+        }
+      ],
+      "description": "The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`."
+    },
+    {
+      "name": "ImagesResponseQuality",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "low"
+        },
+        {
+          "value": "medium"
+        },
+        {
+          "value": "high"
+        }
+      ],
+      "description": "The quality of the image generated. Either `low`, `medium`, or `high`."
+    },
+    {
+      "name": "ImageGenUsage",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "input_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of tokens (images and text) in the input prompt."
+        },
+        {
+          "name": "total_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The total number of tokens (images and text) used for the image generation."
+        },
+        {
+          "name": "output_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of output tokens generated by the model."
+        },
+        {
+          "name": "output_tokens_details",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenOutputTokensDetails"
+          },
+          "required": false
+        },
+        {
+          "name": "input_tokens_details",
+          "type": {
+            "kind": "ref",
+            "name": "ImageGenInputUsageDetails"
+          },
+          "required": true
+        }
+      ],
+      "description": "For `gpt-image-1` only, the token usage information for the image generation."
+    },
+    {
+      "name": "ImageGenOutputTokensDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "image_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of image output tokens generated by the model."
+        },
+        {
+          "name": "text_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of text output tokens generated by the model."
+        }
+      ],
+      "description": "The output token details for the image generation."
+    },
+    {
+      "name": "ImageGenInputUsageDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "text_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of text tokens in the input prompt."
+        },
+        {
+          "name": "image_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of image tokens in the input prompt."
+        }
+      ],
+      "description": "The input tokens detailed information for the image generation."
+    }
+  ],
+  "resources": [
+    {
+      "name": "images",
+      "resources": [
+        {
+          "name": "generations",
+          "methods": [
+            {
+              "action": "create",
+              "httpMethod": "post",
+              "path": "/images/generations",
+              "operationId": "createImage",
+              "description": "Creates an image given a prompt. [Learn more](/docs/guides/images).\n",
+              "requestBody": {
+                "contentType": "application/json",
+                "type": {
+                  "kind": "ref",
+                  "name": "CreateImageRequest"
+                },
+                "required": true,
+                "encoding": "json"
+              },
+              "responses": [
+                {
+                  "status": "200",
+                  "description": "OK",
+                  "contentType": "application/json",
+                  "type": {
+                    "kind": "ref",
+                    "name": "ImagesResponse"
+                  }
+                }
+              ],
+              "primaryResponse": {
+                "kind": "ref",
+                "name": "ImagesResponse"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

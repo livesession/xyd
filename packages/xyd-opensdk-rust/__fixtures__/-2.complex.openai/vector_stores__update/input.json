@@ -1,0 +1,409 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "UpdateVectorStoreRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false,
+          "nullable": true,
+          "description": "The name of the vector store."
+        },
+        {
+          "name": "expires_after",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreExpirationAfter",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "ref",
+            "name": "Metadata"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "VectorStoreExpirationAfter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "anchor",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "last_active_at"
+          },
+          "required": true,
+          "description": "Anchor timestamp after which the expiration policy applies. Supported anchors: `last_active_at`."
+        },
+        {
+          "name": "days",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of days after the anchor time that the vector store will expire."
+        }
+      ],
+      "description": "The expiration policy for a vector store."
+    },
+    {
+      "name": "Metadata",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        "nullable": true
+      }
+    },
+    {
+      "name": "VectorStoreObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "vector_store"
+          },
+          "required": true,
+          "description": "The object type, which is always `vector_store`."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the vector store was created."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the vector store."
+        },
+        {
+          "name": "usage_bytes",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The total number of bytes used by the files in the vector store."
+        },
+        {
+          "name": "file_counts",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreObjectFileCounts"
+          },
+          "required": true
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreObjectStatus"
+          },
+          "required": true,
+          "description": "The status of the vector store, which can be either `expired`, `in_progress`, or `completed`. A status of `completed` indicates that the vector store is ready for use."
+        },
+        {
+          "name": "expires_after",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreExpirationAfter"
+          },
+          "required": false
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "last_active_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "metadata",
+          "type": {
+            "kind": "ref",
+            "name": "Metadata"
+          },
+          "required": true
+        }
+      ],
+      "description": "A vector store is a collection of processed files can be used by the `file_search` tool."
+    },
+    {
+      "name": "VectorStoreObjectFileCounts",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "in_progress",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of files that are currently being processed."
+        },
+        {
+          "name": "completed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of files that have been successfully processed."
+        },
+        {
+          "name": "failed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of files that have failed to process."
+        },
+        {
+          "name": "cancelled",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of files that were cancelled."
+        },
+        {
+          "name": "total",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The total number of files."
+        }
+      ]
+    },
+    {
+      "name": "VectorStoreObjectStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "expired"
+        },
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        }
+      ],
+      "description": "The status of the vector store, which can be either `expired`, `in_progress`, or `completed`. A status of `completed` indicates that the vector store is ready for use."
+    }
+  ],
+  "resources": [
+    {
+      "name": "vector-stores",
+      "methods": [
+        {
+          "action": "update",
+          "httpMethod": "post",
+          "path": "/vector_stores/{vector_store_id}",
+          "operationId": "modifyVectorStore",
+          "description": "Modifies a vector store.",
+          "pathParams": [
+            {
+              "name": "vector_store_id",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": true,
+              "description": "The ID of the vector store to modify."
+            }
+          ],
+          "requestBody": {
+            "contentType": "application/json",
+            "type": {
+              "kind": "ref",
+              "name": "UpdateVectorStoreRequest"
+            },
+            "required": true,
+            "encoding": "json"
+          },
+          "responses": [
+            {
+              "status": "200",
+              "description": "OK",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "VectorStoreObject"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "VectorStoreObject"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

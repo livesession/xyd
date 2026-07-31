@@ -1,0 +1,671 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "CreateContainerBody",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Name of the container to create."
+        },
+        {
+          "name": "file_ids",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "IDs of files to copy to the container."
+        },
+        {
+          "name": "expires_after",
+          "type": {
+            "kind": "ref",
+            "name": "CreateContainerBodyExpiresAfter"
+          },
+          "required": false,
+          "description": "Container expiration time in seconds relative to the 'anchor' time."
+        },
+        {
+          "name": "skills",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CreateContainerBodySkillsItem"
+            }
+          },
+          "required": false,
+          "description": "An optional list of skills referenced by id or inline data."
+        },
+        {
+          "name": "memory_limit",
+          "type": {
+            "kind": "ref",
+            "name": "CreateContainerBodyMemoryLimit"
+          },
+          "required": false,
+          "description": "Optional memory limit for the container. Defaults to \"1g\"."
+        },
+        {
+          "name": "network_policy",
+          "type": {
+            "kind": "ref",
+            "name": "CreateContainerBodyNetworkPolicy"
+          },
+          "required": false,
+          "description": "Network access policy for the container."
+        }
+      ]
+    },
+    {
+      "name": "CreateContainerBodyExpiresAfter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "anchor",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "last_active_at"
+          },
+          "required": true,
+          "description": "Time anchor for the expiration time. Currently only 'last_active_at' is supported."
+        },
+        {
+          "name": "minutes",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true
+        }
+      ],
+      "description": "Container expiration time in seconds relative to the 'anchor' time."
+    },
+    {
+      "name": "CreateContainerBodySkillsItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "SkillReferenceParam"
+        },
+        {
+          "kind": "ref",
+          "name": "InlineSkillParam"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "skill_reference": "SkillReferenceParam",
+          "inline": "InlineSkillParam"
+        }
+      }
+    },
+    {
+      "name": "SkillReferenceParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "skill_reference"
+          },
+          "required": true,
+          "default": "skill_reference",
+          "description": "References a skill created with the /v1/skills endpoint."
+        },
+        {
+          "name": "skill_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the referenced skill."
+        },
+        {
+          "name": "version",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Optional skill version. Use a positive integer or 'latest'. Omit for default."
+        }
+      ]
+    },
+    {
+      "name": "InlineSkillParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "inline"
+          },
+          "required": true,
+          "default": "inline",
+          "description": "Defines an inline skill for this request."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the skill."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The description of the skill."
+        },
+        {
+          "name": "source",
+          "type": {
+            "kind": "ref",
+            "name": "InlineSkillSourceParam"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "InlineSkillSourceParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "base64"
+          },
+          "required": true,
+          "default": "base64",
+          "description": "The type of the inline skill source. Must be `base64`."
+        },
+        {
+          "name": "media_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "application/zip"
+          },
+          "required": true,
+          "default": "application/zip",
+          "description": "The media type of the inline skill payload. Must be `application/zip`."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Base64-encoded skill zip bundle."
+        }
+      ],
+      "description": "Inline skill payload"
+    },
+    {
+      "name": "CreateContainerBodyMemoryLimit",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "1g"
+        },
+        {
+          "value": "4g"
+        },
+        {
+          "value": "16g"
+        },
+        {
+          "value": "64g"
+        }
+      ],
+      "description": "Optional memory limit for the container. Defaults to \"1g\"."
+    },
+    {
+      "name": "CreateContainerBodyNetworkPolicy",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "ContainerNetworkPolicyDisabledParam"
+        },
+        {
+          "kind": "ref",
+          "name": "ContainerNetworkPolicyAllowlistParam"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "type",
+        "mapping": {
+          "disabled": "ContainerNetworkPolicyDisabledParam",
+          "allowlist": "ContainerNetworkPolicyAllowlistParam"
+        }
+      },
+      "description": "Network access policy for the container."
+    },
+    {
+      "name": "ContainerNetworkPolicyDisabledParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "disabled"
+          },
+          "required": true,
+          "default": "disabled",
+          "description": "Disable outbound network access. Always `disabled`."
+        }
+      ]
+    },
+    {
+      "name": "ContainerNetworkPolicyAllowlistParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "allowlist"
+          },
+          "required": true,
+          "default": "allowlist",
+          "description": "Allow outbound network access only to specified domains. Always `allowlist`."
+        },
+        {
+          "name": "allowed_domains",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "A list of allowed domains when type is `allowlist`."
+        },
+        {
+          "name": "domain_secrets",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ContainerNetworkPolicyDomainSecretParam"
+            }
+          },
+          "required": false,
+          "description": "Optional domain-scoped secrets for allowlisted domains."
+        }
+      ]
+    },
+    {
+      "name": "ContainerNetworkPolicyDomainSecretParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "domain",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The domain associated with the secret."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the secret to inject for the domain."
+        },
+        {
+          "name": "value",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The secret value to inject for the domain."
+        }
+      ]
+    },
+    {
+      "name": "ContainerResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Unique identifier for the container."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The type of this object."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Name of the container."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the container was created."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Status of the container (e.g., active, deleted)."
+        },
+        {
+          "name": "last_active_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "Unix timestamp (in seconds) when the container was last active."
+        },
+        {
+          "name": "expires_after",
+          "type": {
+            "kind": "ref",
+            "name": "ContainerResourceExpiresAfter"
+          },
+          "required": false,
+          "description": "The container will expire after this time period.\nThe anchor is the reference point for the expiration.\nThe minutes is the number of minutes after the anchor before the container expires.\n"
+        },
+        {
+          "name": "memory_limit",
+          "type": {
+            "kind": "ref",
+            "name": "CreateContainerBodyMemoryLimit"
+          },
+          "required": false,
+          "description": "The memory limit configured for the container."
+        },
+        {
+          "name": "network_policy",
+          "type": {
+            "kind": "ref",
+            "name": "ContainerResourceNetworkPolicy"
+          },
+          "required": false,
+          "description": "Network access policy for the container."
+        }
+      ]
+    },
+    {
+      "name": "ContainerResourceExpiresAfter",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "anchor",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "last_active_at"
+          },
+          "required": false,
+          "description": "The reference point for the expiration."
+        },
+        {
+          "name": "minutes",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The number of minutes after the anchor before the container expires."
+        }
+      ],
+      "description": "The container will expire after this time period.\nThe anchor is the reference point for the expiration.\nThe minutes is the number of minutes after the anchor before the container expires.\n"
+    },
+    {
+      "name": "ContainerResourceNetworkPolicy",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "ref",
+            "name": "ContainerResourceNetworkPolicyType"
+          },
+          "required": true,
+          "description": "The network policy mode."
+        },
+        {
+          "name": "allowed_domains",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "Allowed outbound domains when `type` is `allowlist`."
+        }
+      ],
+      "description": "Network access policy for the container."
+    },
+    {
+      "name": "ContainerResourceNetworkPolicyType",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "allowlist"
+        },
+        {
+          "value": "disabled"
+        }
+      ],
+      "description": "The network policy mode."
+    }
+  ],
+  "resources": [
+    {
+      "name": "containers",
+      "methods": [
+        {
+          "action": "create",
+          "httpMethod": "post",
+          "path": "/containers",
+          "operationId": "CreateContainer",
+          "description": "Creates a container.",
+          "requestBody": {
+            "contentType": "application/json",
+            "type": {
+              "kind": "ref",
+              "name": "CreateContainerBody"
+            },
+            "required": false,
+            "encoding": "json"
+          },
+          "responses": [
+            {
+              "status": "200",
+              "description": "Success",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "ContainerResource"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "ContainerResource"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

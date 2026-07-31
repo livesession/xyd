@@ -1,0 +1,455 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "UpdateVectorStoreFileAttributesRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "attributes",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreFileAttributes"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "VectorStoreFileAttributes",
+      "kind": "alias",
+      "of": {
+        "kind": "map",
+        "values": {
+          "kind": "ref",
+          "name": "VectorStoreFileAttributesValue"
+        },
+        "nullable": true
+      }
+    },
+    {
+      "name": "VectorStoreFileAttributesValue",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "number"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "boolean"
+        }
+      ]
+    },
+    {
+      "name": "VectorStoreFileObject",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "vector_store.file"
+          },
+          "required": true,
+          "description": "The object type, which is always `vector_store.file`."
+        },
+        {
+          "name": "usage_bytes",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The total vector store usage in bytes. Note that this may be different from the original file size."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the vector store file was created."
+        },
+        {
+          "name": "vector_store_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The ID of the [vector store](/docs/api-reference/vector-stores/object) that the [File](/docs/api-reference/files) is attached to."
+        },
+        {
+          "name": "status",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreFileObjectStatus"
+          },
+          "required": true,
+          "description": "The status of the vector store file, which can be either `in_progress`, `completed`, `cancelled`, or `failed`. The status `completed` indicates that the vector store file is ready for use."
+        },
+        {
+          "name": "last_error",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreFileObjectLastError",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "chunking_strategy",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreFileObjectChunkingStrategy"
+          },
+          "required": false,
+          "description": "The strategy used to chunk the file."
+        },
+        {
+          "name": "attributes",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreFileAttributes"
+          },
+          "required": false
+        }
+      ],
+      "description": "A list of files attached to a vector store."
+    },
+    {
+      "name": "VectorStoreFileObjectStatus",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "in_progress"
+        },
+        {
+          "value": "completed"
+        },
+        {
+          "value": "cancelled"
+        },
+        {
+          "value": "failed"
+        }
+      ],
+      "description": "The status of the vector store file, which can be either `in_progress`, `completed`, `cancelled`, or `failed`. The status `completed` indicates that the vector store file is ready for use."
+    },
+    {
+      "name": "VectorStoreFileObjectLastError",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "code",
+          "type": {
+            "kind": "ref",
+            "name": "VectorStoreFileObjectLastErrorCode"
+          },
+          "required": true,
+          "description": "One of `server_error`, `unsupported_file`, or `invalid_file`."
+        },
+        {
+          "name": "message",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A human-readable description of the error."
+        }
+      ],
+      "description": "The last error associated with this vector store file. Will be `null` if there are no errors."
+    },
+    {
+      "name": "VectorStoreFileObjectLastErrorCode",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "server_error"
+        },
+        {
+          "value": "unsupported_file"
+        },
+        {
+          "value": "invalid_file"
+        }
+      ],
+      "description": "One of `server_error`, `unsupported_file`, or `invalid_file`."
+    },
+    {
+      "name": "VectorStoreFileObjectChunkingStrategy",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "StaticChunkingStrategyResponseParam"
+        },
+        {
+          "kind": "ref",
+          "name": "OtherChunkingStrategyResponseParam"
+        }
+      ],
+      "description": "The strategy used to chunk the file."
+    },
+    {
+      "name": "StaticChunkingStrategyResponseParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "static"
+          },
+          "required": true,
+          "description": "Always `static`."
+        },
+        {
+          "name": "static",
+          "type": {
+            "kind": "ref",
+            "name": "StaticChunkingStrategy"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "StaticChunkingStrategy",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "max_chunk_size_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The maximum number of tokens in each chunk. The default value is `800`. The minimum value is `100` and the maximum value is `4096`."
+        },
+        {
+          "name": "chunk_overlap_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of tokens that overlap between chunks. The default value is `400`.\n\nNote that the overlap must not exceed half of `max_chunk_size_tokens`.\n"
+        }
+      ]
+    },
+    {
+      "name": "OtherChunkingStrategyResponseParam",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "other"
+          },
+          "required": true,
+          "description": "Always `other`."
+        }
+      ],
+      "description": "This is returned when the chunking strategy is unknown. Typically, this is because the file was indexed before the `chunking_strategy` concept was introduced in the API."
+    }
+  ],
+  "resources": [
+    {
+      "name": "vector-stores",
+      "resources": [
+        {
+          "name": "files",
+          "methods": [
+            {
+              "action": "update",
+              "httpMethod": "post",
+              "path": "/vector_stores/{vector_store_id}/files/{file_id}",
+              "operationId": "updateVectorStoreFileAttributes",
+              "description": "Update attributes on a vector store file.",
+              "pathParams": [
+                {
+                  "name": "vector_store_id",
+                  "type": {
+                    "kind": "scalar",
+                    "scalar": "string"
+                  },
+                  "required": true,
+                  "description": "The ID of the vector store the file belongs to.",
+                  "example": "vs_abc123"
+                },
+                {
+                  "name": "file_id",
+                  "type": {
+                    "kind": "scalar",
+                    "scalar": "string"
+                  },
+                  "required": true,
+                  "description": "The ID of the file to update attributes.",
+                  "example": "file-abc123"
+                }
+              ],
+              "requestBody": {
+                "contentType": "application/json",
+                "type": {
+                  "kind": "ref",
+                  "name": "UpdateVectorStoreFileAttributesRequest"
+                },
+                "required": true,
+                "encoding": "json"
+              },
+              "responses": [
+                {
+                  "status": "200",
+                  "description": "OK",
+                  "contentType": "application/json",
+                  "type": {
+                    "kind": "ref",
+                    "name": "VectorStoreFileObject"
+                  }
+                }
+              ],
+              "primaryResponse": {
+                "kind": "ref",
+                "name": "VectorStoreFileObject"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

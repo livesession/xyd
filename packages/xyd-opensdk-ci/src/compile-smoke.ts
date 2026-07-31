@@ -20,6 +20,7 @@ const PROBES: Record<string, string> = {
   ruby: 'ruby --version',
   java: 'javac -version',
   dotnet: 'dotnet --version',
+  rust: 'cargo --version',
 };
 
 /** Recursively list files under `dir` whose name ends with `ext`. */
@@ -61,6 +62,9 @@ const COMPILERS: Record<string, (dir: string) => void> = {
   },
   dotnet(dir) {
     for (const csproj of filesByExt(dir, '.csproj')) runCommand('dotnet', ['build', '--nologo', csproj], { cwd: dir });
+  },
+  rust(dir) {
+    runCommand('cargo', ['build'], { cwd: dir });
   },
 };
 

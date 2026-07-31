@@ -35,7 +35,7 @@ on:
       - 'packages/xyd-opensdk-ruby/**'
       - 'packages/xyd-opensdk-java/**'
       - 'packages/xyd-opensdk-dotnet/**'
-      - 'packages/xyd-opensdk-uniform/**'
+      - 'packages/xyd-opensdk-rust/**'
       - 'packages/xyd-opensdk-chain/**'
       - 'packages/xyd-opensdk-cli/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
@@ -52,7 +52,7 @@ on:
       - 'packages/xyd-opensdk-ruby/**'
       - 'packages/xyd-opensdk-java/**'
       - 'packages/xyd-opensdk-dotnet/**'
-      - 'packages/xyd-opensdk-uniform/**'
+      - 'packages/xyd-opensdk-rust/**'
       - 'packages/xyd-opensdk-chain/**'
       - 'packages/xyd-opensdk-cli/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
@@ -112,6 +112,19 @@ jobs:
       with:
         dotnet-version: '8.0.x'
 
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Setup cargo cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+        key: ${{ runner.os }}-cargo-opensdk-rust
+        restore-keys: |
+          ${{ runner.os }}-cargo-
+
     - name: Get pnpm store directory
       shell: bash
       run: |
@@ -141,7 +154,7 @@ jobs:
         --filter "@xyd-js/opensdk-ruby..."
         --filter "@xyd-js/opensdk-java..."
         --filter "@xyd-js/opensdk-dotnet..."
-        --filter "@xyd-js/opensdk-uniform..."
+        --filter "@xyd-js/opensdk-rust..."
         --filter "@xyd-js/opensdk-chain..."
         --filter "@xyd-js/opensdk-cli..."
         build
@@ -227,18 +240,13 @@ jobs:
         E2E_SDK: '1'
         E2E_SDK_TESTS: '1'
 
-    # Cross-language: render SDK usage examples into Uniform (Atlas tabs) + the
-    # gated per-language COMPILE of each generated snippet. All 6 toolchains are set
-    # up above, so the O2S_<LANG>_SMOKE compile tier runs for every language.
-    - name: Test @xyd-js/opensdk-uniform (Uniform render + usage-snippet compile per language)
-      run: pnpm --filter @xyd-js/opensdk-uniform ci:test
+    - name: Test @xyd-js/opensdk-rust (golden trees + cargo compile smoke + generated-test run)
+      run: pnpm --filter @xyd-js/opensdk-rust ci:test
       env:
-        O2S_GO_SMOKE: '1'
-        O2S_PY_SMOKE: '1'
-        O2S_NODE_SMOKE: '1'
-        O2S_RUBY_SMOKE: '1'
-        O2S_JAVA_SMOKE: '1'
-        O2S_DOTNET_SMOKE: '1'
+        # cargo test --no-run compiles the generated crate + its integration tests;
+        # E2E_SDK_TESTS runs the emitted #[tokio::test] suite against a spec-shaped mock.
+        O2S_RUST_SMOKE: '1'
+        E2E_SDK_TESTS: '1'
 
     - name: Test @xyd-js/opensdk-cli (parse/generate/init + plugin config)
       run: pnpm --filter @xyd-js/opensdk-cli ci:test
@@ -281,14 +289,15 @@ jobs:
           echo "PUBLISH_NUGET_FEED=$RUNNER_TEMP/nuget-feed"
           echo "PUBLISH_MAVEN_REPO=$RUNNER_TEMP/maven-repo"
           echo "PUBLISH_GOPROXY_DIR=$RUNNER_TEMP/goproxy"
+          echo "PUBLISH_CARGO_REGISTRY=$RUNNER_TEMP/cargo-feed"
         } >> "$GITHUB_ENV"
-        mkdir -p "$RUNNER_TEMP/nuget-feed" "$RUNNER_TEMP/maven-repo" "$RUNNER_TEMP/goproxy"
+        mkdir -p "$RUNNER_TEMP/nuget-feed" "$RUNNER_TEMP/maven-repo" "$RUNNER_TEMP/goproxy" "$RUNNER_TEMP/cargo-feed"
 
     - name: Publish e2e (generate → publish → install → load, all languages)
       env:
         E2E_SDK_PUBLISH: '1'
       run: |
-        for pkg in node python ruby dotnet java go; do
+        for pkg in node python ruby dotnet java go rust; do
           echo "== publish e2e: $pkg =="
           pnpm --filter "@xyd-js/opensdk-$pkg" exec vitest run __tests__/e2e/publish.test.ts
         done

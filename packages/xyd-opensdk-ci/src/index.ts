@@ -28,6 +28,7 @@ export {
   dotnetPublishAdapter,
   javaPublishAdapter,
   goPublishAdapter,
+  rustPublishAdapter,
 } from './publish';
 export type { PublishAdapter, PublishCtx, PublishRoundTripConfig } from './publish';
 export { listComplexCorpora, representativeMethods, CORPUS_SPECS } from './corpus';

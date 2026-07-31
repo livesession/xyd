@@ -1,0 +1,1054 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "AdminOrganizationUsageVectorStoresListBucketWidth",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "1m"
+        },
+        {
+          "value": "1h"
+        },
+        {
+          "value": "1d"
+        }
+      ]
+    },
+    {
+      "name": "UsageResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "page"
+          },
+          "required": true
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "UsageTimeBucket"
+            }
+          },
+          "required": true
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        },
+        {
+          "name": "next_page",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "UsageTimeBucket",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "bucket"
+          },
+          "required": true
+        },
+        {
+          "name": "start_time",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true
+        },
+        {
+          "name": "end_time",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true
+        },
+        {
+          "name": "results",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "UsageTimeBucketResultsItem"
+            }
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "UsageTimeBucketResultsItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "UsageCompletionsResult"
+        },
+        {
+          "kind": "ref",
+          "name": "UsageEmbeddingsResult"
+        },
+        {
+          "kind": "ref",
+          "name": "UsageModerationsResult"
+        },
+        {
+          "kind": "ref",
+          "name": "UsageImagesResult"
+        },
+        {
+          "kind": "ref",
+          "name": "UsageAudioSpeechesResult"
+        },
+        {
+          "kind": "ref",
+          "name": "UsageAudioTranscriptionsResult"
+        },
+        {
+          "kind": "ref",
+          "name": "UsageVectorStoresResult"
+        },
+        {
+          "kind": "ref",
+          "name": "UsageCodeInterpreterSessionsResult"
+        },
+        {
+          "kind": "ref",
+          "name": "CostsResult"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "object",
+        "mapping": {
+          "organization.usage.completions.result": "UsageCompletionsResult",
+          "organization.usage.embeddings.result": "UsageEmbeddingsResult",
+          "organization.usage.moderations.result": "UsageModerationsResult",
+          "organization.usage.images.result": "UsageImagesResult",
+          "organization.usage.audio_speeches.result": "UsageAudioSpeechesResult",
+          "organization.usage.audio_transcriptions.result": "UsageAudioTranscriptionsResult",
+          "organization.usage.vector_stores.result": "UsageVectorStoresResult",
+          "organization.usage.code_interpreter_sessions.result": "UsageCodeInterpreterSessionsResult",
+          "organization.costs.result": "CostsResult"
+        }
+      }
+    },
+    {
+      "name": "UsageCompletionsResult",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.usage.completions.result"
+          },
+          "required": true
+        },
+        {
+          "name": "input_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The aggregated number of text input tokens used, including cached tokens. For customers subscribe to scale tier, this includes scale tier tokens."
+        },
+        {
+          "name": "input_cached_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The aggregated number of text input tokens that has been cached from previous requests. For customers subscribe to scale tier, this includes scale tier tokens."
+        },
+        {
+          "name": "output_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The aggregated number of text output tokens used. For customers subscribe to scale tier, this includes scale tier tokens."
+        },
+        {
+          "name": "input_audio_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The aggregated number of audio input tokens used, including cached tokens."
+        },
+        {
+          "name": "output_audio_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false,
+          "description": "The aggregated number of audio output tokens used."
+        },
+        {
+          "name": "num_model_requests",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The count of requests made to the model."
+        },
+        {
+          "name": "project_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "api_key_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "batch",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "service_tier",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "The aggregated completions usage details of the specific time bucket."
+    },
+    {
+      "name": "UsageEmbeddingsResult",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.usage.embeddings.result"
+          },
+          "required": true
+        },
+        {
+          "name": "input_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The aggregated number of input tokens used."
+        },
+        {
+          "name": "num_model_requests",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The count of requests made to the model."
+        },
+        {
+          "name": "project_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "api_key_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "The aggregated embeddings usage details of the specific time bucket."
+    },
+    {
+      "name": "UsageModerationsResult",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.usage.moderations.result"
+          },
+          "required": true
+        },
+        {
+          "name": "input_tokens",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The aggregated number of input tokens used."
+        },
+        {
+          "name": "num_model_requests",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The count of requests made to the model."
+        },
+        {
+          "name": "project_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "api_key_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "The aggregated moderations usage details of the specific time bucket."
+    },
+    {
+      "name": "UsageImagesResult",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.usage.images.result"
+          },
+          "required": true
+        },
+        {
+          "name": "images",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of images processed."
+        },
+        {
+          "name": "num_model_requests",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The count of requests made to the model."
+        },
+        {
+          "name": "source",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "size",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "project_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "api_key_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "The aggregated images usage details of the specific time bucket."
+    },
+    {
+      "name": "UsageAudioSpeechesResult",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.usage.audio_speeches.result"
+          },
+          "required": true
+        },
+        {
+          "name": "characters",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of characters processed."
+        },
+        {
+          "name": "num_model_requests",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The count of requests made to the model."
+        },
+        {
+          "name": "project_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "api_key_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "The aggregated audio speeches usage details of the specific time bucket."
+    },
+    {
+      "name": "UsageAudioTranscriptionsResult",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.usage.audio_transcriptions.result"
+          },
+          "required": true
+        },
+        {
+          "name": "seconds",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "int64"
+          },
+          "required": true,
+          "description": "The number of seconds processed."
+        },
+        {
+          "name": "num_model_requests",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The count of requests made to the model."
+        },
+        {
+          "name": "project_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "user_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "api_key_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "The aggregated audio transcriptions usage details of the specific time bucket."
+    },
+    {
+      "name": "UsageVectorStoresResult",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.usage.vector_stores.result"
+          },
+          "required": true
+        },
+        {
+          "name": "usage_bytes",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The vector stores usage in bytes."
+        },
+        {
+          "name": "project_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "The aggregated vector stores usage details of the specific time bucket."
+    },
+    {
+      "name": "UsageCodeInterpreterSessionsResult",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.usage.code_interpreter_sessions.result"
+          },
+          "required": true
+        },
+        {
+          "name": "num_sessions",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "The number of code interpreter sessions."
+        },
+        {
+          "name": "project_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "The aggregated code interpreter sessions usage details of the specific time bucket."
+    },
+    {
+      "name": "CostsResult",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.costs.result"
+          },
+          "required": true
+        },
+        {
+          "name": "amount",
+          "type": {
+            "kind": "ref",
+            "name": "CostsResultAmount"
+          },
+          "required": false,
+          "description": "The monetary value in its associated currency."
+        },
+        {
+          "name": "line_item",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "project_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "api_key_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "quantity",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "The aggregated costs details of the specific time bucket."
+    },
+    {
+      "name": "CostsResultAmount",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "value",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": false,
+          "description": "The numeric value of the cost."
+        },
+        {
+          "name": "currency",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Lowercase ISO-4217 currency e.g. \"usd\""
+        }
+      ],
+      "description": "The monetary value in its associated currency."
+    }
+  ],
+  "resources": [
+    {
+      "name": "admin",
+      "resources": [
+        {
+          "name": "organization",
+          "resources": [
+            {
+              "name": "usage",
+              "resources": [
+                {
+                  "name": "vector-stores",
+                  "methods": [
+                    {
+                      "action": "list",
+                      "httpMethod": "get",
+                      "path": "/organization/usage/vector_stores",
+                      "operationId": "usage-vector-stores",
+                      "description": "Get vector stores usage details for the organization.",
+                      "queryParams": [
+                        {
+                          "name": "start_time",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "integer"
+                          },
+                          "required": true,
+                          "description": "Start time (Unix seconds) of the query time range, inclusive."
+                        },
+                        {
+                          "name": "end_time",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "integer"
+                          },
+                          "required": false,
+                          "description": "End time (Unix seconds) of the query time range, exclusive."
+                        },
+                        {
+                          "name": "bucket_width",
+                          "type": {
+                            "kind": "ref",
+                            "name": "AdminOrganizationUsageVectorStoresListBucketWidth"
+                          },
+                          "required": false,
+                          "description": "Width of each time bucket in response. Currently `1m`, `1h` and `1d` are supported, default to `1d`.",
+                          "default": "1d"
+                        },
+                        {
+                          "name": "project_ids",
+                          "type": {
+                            "kind": "array",
+                            "items": {
+                              "kind": "scalar",
+                              "scalar": "string"
+                            }
+                          },
+                          "required": false,
+                          "description": "Return only usage for these projects."
+                        },
+                        {
+                          "name": "group_by",
+                          "type": {
+                            "kind": "array",
+                            "items": {
+                              "kind": "scalar",
+                              "scalar": "string",
+                              "const": "project_id"
+                            }
+                          },
+                          "required": false,
+                          "description": "Group the usage data by the specified fields. Support fields include `project_id`."
+                        },
+                        {
+                          "name": "limit",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "integer"
+                          },
+                          "required": false,
+                          "description": "Specifies the number of buckets to return.\n- `bucket_width=1d`: default: 7, max: 31\n- `bucket_width=1h`: default: 24, max: 168\n- `bucket_width=1m`: default: 60, max: 1440\n"
+                        },
+                        {
+                          "name": "page",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": false,
+                          "description": "A cursor for use in pagination. Corresponding to the `next_page` field from the previous response."
+                        }
+                      ],
+                      "responses": [
+                        {
+                          "status": "200",
+                          "description": "Usage data retrieved successfully.",
+                          "contentType": "application/json",
+                          "type": {
+                            "kind": "ref",
+                            "name": "UsageResponse"
+                          }
+                        }
+                      ],
+                      "primaryResponse": {
+                        "kind": "ref",
+                        "name": "UsageResponse"
+                      },
+                      "pagination": {
+                        "style": "cursor",
+                        "itemsField": "data",
+                        "nextField": "has_more",
+                        "itemType": {
+                          "kind": "ref",
+                          "name": "UsageTimeBucket"
+                        },
+                        "cursorParam": "page",
+                        "limitParam": "limit"
+                      },
+                      "security": [
+                        {
+                          "type": "http",
+                          "kind": "bearer",
+                          "schemeName": "AdminApiKeyAuth",
+                          "scheme": "bearer"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}

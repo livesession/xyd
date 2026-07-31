@@ -8,6 +8,7 @@ import { javaEmitter } from '@xyd-js/opensdk-java';
 import { nodeEmitter } from '@xyd-js/opensdk-node';
 import { pythonEmitter } from '@xyd-js/opensdk-python';
 import { rubyEmitter } from '@xyd-js/opensdk-ruby';
+import { rustEmitter } from '@xyd-js/opensdk-rust';
 
 import { resolveConfig } from './config/source';
 import type { ResolvedConfig } from './config/types';
@@ -34,6 +35,7 @@ export function registerBuiltinEmitters(): void {
   registerEmitter(rubyEmitter);
   registerEmitter(javaEmitter);
   registerEmitter(dotnetEmitter);
+  registerEmitter(rustEmitter);
 }
 
 export async function main(argv: string[] = process.argv): Promise<void> {
@@ -83,8 +85,8 @@ export async function main(argv: string[] = process.argv): Promise<void> {
   program
     .command('generate')
     .description('Generate an SDK from an OpenAPI spec (or a pre-parsed IR json). With no --lang, every language declared in sdk.json is generated.')
-    .option('--spec <path>', 'Path to the OpenAPI spec (yaml/json) or OpenSDK IR (.json); omit to use the "spec" field in sdk.json')
-    .option('--lang <language>', 'Emitter language/alias (go|python|typescript|ruby|java|csharp|...); omit to build every language in sdk.json')
+    .requiredOption('--spec <path>', 'Path to the OpenAPI spec (yaml/json) or OpenSDK IR (.json)')
+    .option('--lang <language>', 'Emitter language/alias (go|python|typescript|ruby|java|csharp|rust|...); omit to build every language in sdk.json')
     .option('--output <dir>', 'Output directory (single --lang), or the base dir for per-language subfolders (multi-target)')
     .option('--sdk-name <name>', 'SDK name for the converter')
     .option('--grouping <path>', 'JSON grouping file ({mountRules, operationHints}); overrides the config values')

@@ -21,6 +21,8 @@ export const languageAliases: Record<string, string> = {
   ruby: 'ruby',
   rb: 'ruby',
   java: 'java',
+  rust: 'rust',
+  rs: 'rust',
   csharp: 'dotnet',
   'c#': 'dotnet',
   cs: 'dotnet',

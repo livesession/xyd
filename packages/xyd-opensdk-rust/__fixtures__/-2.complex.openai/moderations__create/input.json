@@ -1,0 +1,831 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "CreateModerationRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "input",
+          "type": {
+            "kind": "ref",
+            "name": "CreateModerationRequestInput"
+          },
+          "required": true,
+          "description": "Input (or inputs) to classify. Can be a single string, an array of strings, or\nan array of multi-modal input objects similar to other models.\n"
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "ref",
+            "name": "CreateModerationRequestModel"
+          },
+          "required": false,
+          "default": "omni-moderation-latest",
+          "description": "The content moderation model you would like to use. Learn more in\n[the moderation guide](/docs/guides/moderation), and learn about\navailable models [here](/docs/models#moderation).\n"
+        }
+      ]
+    },
+    {
+      "name": "CreateModerationRequestInput",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "scalar",
+            "scalar": "string"
+          }
+        },
+        {
+          "kind": "array",
+          "items": {
+            "kind": "ref",
+            "name": "CreateModerationRequestInputArrayItem"
+          }
+        }
+      ],
+      "description": "Input (or inputs) to classify. Can be a single string, an array of strings, or\nan array of multi-modal input objects similar to other models.\n"
+    },
+    {
+      "name": "CreateModerationRequestInputArrayItem",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "CreateModerationRequestInputArrayItemImageUrl"
+        },
+        {
+          "kind": "ref",
+          "name": "CreateModerationRequestInputArrayItemText"
+        }
+      ]
+    },
+    {
+      "name": "CreateModerationRequestInputArrayItemImageUrl",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "image_url"
+          },
+          "required": true,
+          "description": "Always `image_url`."
+        },
+        {
+          "name": "image_url",
+          "type": {
+            "kind": "ref",
+            "name": "CreateModerationRequestInputArrayItemImageUrlImageUrl"
+          },
+          "required": true,
+          "description": "Contains either an image URL or a data URL for a base64 encoded image."
+        }
+      ],
+      "description": "An object describing an image to classify."
+    },
+    {
+      "name": "CreateModerationRequestInputArrayItemImageUrlImageUrl",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "url",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "uri"
+          },
+          "required": true,
+          "description": "Either a URL of the image or the base64 encoded image data."
+        }
+      ],
+      "description": "Contains either an image URL or a data URL for a base64 encoded image."
+    },
+    {
+      "name": "CreateModerationRequestInputArrayItemText",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "text"
+          },
+          "required": true,
+          "description": "Always `text`."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "A string of text to classify."
+        }
+      ],
+      "description": "An object describing text to classify."
+    },
+    {
+      "name": "CreateModerationRequestModel",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "ref",
+          "name": "CreateModerationRequestModelString"
+        }
+      ],
+      "description": "The content moderation model you would like to use. Learn more in\n[the moderation guide](/docs/guides/moderation), and learn about\navailable models [here](/docs/models#moderation).\n"
+    },
+    {
+      "name": "CreateModerationRequestModelString",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "omni-moderation-latest"
+        },
+        {
+          "value": "omni-moderation-2024-09-26"
+        },
+        {
+          "value": "text-moderation-latest"
+        },
+        {
+          "value": "text-moderation-stable"
+        }
+      ]
+    },
+    {
+      "name": "CreateModerationResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The unique identifier for the moderation request."
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The model used to generate the moderation results."
+        },
+        {
+          "name": "results",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CreateModerationResponseResultsItem"
+            }
+          },
+          "required": true,
+          "description": "A list of moderation objects."
+        }
+      ],
+      "description": "Represents if a given text input is potentially harmful."
+    },
+    {
+      "name": "CreateModerationResponseResultsItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "flagged",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether any of the below categories are flagged."
+        },
+        {
+          "name": "categories",
+          "type": {
+            "kind": "ref",
+            "name": "CreateModerationResponseResultsItemCategories"
+          },
+          "required": true,
+          "description": "A list of the categories, and whether they are flagged or not."
+        },
+        {
+          "name": "category_scores",
+          "type": {
+            "kind": "ref",
+            "name": "CreateModerationResponseResultsItemCategoryScores"
+          },
+          "required": true,
+          "description": "A list of the categories along with their scores as predicted by model."
+        },
+        {
+          "name": "category_applied_input_types",
+          "type": {
+            "kind": "ref",
+            "name": "CreateModerationResponseResultsItemCategoryAppliedInputTypes"
+          },
+          "required": true,
+          "description": "A list of the categories along with the input type(s) that the score applies to."
+        }
+      ]
+    },
+    {
+      "name": "CreateModerationResponseResultsItemCategories",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "hate",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Content that expresses, incites, or promotes hate based on race, gender, ethnicity, religion, nationality, sexual orientation, disability status, or caste. Hateful content aimed at non-protected groups (e.g., chess players) is harassment."
+        },
+        {
+          "name": "hate/threatening",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Hateful content that also includes violence or serious harm towards the targeted group based on race, gender, ethnicity, religion, nationality, sexual orientation, disability status, or caste."
+        },
+        {
+          "name": "harassment",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Content that expresses, incites, or promotes harassing language towards any target."
+        },
+        {
+          "name": "harassment/threatening",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Harassment content that also includes violence or serious harm towards any target."
+        },
+        {
+          "name": "illicit",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "illicit/violent",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "self-harm",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Content that promotes, encourages, or depicts acts of self-harm, such as suicide, cutting, and eating disorders."
+        },
+        {
+          "name": "self-harm/intent",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Content where the speaker expresses that they are engaging or intend to engage in acts of self-harm, such as suicide, cutting, and eating disorders."
+        },
+        {
+          "name": "self-harm/instructions",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Content that encourages performing acts of self-harm, such as suicide, cutting, and eating disorders, or that gives instructions or advice on how to commit such acts."
+        },
+        {
+          "name": "sexual",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Content meant to arouse sexual excitement, such as the description of sexual activity, or that promotes sexual services (excluding sex education and wellness)."
+        },
+        {
+          "name": "sexual/minors",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Sexual content that includes an individual who is under 18 years old."
+        },
+        {
+          "name": "violence",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Content that depicts death, violence, or physical injury."
+        },
+        {
+          "name": "violence/graphic",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Content that depicts death, violence, or physical injury in graphic detail."
+        }
+      ],
+      "description": "A list of the categories, and whether they are flagged or not."
+    },
+    {
+      "name": "CreateModerationResponseResultsItemCategoryScores",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "hate",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The score for the category 'hate'."
+        },
+        {
+          "name": "hate/threatening",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The score for the category 'hate/threatening'."
+        },
+        {
+          "name": "harassment",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The score for the category 'harassment'."
+        },
+        {
+          "name": "harassment/threatening",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The score for the category 'harassment/threatening'."
+        },
+        {
+          "name": "illicit",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The score for the category 'illicit'."
+        },
+        {
+          "name": "illicit/violent",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The score for the category 'illicit/violent'."
+        },
+        {
+          "name": "self-harm",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The score for the category 'self-harm'."
+        },
+        {
+          "name": "self-harm/intent",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The score for the category 'self-harm/intent'."
+        },
+        {
+          "name": "self-harm/instructions",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The score for the category 'self-harm/instructions'."
+        },
+        {
+          "name": "sexual",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The score for the category 'sexual'."
+        },
+        {
+          "name": "sexual/minors",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The score for the category 'sexual/minors'."
+        },
+        {
+          "name": "violence",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The score for the category 'violence'."
+        },
+        {
+          "name": "violence/graphic",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": true,
+          "description": "The score for the category 'violence/graphic'."
+        }
+      ],
+      "description": "A list of the categories along with their scores as predicted by model."
+    },
+    {
+      "name": "CreateModerationResponseResultsItemCategoryAppliedInputTypes",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "hate",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string",
+              "const": "text"
+            }
+          },
+          "required": true,
+          "description": "The applied input type(s) for the category 'hate'."
+        },
+        {
+          "name": "hate/threatening",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string",
+              "const": "text"
+            }
+          },
+          "required": true,
+          "description": "The applied input type(s) for the category 'hate/threatening'."
+        },
+        {
+          "name": "harassment",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string",
+              "const": "text"
+            }
+          },
+          "required": true,
+          "description": "The applied input type(s) for the category 'harassment'."
+        },
+        {
+          "name": "harassment/threatening",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string",
+              "const": "text"
+            }
+          },
+          "required": true,
+          "description": "The applied input type(s) for the category 'harassment/threatening'."
+        },
+        {
+          "name": "illicit",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string",
+              "const": "text"
+            }
+          },
+          "required": true,
+          "description": "The applied input type(s) for the category 'illicit'."
+        },
+        {
+          "name": "illicit/violent",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string",
+              "const": "text"
+            }
+          },
+          "required": true,
+          "description": "The applied input type(s) for the category 'illicit/violent'."
+        },
+        {
+          "name": "self-harm",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CreateModerationResponseResultsItemCategoryAppliedInputTypesSelfHarmItem"
+            }
+          },
+          "required": true,
+          "description": "The applied input type(s) for the category 'self-harm'."
+        },
+        {
+          "name": "self-harm/intent",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CreateModerationResponseResultsItemCategoryAppliedInputTypesSelfHarmItem"
+            }
+          },
+          "required": true,
+          "description": "The applied input type(s) for the category 'self-harm/intent'."
+        },
+        {
+          "name": "self-harm/instructions",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CreateModerationResponseResultsItemCategoryAppliedInputTypesSelfHarmItem"
+            }
+          },
+          "required": true,
+          "description": "The applied input type(s) for the category 'self-harm/instructions'."
+        },
+        {
+          "name": "sexual",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CreateModerationResponseResultsItemCategoryAppliedInputTypesSelfHarmItem"
+            }
+          },
+          "required": true,
+          "description": "The applied input type(s) for the category 'sexual'."
+        },
+        {
+          "name": "sexual/minors",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string",
+              "const": "text"
+            }
+          },
+          "required": true,
+          "description": "The applied input type(s) for the category 'sexual/minors'."
+        },
+        {
+          "name": "violence",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CreateModerationResponseResultsItemCategoryAppliedInputTypesSelfHarmItem"
+            }
+          },
+          "required": true,
+          "description": "The applied input type(s) for the category 'violence'."
+        },
+        {
+          "name": "violence/graphic",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "CreateModerationResponseResultsItemCategoryAppliedInputTypesSelfHarmItem"
+            }
+          },
+          "required": true,
+          "description": "The applied input type(s) for the category 'violence/graphic'."
+        }
+      ],
+      "description": "A list of the categories along with the input type(s) that the score applies to."
+    },
+    {
+      "name": "CreateModerationResponseResultsItemCategoryAppliedInputTypesSelfHarmItem",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "text"
+        },
+        {
+          "value": "image"
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "name": "moderations",
+      "methods": [
+        {
+          "action": "create",
+          "httpMethod": "post",
+          "path": "/moderations",
+          "operationId": "createModeration",
+          "description": "Classifies if text and/or image inputs are potentially harmful. Learn\nmore in the [moderation guide](/docs/guides/moderation).\n",
+          "requestBody": {
+            "contentType": "application/json",
+            "type": {
+              "kind": "ref",
+              "name": "CreateModerationRequest"
+            },
+            "required": true,
+            "encoding": "json"
+          },
+          "responses": [
+            {
+              "status": "200",
+              "description": "OK",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "CreateModerationResponse"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "CreateModerationResponse"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}
