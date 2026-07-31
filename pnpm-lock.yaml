@@ -1957,6 +1957,9 @@ importers:
       '@xyd-js/opensdk-core':
         specifier: workspace:*
         version: link:../xyd-opensdk-core
+      '@xyd-js/opensdk-merge':
+        specifier: workspace:*
+        version: link:../xyd-opensdk-merge
     devDependencies:
       '@types/node':
         specifier: ^20.9.0
@@ -2038,6 +2041,28 @@ importers:
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.1
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      tsup:
+        specifier: ^8.3.0
+        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@5.8.3)(yaml@2.8.4)
+      typescript:
+        specifier: ^5.6.2
+        version: 5.8.3
+      vitest:
+        specifier: ^2.1.1
+        version: 2.1.9(@types/node@20.9.0)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
+
+  packages/xyd-opensdk-merge:
+    dependencies:
+      diff:
+        specifier: ^5.2.2
+        version: 5.2.2
+    devDependencies:
+      '@types/node':
+        specifier: ^20.9.0
+        version: 20.9.0
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
@@ -2203,6 +2228,70 @@ importers:
         version: 2.1.9(@types/node@20.9.0)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
 
   packages/xyd-opensdk-schemas: {}
+
+  packages/xyd-opensdk-uniform:
+    dependencies:
+      '@xyd-js/openapi2opensdk':
+        specifier: workspace:*
+        version: link:../xyd-openapi2opensdk
+      '@xyd-js/opensdk-core':
+        specifier: workspace:*
+        version: link:../xyd-opensdk-core
+      '@xyd-js/opensdk-dotnet':
+        specifier: workspace:*
+        version: link:../xyd-opensdk-dotnet
+      '@xyd-js/opensdk-framework':
+        specifier: workspace:*
+        version: link:../xyd-opensdk-framework
+      '@xyd-js/opensdk-go':
+        specifier: workspace:*
+        version: link:../xyd-opensdk-go
+      '@xyd-js/opensdk-java':
+        specifier: workspace:*
+        version: link:../xyd-opensdk-java
+      '@xyd-js/opensdk-node':
+        specifier: workspace:*
+        version: link:../xyd-opensdk-node
+      '@xyd-js/opensdk-python':
+        specifier: workspace:*
+        version: link:../xyd-opensdk-python
+      '@xyd-js/opensdk-ruby':
+        specifier: workspace:*
+        version: link:../xyd-opensdk-ruby
+      '@xyd-js/uniform':
+        specifier: workspace:*
+        version: link:../xyd-uniform
+    devDependencies:
+      '@types/js-yaml':
+        specifier: ^4.0.9
+        version: 4.0.9
+      '@types/node':
+        specifier: ^20.9.0
+        version: 20.9.0
+      '@xyd-js/openapi':
+        specifier: workspace:*
+        version: link:../xyd-openapi
+      '@xyd-js/opensdk-ci':
+        specifier: workspace:*
+        version: link:../xyd-opensdk-ci
+      js-yaml:
+        specifier: ^4.1.0
+        version: 4.1.1
+      openapi-types:
+        specifier: ^12.1.3
+        version: 12.1.3
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      tsup:
+        specifier: ^8.3.0
+        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@5.8.3)(yaml@2.8.4)
+      typescript:
+        specifier: ^5.6.2
+        version: 5.8.3
+      vitest:
+        specifier: ^2.1.1
+        version: 2.1.9(@types/node@20.9.0)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
 
   packages/xyd-plugin-access-control:
     dependencies:
@@ -24754,17 +24843,9 @@ snapshots:
       '@fastify/error': 3.4.1
       fastq: 1.20.1
 
-  axios@1.15.2:
-    dependencies:
-      follow-redirects: 1.16.0(debug@4.3.7)
-      form-data: 4.0.5
-      proxy-from-env: 2.1.0
-    transitivePeerDependencies:
-      - debug
-
   axios@1.15.2(debug@4.3.4):
     dependencies:
-      follow-redirects: 1.16.0(debug@4.3.4)
+      follow-redirects: 1.16.0(debug@4.3.7)
       form-data: 4.0.5
       proxy-from-env: 2.1.0
     transitivePeerDependencies:
@@ -27306,10 +27387,6 @@ snapshots:
     dependencies:
       from2: 2.3.0
 
-  follow-redirects@1.16.0(debug@4.3.4):
-    optionalDependencies:
-      debug: 4.3.4
-
   follow-redirects@1.16.0(debug@4.3.7):
     optionalDependencies:
       debug: 4.3.7(supports-color@9.4.0)
@@ -28189,7 +28266,7 @@ snapshots:
       jsonwebtoken: 9.0.3
       load-esm: 1.0.3
       mime-types: 2.1.35
-      retry-axios: 2.6.0(axios@1.15.2)
+      retry-axios: 2.6.0(axios@1.15.2(debug@4.3.4))
       tough-cookie: 4.1.3
     transitivePeerDependencies:
       - supports-color
@@ -32504,9 +32581,9 @@ snapshots:
 
   ret@0.4.3: {}
 
-  retry-axios@2.6.0(axios@1.15.2):
+  retry-axios@2.6.0(axios@1.15.2(debug@4.3.4)):
     dependencies:
-      axios: 1.15.2
+      axios: 1.15.2(debug@4.3.4)
 
   retry@0.12.0: {}
 
