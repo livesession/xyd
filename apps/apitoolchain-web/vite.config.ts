@@ -201,6 +201,9 @@ export default defineConfig({
   ssr: {
     noExternal: [
       "@apitoolchain/design-system",
+      // Sign-in/sign-up building blocks; source-exported like design-system and
+      // imports it at runtime, so it must be transpiled (not externalized) too.
+      "@apitoolchain/auth-design-system",
       "@apitoolchain/filters",
       // The dev widget (@apitoolchain/dev/widget) ships TS source too; only
       // its React export is pulled in (not the Node-side ./vite plugin).
@@ -216,6 +219,8 @@ export default defineConfig({
     include: ["path-browserify"],
     exclude: [
       "@apitoolchain/design-system",
+      // Source-exported; excluded from client pre-bundling like its siblings.
+      "@apitoolchain/auth-design-system",
       "@apitoolchain/filters",
       "@apitoolchain/dev",
       "@apitoolchain/sdkjson-wizard",
