@@ -1,5 +1,12 @@
 import type { Field, Method, NamedType, Param, Resource, TypeRef } from '@xyd-js/opensdk-core';
-import { planOperation } from '@xyd-js/opensdk-framework';
+import type {
+  NeutralTypeField,
+  NeutralTypeReference,
+  OperationPlan,
+  RenderedTypeField,
+  RenderedTypeReference,
+} from '@xyd-js/opensdk-framework';
+import { planOperation, planTypeReference, refSchemaName } from '@xyd-js/opensdk-framework';
 
 import { unionDecoderRef, unionMapping } from './model';
 import { pascalCase, rubyMethodName, snakeCase } from './naming';
@@ -213,4 +220,89 @@ function returnDoc(method: Method, op: ReturnType<typeof planOperation>): string
   if (op.pageName) return `Page<${rbDocType(method.pagination?.itemType as TypeRef | undefined)}>`;
   if (!method.primaryResponse) return 'nil';
   return rbDocType(method.primaryResponse);
+}
+
+// ---- type reference (Atlas SDK-types view) -------------------------------
+
+/**
+ * The kwarg YARD type of a request field — mirrors methodDoc's `@param` type
+ * (a plain `rbDocType`). Ruby flattens the params struct to keyword args and is
+ * duck-typed, so location (body/query/header) and optionality don't change the
+ * documented type (a `nil` default rides on the arg, not the type).
+ */
+function rbFieldTypeDisplay(f: NeutralTypeField): string {
+  return rbDocType(f.typeRef);
+}
+
+/** One neutral field → a rendered row: snake_case name + its YARD type string. */
+function rbRenderField(f: NeutralTypeField): RenderedTypeField {
+  return {
+    name: snakeCase(f.logicalName),
+    langType: rbFieldTypeDisplay(f),
+    required: f.required,
+    description: f.description,
+    deprecated: f.deprecated,
+    refTypeName: refSchemaName(f.typeRef),
+  };
+}
+
+function rbResponse(
+  method: Method,
+  op: OperationPlan,
+  neutral: NeutralTypeReference,
+): RenderedTypeReference['response'] {
+  const langType = returnDoc(method, op);
+  if (op.binaryContentType) return { langType, note: `binary download (${op.binaryContentType})` };
+  const ref = neutral.response.typeRef;
+  if (!ref || op.primaryResponse === 'none') return { langType: 'nil', note: 'no response body' };
+  const note = op.pageName ? `paginated (Page)` : undefined;
+  if (neutral.response.fields) {
+    return {
+      typeName: langType,
+      note,
+      fields: neutral.response.fields.map((f) => ({
+        name: snakeCase(f.logicalName),
+        langType: rbDocType(f.typeRef),
+        required: f.required,
+        description: f.description,
+        deprecated: f.deprecated,
+        refTypeName: refSchemaName(f.typeRef),
+      })),
+    };
+  }
+  return { typeName: langType, langType, note };
+}
+
+/**
+ * The per-operation TYPE REFERENCE for Ruby: the idiomatic call signature, the
+ * request kwargs' field rows, and the response type — the SDK-native view Atlas
+ * renders in place of the REST param definitions. Ruby flattens the params
+ * struct to keyword args, so `request.typeName` is left undefined (mirrors the
+ * Go/Python emitters, using Ruby's primitives). `segments` is the resource-name
+ * path (root→owner) the method hangs off.
+ */
+export function generateRubyTypeReference(method: Method, segments: string[], ctx: RubyCtx): RenderedTypeReference {
+  const op = planOperation(method, ctx.types);
+  const neutral = planTypeReference(method, ctx.types);
+
+  const requestFields = neutral.request.fields.map(rbRenderField);
+
+  // The call signature: `client.<attr>.<action>(<path args>, <kwargs>) -> <return>`.
+  // Positional path params (snake), then each request field as a keyword
+  // (required → `name:`, optional → `name: nil`), mirroring emitMethod's arg order.
+  const attrs = segments.map((s) => snakeCase(s));
+  const action = rubyMethodName(method.action);
+  const callChain = `client.${[...attrs, action].join('.')}`;
+  const args = [...op.paramGroups.path.map((p) => snakeCase(p.name))];
+  for (const f of neutral.request.fields) {
+    const n = snakeCase(f.logicalName);
+    args.push(f.required ? `${n}:` : `${n}: nil`);
+  }
+  const signature = `${callChain}(${args.join(', ')}) -> ${returnDoc(method, op)}`;
+
+  return {
+    signature,
+    request: { typeName: undefined, fields: requestFields },
+    response: rbResponse(method, op, neutral),
+  };
 }

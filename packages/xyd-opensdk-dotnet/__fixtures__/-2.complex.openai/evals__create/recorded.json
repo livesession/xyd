@@ -1,0 +1,14 @@
+{
+  "call": "Evals.Create",
+  "request": {
+    "method": "post",
+    "path": "/evals",
+    "query": [],
+    "bodyFields": [
+      "data_source_config",
+      "testing_criteria"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

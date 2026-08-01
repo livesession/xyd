@@ -1,8 +1,9 @@
-import type { Method, NamedType, Param, Resource } from '@xyd-js/opensdk-core';
+import type { Method, NamedType, OpensdkSpecJson, Param, Resource } from '@xyd-js/opensdk-core';
 import { type MethodExample, planMethodExample, planOperation } from '@xyd-js/opensdk-framework';
 
 import { renderRbExample } from './example-rb';
-import { pascalCase, snakeCase } from './naming';
+import { pascalCase, rubyGemName, screamingSnakeCase, snakeCase } from './naming';
+import type { OpensdkRubyOptions } from './types';
 
 // The generated SDK's OWN test suite (rubyEmitter.generateTests), minitest-shaped
 // (stdlib: `require "minitest/autorun"`). One test/test_<resource>.rb per
@@ -147,4 +148,64 @@ class Test${pascalCase(resource.name)} < Minitest::Test
 ${body}
 end
 `;
+}
+
+/** The env var the generated client reads its API key from (mirrors emitter.resolveOptions). */
+function usageEnvVar(spec: OpensdkSpecJson, pkg: string): string {
+  return spec.security?.find((s) => s.envVar)?.envVar ?? `${screamingSnakeCase(pkg)}_API_KEY`;
+}
+
+/**
+ * A single per-operation USAGE SNIPPET (docs): a self-contained, runnable-looking
+ * Ruby example that requires the gem, constructs the client, and makes ONE
+ * required-only method call (à la Fern/Speakeasy/Stainless), mirroring the Go
+ * emitter's `generateGoUsage` and the Python emitter's `generatePythonUsage`.
+ * Reuses the same client attribute-chain builder (snake_case) and the shared
+ * example planner (required-only, no `withOptional`) the test suite uses, minus
+ * the mock/assert/guard scaffolding. `chain` is the resource-name path
+ * (root→owner) the method hangs off.
+ */
+export function generateRubyUsage(
+  method: Method,
+  chain: string[],
+  spec: OpensdkSpecJson,
+  options: OpensdkRubyOptions = {},
+): string {
+  const pkg = options.packageName ?? rubyGemName(spec.info.title);
+  const moduleName = options.moduleName ?? pascalCase(spec.info.title);
+  const envVar = usageEnvVar(spec, pkg);
+
+  const types = new Map((spec.types || []).map((t) => [t.name, t]));
+  const attrs = chain.map((s) => snakeCase(s));
+  const action = snakeCase(method.action);
+  const callChain = `client.${[...attrs, action].join('.')}`;
+
+  // A doc usage snippet: ALL fields with realistic (spec example/default) values.
+  const example = planMethodExample(method, types, { realistic: true, withOptional: true });
+  const args = renderCallArgs(example);
+  const call = args ? `${callChain}(${args})` : callChain;
+
+  // Capture + print the result only when the method returns one (binary
+  // download, paginated list, or a primary response) — mirrors resultAssertion.
+  const op = planOperation(method, types);
+  const hasResult = op.binaryContentType != null || op.pageName != null || method.primaryResponse != null;
+
+  // Client construction: normally the default base URL. When the caller sets
+  // `baseUrlEnv` (the snippet-run tier), also read the base URL from that env var
+  // so the snippet can target a recording server. Only alters output when set —
+  // default snippet output stays byte-identical.
+  const clientArgs = [`api_key: ENV[${JSON.stringify(envVar)}]`];
+  if (options.baseUrlEnv) {
+    clientArgs.push(`base_url: ENV[${JSON.stringify(options.baseUrlEnv)}]`);
+  }
+  const clientLine = `client = ${moduleName}::Client.new(${clientArgs.join(', ')})`;
+
+  const lines = [`require ${JSON.stringify(pkg)}`, ``, clientLine, ``];
+  if (hasResult) {
+    lines.push(`result = ${call}`);
+    lines.push(`pp result`);
+  } else {
+    lines.push(call);
+  }
+  return `${lines.join('\n')}\n`;
 }

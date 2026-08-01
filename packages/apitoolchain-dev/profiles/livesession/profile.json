@@ -1,0 +1,21 @@
+{
+  "name": "LiveSession API",
+  "description": "The real LiveSession OpenAPI spec (fetched fresh from GitHub) registered under its own namespace, with a generated Node SDK.",
+  "order": 10,
+  "apis": [
+    {
+      "name": "LiveSession API",
+      "ns": "livesession",
+      "spec": "livesession",
+      "source": "github.com/livesession/livesession-docs"
+    }
+  ],
+  "sdks": [
+    {
+      "api": "LiveSession API",
+      "name": "LiveSession SDK",
+      "languages": ["node"]
+    }
+  ],
+  "connect": false
+}

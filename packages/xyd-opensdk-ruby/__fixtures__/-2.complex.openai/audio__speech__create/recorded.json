@@ -1,0 +1,15 @@
+{
+  "call": "audio.speech.create",
+  "request": {
+    "method": "post",
+    "path": "/audio/speech",
+    "query": [],
+    "bodyFields": [
+      "input",
+      "model",
+      "voice"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

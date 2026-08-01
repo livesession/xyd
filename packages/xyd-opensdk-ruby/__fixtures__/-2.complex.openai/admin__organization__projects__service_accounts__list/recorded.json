@@ -1,0 +1,10 @@
+{
+  "call": "admin.organization.projects.service_accounts.list",
+  "request": {
+    "method": "get",
+    "path": "/organization/projects/{project_id}/service_accounts",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

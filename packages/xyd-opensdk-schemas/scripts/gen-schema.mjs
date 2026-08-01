@@ -138,6 +138,11 @@ const schema = {
   properties: {
     $schema: { type: 'string' },
     version: { description: 'Config schema version.', anyOf: [{ type: 'number' }, { type: 'string' }] },
+    spec: {
+      type: 'string',
+      description:
+        'Path to the OpenAPI spec (yaml/json) or a pre-parsed OpenSDK IR (.json), relative to this file. Used by `opensdk generate` when --spec is omitted; --spec overrides it.',
+    },
     sdkName: { type: 'string', description: 'Default SDK name passed to the converter.' },
     behavior: { $ref: '#/$defs/SdkBehavior', description: 'Global runtime behavior (deep-merged over the canonical defaults).' },
     grouping: {

@@ -1,0 +1,10 @@
+{
+  "call": "fineTuning.jobs.pause",
+  "request": {
+    "method": "post",
+    "path": "/fine_tuning/jobs/{fine_tuning_job_id}/pause",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

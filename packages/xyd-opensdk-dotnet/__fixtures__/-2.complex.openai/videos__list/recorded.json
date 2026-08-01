@@ -1,0 +1,10 @@
+{
+  "call": "Videos.List",
+  "request": {
+    "method": "get",
+    "path": "/videos",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

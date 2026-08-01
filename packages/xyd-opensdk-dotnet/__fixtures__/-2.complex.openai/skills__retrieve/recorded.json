@@ -1,0 +1,10 @@
+{
+  "call": "Skills.Retrieve",
+  "request": {
+    "method": "get",
+    "path": "/skills/{skill_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

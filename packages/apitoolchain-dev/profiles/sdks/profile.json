@@ -1,0 +1,25 @@
+{
+  "name": "APIs + SDKs",
+  "description": "An API with a generated SDK across Node, Go and Python targets — not yet pushed anywhere.",
+  "order": 3,
+  "apis": [
+    {
+      "name": "LiveSession API",
+      "ns": "livesession",
+      "spec": "livesession",
+      "source": "github.com/livesession/livesession-docs"
+    }
+  ],
+  "sdks": [
+    {
+      "api": "LiveSession API",
+      "name": "LiveSession SDK",
+      "languages": ["node", "go", "python"]
+    }
+  ],
+  "projects": [{ "name": "Staging" }],
+  "members": [
+    { "email": "ada@livesession.io", "name": "Ada Lovelace", "role": "member" }
+  ],
+  "connect": false
+}

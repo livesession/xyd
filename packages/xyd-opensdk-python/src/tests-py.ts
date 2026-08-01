@@ -1,10 +1,12 @@
-import type { Method, NamedType, Param, Resource, TypeRef } from '@xyd-js/opensdk-core';
+import type { Method, NamedType, OpensdkSpecJson, Param, Resource, TypeRef } from '@xyd-js/opensdk-core';
 import { type MethodExample, type PageName, planMethodExample, planOperation } from '@xyd-js/opensdk-framework';
 
 import { renderPyExample } from './example-py';
 import { pyPageName } from './method';
 import { pascalCase, snakeCase } from './naming';
+import { resolvePythonOptions } from './project';
 import { PyUses, pyType } from './pytype';
+import type { OpensdkPythonOptions } from './types';
 
 // The SDK's OWN pytest suite — the artifact openai-python ships
 // (tests/api_resources/test_*.py). One tests/test_<resource>.py per top-level
@@ -194,4 +196,63 @@ export function resourceTestPy(resource: Resource, pkg: string, types: Map<strin
   const imports = groups.map((g) => g.join('\n')).join('\n\n');
   const body = blocks.length ? blocks.join('\n\n') : '    pass';
   return `${imports}\n\n\nclass Test${pascalCase(resource.name)}:\n${body}\n`;
+}
+
+/**
+ * A single per-operation USAGE SNIPPET (docs): a self-contained, runnable-looking
+ * Python example that constructs the client and makes ONE required-only method
+ * call (à la Fern/Speakeasy/Stainless), mirroring the Go emitter's
+ * `generateGoUsage`. Reuses the same client attribute-chain builder and the
+ * shared example planner (required-only, no `withOptional`) the test suite uses,
+ * minus the fixture/assert/guard scaffolding. `chain` is the resource-name path
+ * (root→owner) the method hangs off. Sync — we have no async client yet.
+ */
+export function generatePythonUsage(
+  method: Method,
+  chain: string[],
+  spec: OpensdkSpecJson,
+  options: OpensdkPythonOptions = {},
+): string {
+  const { pkg, envVar } = resolvePythonOptions(spec, options);
+  const attrs = chain.map((s) => snakeCase(s));
+  const action = snakeCase(method.action);
+  const callChain = `client.${[...attrs, action].join('.')}`;
+  // A doc usage snippet: ALL fields with realistic (spec example/default) values.
+  const example = planMethodExample(method, new Map((spec.types || []).map((t) => [t.name, t])), {
+    realistic: true,
+    withOptional: true,
+  });
+  const call = `${callChain}(${renderCallArgs(example)})`;
+
+  // Capture + print the result only when the method returns one (binary
+  // download, paginated list, or a primary response) — mirrors the Go emitter.
+  const plan = planOperation(method, new Map((spec.types || []).map((t) => [t.name, t])));
+  const hasResult =
+    plan.binaryContentType != null || pyPageName(plan) != null || method.primaryResponse != null;
+
+  // Client construction: normally the default base URL. When the caller sets
+  // `baseUrlEnv` (the snippet-run tier), read the base URL from that env var so
+  // the snippet can target a recording server. Only alters output when set —
+  // default snippet output stays byte-identical.
+  const clientArgs = [`    api_key=os.environ.get(${JSON.stringify(envVar)}),`];
+  if (options.baseUrlEnv) {
+    clientArgs.push(`    base_url=os.environ.get(${JSON.stringify(options.baseUrlEnv)}),`);
+  }
+  const lines = [
+    `import os`,
+    ``,
+    `from ${pkg} import Client`,
+    ``,
+    `client = Client(`,
+    ...clientArgs,
+    `)`,
+    ``,
+  ];
+  if (hasResult) {
+    lines.push(`result = ${call}`);
+    lines.push(`print(result)`);
+  } else {
+    lines.push(call);
+  }
+  return `${lines.join('\n')}\n`;
 }

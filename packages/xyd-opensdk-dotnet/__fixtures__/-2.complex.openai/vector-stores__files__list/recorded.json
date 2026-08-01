@@ -1,0 +1,10 @@
+{
+  "call": "VectorStores.Files.List",
+  "request": {
+    "method": "get",
+    "path": "/vector_stores/{vector_store_id}/files",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

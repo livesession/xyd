@@ -18,6 +18,13 @@ export default defineConfig({
             // tests — never collect them (each emitter's own vitest config already
             // restricts include to __tests__/**; the root glob is broader).
             '**/__fixtures__/**',
+            // The @apitoolchain/* packages are standalone bun packages (excluded
+            // from the pnpm workspace) with their own test runners: apitoolchain-
+            // filters runs its own `vitest run` against its own node_modules (for
+            // kysely etc.), and apitoolchain-release-man uses `bun test`
+            // (`bun:test`). The root pnpm Vitest can't resolve their bun deps, so
+            // never collect them here.
+            'packages/apitoolchain-*/**',
             '**/node_modules/**',
             '**/dist/**',
             '**/build/**'

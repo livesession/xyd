@@ -1,0 +1,13 @@
+{
+  "call": "Skills.Update",
+  "request": {
+    "method": "post",
+    "path": "/skills/{skill_id}",
+    "query": [],
+    "bodyFields": [
+      "default_version"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

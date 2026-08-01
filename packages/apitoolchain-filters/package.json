@@ -1,0 +1,36 @@
+{
+  "name": "@apitoolchain/filters",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Headless filter composer — a filter model (search + rules) compiled to parameterized SQL via Kysely (compile-only).",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": ["src"],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "format": "bunx biome check --write src"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.2",
+    "@types/react": "^19.2.17",
+    "react": "^19.2.7",
+    "typescript": "^6.0.3",
+    "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "kysely": "^0.29.2"
+  }
+}

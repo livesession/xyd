@@ -90,7 +90,13 @@ export function openapi2opensdk(doc: OpenAPIV3.Document, options: OpenApi2OpenSd
       const operation = (pathItem as Record<string, unknown>)[method] as OpenAPIV3.OperationObject | undefined;
       if (!operation || typeof operation !== 'object') continue;
 
-      const target = applyMounts(deriveTarget(method, path, operation, options), method, path, options);
+      const target = applyMounts(
+        deriveTarget(method, path, operation, options),
+        method,
+        path,
+        options,
+        operation,
+      );
       const built = buildMethod(doc, method, path, operation, pathItemParams, target, symbols, sdk);
       tree.insert(target.resourcePath, built);
     }
@@ -115,25 +121,57 @@ const splitSegments = (s: string): string[] =>
     .map(kebabCase);
 
 /**
- * Apply SDK-config grouping that isn't in the spec paths (oagen's
- * operationHints/mountRules): a per-operation `mountOn`/`action` override, then
- * longest-prefix `mountRules` remapping of the resource path — e.g.
- * `organization -> admin/organization` reproduces openai-go's admin namespace.
+ * `x-open-sdk-method-name` on an operation — a verbatim SDK method name that
+ * overrides the derived action. Kebab-cased to match the rest of the pipeline
+ * (emitters re-case it per language convention).
+ */
+function xMethodName(operation: OpenAPIV3.OperationObject): string | undefined {
+  const v = (operation as Record<string, unknown>)['x-open-sdk-method-name'];
+  return typeof v === 'string' && v.trim() ? v : undefined;
+}
+
+/**
+ * `x-open-sdk-group-name` on an operation — the namespace the method nests
+ * under. A string (optionally `/`- or `.`-separated) is one path; an array
+ * nests (e.g. `[admin, users]` → `client.admin.users.*`).
+ */
+function xGroupName(operation: OpenAPIV3.OperationObject): string[] | undefined {
+  const v = (operation as Record<string, unknown>)['x-open-sdk-group-name'];
+  if (typeof v === 'string' && v.trim()) return splitSegments(v);
+  if (Array.isArray(v)) {
+    const segs = v
+      .filter((s): s is string => typeof s === 'string' && s.trim() !== '')
+      .flatMap(splitSegments);
+    return segs.length ? segs : undefined;
+  }
+  return undefined;
+}
+
+/**
+ * Apply grouping/naming that isn't in the spec paths. Precedence, lowest to
+ * highest: the derived path/action → oagen `operationHints`/`mountRules` (SDK
+ * config) → the operation's own `x-open-sdk-group-name`/`x-open-sdk-method-name`
+ * extensions, which are the most explicit (Fern-style) and therefore win.
  */
 function applyMounts(
   target: DerivedTarget,
   method: string,
   path: string,
   options: OpenApi2OpenSdkOptions,
+  operation: OpenAPIV3.OperationObject,
 ): DerivedTarget {
   let resourcePath = target.resourcePath;
   let action = target.action;
+
+  const xGroup = xGroupName(operation);
+  const xName = xMethodName(operation);
 
   const hint = options.operationHints?.[`${method.toUpperCase()} ${path}`];
   if (hint?.mountOn) resourcePath = splitSegments(hint.mountOn);
   if (hint?.action) action = kebabCase(hint.action);
 
-  if (options.mountRules && !hint?.mountOn) {
+  // A spec-level group override supersedes config remapping entirely.
+  if (options.mountRules && !hint?.mountOn && !xGroup) {
     let fromSegs: string[] | undefined;
     let toSegs: string[] | undefined;
     for (const [from, to] of Object.entries(options.mountRules)) {
@@ -145,6 +183,11 @@ function applyMounts(
     }
     if (fromSegs && toSegs) resourcePath = [...toSegs, ...resourcePath.slice(fromSegs.length)];
   }
+
+  // The operation's own extensions are the most explicit — they win over the
+  // derived path and any SDK-config hint/rule above.
+  if (xGroup) resourcePath = xGroup;
+  if (xName) action = kebabCase(xName);
 
   return { ...target, resourcePath, action };
 }

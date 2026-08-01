@@ -1,0 +1,20 @@
+{
+  "name": "@apitoolchain/schemas",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared TypeSpec domain models (the wire contract) for the apitoolchain backend services.",
+  "tspMain": "tsp/models.tsp",
+  "exports": {
+    ".": {
+      "typespec": "./tsp/models.tsp"
+    }
+  },
+  "files": ["tsp"],
+  "scripts": {
+    "format": "bunx biome check --write ."
+  },
+  "peerDependencies": {
+    "@typespec/compiler": ">=1.0.0"
+  }
+}

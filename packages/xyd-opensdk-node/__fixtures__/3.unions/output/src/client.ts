@@ -7,7 +7,7 @@ import { Events } from './resources/events';
 import { Logs } from './resources/logs';
 
 /** The Union Depot API client. */
-export class Client extends APIClient {
+export class UnionDepot extends APIClient {
   readonly shapes: Shapes;
   readonly events: Events;
   readonly logs: Logs;

@@ -14,9 +14,15 @@ export const CodeCopyHost = css`
         border-radius: 6px;
         padding: 6px;
 
+        /* Keep the inherited (muted) icon colour at rest; brighten to the
+         * toolbar's ACTIVE colour on hover so the icon itself reacts, not just
+         * the background. (Don't set a rest colour — in dark-code themes
+         * --codetabs-color is white, which would make the icon look always-on.) */
+        transition: color ease-in 0.1s, background ease-in 0.1s;
+
         &:hover {
-            transition: ease-in 0.1s;
+            color: var(--codetabs-color--active);
             background: var(--xyd-code-copy-color);
         }
     }
-`; 
+`;

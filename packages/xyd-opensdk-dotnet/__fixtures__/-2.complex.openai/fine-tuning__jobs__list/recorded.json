@@ -1,0 +1,10 @@
+{
+  "call": "FineTuning.Jobs.List",
+  "request": {
+    "method": "get",
+    "path": "/fine_tuning/jobs",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "call": "Beta.Assistants.Create",
+  "request": {
+    "method": "post",
+    "path": "/assistants",
+    "query": [],
+    "bodyFields": [
+      "model"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

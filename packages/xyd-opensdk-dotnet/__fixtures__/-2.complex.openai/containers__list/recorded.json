@@ -1,0 +1,10 @@
+{
+  "call": "Containers.List",
+  "request": {
+    "method": "get",
+    "path": "/containers",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

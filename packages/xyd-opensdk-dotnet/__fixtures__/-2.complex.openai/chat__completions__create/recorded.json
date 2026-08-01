@@ -1,0 +1,14 @@
+{
+  "call": "Chat.Completions.Create",
+  "request": {
+    "method": "post",
+    "path": "/chat/completions",
+    "query": [],
+    "bodyFields": [
+      "messages",
+      "model"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

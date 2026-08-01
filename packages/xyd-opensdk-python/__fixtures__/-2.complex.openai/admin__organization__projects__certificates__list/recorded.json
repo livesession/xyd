@@ -1,0 +1,10 @@
+{
+  "call": "admin.organization.projects.certificates.list",
+  "request": {
+    "method": "get",
+    "path": "/organization/projects/{project_id}/certificates",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

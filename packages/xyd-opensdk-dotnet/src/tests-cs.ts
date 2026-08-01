@@ -1,9 +1,11 @@
-import type { Method, NamedType, Param, Resource, TypeRef } from '@xyd-js/opensdk-core';
-import { planExample, planMethodExample, planOperation } from '@xyd-js/opensdk-framework';
+import type { Method, NamedType, OpensdkSpecJson, Param, Resource, TypeRef } from '@xyd-js/opensdk-core';
+import type { NeutralTypeField, RenderedTypeField, RenderedTypeReference } from '@xyd-js/opensdk-framework';
+import { planExample, planMethodExample, planOperation, planTypeReference, realisticLiteral, refSchemaName } from '@xyd-js/opensdk-framework';
 
-import { CS_HEADER, CSPROJ_HEADER, indent } from './cswriter';
+import { CS_HEADER, CSPROJ_HEADER, csFile, indent } from './cswriter';
+import { csType, nullable } from './cstype';
 import { type CsExampleCtx, renderRefValue } from './example-cs';
-import { methodName, pascalCase } from './naming';
+import { camelCase, methodName, pascalCase, screamingSnakeCase } from './naming';
 import { dotnetPageName } from './pagination';
 
 // The SDK's OWN test suite (dotnetEmitter.generateTests) — one `<Resource>Tests`
@@ -245,21 +247,30 @@ function methodHasResult(method: Method, types: Map<string, NamedType>): boolean
  * or required+optional when `withOptional`. A `targetPath` param renders as `""`
  * (the empty-path guard). Mirrors the service emitter's signature ordering.
  */
-function callArgs(method: Method, exCtx: CsExampleCtx, withOptional: boolean, targetPath?: Param): string {
+function callArgs(method: Method, exCtx: CsExampleCtx, withOptional: boolean, targetPath?: Param, realistic = false): string {
   const required: string[] = [];
   const optional: string[] = [];
   for (const p of method.pathParams || []) {
     if (targetPath && p === targetPath) required.push('""');
-    else required.push(renderRefValue(p.type as TypeRef, planExample(p.type as TypeRef, exCtx.types, { stringHint: p.name }), exCtx));
+    else {
+      const value =
+        (realistic ? realisticLiteral(p.type as TypeRef, p.example, p.default) : undefined) ??
+        planExample(p.type as TypeRef, exCtx.types, { stringHint: p.name, realistic });
+      required.push(renderRefValue(p.type as TypeRef, value, exCtx));
+    }
   }
   const bodyRef = method.requestBody?.type as TypeRef | undefined;
   if (bodyRef) {
-    const expr = renderRefValue(bodyRef, planExample(bodyRef, exCtx.types, { withOptional }), exCtx);
+    // A body is a struct ref — its fields get realism via exampleFields (field.default).
+    const expr = renderRefValue(bodyRef, planExample(bodyRef, exCtx.types, { withOptional, realistic }), exCtx);
     if (method.requestBody?.required === true) required.push(expr);
     else optional.push(expr);
   }
   for (const p of [...(method.queryParams || []), ...(method.headerParams || [])]) {
-    const expr = renderRefValue(p.type as TypeRef, planExample(p.type as TypeRef, exCtx.types, { withOptional, stringHint: p.name }), exCtx);
+    const value =
+      (realistic ? realisticLiteral(p.type as TypeRef, p.example, p.default) : undefined) ??
+      planExample(p.type as TypeRef, exCtx.types, { withOptional, stringHint: p.name, realistic });
+    const expr = renderRefValue(p.type as TypeRef, value, exCtx);
     if (p.required) required.push(expr);
     else optional.push(expr);
   }
@@ -340,4 +351,147 @@ namespace ${testNamespace};
 
 ${cls}
 `;
+}
+
+/** The render context threaded through the .NET usage-snippet emitter. */
+export interface DotnetUsageCtx {
+  sdk: string;
+  namespace: string;
+  types: Map<string, NamedType>;
+  /** The env var the client reads the credential from; falls back to `<SDK>_API_KEY`. */
+  envVar?: string;
+  /**
+   * Snippet-run only (ask C.2): when set, the snippet also constructs the client
+   * reading its base URL from this env var so it can be pointed at a recording
+   * server. Unset (default) → the snippet's client construction — and every
+   * committed usage golden — stays byte-identical.
+   */
+  baseUrlEnv?: string;
+}
+
+/**
+ * A single per-operation USAGE SNIPPET (docs): a self-contained, runnable-looking
+ * C# example — a top-level `Example` program that constructs the client and makes
+ * ONE required-only method call (à la Fern/Speakeasy/Stainless), mirroring the
+ * Go/Python/Java emitters' usage snippets. Reuses the SAME client attribute chain
+ * builder (PascalCase) and call-assembly (`callArgs`, required-only) the test suite
+ * uses, minus the mock/assert/guard scaffolding. `chain` is the resource-name path
+ * (root→owner) the method hangs off. Async — the SDK's methods are `...Async`.
+ */
+export function generateDotnetUsage(method: Method, chain: string[], ctx: DotnetUsageCtx): string {
+  const exCtx: CsExampleCtx = { types: ctx.types };
+  const name = methodName(method.action);
+  const chainExpr = `client.${chain.map(pascalCase).join('.')}.${name}`;
+  // A doc usage snippet: ALL fields with realistic (spec example/default) values.
+  const call = `${chainExpr}(${callArgs(method, exCtx, true, undefined, true)})`;
+  const hasResult = methodHasResult(method, ctx.types);
+
+  const envVar = ctx.envVar ?? `${screamingSnakeCase(ctx.sdk)}_API_KEY`;
+  const keyExpr = `Environment.GetEnvironmentVariable(${JSON.stringify(envVar)})`;
+
+  // Client construction: normally apiKey-only (default base URL). When `baseUrlEnv`
+  // is set (the snippet-run tier, ask C.2), ALSO read the base URL from that env var
+  // so the snippet can target a recording server. Only alters output when set —
+  // default snippet output stays BYTE-IDENTICAL.
+  const clientArgs = [`apiKey: ${keyExpr}`];
+  if (ctx.baseUrlEnv) {
+    clientArgs.push(`baseUrl: Environment.GetEnvironmentVariable(${JSON.stringify(ctx.baseUrlEnv)})`);
+  }
+
+  const lines: string[] = [`var client = new ${ctx.sdk}Client(${clientArgs.join(', ')});`];
+  if (hasResult) {
+    lines.push(`var result = await ${call};`);
+    lines.push('Console.WriteLine(result);');
+  } else {
+    lines.push(`await ${call};`);
+  }
+
+  // A top-level async-Main `Program` (the conventional entry class name; avoids
+  // clashing with an `Example`-rooted namespace): `using`s sorted by csFile, the
+  // SDK namespace imported so the client + models resolve. System.Collections.Generic
+  // is needed whenever a required example value is a List<T>/Dictionary<string,T>.
+  const usings = ['System', 'System.Collections.Generic', 'System.Threading.Tasks', ctx.namespace];
+  const cls = `public static class Program\n{\n${indent(
+    `public static async Task Main()\n{\n${indent(lines.join('\n'))}\n}`,
+  )}\n}`;
+  return csFile(usings, `${ctx.namespace}.Usage`, [cls]);
+}
+
+// ---- type reference (Atlas SDK-types view) -------------------------------
+
+function csRenderField(f: NeutralTypeField, types: Map<string, NamedType>): RenderedTypeField {
+  const base = csType(f.typeRef as TypeRef, types);
+  return {
+    // Body maps to a model class property (PascalCase); query/header map to a
+    // method argument (camelCase).
+    name: f.in === 'body' ? pascalCase(f.logicalName) : camelCase(f.logicalName),
+    langType: f.required ? base : nullable(base),
+    required: f.required,
+    description: f.description,
+    deprecated: f.deprecated,
+    refTypeName: refSchemaName(f.typeRef),
+  };
+}
+
+/** The `Task<T>` display return — the actual type name (csType), not the runtime
+ * `object?` a mapped union decodes to. Mirrors returnPlan (service.ts). */
+function csReturnDisplay(method: Method, op: ReturnType<typeof planOperation>, types: Map<string, NamedType>): string {
+  if (op.binaryContentType) return 'Task<byte[]>';
+  const page = dotnetPageName(op);
+  if (page) return `Task<${page}<${csType(method.pagination?.itemType as TypeRef | undefined, types)}>>`;
+  const ref = method.primaryResponse as TypeRef | undefined;
+  if (!ref || op.primaryResponse === 'none') return 'Task';
+  return `Task<${csType(ref, types)}>`;
+}
+
+function csResponse(
+  method: Method,
+  op: ReturnType<typeof planOperation>,
+  neutral: ReturnType<typeof planTypeReference>,
+  types: Map<string, NamedType>,
+): RenderedTypeReference['response'] {
+  if (op.binaryContentType) return { langType: 'byte[]', note: `binary download (${op.binaryContentType})` };
+  const ref = neutral.response.typeRef;
+  if (!ref || op.primaryResponse === 'none') return { langType: 'Task', note: 'no response body' };
+  const typeName = csType(ref as TypeRef, types);
+  const note = op.pageName ? `paginated (${op.pageName})` : undefined;
+  if (neutral.response.fields) {
+    return {
+      typeName,
+      note,
+      fields: neutral.response.fields.map((f) => ({
+        name: pascalCase(f.logicalName),
+        langType: csType(f.typeRef as TypeRef, types),
+        required: f.required,
+        description: f.description,
+        deprecated: f.deprecated,
+        refTypeName: refSchemaName(f.typeRef),
+      })),
+    };
+  }
+  return { typeName, langType: typeName, note };
+}
+
+/** The per-operation SDK TYPE reference for .NET: the method signature + the
+ * request field rows (flattened args — no dedicated params class) + the response. */
+export function generateDotnetTypeReference(method: Method, chain: string[], ctx: DotnetUsageCtx): RenderedTypeReference {
+  const types = ctx.types;
+  const op = planOperation(method, types);
+  const neutral = planTypeReference(method, types);
+  const name = methodName(method.action);
+  const chainExpr = `client.${chain.map(pascalCase).join('.')}.${name}`;
+
+  const argNames = [
+    ...op.paramGroups.path.map((p) => camelCase(p.name)),
+    ...(op.hasBody ? ['body'] : []),
+    ...op.paramGroups.query.map((q) => camelCase(q.name)),
+    ...op.paramGroups.header.map((h) => camelCase(h.name)),
+  ];
+  const signature = `${chainExpr}(${argNames.join(', ')}) -> ${csReturnDisplay(method, op, types)}`;
+
+  return {
+    signature,
+    request: { fields: neutral.request.fields.map((f) => csRenderField(f, types)) },
+    response: csResponse(method, op, neutral, types),
+  };
 }

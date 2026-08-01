@@ -1,0 +1,13 @@
+{
+  "call": "vector_stores.search",
+  "request": {
+    "method": "post",
+    "path": "/vector_stores/{vector_store_id}/search",
+    "query": [],
+    "bodyFields": [
+      "query"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

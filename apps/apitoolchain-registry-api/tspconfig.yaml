@@ -1,0 +1,11 @@
+emit:
+  - "@typespec/http-server-js"
+  - "@typespec/openapi3"
+options:
+  "@typespec/http-server-js":
+    emitter-output-dir: "{project-root}/api/openapi/v1"
+    express: false
+  "@typespec/openapi3":
+    emitter-output-dir: "{project-root}/openapi/v1/__generated__"
+    openapi-versions:
+      - 3.0.0

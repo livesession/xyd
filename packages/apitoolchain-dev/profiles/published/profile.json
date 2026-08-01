@@ -1,0 +1,22 @@
+{
+  "name": "Published SDKs",
+  "description": "An API with a generated Node SDK published to the local dev npm registry (verdaccio). Shows the full publish flow — connect a package registry, publish, and `npm install` the result.",
+  "order": 8,
+  "apis": [
+    {
+      "name": "LiveSession API",
+      "ns": "livesession",
+      "spec": "livesession",
+      "source": "github.com/livesession/livesession-docs"
+    }
+  ],
+  "sdks": [
+    {
+      "api": "LiveSession API",
+      "name": "LiveSession SDK",
+      "languages": ["node"]
+    }
+  ],
+  "publish": true,
+  "connect": false
+}

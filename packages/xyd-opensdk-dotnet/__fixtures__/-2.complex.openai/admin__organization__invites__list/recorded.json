@@ -1,0 +1,10 @@
+{
+  "call": "Admin.Organization.Invites.List",
+  "request": {
+    "method": "get",
+    "path": "/organization/invites",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "call": "Responses.InputItems.List",
+  "request": {
+    "method": "get",
+    "path": "/responses/{response_id}/input_items",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

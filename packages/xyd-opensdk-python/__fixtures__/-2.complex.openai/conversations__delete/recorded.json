@@ -1,0 +1,10 @@
+{
+  "call": "conversations.delete",
+  "request": {
+    "method": "delete",
+    "path": "/conversations/{conversation_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

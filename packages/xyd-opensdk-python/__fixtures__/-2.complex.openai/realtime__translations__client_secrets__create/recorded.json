@@ -1,0 +1,13 @@
+{
+  "call": "realtime.translations.client_secrets.create",
+  "request": {
+    "method": "post",
+    "path": "/realtime/translations/client_secrets",
+    "query": [],
+    "bodyFields": [
+      "session"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

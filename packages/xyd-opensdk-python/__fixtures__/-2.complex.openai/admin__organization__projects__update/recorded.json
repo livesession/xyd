@@ -1,0 +1,11 @@
+{
+  "call": "admin.organization.projects.update",
+  "request": {
+    "method": "post",
+    "path": "/organization/projects/{project_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

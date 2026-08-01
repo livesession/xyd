@@ -1,0 +1,15 @@
+{
+  "call": "audio.voiceConsents.create",
+  "request": {
+    "method": "post",
+    "path": "/audio/voice_consents",
+    "query": [],
+    "bodyFields": [
+      "language",
+      "name",
+      "recording"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

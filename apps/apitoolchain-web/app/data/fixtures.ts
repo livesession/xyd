@@ -1,0 +1,599 @@
+import type {
+  DocsProject,
+  GitProvider,
+  McpServer,
+  Notification,
+  Organization,
+  PackageRegistry,
+  Project,
+  RegistryConnection,
+  RegistryEntry,
+  Release,
+  RepoConnection,
+  Sdk,
+  SdkBuild,
+  SdkTarget,
+  TargetVersion,
+  User,
+} from "./types";
+
+// Git providers/connections need the live gateway (a Go service + real repo);
+// with no backend the UI shows the "connect a provider" empty state.
+export const GIT_PROVIDERS: GitProvider[] = [];
+export const REPO_CONNECTIONS: RepoConnection[] = [];
+export const RELEASES: Release[] = [];
+// Package registries + publish connections likewise need the live gateway
+// (which shells out to npm/twine/… against a real registry).
+export const PACKAGE_REGISTRIES: PackageRegistry[] = [];
+export const REGISTRY_CONNECTIONS: RegistryConnection[] = [];
+
+/**
+ * Mock data for the front-end pass. Timestamps are friendly relative strings
+ * (SSR-stable). Replace these + the accessors in `./api.ts` with real fetches
+ * to wire the sections to the registry / opensdk / docs / mcp backends.
+ */
+
+export const ORGANIZATION: Organization = {
+  id: "org_acme",
+  name: "Acme Inc.",
+  plan: "Free plan",
+};
+
+export const PROJECT: Project = {
+  id: "prj_default",
+  name: "Default project",
+  orgId: "org_acme",
+};
+
+// The signed-in account shown when no backend is configured (auth is a no-op in
+// fixtures mode — the app is usable offline).
+export const USER: User = {
+  id: "usr_dev",
+  email: "you@apitoolchain.dev",
+  name: "Dev User",
+  createdAt: "2024-01-01T00:00:00.000Z",
+};
+
+export const APIS: RegistryEntry[] = [
+  {
+    id: "livesession-api",
+    name: "LiveSession API",
+    description: "Sessions, events, and analytics — the LiveSession REST API.",
+    format: "openapi",
+    namespace: "livesession",
+    source: "github.com/livesession/livesession-openapi",
+    kind: "api",
+    updatedAt: "just now",
+    versions: [
+      {
+        version: "v1",
+        specUrl: "livesession/livesession-api@v1",
+        updatedAt: "just now",
+        current: true,
+      },
+    ],
+    distTags: [{ tag: "latest", version: "v1" }],
+    registryUrl:
+      "http://localhost:8787/@livesession/apis/livesession-api@latest",
+    sdkTargetCount: 0,
+    docsProjectCount: 0,
+    mcpServerCount: 0,
+  },
+  {
+    id: "petstore",
+    name: "Petstore API",
+    description: "Pets, stores, and orders — the canonical example service.",
+    format: "openapi",
+    namespace: "acme",
+    source: "github.com/acme/petstore",
+    kind: "api",
+    updatedAt: "2 hours ago",
+    versions: [
+      {
+        version: "2.1.0",
+        specUrl: "acme/petstore@2.1.0",
+        updatedAt: "2 hours ago",
+        current: true,
+      },
+      {
+        version: "2.0.0",
+        specUrl: "acme/petstore@2.0.0",
+        updatedAt: "3 weeks ago",
+        current: false,
+      },
+      {
+        version: "1.4.0",
+        specUrl: "acme/petstore@1.4.0",
+        updatedAt: "4 months ago",
+        current: false,
+      },
+    ],
+    distTags: [
+      { tag: "latest", version: "2.1.0" },
+      { tag: "stable", version: "2.0.0" },
+    ],
+    registryUrl: "http://localhost:8787/@acme/apis/petstore@latest",
+    sdkTargetCount: 3,
+    docsProjectCount: 1,
+    mcpServerCount: 1,
+  },
+  {
+    id: "payments",
+    name: "Payments API",
+    description: "Charges, refunds, payouts and balance — money movement.",
+    format: "openapi",
+    namespace: "acme",
+    source: "github.com/acme/payments",
+    kind: "api",
+    updatedAt: "yesterday",
+    versions: [
+      {
+        version: "3.2.1",
+        specUrl: "acme/payments@3.2.1",
+        updatedAt: "yesterday",
+        current: true,
+      },
+      {
+        version: "3.2.0",
+        specUrl: "acme/payments@3.2.0",
+        updatedAt: "2 weeks ago",
+        current: false,
+      },
+    ],
+    distTags: [{ tag: "latest", version: "3.2.1" }],
+    registryUrl: "http://localhost:8787/@acme/apis/payments@latest",
+    sdkTargetCount: 6,
+    docsProjectCount: 1,
+    mcpServerCount: 1,
+  },
+  {
+    id: "identity",
+    name: "Identity API",
+    description: "Users, sessions and organizations over GraphQL.",
+    format: "graphql",
+    namespace: "acme",
+    source: "github.com/acme/identity",
+    kind: "api",
+    updatedAt: "5 days ago",
+    versions: [
+      {
+        version: "1.0.0",
+        specUrl: "acme/identity@1.0.0",
+        updatedAt: "5 days ago",
+        current: true,
+      },
+    ],
+    distTags: [{ tag: "latest", version: "1.0.0" }],
+    registryUrl: "http://localhost:8787/@acme/apis/identity@latest",
+    sdkTargetCount: 1,
+    docsProjectCount: 1,
+    mcpServerCount: 0,
+  },
+  {
+    id: "catalog",
+    name: "Catalog Events",
+    description: "Product catalog change events (AsyncAPI). Draft.",
+    format: "asyncapi",
+    namespace: "acme",
+    source: "github.com/acme/catalog-events",
+    kind: "api",
+    updatedAt: "1 hour ago",
+    versions: [
+      {
+        version: "0.3.0",
+        specUrl: "acme/catalog@0.3.0",
+        updatedAt: "1 hour ago",
+        current: true,
+      },
+    ],
+    distTags: [{ tag: "latest", version: "0.3.0" }],
+    registryUrl: "http://localhost:8787/@acme/apis/catalog@latest",
+    sdkTargetCount: 0,
+    docsProjectCount: 0,
+    mcpServerCount: 0,
+  },
+  {
+    id: "address",
+    name: "Address",
+    description: "Shared postal address schema referenced across services.",
+    format: "jsonschema",
+    namespace: "acme",
+    source: "github.com/acme/schemas",
+    kind: "schema",
+    updatedAt: "3 days ago",
+    versions: [
+      {
+        version: "1.2.0",
+        specUrl: "acme/address@1.2.0",
+        updatedAt: "3 days ago",
+        current: true,
+      },
+      {
+        version: "1.1.0",
+        specUrl: "acme/address@1.1.0",
+        updatedAt: "1 month ago",
+        current: false,
+      },
+    ],
+    distTags: [
+      { tag: "latest", version: "1.2.0" },
+      { tag: "beta", version: "1.2.0" },
+    ],
+    registryUrl: "http://localhost:8787/@acme/schemas/address@latest",
+    sdkTargetCount: 0,
+    docsProjectCount: 0,
+    mcpServerCount: 0,
+  },
+  {
+    id: "money",
+    name: "Money",
+    description: "Currency + amount value object (minor units).",
+    format: "jsonschema",
+    namespace: "acme",
+    source: "github.com/acme/schemas",
+    kind: "schema",
+    updatedAt: "1 week ago",
+    versions: [
+      {
+        version: "1.0.0",
+        specUrl: "acme/money@1.0.0",
+        updatedAt: "1 week ago",
+        current: true,
+      },
+    ],
+    distTags: [{ tag: "latest", version: "1.0.0" }],
+    registryUrl: "http://localhost:8787/@acme/schemas/money@latest",
+    sdkTargetCount: 0,
+    docsProjectCount: 0,
+    mcpServerCount: 0,
+  },
+];
+
+export const SDKS: Sdk[] = [
+  {
+    id: "sdkp_petstore",
+    apiId: "petstore",
+    name: "Petstore SDK",
+    description: "Client libraries generated from the Petstore API.",
+    namespace: "acme",
+    version: "0.3.0",
+    registryRef: "sdks/acme/sdkp_petstore@0.3.0",
+    targetCount: 3,
+    createdAt: "2 hours ago",
+    updatedAt: "2 hours ago",
+  },
+  {
+    id: "sdkp_payments",
+    apiId: "payments",
+    name: "Payments SDK",
+    description: "Client libraries generated from the Payments API.",
+    namespace: "acme",
+    version: "1.2.0",
+    registryRef: "sdks/acme/sdkp_payments@1.2.0",
+    targetCount: 6,
+    createdAt: "yesterday",
+    updatedAt: "yesterday",
+  },
+  {
+    id: "sdkp_identity",
+    apiId: "identity",
+    name: "Identity SDK",
+    description: "Client libraries generated from the Identity API.",
+    namespace: "acme",
+    version: "0.1.0",
+    registryRef: "sdks/acme/sdkp_identity@0.1.0",
+    targetCount: 1,
+    createdAt: "5 days ago",
+    updatedAt: "5 days ago",
+  },
+];
+
+export const SDK_BUILDS: SdkBuild[] = [
+  {
+    id: "sdkb_petstore_030",
+    sdkId: "sdkp_petstore",
+    version: "0.3.0",
+    apiVersion: "v1",
+    status: "ready",
+    targets: [
+      { language: "go", packageName: "github.com/acme/petstore-go" },
+      { language: "python", packageName: "acme-petstore" },
+      { language: "node", packageName: "@acme/petstore" },
+    ],
+    logs:
+      "[go] ✓ ready — github.com/acme/petstore-go@2.1.0\n" +
+      "[python] ✓ ready — acme-petstore@2.1.0\n" +
+      "[node] ✓ ready — @acme/petstore@2.1.0\n",
+    createdAt: "2 hours ago",
+  },
+  {
+    id: "sdkb_petstore_020",
+    sdkId: "sdkp_petstore",
+    version: "0.2.0",
+    apiVersion: "v1",
+    status: "ready",
+    targets: [
+      { language: "go", packageName: "github.com/acme/petstore-go" },
+      { language: "python", packageName: "acme-petstore" },
+    ],
+    logs:
+      "[go] ✓ ready — github.com/acme/petstore-go@2.0.0\n" +
+      "[python] ✓ ready — acme-petstore@2.0.0\n",
+    createdAt: "yesterday",
+  },
+];
+
+export const SDK_TARGETS: SdkTarget[] = [
+  {
+    id: "sdk_petstore_go",
+    apiId: "petstore",
+    sdkId: "sdkp_petstore",
+    apiVersion: "v1",
+    language: "go",
+    packageName: "github.com/acme/petstore-go",
+    output: ".",
+    version: "2.1.0",
+    status: "ready",
+    lastPublishedAt: "2 hours ago",
+    registryUrl: "pkg.go.dev/github.com/acme/petstore-go",
+  },
+  {
+    id: "sdk_petstore_node",
+    apiId: "petstore",
+    sdkId: "sdkp_petstore",
+    apiVersion: "v1",
+    language: "node",
+    packageName: "@acme/petstore",
+    output: ".",
+    version: "2.1.0",
+    status: "ready",
+    lastPublishedAt: "2 hours ago",
+    registryUrl: "npmjs.com/package/@acme/petstore",
+  },
+  {
+    id: "sdk_petstore_python",
+    apiId: "petstore",
+    sdkId: "sdkp_petstore",
+    apiVersion: "v1",
+    language: "python",
+    packageName: "acme-petstore",
+    output: ".",
+    version: "2.1.0",
+    status: "building",
+  },
+
+  {
+    id: "sdk_payments_go",
+    apiId: "payments",
+    sdkId: "sdkp_payments",
+    apiVersion: "v1",
+    language: "go",
+    packageName: "github.com/acme/payments-go",
+    output: ".",
+    version: "3.2.1",
+    status: "ready",
+    lastPublishedAt: "yesterday",
+  },
+  {
+    id: "sdk_payments_node",
+    apiId: "payments",
+    sdkId: "sdkp_payments",
+    apiVersion: "v1",
+    language: "node",
+    packageName: "@acme/payments",
+    output: ".",
+    version: "3.2.1",
+    status: "ready",
+    lastPublishedAt: "yesterday",
+    registryUrl: "npmjs.com/package/@acme/payments",
+  },
+  {
+    id: "sdk_payments_python",
+    apiId: "payments",
+    sdkId: "sdkp_payments",
+    apiVersion: "v1",
+    language: "python",
+    packageName: "acme-payments",
+    output: ".",
+    version: "3.2.1",
+    status: "ready",
+    lastPublishedAt: "yesterday",
+  },
+  {
+    id: "sdk_payments_ruby",
+    apiId: "payments",
+    sdkId: "sdkp_payments",
+    apiVersion: "v1",
+    language: "ruby",
+    packageName: "acme-payments",
+    output: ".",
+    version: "3.2.1",
+    status: "ready",
+    lastPublishedAt: "2 days ago",
+  },
+  {
+    id: "sdk_payments_java",
+    apiId: "payments",
+    sdkId: "sdkp_payments",
+    apiVersion: "v1",
+    language: "java",
+    packageName: "com.acme.payments",
+    output: ".",
+    version: "3.2.0",
+    status: "draft",
+  },
+  {
+    id: "sdk_payments_dotnet",
+    apiId: "payments",
+    sdkId: "sdkp_payments",
+    apiVersion: "v1",
+    language: "dotnet",
+    packageName: "Acme.Payments",
+    output: ".",
+    version: "3.2.0",
+    status: "error",
+  },
+
+  {
+    id: "sdk_identity_node",
+    apiId: "identity",
+    sdkId: "sdkp_identity",
+    apiVersion: "v1",
+    language: "node",
+    packageName: "@acme/identity",
+    output: ".",
+    version: "1.0.0",
+    status: "ready",
+    lastPublishedAt: "5 days ago",
+  },
+];
+
+/** Per-target build history (mock). Targets with no explicit history fall back
+ * to a single row synthesised from their current version. */
+export const TARGET_VERSIONS: TargetVersion[] = [
+  {
+    id: "tv_petstore_go_210",
+    targetId: "sdk_petstore_go",
+    version: "2.1.0",
+    status: "ready",
+    createdAt: "2 hours ago",
+    publishedAt: "2 hours ago",
+    registryUrl: "pkg.go.dev/github.com/acme/petstore-go@v2.1.0",
+  },
+  {
+    id: "tv_petstore_go_200",
+    targetId: "sdk_petstore_go",
+    version: "2.0.0",
+    status: "ready",
+    createdAt: "3 days ago",
+    publishedAt: "3 days ago",
+    registryUrl: "pkg.go.dev/github.com/acme/petstore-go@v2.0.0",
+  },
+  {
+    id: "tv_petstore_go_150",
+    targetId: "sdk_petstore_go",
+    version: "1.5.0",
+    status: "ready",
+    createdAt: "2 weeks ago",
+    publishedAt: "2 weeks ago",
+    registryUrl: "pkg.go.dev/github.com/acme/petstore-go@v1.5.0",
+  },
+];
+
+export const DOCS_PROJECTS: DocsProject[] = [
+  {
+    id: "docs_petstore",
+    apiId: "petstore",
+    name: "Petstore Docs",
+    theme: "poetry",
+    sourceSpec: "acme/petstore@2.1.0",
+    url: "https://docs.acme.dev/petstore",
+    status: "ready",
+    lastBuiltAt: "2 hours ago",
+  },
+  {
+    id: "docs_payments",
+    apiId: "payments",
+    name: "Payments Docs",
+    theme: "solar",
+    sourceSpec: "acme/payments@3.2.1",
+    url: "https://docs.acme.dev/payments",
+    status: "ready",
+    lastBuiltAt: "yesterday",
+  },
+  {
+    id: "docs_identity",
+    apiId: "identity",
+    name: "Identity Docs",
+    theme: "cosmo",
+    sourceSpec: "acme/identity@1.0.0",
+    url: "https://docs.acme.dev/identity",
+    status: "building",
+  },
+];
+
+export const MCP_SERVERS: McpServer[] = [
+  {
+    id: "mcp_petstore",
+    apiId: "petstore",
+    name: "petstore-mcp",
+    sourceSpec: "acme/petstore@2.1.0",
+    toolsCount: 8,
+    transport: "http",
+    status: "ready",
+    url: "https://mcp.acme.dev/petstore",
+  },
+  {
+    id: "mcp_payments",
+    apiId: "payments",
+    name: "payments-mcp",
+    sourceSpec: "acme/payments@3.2.1",
+    toolsCount: 14,
+    transport: "sse",
+    status: "ready",
+    url: "https://mcp.acme.dev/payments",
+  },
+];
+
+export const NOTIFICATIONS: Notification[] = [
+  {
+    id: "ntf_1",
+    severity: "success",
+    title: "Petstore Node SDK published",
+    body: "@acme/petstore@2.1.0 was published to npm.",
+    createdAt: "2 hours ago",
+    read: false,
+    source: "sdk",
+    apiId: "petstore",
+  },
+  {
+    id: "ntf_2",
+    severity: "info",
+    title: "Petstore docs rebuilt",
+    body: "docs.acme.dev/petstore updated from acme/petstore@2.1.0.",
+    createdAt: "2 hours ago",
+    read: false,
+    source: "docs",
+    apiId: "petstore",
+  },
+  {
+    id: "ntf_3",
+    severity: "error",
+    title: "Payments .NET target failed",
+    body: "dotnet build failed for Acme.Payments — see logs.",
+    createdAt: "yesterday",
+    read: false,
+    source: "sdk",
+    apiId: "payments",
+  },
+  {
+    id: "ntf_4",
+    severity: "info",
+    title: "New API version registered",
+    body: "acme/payments@3.2.1 is now the current version.",
+    createdAt: "yesterday",
+    read: true,
+    source: "registry",
+    apiId: "payments",
+  },
+  {
+    id: "ntf_5",
+    severity: "success",
+    title: "payments-mcp is live",
+    body: "14 tools exposed over SSE at mcp.acme.dev/payments.",
+    createdAt: "2 days ago",
+    read: true,
+    source: "mcp",
+    apiId: "payments",
+  },
+  {
+    id: "ntf_6",
+    severity: "warning",
+    title: "Identity docs still building",
+    body: "The cosmo build has been running longer than usual.",
+    createdAt: "5 days ago",
+    read: true,
+    source: "docs",
+    apiId: "identity",
+  },
+];

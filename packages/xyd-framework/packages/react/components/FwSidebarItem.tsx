@@ -1,4 +1,4 @@
-import React, { } from "react"
+import React, { useEffect, useState } from "react"
 
 import { Metadata } from "@xyd-js/core";
 import { Icon } from "@xyd-js/components/writer";
@@ -6,7 +6,7 @@ import { UISidebar } from "@xyd-js/ui";
 
 
 import { Surface } from "./Surfaces";
-import { FooSidebarItemProps, useFooSidebar } from "../lib";
+import { FooSidebarItemProps, useFooSidebar, useSidebarActive } from "../lib";
 
 export interface FwSidebarItemProps {
     group: string
@@ -67,9 +67,33 @@ export interface FwSidebarItemElementProps extends FooSidebarItemProps {
     pageMeta?: Metadata
 }
 
+// Whether an injected active href lives anywhere under these items (drives a
+// parent group's active highlight in scroll-spy mode).
+function containsHref(items: FwSidebarItemElementProps[] | undefined, href: string): boolean {
+    if (!items) return false
+    return items.some(
+        (item) => item.href === href || item.url === href || containsHref(item.items, href),
+    )
+}
+
 FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
     const { active } = useFooSidebar()
+    const { activeHref } = useSidebarActive()
     const [isActive, setActive] = active(props)
+
+    // Mount the subtree while open, AND briefly while it closes so UICollapse can
+    // animate the collapse (it measures the children's height — if they've
+    // already unmounted it snaps shut). Then unmount, so a collapsed group
+    // doesn't retain its whole subtree (the lazy-mount perf win).
+    const [renderChildren, setRenderChildren] = useState(isActive)
+    useEffect(() => {
+        if (isActive) {
+            setRenderChildren(true)
+            return
+        }
+        const timeout = setTimeout(() => setRenderChildren(false), 320)
+        return () => clearTimeout(timeout)
+    }, [isActive])
 
     const title = props.sidebarTitle || props.title || ""
     const nested = !!props.items?.length
@@ -91,12 +115,18 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
         })
     })
 
-    // An item should only be considered active if it's the final target (has href)
-    const isActiveItem = !!(isActive && props.href)
-    // Only mark as parent active if it's a parent of an active item with href
-    const isParentActive = hasActiveChild
+    // An item is active if it's the final target (has href). A scroll-spy host
+    // (the API editor) can inject an active href to drive it directly — a single
+    // active item that follows the scroll — instead of the route-based Map.
+    const isActiveItem = activeHref != null
+        ? (props.href === activeHref || props.url === activeHref)
+        : !!(isActive && props.href)
+    // A parent highlights when it contains the active item.
+    const isParentActive = activeHref != null
+        ? containsHref(props.items, activeHref)
+        : hasActiveChild
 
-    const icon = <Icon name={props.icon || ""} size={16} />
+    const icon = props.icon ? <Icon name={props.icon} size={16} /> : null
 
     return <UISidebar.Item
         button={nested}
@@ -152,7 +182,7 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
         }
         {
             props.group !== false && props.items?.length && <UISidebar.SubTree isOpen={isActive}>
-                <>
+                {renderChildren && <>
                     {
                         props.items?.map((item, index) => <FwSidebarItem
                             uniqIndex={item.uniqIndex}
@@ -169,7 +199,7 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
                             pageMeta={item.pageMeta}
                         />)
                     }
-                </>
+                </>}
             </UISidebar.SubTree>
         }
     </UISidebar.Item>

@@ -1,6 +1,7 @@
+import { walkMethods } from '@xyd-js/opensdk-core';
 import { describe, expect, it } from 'vitest';
 
-import { opensdkRuby } from '../index';
+import { opensdkRuby, rubyEmitter } from '../index';
 import { RUBY_SMOKE, readIR, rubyCompileSmoke, testFixture } from './utils';
 
 const fixtures = [
@@ -14,6 +15,11 @@ const fixtures = [
     name: '3.unions',
     description:
       'type-system consumption: discriminated-union decode (mapping + raw fallback), mapping-less union passthrough, cursor/offset pagination containers',
+  },
+  {
+    name: '9.x-open-sdk',
+    description:
+      'x-open-sdk naming overrides: method/resource names from the IR action + resource tree (catalog.browse, system.health.check, things.fetch)',
   },
 ];
 
@@ -76,6 +82,27 @@ describe('opensdk-ruby shape', () => {
     expect(models).toContain('Pet = Struct.new(:id, :name, :status, :tags, keyword_init: true)');
     expect(models).toContain('module PetStatus');
     expect(models).toContain('AVAILABLE = "available"');
+  });
+
+  it('generateUsage: a self-contained per-operation doc snippet (client init + one required-only call)', () => {
+    const spec = readIR('9.x-open-sdk');
+    const types = new Map((spec.types || []).map((t: { name: string }) => [t.name, t]));
+    const flat = walkMethods(spec).find(({ method }) => method.action === 'browse');
+    expect(flat).toBeTruthy();
+
+    const snippet = rubyEmitter.generateUsage!(flat!.method, flat!.path, {
+      spec,
+      types,
+      emitterOptions: {},
+    });
+
+    // requires the gem, constructs the client from the env-var API key, and
+    // calls the resource chain in ruby (snake_case) casing.
+    expect(snippet).toContain('require "extensions_demo"');
+    expect(snippet).toContain('client = ExtensionsDemo::Client.new(api_key: ENV["EXTENSIONS_DEMO_API_KEY"])');
+    // catalog.browse returns an array → result is captured and printed.
+    expect(snippet).toContain('result = client.catalog.browse');
+    expect(snippet).toContain('pp result');
   });
 
   it('bakes the sdk-behavior policy into the stdlib transport', () => {

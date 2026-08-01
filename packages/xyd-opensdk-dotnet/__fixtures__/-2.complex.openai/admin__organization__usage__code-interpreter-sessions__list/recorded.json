@@ -1,0 +1,12 @@
+{
+  "call": "Admin.Organization.Usage.CodeInterpreterSessions.List",
+  "request": {
+    "method": "get",
+    "path": "/organization/usage/code_interpreter_sessions",
+    "query": [
+      "start_time"
+    ],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "call": "Conversations.Items.List",
+  "request": {
+    "method": "get",
+    "path": "/conversations/{conversation_id}/items",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

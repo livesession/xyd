@@ -1,0 +1,21 @@
+{
+  "name": "Connected to Gitea",
+  "description": "The full flow — API + SDK, with the spec and SDK targets already pushed into local Gitea repos.",
+  "order": 4,
+  "apis": [
+    {
+      "name": "LiveSession API",
+      "ns": "livesession",
+      "spec": "livesession",
+      "source": "github.com/livesession/livesession-docs"
+    }
+  ],
+  "sdks": [
+    {
+      "api": "LiveSession API",
+      "name": "LiveSession SDK",
+      "languages": ["node", "go"]
+    }
+  ],
+  "connect": true
+}

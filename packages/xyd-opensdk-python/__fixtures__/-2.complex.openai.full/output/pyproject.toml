@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "openai"
+version = "2.3.0"
+requires-python = ">=3.9"
+
+[tool.setuptools.packages.find]
+include = ["openai"]

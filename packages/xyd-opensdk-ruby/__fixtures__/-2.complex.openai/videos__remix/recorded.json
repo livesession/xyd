@@ -1,0 +1,13 @@
+{
+  "call": "videos.remix",
+  "request": {
+    "method": "post",
+    "path": "/videos/{video_id}/remix",
+    "query": [],
+    "bodyFields": [
+      "prompt"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

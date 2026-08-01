@@ -1,0 +1,12 @@
+{
+  "call": "Admin.Organization.Usage.VectorStores.List",
+  "request": {
+    "method": "get",
+    "path": "/organization/usage/vector_stores",
+    "query": [
+      "start_time"
+    ],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "call": "Batches.List",
+  "request": {
+    "method": "get",
+    "path": "/batches",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

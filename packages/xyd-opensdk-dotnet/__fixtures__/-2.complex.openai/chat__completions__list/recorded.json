@@ -1,0 +1,10 @@
+{
+  "call": "Chat.Completions.List",
+  "request": {
+    "method": "get",
+    "path": "/chat/completions",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

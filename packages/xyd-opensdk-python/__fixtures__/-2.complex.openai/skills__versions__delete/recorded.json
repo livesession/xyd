@@ -1,0 +1,10 @@
+{
+  "call": "skills.versions.delete",
+  "request": {
+    "method": "delete",
+    "path": "/skills/{skill_id}/versions/{version}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

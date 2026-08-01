@@ -1,0 +1,13 @@
+{
+  "call": "admin.organization.groups.update",
+  "request": {
+    "method": "post",
+    "path": "/organization/groups/{group_id}",
+    "query": [],
+    "bodyFields": [
+      "name"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

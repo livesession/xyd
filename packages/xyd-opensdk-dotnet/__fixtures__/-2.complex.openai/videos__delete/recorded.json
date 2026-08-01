@@ -1,0 +1,10 @@
+{
+  "call": "Videos.Delete",
+  "request": {
+    "method": "delete",
+    "path": "/videos/{video_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

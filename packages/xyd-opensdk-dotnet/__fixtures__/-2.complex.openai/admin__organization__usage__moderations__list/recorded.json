@@ -1,0 +1,12 @@
+{
+  "call": "Admin.Organization.Usage.Moderations.List",
+  "request": {
+    "method": "get",
+    "path": "/organization/usage/moderations",
+    "query": [
+      "start_time"
+    ],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -99,6 +99,20 @@ export interface SdkJson {
   $schema?: string;
   /** Config schema version. */
   version: number | string;
+  /**
+   * The API this SDK is generated FROM — a registry ref (`apis/<ns>/<api>@<ver>`)
+   * or a path to the OpenAPI spec (yaml/json) / pre-parsed OpenSDK IR (.json),
+   * relative to this file. Used by `opensdk generate` when `--spec` is omitted;
+   * `--spec` overrides it. Supersedes the legacy `spec` key.
+   */
+  api?: string;
+  /** @deprecated Renamed to `api`. Still read as a fallback for old sdk.json files. */
+  spec?: string;
+  /**
+   * This SDK's OWN registry identity (`sdks/<ns>/<sdk>@<ver>`) — informational,
+   * mirrors `api`'s shape but for the SDK it produces (not the source spec).
+   */
+  sdk?: string;
   /** Global runtime behavior (deep-merged over `defaultSdkBehavior()`). */
   behavior?: DeepPartial<SdkBehavior>;
   /** Default SDK name passed to the converter. */

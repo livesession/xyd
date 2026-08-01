@@ -1,0 +1,46 @@
+{
+  "name": "@apitoolchain/auth-design-system",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "apitoolchain auth design system — sign-in / sign-up building blocks (React).",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "storybook": "storybook dev -p 6008",
+    "build-storybook": "storybook build",
+    "format": "bunx biome check --write ."
+  },
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  },
+  "dependencies": {
+    "@apitoolchain/design-system": "file:../apitoolchain-design-system"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.2",
+    "@storybook/addon-essentials": "^8.4.7",
+    "@storybook/addon-interactions": "^8.4.7",
+    "@storybook/blocks": "^8.4.7",
+    "@storybook/react": "^8.4.7",
+    "@storybook/react-vite": "^8.4.7",
+    "@storybook/test": "^8.4.7",
+    "@tailwindcss/vite": "^4.3.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "storybook": "^8.4.7",
+    "tailwindcss": "^4.3.2",
+    "typescript": "^6.0.3",
+    "vite": "^6.3.6"
+  }
+}

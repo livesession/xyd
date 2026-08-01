@@ -1,0 +1,10 @@
+{
+  "call": "admin.organization.projects.rateLimits.listRateLimits",
+  "request": {
+    "method": "get",
+    "path": "/organization/projects/{project_id}/rate_limits",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "call": "fine_tuning.jobs.create",
+  "request": {
+    "method": "post",
+    "path": "/fine_tuning/jobs",
+    "query": [],
+    "bodyFields": [
+      "model",
+      "training_file"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

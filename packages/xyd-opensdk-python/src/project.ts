@@ -9,7 +9,16 @@ import {
   type TypeRef,
   sdkBehavior,
 } from '@xyd-js/opensdk-core';
-import { type OperationPlan, planOperation } from '@xyd-js/opensdk-framework';
+import {
+  type NeutralTypeField,
+  type NeutralTypeReference,
+  type OperationPlan,
+  type RenderedTypeField,
+  type RenderedTypeReference,
+  planOperation,
+  planTypeReference,
+  refSchemaName,
+} from '@xyd-js/opensdk-framework';
 
 import { pyPageName } from './method';
 import { pascalCase, pyModuleName, screamingSnakeCase, snakeCase } from './naming';
@@ -443,4 +452,112 @@ class Client:
         self._transport = Transport(base_url=base_url, api_key=key, timeout=timeout)
 ${attrLines.join('\n')}
 `;
+}
+
+// ---- type reference (Atlas SDK-types view) -------------------------------
+
+/** A throwaway ResourcesCtx for the type-reference renderers: only `uses`,
+ * `pages` and `transportImports` are read by returnPlan, and the display
+ * string discards those collected import sets (behavior is unused here). */
+function typeRefCtx(types: Map<string, NamedType>): ResourcesCtx {
+  return {
+    types,
+    behavior: sdkBehavior({} as OpensdkSpecJson),
+    uses: new PyUses(),
+    transportImports: new Set(),
+    pages: new Set(),
+  };
+}
+
+/** The params-KWARG Python type — mirrors methodDef's param/body field types:
+ * `pyType(...)` when required, `Optional[...]` otherwise (Python flattens the
+ * params struct to keyword args, so location — body/query/header — is irrelevant
+ * to the rendered type). Display string: the Imports/uses tracking is discarded. */
+function pyFieldTypeDisplay(f: NeutralTypeField): string {
+  const uses = new PyUses();
+  const base = pyType(f.typeRef, uses);
+  return f.required ? base : optionalize(base, uses);
+}
+
+function pyRenderField(f: NeutralTypeField): RenderedTypeField {
+  return {
+    name: snakeCase(f.logicalName),
+    langType: pyFieldTypeDisplay(f),
+    required: f.required,
+    description: f.description,
+    deprecated: f.deprecated,
+    refTypeName: refSchemaName(f.typeRef),
+  };
+}
+
+/** The Python "Returns" display type — mirrors returnPlan's annotation
+ * (bytes / <Page>[<Item>] / decoded model / None), minus the body. */
+function pyReturnDisplay(plan: OperationPlan, ctx: ResourcesCtx): string {
+  return returnPlan(plan, '', ctx).annotation;
+}
+
+function pyResponse(
+  plan: OperationPlan,
+  neutral: NeutralTypeReference,
+  ctx: ResourcesCtx,
+): RenderedTypeReference['response'] {
+  const langType = pyReturnDisplay(plan, ctx);
+  if (plan.binaryContentType) return { langType, note: `binary download (${plan.binaryContentType})` };
+  const ref = neutral.response.typeRef;
+  if (!ref || plan.primaryResponse === 'none') return { langType: 'None', note: 'no response body' };
+  const page = pyPageName(plan);
+  const note = page ? `paginated (${page})` : undefined;
+  if (neutral.response.fields) {
+    return {
+      typeName: langType,
+      note,
+      fields: neutral.response.fields.map((f) => ({
+        name: snakeCase(f.logicalName),
+        langType: pyType(f.typeRef, new PyUses()),
+        required: f.required,
+        description: f.description,
+        deprecated: f.deprecated,
+        refTypeName: refSchemaName(f.typeRef),
+      })),
+    };
+  }
+  return { typeName: langType, langType, note };
+}
+
+/**
+ * The per-operation TYPE REFERENCE for Python: the idiomatic call signature, the
+ * request kwargs' field rows, and the response type — the SDK-native view Atlas
+ * renders in place of the REST param definitions. Python flattens the params
+ * struct to keyword args, so `request.typeName` is left undefined (mirrors the
+ * Go emitter's `generateGoTypeReference`, using Python's primitives).
+ */
+export function generatePythonTypeReference(
+  method: Method,
+  chain: string[],
+  types: Map<string, NamedType>,
+): RenderedTypeReference {
+  const plan = planOperation(method, types);
+  const neutral = planTypeReference(method, types);
+  const ctx = typeRefCtx(types);
+
+  const requestFields = neutral.request.fields.map(pyRenderField);
+
+  // The call signature: `client.<attr>.<action>(<path args>, <kwargs>) -> <return>`.
+  // Positional path params by snake name, then each request field as a keyword
+  // (required → `name`, optional → `name=...`), mirroring methodDef's arg order.
+  const attrs = chain.map((s) => snakeCase(s));
+  const action = snakeCase(method.action);
+  const callChain = `client.${[...attrs, action].join('.')}`;
+  const args = [...plan.paramGroups.path.map((p) => snakeCase(p.name))];
+  for (const f of neutral.request.fields) {
+    const n = snakeCase(f.logicalName);
+    args.push(f.required ? n : `${n}=...`);
+  }
+  const signature = `${callChain}(${args.join(', ')}) -> ${pyReturnDisplay(plan, ctx)}`;
+
+  return {
+    signature,
+    request: { typeName: undefined, fields: requestFields },
+    response: pyResponse(plan, neutral, ctx),
+  };
 }

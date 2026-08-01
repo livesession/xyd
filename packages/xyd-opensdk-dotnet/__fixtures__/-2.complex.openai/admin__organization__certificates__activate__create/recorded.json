@@ -1,0 +1,13 @@
+{
+  "call": "Admin.Organization.Certificates.Activate.Create",
+  "request": {
+    "method": "post",
+    "path": "/organization/certificates/activate",
+    "query": [],
+    "bodyFields": [
+      "certificate_ids"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "call": "containers.files.delete",
+  "request": {
+    "method": "delete",
+    "path": "/containers/{container_id}/files/{file_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

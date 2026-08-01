@@ -1,4 +1,4 @@
-import type { NamedType, OpensdkSpecJson, Resource } from '@xyd-js/opensdk-core';
+import type { Method, NamedType, OpensdkSpecJson, Resource } from '@xyd-js/opensdk-core';
 import type { Emitter, EmitterContext, GeneratedFile } from '@xyd-js/opensdk-framework';
 import { generate } from '@xyd-js/opensdk-framework';
 
@@ -7,8 +7,8 @@ import { renderModelsFile } from './model';
 import { pascalCase, rubyGemName, screamingSnakeCase, snakeCase } from './naming';
 import { renderEntrypoint, renderGemspec } from './project';
 import { renderTransportFile } from './runtime';
-import { renderServiceFile, type RubyCtx } from './service';
-import { resourceTestRb, testHelperRb } from './tests-rb';
+import { generateRubyTypeReference, renderServiceFile, type RubyCtx } from './service';
+import { generateRubyUsage, resourceTestRb, testHelperRb } from './tests-rb';
 import type { OpensdkRubyOptions } from './types';
 
 interface ResolvedRubyOptions {
@@ -96,6 +96,18 @@ export const rubyEmitter: Emitter = {
       files.push({ path: `test/test_${snakeCase(r.name)}.rb`, content: resourceTestRb(r, moduleName, types) });
     }
     return files;
+  },
+
+  // A single per-operation doc USAGE SNIPPET: requires the gem, constructs the
+  // client and makes one required-only call (à la Fern/Speakeasy/Stainless).
+  // `chain` is the resource-name path (root→owner) the method hangs off.
+  generateUsage(method: Method, chain: string[], ctx: EmitterContext): string {
+    return generateRubyUsage(method, chain, ctx.spec, ctx.emitterOptions as OpensdkRubyOptions);
+  },
+
+  // The per-operation SDK type reference (signature + request/response types).
+  generateTypeReference(method: Method, chain: string[], ctx: EmitterContext) {
+    return generateRubyTypeReference(method, chain, rubyCtx(ctx.spec, ctx));
   },
 };
 

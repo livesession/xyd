@@ -3,7 +3,10 @@ import path from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { opensdkGo } from '../index';
+import { walkMethods, type NamedType } from '@xyd-js/opensdk-core';
+import type { EmitterContext } from '@xyd-js/opensdk-framework';
+
+import { goEmitter, opensdkGo } from '../index';
 import { GO_SMOKE, goBuildSmoke, testFixture } from './utils';
 
 const fixtures: { name: string; description: string; runtimeTest?: string }[] = [
@@ -22,6 +25,11 @@ const fixtures: { name: string; description: string; runtimeTest?: string }[] = 
       'type-system consumption: discriminated-union decode (mapping + raw fallback), const auto-fill on request marshal, cursor/offset auto-pagers (GetNextPage)',
     // real runtime coverage of Unmarshal<Union>JSON, MarshalJSON const fill and pagination continuation
     runtimeTest: path.join(__dirname, 'go-smoke', 'unions_smoke_test.go'),
+  },
+  {
+    name: '9.x-open-sdk',
+    description:
+      'x-open-sdk naming overrides: method/service names come from the IR action + resource tree (catalog.browse, system.health.check, things.fetch)',
   },
 ];
 
@@ -139,5 +147,24 @@ describe('opensdk-go sdk-behavior interpolation', () => {
     const noRetryFiles = opensdkGo(noRetry);
     expect(noRetryFiles['tokens.go']).not.toContain('NewIdempotencyKey');
     expect(noRetryFiles['internal/requestconfig/requestconfig.go']).not.toContain('NewIdempotencyKey');
+  });
+});
+
+describe('opensdk-go generateUsage', () => {
+  it('emits a self-contained client-init + one-call usage snippet', () => {
+    const ir = JSON.parse(
+      fs.readFileSync(path.join(__dirname, '../__fixtures__/9.x-open-sdk/input.json'), 'utf8'),
+    );
+    const types = new Map<string, NamedType>((ir.types || []).map((t: NamedType) => [t.name, t]));
+    const ctx: EmitterContext = { spec: ir, types, emitterOptions: {} };
+
+    const browse = walkMethods(ir).find((f) => f.method.action === 'browse');
+    expect(browse).toBeTruthy();
+
+    const code = goEmitter.generateUsage!(browse!.method, browse!.path, ctx);
+    expect(code).toContain('package main');
+    expect(code).toContain('.NewClient(');
+    expect(code).toContain('client.Catalog.Browse(');
+    expect(code).toContain('context.TODO()');
   });
 });

@@ -1,0 +1,13 @@
+{
+  "call": "responses.compact.create",
+  "request": {
+    "method": "post",
+    "path": "/responses/compact",
+    "query": [],
+    "bodyFields": [
+      "model"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

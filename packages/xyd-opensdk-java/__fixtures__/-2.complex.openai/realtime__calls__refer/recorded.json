@@ -1,0 +1,13 @@
+{
+  "call": "realtime.calls.refer",
+  "request": {
+    "method": "post",
+    "path": "/realtime/calls/{call_id}/refer",
+    "query": [],
+    "bodyFields": [
+      "target_uri"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

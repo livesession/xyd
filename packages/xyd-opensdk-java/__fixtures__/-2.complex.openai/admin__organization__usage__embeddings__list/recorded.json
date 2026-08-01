@@ -1,0 +1,12 @@
+{
+  "call": "admin.organization.usage.embeddings.list",
+  "request": {
+    "method": "get",
+    "path": "/organization/usage/embeddings",
+    "query": [
+      "start_time"
+    ],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

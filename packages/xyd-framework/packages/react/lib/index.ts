@@ -4,3 +4,8 @@ export {
 
     type FooSidebarItemProps,
 } from "./FooSidebar";
+
+export {
+    SidebarActiveProvider,
+    useSidebarActive,
+} from "./SidebarActive";

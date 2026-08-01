@@ -1,0 +1,10 @@
+{
+  "call": "videos.download_content",
+  "request": {
+    "method": "get",
+    "path": "/videos/{video_id}/content",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

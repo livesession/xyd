@@ -1,0 +1,10 @@
+{
+  "call": "Admin.Organization.Projects.ServiceAccounts.Delete",
+  "request": {
+    "method": "delete",
+    "path": "/organization/projects/{project_id}/service_accounts/{service_account_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

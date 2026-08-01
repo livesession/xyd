@@ -1,0 +1,15 @@
+{
+  "name": "APIs only",
+  "description": "A registered API spec in the registry. Nothing generated yet.",
+  "order": 2,
+  "apis": [
+    {
+      "name": "LiveSession API",
+      "ns": "livesession",
+      "spec": "livesession",
+      "source": "github.com/livesession/livesession-docs"
+    }
+  ],
+  "sdks": [],
+  "connect": false
+}

@@ -1,0 +1,12 @@
+{
+  "name": "@apitoolchain/sdk-chain",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "generate": "bash generate.sh",
+    "format": "bunx biome check --write chain.json"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.2"
+  }
+}

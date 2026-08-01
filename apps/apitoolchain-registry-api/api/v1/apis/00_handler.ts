@@ -1,0 +1,18 @@
+import type { Apis } from "../../openapi/v1/src/generated/models/all/registry-api";
+import { getApi } from "./get_api";
+import { listApis } from "./list_apis";
+import { registerApi } from "./register_api";
+import { setDistTag } from "./set_dist_tag";
+import { spec } from "./spec";
+import { updateApi } from "./update_api";
+
+/** `/apis` — the registry namespace (list, get, register, update, dist-tags,
+ * raw spec bytes). */
+export const apis: Apis = {
+  list: listApis,
+  read: getApi,
+  register: registerApi,
+  update: updateApi,
+  setDistTag,
+  spec,
+};

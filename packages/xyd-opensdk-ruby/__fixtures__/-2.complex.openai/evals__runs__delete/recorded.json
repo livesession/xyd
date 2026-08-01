@@ -1,0 +1,10 @@
+{
+  "call": "evals.runs.delete",
+  "request": {
+    "method": "delete",
+    "path": "/evals/{eval_id}/runs/{run_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

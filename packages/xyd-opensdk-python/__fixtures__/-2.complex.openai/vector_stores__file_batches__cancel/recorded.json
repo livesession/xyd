@@ -1,0 +1,10 @@
+{
+  "call": "vector_stores.file_batches.cancel",
+  "request": {
+    "method": "post",
+    "path": "/vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

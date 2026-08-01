@@ -51,10 +51,12 @@ export function withSidebar<P extends {
     // TODO: better API for elements like logo search
     return function WithSidebarContent(props: P) {
         const [sidebarTree, sidebarTreeFlags] = useSidebarTree()
+        const appearance = useAppearance()
         const { children, ...rest } = props
 
         return <FooSidebar
             initialActiveItems={sidebarTreeFlags.initialActiveItems}
+            persist={Boolean((appearance as any)?.sidebar?.keepExpanded)}
         >
             <Component {...rest as P}>
                 {children}

@@ -1,20 +1,39 @@
 import type { OpensdkSpecJson } from '@xyd-js/opensdk-core';
 
-import { npmPackageName, screamingSnakeCase } from './naming';
+import { type ResolvedBusybox, resolveBusybox } from './busybox';
+import { npmPackageName, pascalCase, screamingSnakeCase } from './naming';
 import type { OpensdkNodeOptions } from './types';
 
 export interface ResolvedNodeOptions {
   pkg: string;
   baseURL: string;
   envVar: string;
+  /** The client class name (also the exported symbol in named mode). */
+  clientName: string;
+  /** `true` → default export (`import X from 'pkg'`); `false` → named export. */
+  defaultExport: boolean;
+  /** The resolved error-helper "busybox" config, or `null` when disabled. */
+  busybox: ResolvedBusybox | null;
 }
 
 export function resolveNodeOptions(spec: OpensdkSpecJson, options: OpensdkNodeOptions): ResolvedNodeOptions {
   const pkg = options.packageName ?? npmPackageName(spec.info.title);
+  // Named export iff `exportPackage` is set; otherwise a default export (the
+  // fallback, also when `exportDefault` is set). For the chosen option, a string
+  // is used verbatim as the symbol; `true`/unset → the PascalCase name derived
+  // from the package (`@cloudinary/analysis` → `CloudinaryAnalysis`).
+  const named =
+    options.exportPackage !== undefined && options.exportPackage !== false;
+  const nameOpt = named ? options.exportPackage : options.exportDefault;
+  const clientName =
+    (typeof nameOpt === 'string' ? nameOpt.trim() : '') || pascalCase(pkg);
   return {
     pkg,
     baseURL: options.baseURL ?? spec.servers?.[0] ?? '',
     envVar: options.envVar ?? spec.security?.find((s) => s.envVar)?.envVar ?? `${screamingSnakeCase(pkg)}_API_KEY`,
+    clientName,
+    defaultExport: !named,
+    busybox: resolveBusybox(options.busybox),
   };
 }
 
@@ -81,16 +100,19 @@ export function tsconfigJson(): string {
 }
 
 /** A minimal README scaffold. */
-export function readme(pkg: string, spec: OpensdkSpecJson): string {
+export function readme(pkg: string, spec: OpensdkSpecJson, clientName: string, defaultExport: boolean): string {
   const summary = spec.info.description ? `\n${spec.info.description}\n` : '';
+  const importLine = defaultExport
+    ? `import ${clientName} from '${pkg}';`
+    : `import { ${clientName} } from '${pkg}';`;
   return `# ${pkg}
 ${summary}
 ## Usage
 
 \`\`\`ts
-import { Client } from '${pkg}';
+${importLine}
 
-const client = new Client({ apiKey: process.env.API_KEY });
+const client = new ${clientName}({ apiKey: process.env.API_KEY });
 \`\`\`
 `;
 }

@@ -5,7 +5,7 @@ Handcrafted IR exercising request encodings, header params and query serializati
 ## Usage
 
 ```ts
-import { Client } from 'wire-kitchen';
+import WireKitchen from 'wire-kitchen';
 
-const client = new Client({ apiKey: process.env.API_KEY });
+const client = new WireKitchen({ apiKey: process.env.API_KEY });
 ```

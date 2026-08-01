@@ -1,0 +1,13 @@
+{
+  "call": "realtime.calls.accept",
+  "request": {
+    "method": "post",
+    "path": "/realtime/calls/{call_id}/accept",
+    "query": [],
+    "bodyFields": [
+      "type"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

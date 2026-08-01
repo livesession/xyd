@@ -1,0 +1,12 @@
+{
+  "call": "admin.organization.usage.audioTranscriptions.list",
+  "request": {
+    "method": "get",
+    "path": "/organization/usage/audio_transcriptions",
+    "query": [
+      "start_time"
+    ],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

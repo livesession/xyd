@@ -1,0 +1,11 @@
+{
+  "call": "containers.files.create",
+  "request": {
+    "method": "post",
+    "path": "/containers/{container_id}/files",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

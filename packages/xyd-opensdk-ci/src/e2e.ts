@@ -144,17 +144,46 @@ export class RecordingServer {
   }
 }
 
+/**
+ * The field names a request body carries, across the content types an SDK emits:
+ * JSON (object keys), `multipart/form-data` (each part's `name="…"`), and
+ * `x-www-form-urlencoded` (the form keys). Multipart matters for file uploads —
+ * without it those ops look like they sent an empty body.
+ */
+function bodyFieldNames(body: string, contentType: string): string[] {
+  const ct = contentType.toLowerCase();
+  if (ct.includes('multipart/form-data')) {
+    // Part headers are ASCII and precede any binary payload, so a regex over the
+    // raw body reliably lifts the part names even when file bytes follow.
+    const names = new Set<string>();
+    const re = /content-disposition:\s*form-data;[^\r\n]*\bname="([^"]*)"/gi;
+    let m: RegExpExecArray | null;
+    // biome-ignore lint/suspicious/noAssignInExpressions: standard regex exec loop
+    while ((m = re.exec(body)) !== null) names.add(m[1]);
+    return [...names].sort();
+  }
+  if (ct.includes('x-www-form-urlencoded')) {
+    try {
+      return [...new URLSearchParams(body).keys()].sort();
+    } catch {
+      return [];
+    }
+  }
+  try {
+    const parsed = body ? JSON.parse(body) : {};
+    if (parsed && typeof parsed === 'object') return Object.keys(parsed).sort();
+  } catch {
+    /* non-JSON body */
+  }
+  return [];
+}
+
 /** Reduce a raw recorded request to the comparable shape. */
 export function normalizeRecorded(raw: NonNullable<RecordingServer['last']>): RecordedRequest {
   const [p, qs] = (raw.url || '').split('?');
   const query = qs ? [...new URLSearchParams(qs).keys()].sort() : [];
-  let bodyFields: string[] = [];
-  try {
-    const parsed = raw.body ? JSON.parse(raw.body) : {};
-    if (parsed && typeof parsed === 'object') bodyFields = Object.keys(parsed).sort();
-  } catch {
-    /* non-JSON body */
-  }
+  const contentType = (raw.headers['content-type'] as string) || '';
+  const bodyFields = bodyFieldNames(raw.body, contentType);
   const authHeader = (raw.headers.authorization as string) || '';
   const auth = authHeader.startsWith('Bearer ') ? 'bearer' : authHeader ? 'apikey' : '';
   return {
@@ -163,7 +192,7 @@ export function normalizeRecorded(raw: NonNullable<RecordingServer['last']>): Re
     query,
     bodyFields,
     auth,
-    contentType: ((raw.headers['content-type'] as string) || '').split(';')[0] || undefined,
+    contentType: contentType.split(';')[0] || undefined,
   };
 }
 

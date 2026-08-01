@@ -1,9 +1,9 @@
-import type { NamedType, OpensdkSpecJson, Resource } from '@xyd-js/opensdk-core';
+import type { Method, NamedType, OpensdkSpecJson, Resource } from '@xyd-js/opensdk-core';
 import type { Emitter, EmitterContext, GeneratedFile } from '@xyd-js/opensdk-framework';
 import { generate } from '@xyd-js/opensdk-framework';
 
 import { renderClientFile } from './client';
-import { generateJavaTests } from './example-java';
+import { generateJavaTests, generateJavaTypeReference, generateJavaUsage } from './example-java';
 import { HEADER } from './javawriter';
 import { renderTypeFiles } from './model';
 import { pomXml, resolveJavaOptions } from './project';
@@ -64,6 +64,18 @@ export const javaEmitter: Emitter = {
     if ((ctx.emitterOptions as OpensdkJavaOptions).tests === false) return [];
     const jctx = resolveJavaOptions(spec, ctx);
     return generateJavaTests(spec, jctx);
+  },
+
+  // A single per-operation doc USAGE SNIPPET: an `Example` class that constructs
+  // the client and makes one required-only call (à la Fern/Speakeasy/Stainless).
+  // `chain` is the resource-name path (root→owner) the method hangs off.
+  generateUsage(method: Method, chain: string[], ctx: EmitterContext): string {
+    return generateJavaUsage(method, chain, resolveJavaOptions(ctx.spec, ctx));
+  },
+
+  // The per-operation SDK type reference (signature + request/response types).
+  generateTypeReference(method: Method, chain: string[], ctx: EmitterContext) {
+    return generateJavaTypeReference(method, chain, resolveJavaOptions(ctx.spec, ctx));
   },
 };
 

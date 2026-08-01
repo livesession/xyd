@@ -1,0 +1,10 @@
+{
+  "call": "Skills.Versions.Retrieve",
+  "request": {
+    "method": "get",
+    "path": "/skills/{skill_id}/versions/{version}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

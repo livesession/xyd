@@ -1,0 +1,60 @@
+# Shared dev infra for the apitoolchain backend services (registry-api + api):
+# Postgres + MinIO (S3-compatible), mirroring the apiatlas MinIO precedent, plus
+# Gitea for local git-provider sync tests (no external tokens). Seed the Gitea
+# admin/token/repo with:
+#   docker compose exec -u git gitea gitea admin user create --admin \
+#     --username apitoolchain --password apitoolchain-secret \
+#     --email dev@apitoolchain.local --must-change-password=false
+#   docker compose exec -u git gitea gitea admin user generate-access-token \
+#     --username apitoolchain --raw --scopes all
+# The gitproviderd Go service runs via `mise run dev:apitoolchain-gitprovider`.
+# (The Vite dev plugin does all of this automatically via testcontainers.)
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: apitoolchain
+      POSTGRES_PASSWORD: apitoolchain
+      POSTGRES_DB: apitoolchain
+    # 5433 on the host to avoid clashing with a local (brew) Postgres on 5432.
+    ports: ["5433:5432"]
+    volumes: ["apitoolchain-pg:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apitoolchain"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    image: minio/minio:latest
+    command: server /data --console-address ":9001"
+    ports: ["9000:9000", "9001:9001"]
+    environment:
+      MINIO_ROOT_USER: apitoolchain
+      MINIO_ROOT_PASSWORD: apitoolchain-secret
+    volumes: ["apitoolchain-minio:/data"]
+
+  createbuckets:
+    image: minio/mc
+    depends_on: [minio]
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 apitoolchain apitoolchain-secret; do echo 'waiting for minio'; sleep 1; done;
+      mc mb -p local/apitoolchain-specs;
+      mc mb -p local/apitoolchain-artifacts;
+      exit 0"
+
+  gitea:
+    image: gitea/gitea:1.22
+    environment:
+      GITEA__database__DB_TYPE: sqlite3
+      GITEA__security__INSTALL_LOCK: "true"
+      GITEA__server__ROOT_URL: http://localhost:3000/
+      GITEA__log__LEVEL: warn
+    ports: ["3000:3000"]
+    volumes: ["apitoolchain-gitea:/data"]
+
+volumes:
+  apitoolchain-pg:
+  apitoolchain-minio:
+  apitoolchain-gitea:

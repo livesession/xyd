@@ -1,0 +1,13 @@
+{
+  "call": "Admin.Organization.Certificates.Deactivate.Create",
+  "request": {
+    "method": "post",
+    "path": "/organization/certificates/deactivate",
+    "query": [],
+    "bodyFields": [
+      "certificate_ids"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

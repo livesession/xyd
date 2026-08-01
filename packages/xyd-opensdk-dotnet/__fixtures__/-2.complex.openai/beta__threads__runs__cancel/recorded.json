@@ -1,0 +1,10 @@
+{
+  "call": "Beta.Threads.Runs.Cancel",
+  "request": {
+    "method": "post",
+    "path": "/threads/{thread_id}/runs/{run_id}/cancel",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

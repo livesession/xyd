@@ -1,0 +1,10 @@
+{
+  "call": "beta.assistants.delete",
+  "request": {
+    "method": "delete",
+    "path": "/assistants/{assistant_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

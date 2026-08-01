@@ -1,0 +1,10 @@
+{
+  "call": "admin.organization.groups.roles.list",
+  "request": {
+    "method": "get",
+    "path": "/organization/groups/{group_id}/roles",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

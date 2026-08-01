@@ -20,9 +20,9 @@ export function oapExamples(
     operation: Operation,
     visitedExamples?: Map<JSONSchema7 | JSONSchema7[], any>
 ): ExampleGroup[] {
-    const exampleGroups = [
-        ...reqExamples(operation, oas, visitedExamples),
-        ...resBodyExmaples(operation, oas, visitedExamples),
+    const exampleGroups: ExampleGroup[] = [
+        ...reqExamples(operation, oas, visitedExamples).map((g) => ({ ...g, kind: "request" as const })),
+        ...resBodyExmaples(operation, oas, visitedExamples).map((g) => ({ ...g, kind: "response" as const })),
     ]
 
     return exampleGroups

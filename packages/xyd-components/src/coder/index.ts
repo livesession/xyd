@@ -29,7 +29,8 @@ export type { CodeThemeProps, CodeThemeBlockProps } from "./CodeTheme";
 export {
     CodeTheme,
 
-    useCodeTheme
+    useCodeTheme,
+    prewarmHighlight
 } from "./CodeTheme";
 
 export {

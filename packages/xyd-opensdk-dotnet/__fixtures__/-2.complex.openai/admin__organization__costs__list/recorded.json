@@ -1,0 +1,12 @@
+{
+  "call": "Admin.Organization.Costs.List",
+  "request": {
+    "method": "get",
+    "path": "/organization/costs",
+    "query": [
+      "start_time"
+    ],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

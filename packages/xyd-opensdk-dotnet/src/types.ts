@@ -13,4 +13,13 @@ export interface OpensdkDotnetOptions {
    * set `false` to opt out (same gate as the Go/Python emitters).
    */
   tests?: boolean;
+  /**
+   * When set, a generated USAGE snippet constructs the client reading its base
+   * URL from this env var (`baseUrl: Environment.GetEnvironmentVariable("<baseUrlEnv>")`)
+   * INSTEAD of the SDK default — so the snippet can be pointed at a recording
+   * server for the run-diff tier (ask C.2). Only alters `generateUsage`; unset
+   * (the default) leaves the snippet — and every committed usage golden —
+   * byte-identical. Not a persisted SDK option — it is passed per snippet-run.
+   */
+  baseUrlEnv?: string;
 }

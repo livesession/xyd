@@ -92,6 +92,10 @@ export async function main(argv: string[] = process.argv): Promise<void> {
     .option('--grouping <path>', 'JSON grouping file ({mountRules, operationHints}); overrides the config values')
     .option('--dry-run', 'Print the files that would be generated without writing')
     .option('--no-tests', "Don't emit the generated SDK's self-test suite (sets emitterOptions.<lang>.tests=false)")
+    .option(
+      '--merge',
+      'Preserve hand-edits to generated files: 3-way merge them with the new generation instead of overwriting (writes .sdk/base; conflicts get <<<<<<< markers)',
+    )
     .action(async (opts) => {
       try {
         const shared = {
@@ -102,14 +106,21 @@ export async function main(argv: string[] = process.argv): Promise<void> {
           dryRun: opts.dryRun,
           // Commander maps `--no-tests` to opts.tests === false (default true).
           noTests: opts.tests === false,
+          merge: opts.merge ?? config?.merge,
         };
+        // --spec wins; else fall back to the config's predefined `spec` (already
+        // resolved absolute against the config dir).
+        const spec = opts.spec ?? config?.spec;
+        if (!spec) {
+          throw new Error('No spec — pass --spec, or add a "spec" field to your sdk.json.');
+        }
         if (opts.lang) {
           // Single target: merge the language's behavior over the global one.
           const lang = resolveLanguage(opts.lang);
           const target = config?.targets?.[lang];
           await generateCommand({
             ...shared,
-            spec: opts.spec,
+            spec,
             lang: opts.lang,
             output: opts.output ?? target?.output ?? './sdk',
             sdk: mergeBehaviorOverrides(config?.sdk, target?.behavior),
@@ -121,7 +132,7 @@ export async function main(argv: string[] = process.argv): Promise<void> {
           if (!config) {
             throw new Error('No config found — pass --lang, or add a sdk.json with language sections.');
           }
-          await generateTargets({ ...shared, spec: opts.spec, output: opts.output ?? './sdk', sdk: config.sdk, config });
+          await generateTargets({ ...shared, spec, output: opts.output ?? './sdk', sdk: config.sdk, config });
         }
       } catch (err) {
         handleError(err);

@@ -1,0 +1,10 @@
+{
+  "call": "admin.organization.projects.groups.list",
+  "request": {
+    "method": "get",
+    "path": "/organization/projects/{project_id}/groups",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

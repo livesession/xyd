@@ -1,0 +1,155 @@
+{
+  "name": "Loaded (demo data)",
+  "description": "A big seed for exercising the dashboard at scale: many namespaces, many APIs with rich version history, and SDKs across every language target. The bulk uses a small bundled spec (fast); LiveSession + OpenAI come from their real GitHub specs.",
+  "order": 11,
+  "namespaces": [
+    { "id": "acme", "name": "Acme Inc.", "description": "Core platform APIs." },
+    {
+      "id": "globex",
+      "name": "Globex",
+      "description": "Logistics + fulfilment."
+    },
+    { "id": "initech", "name": "Initech", "description": "Internal tooling." }
+  ],
+  "apis": [
+    {
+      "name": "Petstore API",
+      "ns": "acme",
+      "spec": "specs/petstore.yaml",
+      "source": "github.com/acme/petstore",
+      "versions": ["1.0.0", "1.1.0", "1.2.0", "2.0.0"]
+    },
+    {
+      "name": "Payments API",
+      "ns": "acme",
+      "spec": "specs/petstore.yaml",
+      "source": "github.com/acme/payments",
+      "versions": ["3.0.0", "3.1.0", "3.2.0"]
+    },
+    {
+      "name": "Identity API",
+      "ns": "acme",
+      "spec": "specs/petstore.yaml",
+      "source": "github.com/acme/identity",
+      "versions": ["1.0.0", "2.0.0"]
+    },
+    {
+      "name": "Catalog API",
+      "ns": "acme",
+      "spec": "specs/petstore.yaml",
+      "source": "github.com/acme/catalog",
+      "versions": ["0.1.0", "0.2.0", "0.3.0"]
+    },
+    {
+      "name": "Billing API",
+      "ns": "acme",
+      "spec": "specs/petstore.yaml",
+      "source": "github.com/acme/billing",
+      "versions": ["1.0.0", "1.1.0"]
+    },
+    {
+      "name": "Notifications API",
+      "ns": "acme",
+      "spec": "specs/petstore.yaml",
+      "source": "github.com/acme/notifications"
+    },
+    {
+      "name": "Inventory API",
+      "ns": "globex",
+      "spec": "specs/petstore.yaml",
+      "source": "github.com/globex/inventory",
+      "versions": ["1.0.0", "1.1.0", "2.0.0"]
+    },
+    {
+      "name": "Shipping API",
+      "ns": "globex",
+      "spec": "specs/petstore.yaml",
+      "source": "github.com/globex/shipping",
+      "versions": ["2.0.0", "2.1.0"]
+    },
+    {
+      "name": "TPS Reports API",
+      "ns": "initech",
+      "spec": "specs/petstore.yaml",
+      "source": "github.com/initech/tps",
+      "versions": ["1.0.0", "1.1.0"]
+    },
+    {
+      "name": "LiveSession API",
+      "ns": "livesession",
+      "spec": "livesession",
+      "source": "github.com/livesession/livesession-docs",
+      "versions": ["1.0.0", "1.1.0", "2.0.0"]
+    },
+    {
+      "name": "Analytics API",
+      "ns": "livesession",
+      "spec": "livesession",
+      "source": "github.com/livesession/livesession-docs"
+    },
+    {
+      "name": "OpenAI API",
+      "ns": "openai",
+      "spec": "openai",
+      "source": "github.com/openai/openai-openapi"
+    }
+  ],
+  "sdks": [
+    {
+      "api": "Petstore API",
+      "name": "Petstore SDK",
+      "languages": ["node", "go", "python", "ruby", "java", "dotnet"]
+    },
+    {
+      "api": "Petstore API",
+      "name": "Petstore Lite SDK",
+      "languages": ["node", "go"]
+    },
+    {
+      "api": "Payments API",
+      "name": "Payments SDK",
+      "languages": ["node", "go", "python"]
+    },
+    {
+      "api": "Identity API",
+      "name": "Identity SDK",
+      "languages": ["node", "python"]
+    },
+    {
+      "api": "Catalog API",
+      "name": "Catalog SDK",
+      "languages": ["node", "java"]
+    },
+    {
+      "api": "Inventory API",
+      "name": "Inventory SDK",
+      "languages": ["node", "go", "python", "java"]
+    },
+    {
+      "api": "Shipping API",
+      "name": "Shipping SDK",
+      "languages": ["go", "dotnet"]
+    },
+    {
+      "api": "LiveSession API",
+      "name": "LiveSession SDK",
+      "languages": ["node", "go", "python"]
+    }
+  ],
+  "projects": [
+    { "name": "Staging" },
+    { "name": "Production" },
+    { "name": "Sandbox" }
+  ],
+  "members": [
+    { "email": "ada@acme.dev", "name": "Ada Lovelace", "role": "admin" },
+    { "email": "grace@acme.dev", "name": "Grace Hopper", "role": "member" },
+    { "email": "alan@acme.dev", "name": "Alan Turing", "role": "member" },
+    {
+      "email": "katherine@globex.dev",
+      "name": "Katherine Johnson",
+      "role": "member"
+    }
+  ],
+  "connect": false
+}

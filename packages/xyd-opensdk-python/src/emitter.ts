@@ -1,12 +1,12 @@
-import { type NamedType, type OpensdkSpecJson, type Resource, walkMethods } from '@xyd-js/opensdk-core';
+import { type Method, type NamedType, type OpensdkSpecJson, type Resource, walkMethods } from '@xyd-js/opensdk-core';
 import type { Emitter, EmitterContext, GeneratedFile } from '@xyd-js/opensdk-framework';
 import { generate, planOperation } from '@xyd-js/opensdk-framework';
 
 import { pyPageName } from './method';
 import { snakeCase } from './naming';
-import { clientPy, modelsPy, pyproject, resolvePythonOptions, resourcesPy } from './project';
+import { clientPy, generatePythonTypeReference, modelsPy, pyproject, resolvePythonOptions, resourcesPy } from './project';
 import { errorClassNames, paginationPy, transportPy } from './runtime';
-import { resourceTestPy, testConftestPy, testUtilsPy } from './tests-py';
+import { generatePythonUsage, resourceTestPy, testConftestPy, testUtilsPy } from './tests-py';
 import type { OpensdkPythonOptions } from './types';
 
 const resolve = (spec: OpensdkSpecJson, ctx: EmitterContext) =>
@@ -83,6 +83,18 @@ export const pythonEmitter: Emitter = {
       files.push({ path: `tests/test_${snakeCase(r.name)}.py`, content: resourceTestPy(r, pkg, ctx.types) });
     }
     return files;
+  },
+
+  // A single per-operation doc USAGE SNIPPET: constructs the client and makes
+  // one required-only call (à la Fern/Speakeasy/Stainless). `chain` is the
+  // resource-name path (root→owner) the method hangs off.
+  generateUsage(method: Method, chain: string[], ctx: EmitterContext): string {
+    return generatePythonUsage(method, chain, ctx.spec, ctx.emitterOptions as OpensdkPythonOptions);
+  },
+
+  // The per-operation SDK type reference (signature + request/response types).
+  generateTypeReference(method: Method, chain: string[], ctx: EmitterContext) {
+    return generatePythonTypeReference(method, chain, ctx.types as Map<string, NamedType>);
   },
 };
 

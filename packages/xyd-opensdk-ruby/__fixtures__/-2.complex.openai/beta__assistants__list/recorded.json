@@ -1,0 +1,10 @@
+{
+  "call": "beta.assistants.list",
+  "request": {
+    "method": "get",
+    "path": "/assistants",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -9,6 +9,8 @@ export interface ResolvedTarget {
   behavior?: DeepPartial<SdkBehavior>;
   /** Publish target override merged OVER the global publish for this language only. */
   publish?: PublishTarget;
+  /** Per-language override of the 3-way-merge regen mode (wins over the top-level `merge`). */
+  merge?: boolean;
 }
 
 /**
@@ -17,6 +19,9 @@ export interface ResolvedTarget {
  * a future chain.json). A superset of the historical `OpensdkCliConfig`.
  */
 export interface ResolvedConfig {
+  /** Default spec path (resolved absolute against the config dir). Used by
+   * `generate` when `--spec` is omitted; `--spec` overrides it. */
+  spec?: string;
   /** Extra emitter plugins to register (from a JS/TS plugin bundle). */
   emitters?: Emitter[];
   /** Per-language emitter options, keyed by CANONICAL language id (go|python|node|ruby|java|dotnet). */
@@ -31,6 +36,8 @@ export interface ResolvedConfig {
   sdk?: DeepPartial<SdkBehavior>;
   /** Global publish target (defaults; a target's `publish` overrides it). */
   publish?: PublishTarget;
+  /** Default 3-way-merge regen mode for all targets (the CLI `--merge` overrides it). */
+  merge?: boolean;
   /** Per-language targets (output + per-language behavior/publish), keyed by canonical language id. */
   targets?: Record<string, ResolvedTarget>;
   /** Provenance of the loaded config (for precedence messages + tests). */

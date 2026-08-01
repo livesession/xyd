@@ -1,0 +1,10 @@
+{
+  "call": "vector_stores.file_batches.list_files",
+  "request": {
+    "method": "get",
+    "path": "/vector_stores/{vector_store_id}/file_batches/{batch_id}/files",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

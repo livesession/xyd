@@ -1,0 +1,10 @@
+{
+  "call": "Beta.Threads.Delete",
+  "request": {
+    "method": "delete",
+    "path": "/threads/{thread_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

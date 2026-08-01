@@ -1,0 +1,12 @@
+{
+  "call": "Admin.Organization.Usage.AudioSpeeches.List",
+  "request": {
+    "method": "get",
+    "path": "/organization/usage/audio_speeches",
+    "query": [
+      "start_time"
+    ],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

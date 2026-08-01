@@ -1,0 +1,10 @@
+{
+  "call": "skills.versions.content",
+  "request": {
+    "method": "get",
+    "path": "/skills/{skill_id}/versions/{version}/content",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

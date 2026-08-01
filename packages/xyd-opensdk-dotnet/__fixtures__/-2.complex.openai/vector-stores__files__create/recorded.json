@@ -1,0 +1,13 @@
+{
+  "call": "VectorStores.Files.Create",
+  "request": {
+    "method": "post",
+    "path": "/vector_stores/{vector_store_id}/files",
+    "query": [],
+    "bodyFields": [
+      "file_id"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

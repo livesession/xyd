@@ -1,10 +1,19 @@
+import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { SDK_LOCK_FILENAME, deepMergeJson, writeProject } from '../src';
+import {
+  SDK_IGNORE_FILENAME,
+  SDK_LOCK_FILENAME,
+  deepMergeJson,
+  isSdkIgnored,
+  materializeProject,
+  parseSdkIgnore,
+  writeProject,
+} from '../src';
 
 const tmpDirs: string[] = [];
 function tmpDir(): string {
@@ -34,6 +43,9 @@ describe('writeProject: basics + manifest', () => {
       unchanged: [],
       pruned: [],
       keptModified: [],
+      conflicts: [],
+      merged: [],
+      mergeConflicts: [],
     });
 
     const m = manifest(out);
@@ -52,7 +64,7 @@ describe('writeProject: basics + manifest', () => {
   });
 
   it('rejects a file map that emits the manifest path itself', async () => {
-    await expect(writeProject({ [SDK_LOCK_FILENAME]: '{}' }, tmpDir())).rejects.toThrow(/owns it/);
+    await expect(writeProject({ [SDK_LOCK_FILENAME]: '{}' }, tmpDir())).rejects.toThrow(/owns \.sdk/);
   });
 });
 
@@ -187,6 +199,239 @@ describe('writeProject: guarded stale-prune', () => {
     const result = await writeProject({ 'a.go': 'a' }, out);
     expect(result.pruned).toEqual([]);
     expect(exists(out, 'stale.go')).toBe(true);
+  });
+});
+
+describe('writeProject: .sdkignore (user-owned protection)', () => {
+  const ignore = (dir: string, body: string) => fs.writeFileSync(path.join(dir, SDK_IGNORE_FILENAME), body);
+
+  it('never overwrites an ignored existing file, and reports the conflict', async () => {
+    const out = tmpDir();
+    fs.writeFileSync(path.join(out, 'client.go'), 'my hand-tuned client');
+    ignore(out, 'client.go\n');
+
+    const result = await writeProject({ 'client.go': 'GENERATED client', 'types.go': 'types' }, out);
+
+    expect(read(out, 'client.go')).toBe('my hand-tuned client'); // kept
+    expect(read(out, 'types.go')).toBe('types'); // non-ignored still written
+    expect(result.conflicts).toEqual(['client.go']);
+    expect(result.written).toEqual(['types.go']);
+  });
+
+  it('wins over writeMode: an ignored overwrite/mergeJson file is left alone', async () => {
+    const out = tmpDir();
+    fs.writeFileSync(path.join(out, 'package.json'), '{"name":"mine"}');
+    ignore(out, 'package.json\n');
+
+    const result = await writeProject(
+      { 'package.json': { content: '{"name":"generated","version":"1.0.0"}', writeMode: 'mergeJson' } },
+      out,
+    );
+    expect(read(out, 'package.json')).toBe('{"name":"mine"}'); // not merged, not touched
+    expect(result.conflicts).toEqual(['package.json']);
+  });
+
+  it('reports no conflict when the ignored file already matches the generated output', async () => {
+    const out = tmpDir();
+    fs.writeFileSync(path.join(out, 'client.go'), 'same');
+    ignore(out, 'client.go\n');
+
+    const result = await writeProject({ 'client.go': 'same' }, out);
+    expect(result.conflicts).toEqual([]);
+    expect(result.unchanged).toEqual(['client.go']);
+  });
+
+  it('still bootstraps an ignored file that does not exist yet ("never overwrite", not "never generate")', async () => {
+    const out = tmpDir();
+    ignore(out, 'client.go\n');
+
+    const result = await writeProject({ 'client.go': 'generated' }, out);
+    expect(read(out, 'client.go')).toBe('generated');
+    expect(result.written).toEqual(['client.go']);
+    expect(result.conflicts).toEqual([]);
+  });
+
+  it('honors glob patterns (protects every match)', async () => {
+    const out = tmpDir();
+    fs.mkdirSync(path.join(out, 'docs'), { recursive: true });
+    fs.writeFileSync(path.join(out, 'docs', 'guide.md'), 'user docs');
+    fs.writeFileSync(path.join(out, 'README.md'), 'user readme');
+    ignore(out, '*.md\n');
+
+    const result = await writeProject(
+      { 'docs/guide.md': 'gen guide', 'README.md': 'gen readme', 'main.go': 'main' },
+      out,
+    );
+    expect(read(out, 'docs/guide.md')).toBe('user docs');
+    expect(read(out, 'README.md')).toBe('user readme');
+    expect(read(out, 'main.go')).toBe('main');
+    expect(result.conflicts).toEqual(['README.md', 'docs/guide.md']); // sorted
+    expect(result.written).toEqual(['main.go']);
+  });
+
+  it('protects an ignored file from the guarded stale-prune', async () => {
+    const out = tmpDir();
+    ignore(out, 'extra.go\n');
+    // Bootstrap it, then the emitter stops producing it — a normal file would be pruned.
+    await writeProject({ 'a.go': 'a', 'extra.go': 'extra' }, out);
+    const result = await writeProject({ 'a.go': 'a' }, out);
+
+    expect(result.pruned).toEqual([]);
+    expect(exists(out, 'extra.go')).toBe(true);
+  });
+});
+
+describe('isSdkIgnored / parseSdkIgnore', () => {
+  it('parseSdkIgnore drops blanks + comments, keeps order', () => {
+    expect(parseSdkIgnore('# a comment\n\nclient.go\n  README.md  \n')).toEqual(['client.go', 'README.md']);
+    expect(parseSdkIgnore(null)).toEqual([]);
+  });
+
+  it('matches gitignore-style patterns', () => {
+    // bare name → any depth
+    expect(isSdkIgnored('client.go', ['client.go'])).toBe(true);
+    expect(isSdkIgnored('pkg/client.go', ['client.go'])).toBe(true);
+    expect(isSdkIgnored('client.go', ['other.go'])).toBe(false);
+    // anchored (has a slash) → root only
+    expect(isSdkIgnored('src/config.go', ['src/config.go'])).toBe(true);
+    expect(isSdkIgnored('deep/src/config.go', ['src/config.go'])).toBe(false);
+    expect(isSdkIgnored('LICENSE', ['/LICENSE'])).toBe(true);
+    // globs
+    expect(isSdkIgnored('README.md', ['*.md'])).toBe(true);
+    expect(isSdkIgnored('a/b/notes.md', ['*.md'])).toBe(true);
+    expect(isSdkIgnored('main.go', ['*.md'])).toBe(false);
+    expect(isSdkIgnored('internal/vendor/x.go', ['internal/**'])).toBe(true);
+    // directory + its contents
+    expect(isSdkIgnored('docs', ['docs/'])).toBe(true);
+    expect(isSdkIgnored('docs/api/x.md', ['docs/'])).toBe(true);
+    // negation (last match wins)
+    expect(isSdkIgnored('README.md', ['*.md', '!README.md'])).toBe(false);
+    expect(isSdkIgnored('other.md', ['*.md', '!README.md'])).toBe(true);
+  });
+});
+
+describe('writeProject: merge (3-way)', () => {
+  const baseDir = (dir: string) => path.join(dir, '.sdk', 'base')
+  const baseObjects = (dir: string) => {
+    try {
+      return fs.readdirSync(baseDir(dir)).sort()
+    } catch {
+      return []
+    }
+  }
+
+  it('preserves a user edit while applying a generator change elsewhere', async () => {
+    const out = tmpDir()
+    // seed: pristine generation writes the file + the base snapshot
+    await writeProject({ 'client.go': 'package sdk\n\nfunc New() {}\n\nfunc List() {}\n' }, out, { merge: true })
+    // user hand-edits a region the generator won't touch (adds a helper)
+    fs.writeFileSync(path.join(out, 'client.go'), 'package sdk\n\nfunc New() {}\n\nfunc List() {}\n\nfunc Helper() {}\n')
+    // regenerate: the generator changed a DIFFERENT region (New -> New(cfg))
+    const result = await writeProject(
+      { 'client.go': 'package sdk\n\nfunc New(cfg Config) {}\n\nfunc List() {}\n' },
+      out,
+      { merge: true },
+    )
+    expect(result.merged).toEqual(['client.go'])
+    expect(result.mergeConflicts).toEqual([])
+    const merged = read(out, 'client.go')
+    expect(merged).toContain('func New(cfg Config) {}') // generator change landed
+    expect(merged).toContain('func Helper() {}') // user edit survived
+    expect(merged).not.toContain('<<<<<<<')
+  })
+
+  it('writes conflict markers when user and generator change the same region', async () => {
+    const out = tmpDir()
+    await writeProject({ 'v.go': 'const Version = "1.0.0"\n' }, out, { merge: true })
+    fs.writeFileSync(path.join(out, 'v.go'), 'const Version = "1.0.0-mine"\n') // user edit
+    const result = await writeProject({ 'v.go': 'const Version = "2.0.0"\n' }, out, { merge: true }) // generator edit, same line
+    expect(result.mergeConflicts).toEqual(['v.go'])
+    expect(result.merged).toEqual([])
+    const c = read(out, 'v.go')
+    expect(c).toContain('<<<<<<< your edits')
+    expect(c).toContain('1.0.0-mine')
+    expect(c).toContain('2.0.0')
+    expect(c).toContain('>>>>>>> generated')
+  })
+
+  it('overwrites an UNmodified file via the fast path (not merged)', async () => {
+    const out = tmpDir()
+    await writeProject({ 'a.go': 'v1\n' }, out, { merge: true })
+    const result = await writeProject({ 'a.go': 'v2\n' }, out, { merge: true }) // no user edit
+    expect(result.written).toEqual(['a.go'])
+    expect(result.merged).toEqual([])
+    expect(read(out, 'a.go')).toBe('v2\n')
+  })
+
+  it('first merge run with a pre-existing edit keeps it (no base yet) and seeds the base', async () => {
+    const out = tmpDir()
+    fs.writeFileSync(path.join(out, 'a.go'), 'user pre-edit\n') // exists before ANY generation
+    const result = await writeProject({ 'a.go': 'generated\n' }, out, { merge: true })
+    expect(result.keptModified).toEqual(['a.go'])
+    expect(read(out, 'a.go')).toBe('user pre-edit\n') // not clobbered
+    expect(baseObjects(out).length).toBe(1) // base seeded for next run
+  })
+
+  it('.sdkignore still wins over merge (whole-file protection, no 3-way attempted)', async () => {
+    const out = tmpDir()
+    fs.writeFileSync(path.join(out, '.sdkignore'), 'client.go\n')
+    fs.writeFileSync(path.join(out, 'client.go'), 'user owned\n')
+    const result = await writeProject({ 'client.go': 'generated\n' }, out, { merge: true })
+    expect(read(out, 'client.go')).toBe('user owned\n')
+    expect(result.conflicts).toEqual(['client.go']) // .sdkignore conflict, not a 3-way merge
+    expect(result.merged).toEqual([])
+    expect(result.mergeConflicts).toEqual([])
+  })
+
+  it('base snapshot is content-addressed: dedups + prunes unreferenced objects', async () => {
+    const out = tmpDir()
+    await writeProject({ 'a.go': 'aaa\n', 'b.go': 'bbb\n' }, out, { merge: true })
+    expect(baseObjects(out).length).toBe(2) // one object per distinct content
+    await writeProject({ 'a.go': 'AAA\n', 'b.go': 'bbb\n' }, out, { merge: true }) // a changes, b identical
+    expect(baseObjects(out).length).toBe(2) // b's object stays; a's old pruned, new added
+  })
+
+  it('writes NO base snapshot when merge is off', async () => {
+    const out = tmpDir()
+    await writeProject({ 'a.go': 'x\n' }, out) // no merge
+    expect(exists(out, '.sdk/base')).toBe(false)
+  })
+})
+
+describe('materializeProject: disk-less file map + manifest', () => {
+  const sha256 = (s: string) => createHash('sha256').update(s, 'utf8').digest('hex');
+
+  it('returns the file map plus a deterministic .sdk/sdk.lock whose hashes match the emitted bytes', async () => {
+    const out = await materializeProject({ 'pkg/client.go': 'client', 'types.go': 'types' });
+
+    // Generated files pass through verbatim; the framework owns the manifest.
+    expect(out['pkg/client.go']).toBe('client');
+    expect(out['types.go']).toBe('types');
+
+    const m = JSON.parse(out[SDK_LOCK_FILENAME]);
+    expect(m.schemaVersion).toBe(1);
+    expect(m.generator).toBe('opensdk');
+    expect(Object.keys(m.files)).toEqual(['pkg/client.go', 'types.go']); // sorted
+    expect(m.files['types.go']).toBe(sha256('types')); // hash of the EMITTED content
+    expect(out[SDK_LOCK_FILENAME]).not.toMatch(/\d{4}-\d{2}-\d{2}T/); // no timestamps
+  });
+
+  it('records the generator name from options', async () => {
+    const out = await materializeProject({ 'a.go': 'a' }, { generator: 'go' });
+    expect(JSON.parse(out[SDK_LOCK_FILENAME]).generator).toBe('go');
+  });
+
+  it('canonicalizes mergeJson (no disk → pretty JSON + newline, the exact bytes a later writeProject regen would hash)', async () => {
+    const out = await materializeProject({
+      'pkg.json': { content: '{"a":1,"b":[1,2]}', writeMode: 'mergeJson' },
+    });
+    const canonical = `${JSON.stringify({ a: 1, b: [1, 2] }, null, 2)}\n`;
+    expect(out['pkg.json']).toBe(canonical);
+    expect(JSON.parse(out[SDK_LOCK_FILENAME]).files['pkg.json']).toBe(sha256(canonical));
+  });
+
+  it('rejects a file map that emits the manifest path itself', async () => {
+    await expect(materializeProject({ [SDK_LOCK_FILENAME]: '{}' })).rejects.toThrow(/owns \.sdk/);
   });
 });
 

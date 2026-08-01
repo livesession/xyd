@@ -13,7 +13,8 @@
     "format": "bunx biome check --write src"
   },
   "dependencies": {
-    "@xyd-js/opensdk-core": "workspace:*"
+    "@xyd-js/opensdk-core": "workspace:*",
+    "@xyd-js/opensdk-merge": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.9.0",

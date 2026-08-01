@@ -1,0 +1,10 @@
+{
+  "call": "vector_stores.files.retrieve",
+  "request": {
+    "method": "get",
+    "path": "/vector_stores/{vector_store_id}/files/{file_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

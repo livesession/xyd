@@ -1,0 +1,9 @@
+/**
+ * The wizard Storybook stylesheet — the same Tailwind pipeline as the app, with
+ * the design-system theme tokens. `@source` scans this package's src AND the
+ * design-system's src (its components live outside this file's dir) for classes.
+ */
+@import "tailwindcss";
+@import "@apitoolchain/design-system/theme.css";
+@source "../";
+@source "../../../apitoolchain-design-system/src";

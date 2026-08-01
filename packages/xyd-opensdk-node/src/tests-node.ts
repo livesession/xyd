@@ -1,10 +1,12 @@
-import type { Method, Param, Resource } from '@xyd-js/opensdk-core';
+import type { Method, NamedType, OpensdkSpecJson, Param, Resource } from '@xyd-js/opensdk-core';
 import { type MethodExample, type OperationPlan, planMethodExample, planOperation } from '@xyd-js/opensdk-framework';
 
 import { renderNodeExample } from './example-node';
 import { propKey } from './model';
 import { camelCase, nodeMethodName } from './naming';
+import { resolveNodeOptions } from './project';
 import type { NodeCtx } from './resource';
+import type { OpensdkNodeOptions } from './types';
 
 // The SDK's OWN test suite — the artifact openai-node ships (tests/api-resources/*).
 // One tests/<resource>.test.ts per top-level resource constructs the generated
@@ -55,10 +57,15 @@ declare module 'node:assert' {
 }
 
 /** tests/setup.ts — the shared client (pointed at the mock base URL) + a server probe + a structural check. */
-export function testSetupFile(): string {
+export function testSetupFile(clientName: string, defaultExport: boolean): string {
+  // Bind the client to a local `Client` so the rest of the suite is export-shape
+  // agnostic (default import, or a named import aliased).
+  const importLine = defaultExport
+    ? `import Client from '../src/index';`
+    : `import { ${clientName} as Client } from '../src/index';`;
   return `import assert from 'node:assert';
 
-import { Client } from '../src/index';
+${importLine}
 
 /** The spec-shaped mock base URL the generated suite runs against (openai-node's TEST_API_BASE_URL). */
 const baseURL = readEnv('TEST_API_BASE_URL') ?? 'http://127.0.0.1:4010';
@@ -236,4 +243,66 @@ export function renderResourceTestFile(resource: Resource, ctx: NodeCtx): string
   const imports = importLines.join('\n');
   const body = blocks.length ? blocks.join('\n\n') : 'test("noop", () => {});';
   return `${imports}\n\n${body}\n`;
+}
+
+/**
+ * A single per-operation USAGE SNIPPET (docs): a self-contained, runnable-looking
+ * TypeScript example that constructs the client and makes ONE required-only method
+ * call (à la Fern/Speakeasy/Stainless), mirroring the Go/Python emitters'
+ * `generate*Usage`. Reuses the same client attribute-chain builder (`camelCase` /
+ * `nodeMethodName`) and the shared example planner (required-only, no
+ * `withOptional`) plus the call-arg renderer the test suite uses, minus the
+ * mock/assert/guard scaffolding. `chain` is the resource-name path (root→owner)
+ * the method hangs off. Async — the generated methods return promises.
+ */
+export function generateNodeUsage(
+  method: Method,
+  chain: string[],
+  spec: OpensdkSpecJson,
+  options: OpensdkNodeOptions = {},
+): string {
+  const { pkg, envVar, clientName, defaultExport } = resolveNodeOptions(spec, options);
+  const types = new Map<string, NamedType>((spec.types || []).map((t) => [t.name, t]));
+
+  const attrs = chain.map((s) => camelCase(s));
+  const action = nodeMethodName(method.action);
+  const callChain = `client.${[...attrs, action].join('.')}`;
+
+  const op = planOperation(method, types);
+  // A doc usage snippet: ALL fields with realistic (spec example/default) values.
+  const example = planMethodExample(method, types, { realistic: true, withOptional: true });
+  const call = `${callChain}(${renderCallArgs(example, paramsRequired(op))})`;
+
+  // Capture + log the result only when the method returns one (binary download,
+  // paginated list, or a primary response) — mirrors the Go/Python emitters.
+  const assertable = hasResponse(op);
+
+  const importLine = defaultExport
+    ? `import ${clientName} from ${JSON.stringify(pkg)};`
+    : `import { ${clientName} } from ${JSON.stringify(pkg)};`;
+
+  // Client-construction options. When `baseUrlEnv` is set (only during a snippet
+  // RUN, ask C.2), the client reads its base URL from that env var so the snippet
+  // can hit a recording server; unset (the default) leaves the block — and every
+  // committed usage golden — byte-identical.
+  const clientOpts = [`  apiKey: process.env[${JSON.stringify(envVar)}],`];
+  if (options.baseUrlEnv) {
+    clientOpts.push(`  baseURL: process.env[${JSON.stringify(options.baseUrlEnv)}],`);
+  }
+
+  const lines = [
+    importLine,
+    ``,
+    `const client = new ${clientName}({`,
+    ...clientOpts,
+    `});`,
+    ``,
+  ];
+  if (assertable) {
+    lines.push(`const result = await ${call};`);
+    lines.push(`console.log(result);`);
+  } else {
+    lines.push(`await ${call};`);
+  }
+  return `${lines.join('\n')}\n`;
 }

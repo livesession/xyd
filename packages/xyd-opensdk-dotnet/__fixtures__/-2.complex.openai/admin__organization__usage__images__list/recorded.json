@@ -1,0 +1,12 @@
+{
+  "call": "Admin.Organization.Usage.Images.List",
+  "request": {
+    "method": "get",
+    "path": "/organization/usage/images",
+    "query": [
+      "start_time"
+    ],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

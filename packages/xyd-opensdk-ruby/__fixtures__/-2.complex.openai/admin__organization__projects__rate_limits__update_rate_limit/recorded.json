@@ -1,0 +1,11 @@
+{
+  "call": "admin.organization.projects.rate_limits.update_rate_limit",
+  "request": {
+    "method": "post",
+    "path": "/organization/projects/{project_id}/rate_limits/{rate_limit_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

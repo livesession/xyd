@@ -1,0 +1,10 @@
+{
+  "call": "Evals.List",
+  "request": {
+    "method": "get",
+    "path": "/evals",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

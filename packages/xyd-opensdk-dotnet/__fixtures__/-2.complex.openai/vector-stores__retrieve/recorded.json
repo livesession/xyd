@@ -1,0 +1,10 @@
+{
+  "call": "VectorStores.Retrieve",
+  "request": {
+    "method": "get",
+    "path": "/vector_stores/{vector_store_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

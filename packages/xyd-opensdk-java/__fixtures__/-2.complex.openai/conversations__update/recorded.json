@@ -1,0 +1,13 @@
+{
+  "call": "conversations.update",
+  "request": {
+    "method": "post",
+    "path": "/conversations/{conversation_id}",
+    "query": [],
+    "bodyFields": [
+      "metadata"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

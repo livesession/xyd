@@ -5,7 +5,7 @@ import type { ClientOptions } from './core/request';
 import { Pets } from './resources/pets';
 
 /** The Petstore API client. */
-export class Client extends APIClient {
+export class Petstore extends APIClient {
   readonly pets: Pets;
 
   constructor(options: ClientOptions = {}) {

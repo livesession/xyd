@@ -1,0 +1,10 @@
+{
+  "call": "Admin.Organization.Projects.Groups.Delete",
+  "request": {
+    "method": "delete",
+    "path": "/organization/projects/{project_id}/groups/{group_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

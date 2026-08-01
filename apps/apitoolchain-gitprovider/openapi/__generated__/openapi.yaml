@@ -1,0 +1,793 @@
+openapi: 3.0.0
+info:
+  title: apitoolchain gitproviderd
+  version: v1
+  description: |-
+    apitoolchain gitproviderd — the HTTP wire contract for the Go git-provider
+    service. Provider credentials are inlined into every request body (kind,
+    baseUrl, token, login); there is no shared auth scheme.
+tags: []
+paths:
+  /branches:
+    post:
+      operationId: listBranches
+      parameters: []
+      responses:
+        '200':
+          description: 200 OK with a JSON body of `T`.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          description: Bad request — invalid config/kind/token or a malformed body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream provider op failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BranchesRequest'
+  /create-release:
+    post:
+      operationId: createRelease
+      parameters: []
+      responses:
+        '200':
+          description: 200 OK with a JSON body of `T`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateReleaseResult'
+        '400':
+          description: Bad request — invalid config/kind/token or a malformed body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream provider op failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReleaseBody'
+  /create-repo:
+    post:
+      operationId: createRepo
+      parameters: []
+      responses:
+        '200':
+          description: 200 OK with a JSON body of `T`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Repo'
+        '400':
+          description: Bad request — invalid config/kind/token or a malformed body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream provider op failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRepoBody'
+  /create-tag:
+    post:
+      operationId: createTag
+      parameters: []
+      responses:
+        '200':
+          description: 200 OK with a JSON body of `T`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateTagResult'
+        '400':
+          description: Bad request — invalid config/kind/token or a malformed body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream provider op failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTagBody'
+  /healthz:
+    get:
+      operationId: healthz
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            text/plain:
+              schema:
+                type: string
+  /parse-webhook:
+    post:
+      operationId: parseWebhook
+      parameters: []
+      responses:
+        '200':
+          description: 200 OK with a JSON body of `T`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParseWebhookResult'
+        '400':
+          description: Bad request — invalid config/kind/token or a malformed body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream provider op failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParseWebhookBody'
+  /pr-status:
+    post:
+      operationId: prStatus
+      parameters: []
+      responses:
+        '200':
+          description: 200 OK with a JSON body of `T`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrStatusResult'
+        '400':
+          description: Bad request — invalid config/kind/token or a malformed body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream provider op failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrStatusBody'
+  /register-webhook:
+    post:
+      operationId: registerWebhook
+      parameters: []
+      responses:
+        '200':
+          description: 200 OK with a JSON body of `T`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterWebhookResult'
+        '400':
+          description: Bad request — invalid config/kind/token or a malformed body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream provider op failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterWebhookBody'
+  /repos:
+    post:
+      operationId: listRepos
+      parameters: []
+      responses:
+        '200':
+          description: 200 OK with a JSON body of `T`.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Repo'
+        '400':
+          description: Bad request — invalid config/kind/token or a malformed body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream provider op failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Creds'
+  /sync:
+    post:
+      operationId: sync
+      parameters: []
+      responses:
+        '200':
+          description: 200 OK with a JSON body of `T`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncResult'
+        '400':
+          description: Bad request — invalid config/kind/token or a malformed body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream provider op failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncBody'
+  /upsert-pr:
+    post:
+      operationId: upsertPr
+      parameters: []
+      responses:
+        '200':
+          description: 200 OK with a JSON body of `T`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpsertPrResult'
+        '400':
+          description: Bad request — invalid config/kind/token or a malformed body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream provider op failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertPrBody'
+  /whoami:
+    post:
+      operationId: whoami
+      parameters: []
+      responses:
+        '200':
+          description: 200 OK with a JSON body of `T`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request — invalid config/kind/token or a malformed body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '502':
+          description: Upstream provider op failed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Creds'
+components:
+  schemas:
+    BranchesRequest:
+      type: object
+      required:
+        - kind
+        - baseUrl
+        - token
+        - repo
+      properties:
+        kind:
+          $ref: '#/components/schemas/ProviderKind'
+        baseUrl:
+          type: string
+        token:
+          type: string
+        login:
+          type: string
+        repo:
+          type: string
+    CreateReleaseBody:
+      type: object
+      required:
+        - kind
+        - baseUrl
+        - token
+        - repo
+        - tag
+        - name
+        - body
+        - commitish
+        - prerelease
+      properties:
+        kind:
+          $ref: '#/components/schemas/ProviderKind'
+        baseUrl:
+          type: string
+        token:
+          type: string
+        login:
+          type: string
+        repo:
+          type: string
+        tag:
+          type: string
+        name:
+          type: string
+        body:
+          type: string
+        commitish:
+          type: string
+        prerelease:
+          type: boolean
+    CreateReleaseResult:
+      type: object
+      required:
+        - url
+        - tag
+      properties:
+        url:
+          type: string
+        tag:
+          type: string
+    CreateRepoBody:
+      type: object
+      required:
+        - kind
+        - baseUrl
+        - token
+        - name
+        - private
+      properties:
+        kind:
+          $ref: '#/components/schemas/ProviderKind'
+        baseUrl:
+          type: string
+        token:
+          type: string
+        login:
+          type: string
+        name:
+          type: string
+        private:
+          type: boolean
+        defaultBranch:
+          type: string
+    CreateTagBody:
+      type: object
+      required:
+        - kind
+        - baseUrl
+        - token
+        - repo
+        - tag
+        - ref
+        - author
+      properties:
+        kind:
+          $ref: '#/components/schemas/ProviderKind'
+        baseUrl:
+          type: string
+        token:
+          type: string
+        login:
+          type: string
+        repo:
+          type: string
+        tag:
+          type: string
+        ref:
+          type: string
+        author:
+          $ref: '#/components/schemas/Signature'
+    CreateTagResult:
+      type: object
+      required:
+        - tag
+        - sha
+      properties:
+        tag:
+          type: string
+        sha:
+          type: string
+    Creds:
+      type: object
+      required:
+        - kind
+        - baseUrl
+        - token
+      properties:
+        kind:
+          $ref: '#/components/schemas/ProviderKind'
+        baseUrl:
+          type: string
+        token:
+          type: string
+        login:
+          type: string
+      description: Per-request provider credentials, inlined into every body.
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+    FileEntry:
+      type: object
+      required:
+        - path
+        - contentBase64
+      properties:
+        path:
+          type: string
+        contentBase64:
+          type: string
+      description: A file to push; content is base64-encoded on the wire.
+    ParseWebhookBody:
+      type: object
+      required:
+        - kind
+        - secret
+        - headers
+        - bodyBase64
+      properties:
+        kind:
+          $ref: '#/components/schemas/ProviderKind'
+        secret:
+          type: string
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+        bodyBase64:
+          type: string
+      description: Verify + parse a raw webhook delivery. No token — the secret authenticates it.
+    ParseWebhookResult:
+      type: object
+      required:
+        - event
+        - action
+        - number
+        - merged
+        - baseBranch
+        - mergeSha
+        - verified
+      properties:
+        event:
+          type: string
+        action:
+          type: string
+        number:
+          type: integer
+          format: int32
+        merged:
+          type: boolean
+        baseBranch:
+          type: string
+        mergeSha:
+          type: string
+        verified:
+          type: boolean
+    PrStatusBody:
+      type: object
+      required:
+        - kind
+        - baseUrl
+        - token
+        - repo
+        - number
+      properties:
+        kind:
+          $ref: '#/components/schemas/ProviderKind'
+        baseUrl:
+          type: string
+        token:
+          type: string
+        login:
+          type: string
+        repo:
+          type: string
+        number:
+          type: integer
+          format: int32
+    PrStatusResult:
+      type: object
+      required:
+        - number
+        - merged
+        - closed
+        - mergeSha
+        - baseBranch
+      properties:
+        number:
+          type: integer
+          format: int32
+        merged:
+          type: boolean
+        closed:
+          type: boolean
+        mergeSha:
+          type: string
+        baseBranch:
+          type: string
+    ProviderKind:
+      type: string
+      enum:
+        - github
+        - gitlab
+        - bitbucket
+        - gitea
+    RegisterWebhookBody:
+      type: object
+      required:
+        - kind
+        - baseUrl
+        - token
+        - repo
+        - target
+        - secret
+      properties:
+        kind:
+          $ref: '#/components/schemas/ProviderKind'
+        baseUrl:
+          type: string
+        token:
+          type: string
+        login:
+          type: string
+        repo:
+          type: string
+        target:
+          type: string
+        secret:
+          type: string
+    RegisterWebhookResult:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+    Repo:
+      type: object
+      required:
+        - fullName
+        - namespace
+        - name
+        - defaultBranch
+        - cloneUrl
+        - htmlUrl
+        - private
+      properties:
+        fullName:
+          type: string
+        namespace:
+          type: string
+        name:
+          type: string
+        defaultBranch:
+          type: string
+        cloneUrl:
+          type: string
+        htmlUrl:
+          type: string
+        private:
+          type: boolean
+    Signature:
+      type: object
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+    SyncBody:
+      type: object
+      required:
+        - kind
+        - baseUrl
+        - token
+        - repo
+        - branch
+        - prefix
+        - message
+        - author
+        - files
+      properties:
+        kind:
+          $ref: '#/components/schemas/ProviderKind'
+        baseUrl:
+          type: string
+        token:
+          type: string
+        login:
+          type: string
+        repo:
+          type: string
+        branch:
+          type: string
+        prefix:
+          type: string
+        message:
+          type: string
+        author:
+          $ref: '#/components/schemas/Signature'
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileEntry'
+    SyncResult:
+      type: object
+      required:
+        - commit
+        - branch
+        - htmlUrl
+        - noChanges
+      properties:
+        commit:
+          type: string
+        branch:
+          type: string
+        htmlUrl:
+          type: string
+        noChanges:
+          type: boolean
+    UpsertPrBody:
+      type: object
+      required:
+        - kind
+        - baseUrl
+        - token
+        - repo
+        - headBranch
+        - baseBranch
+        - prefix
+        - title
+        - body
+        - author
+        - files
+        - replaceSubtree
+      properties:
+        kind:
+          $ref: '#/components/schemas/ProviderKind'
+        baseUrl:
+          type: string
+        token:
+          type: string
+        login:
+          type: string
+        repo:
+          type: string
+        headBranch:
+          type: string
+        baseBranch:
+          type: string
+        prefix:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        author:
+          $ref: '#/components/schemas/Signature'
+        files:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileEntry'
+        replaceSubtree:
+          type: boolean
+      description: Open or force-update a rolling release PR (push files to head, PR head→base).
+    UpsertPrResult:
+      type: object
+      required:
+        - number
+        - url
+        - branch
+        - commit
+        - created
+        - noChanges
+      properties:
+        number:
+          type: integer
+          format: int32
+        url:
+          type: string
+        branch:
+          type: string
+        commit:
+          type: string
+        created:
+          type: boolean
+        noChanges:
+          type: boolean
+    User:
+      type: object
+      required:
+        - login
+        - name
+        - email
+      properties:
+        login:
+          type: string
+        name:
+          type: string
+        email:
+          type: string

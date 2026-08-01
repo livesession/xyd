@@ -1,0 +1,10 @@
+{
+  "call": "realtime.calls.hangup",
+  "request": {
+    "method": "post",
+    "path": "/realtime/calls/{call_id}/hangup",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

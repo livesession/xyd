@@ -1,0 +1,10 @@
+{
+  "call": "admin.organization.projects.users.delete",
+  "request": {
+    "method": "delete",
+    "path": "/organization/projects/{project_id}/users/{user_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

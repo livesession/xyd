@@ -1,0 +1,13 @@
+{
+  "call": "admin.organization.certificates.create",
+  "request": {
+    "method": "post",
+    "path": "/organization/certificates",
+    "query": [],
+    "bodyFields": [
+      "certificate"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

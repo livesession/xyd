@@ -112,6 +112,46 @@ export const CodeTabsLanguagesHost = css`
             }
         }
 
+        &[data-dropdown="true"] {
+            align-items: center;
+        }
+
+        [part="language-select-trigger"] {
+            all: unset;
+            box-sizing: border-box;
+
+            cursor: pointer;
+
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+
+            margin: 6px 10px;
+            padding: 4px 8px;
+            border-radius: 6px;
+
+            color: var(--codetabs-color--active);
+
+            font-weight: var(--xyd-font-weight-semibold);
+            font-size: var(--xyd-font-size-xsmall);
+
+            &:hover {
+                transition: ease-in 0.1s;
+                background: var(--codetabs-color--hover);
+            }
+        }
+
+        [part="language-select-value"] {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        [part="language-select-arrow"] {
+            display: inline-flex;
+            opacity: 0.7;
+        }
+
         [part="copy"] {
             display: flex;
             padding-left: 8px;
@@ -122,6 +162,71 @@ export const CodeTabsLanguagesHost = css`
             position: absolute;
             right: 0;
             top: 5px;
+        }
+    }
+`;
+
+// The language dropdown's popover. Radix portals it out of the (overflow:hidden)
+// codetabs container, so these live as standalone classes rather than nested
+// under the host — a descendant selector would never reach the portaled node.
+export const LanguageSelectContent = css`
+    @layer defaults {
+        z-index: 60;
+        overflow: hidden;
+
+        min-width: var(--radix-select-trigger-width);
+
+        background: var(--user-codetabs-bgcolor, var(--xyd-codetabs-bgcolor, #15181e));
+        border: 1px solid var(--xyd-codetabs-border-color);
+        border-radius: 10px;
+        padding: 4px;
+
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+    }
+`;
+
+// The language-icon wrapper (icon, optionally + the pretty name). Used in the
+// tab row (icon only) and the dropdown (icon + name).
+export const LangIcon = css`
+    @layer defaults {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        line-height: 1;
+
+        [part="language-name"] {
+            white-space: nowrap;
+        }
+    }
+`;
+
+export const LanguageSelectItem = css`
+    @layer defaults {
+        all: unset;
+        box-sizing: border-box;
+
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        padding: 6px 10px;
+        border-radius: 6px;
+
+        color: var(--user-codetabs-color, var(--xyd-codetabs-color));
+
+        font-weight: var(--xyd-font-weight-semibold);
+        font-size: var(--xyd-font-size-xsmall);
+        white-space: nowrap;
+
+        &[data-state="checked"] {
+            color: var(--user-codetabs-color--active, var(--xyd-codetabs-color--active));
+        }
+
+        &[data-highlighted] {
+            color: var(--user-codetabs-color--active, var(--xyd-codetabs-color--active));
+            background: var(--user-codetabs-color--hover, var(--xyd-codetabs-color--hover));
         }
     }
 `;
