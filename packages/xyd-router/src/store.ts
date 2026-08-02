@@ -22,7 +22,9 @@ function resolveTo(to: To, base: RLoc): URL {
  */
 export function createRouterStore(init: RouterInit): RouterStore {
   let snap: Snap = Object.freeze({
-    location: init.location,
+    // Ensure the initial location carries a key so the FIRST navigation (which
+    // gets a fresh key) is detectably different → ScrollRestoration fires.
+    location: { ...init.location, key: init.location.key ?? genKey() },
     matches: init.matches,
     navigation: { state: "idle" as const },
     loaderData: init.matches.at(-1)?.data,
@@ -40,6 +42,13 @@ export function createRouterStore(init: RouterInit): RouterStore {
   // navigate's own history calls (that would leak the new location into the
   // loading phase). This flag suppresses the patch's auto-set for those calls.
   let internalHistory = false;
+
+  // Latest-wins guard: every awaited navigation (navigate + popstate) bumps
+  // navSeq and captures it; a resolved fetch only commits if it's still current.
+  // Prevents rapid/overlapping navs (and Back vs in-flight forward) from
+  // committing out of fetch-completion order → URL/content desync.
+  let navSeq = 0;
+  let inflight: AbortController | null = null;
 
   const getSnapshot = () => snap;
   const getServerSnapshot = () => server;
@@ -78,12 +87,19 @@ export function createRouterStore(init: RouterInit): RouterStore {
       return;
     }
 
+    inflight?.abort(); // cancel a superseded fetch (+ its title side effect)
+    const controller = new AbortController();
+    inflight = controller;
+    const seq = ++navSeq;
+
     set({ navigation: { state: "loading", location: target } }); // 1) loading, KEEP old snap.location
     pushOrReplace(opts.replace, target.key!, url.href); // 2) URL changes now
     try {
-      const { matches } = await init.loadPageData(url); // 3) fetch page data
-      set({ location: target, matches, loaderData: matches.at(-1)?.data, navigation: { state: "idle" } }); // 4) atomic commit
+      const { matches } = await init.loadPageData(url, controller.signal); // 3) fetch page data
+      if (seq !== navSeq) return; // 4) superseded by a newer nav → drop this stale commit
+      set({ location: target, matches, loaderData: matches.at(-1)?.data, navigation: { state: "idle" } }); // 5) atomic commit
     } catch {
+      if (seq !== navSeq || controller.signal.aborted) return; // aborted/superseded → not a real failure
       set({ navigation: { state: "idle" } });
       window.location.assign(url.href); // hard-nav fallback → degrades to MPA, never dead-ends
     }
@@ -115,8 +131,13 @@ export function createRouterStore(init: RouterInit): RouterStore {
     const onPop = () => {
       const url = new URL(window.location.href);
       const loc: RLoc = { pathname: url.pathname, search: url.search, hash: url.hash };
+      // A Back/Forward supersedes any in-flight navigate() (and vice versa).
+      inflight?.abort();
+      const controller = new AbortController();
+      inflight = controller;
+      const seq = ++navSeq;
       if (url.pathname === snap.location.pathname && url.search === snap.location.search) {
-        set({ location: loc });
+        set({ location: loc, navigation: { state: "idle" } }); // also clear a stuck 'loading'
         return;
       }
       if (!init.loadPageData) {
@@ -125,9 +146,15 @@ export function createRouterStore(init: RouterInit): RouterStore {
       }
       set({ navigation: { state: "loading" } });
       init
-        .loadPageData(url)
-        .then(({ matches }) => set({ location: loc, matches, loaderData: matches.at(-1)?.data, navigation: { state: "idle" } }))
-        .catch(() => window.location.reload());
+        .loadPageData(url, controller.signal)
+        .then(({ matches }) => {
+          if (seq !== navSeq) return;
+          set({ location: loc, matches, loaderData: matches.at(-1)?.data, navigation: { state: "idle" } });
+        })
+        .catch(() => {
+          if (seq !== navSeq || controller.signal.aborted) return;
+          window.location.reload();
+        });
     };
     window.addEventListener("popstate", onPop);
     return () => {

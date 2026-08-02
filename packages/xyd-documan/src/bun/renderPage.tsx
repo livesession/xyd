@@ -8,7 +8,7 @@ import { ContentFS } from "@xyd-js/content";
 
 import { createRouterStore, RouterProvider } from "@xyd-js/router";
 
-import { seedGlobals, ShellProviders, getSettings, getSettingsClone, matchRoute } from "./render-tree";
+import { seedGlobals, ShellProviders, getSettings, getSettingsClone, matchRoute, slugToPathname } from "./render-tree";
 
 /**
  * Server render (SSR). Reuses the browser-safe tree in `render-tree.tsx` so the
@@ -116,18 +116,21 @@ export async function buildPageData(slug: string) {
   };
 }
 
-export async function renderPage(slug: string): Promise<string> {
+export async function renderPage(slug: string, search: string = ""): Promise<string> {
   slug = slug || "index";
   const s = getSettings();
   const loaderData = await buildPageData(slug);
-  const routeId = matchRoute("/" + slug, s?.navigation);
+  const pathname = slugToPathname(slug); // index → "/" so home active-state hydrates
+  const routeId = matchRoute(pathname, s?.navigation);
 
   // Per-request router store (in context, not module scope → concurrent-render
-  // safe). No loadPageData server-side; getServerSnapshot returns this frozen
-  // snapshot so SSR markup === the client's first snapshot.
+  // safe). Seed location.pathname/search to match the client's window.location
+  // (index → "/", real query threaded through) so useLocation-driven active
+  // state + query-synced Tabs hydrate identically. No loadPageData server-side;
+  // getServerSnapshot returns this frozen snapshot.
   const store = createRouterStore({
-    location: { pathname: "/" + slug, search: "", hash: "" },
-    matches: [{ id: routeId, pathname: "/" + slug, params: {}, data: loaderData }],
+    location: { pathname, search: search || "", hash: "" },
+    matches: [{ id: routeId, pathname, params: {}, data: loaderData }],
   });
   const bodyHtml = renderToString(
     <RouterProvider store={store}>
@@ -200,6 +203,18 @@ export function start(ThemeCtor: any) {
   const CWD = process.cwd();
   const basename = (s?.advanced?.basename || "").replace(/\/$/, "");
 
+  // Strip the basename (prefix OR exact match) from a request pathname → slug.
+  // The exact-basename case (`/docs` with no trailing slash) must map to the
+  // index, not the literal slug "docs" (which has no page → 500).
+  const deriveSlug = (pathname: string): string => {
+    let p = decodeURIComponent(pathname);
+    if (basename) {
+      if (p === basename || p === basename + "/") p = "/";
+      else if (p.startsWith(basename + "/")) p = p.slice(basename.length);
+    }
+    return p.replace(/^\/+/, ""); // "" (root) → renderPage/buildPageData default to "index"
+  };
+
   // Static assets (logo, images, favicon) referenced by settings/content. Vite
   // served `public/` at root; here we strip the basename and try the path on
   // disk (both verbatim and under `public/`) before treating it as a page slug —
@@ -270,14 +285,13 @@ export function start(ThemeCtor: any) {
         // Client-nav JSON: the SAME per-route payload renderPage builds, minus the
         // app-wide settings. buildPageData reads files fresh per request, so the
         // watcher's reinit/reseed keeps it current with no extra wiring.
-        let dslug = decodeURIComponent(url.searchParams.get("slug") || "index");
-        if (basename && ("/" + dslug).startsWith(basename + "/")) dslug = dslug.slice(basename.length);
-        dslug = dslug.replace(/^\/+/, "") || "index";
+        const rawSlug = url.searchParams.get("slug") || "index";
+        const dslug = deriveSlug("/" + rawSlug.replace(/^\/+/, "")) || "index";
         try {
           const st = getSettings();
           const loaderData = await buildPageData(dslug);
           // stripReactElements is mandatory — metadata/sidebarGroups can't cross JSON otherwise.
-          return Response.json(stripReactElements({ loaderData, routeId: matchRoute("/" + dslug, st?.navigation) }));
+          return Response.json(stripReactElements({ loaderData, routeId: matchRoute(slugToPathname(dslug), st?.navigation) }));
         } catch (e: any) {
           return new Response(JSON.stringify({ error: String(e?.message || e) }), {
             status: 404,
@@ -287,11 +301,9 @@ export function start(ThemeCtor: any) {
       }
       const asset = await serveStatic(url.pathname);
       if (asset) return asset;
-      let slug = decodeURIComponent(url.pathname.replace(/^\//, ""));
-      if (basename && ("/" + slug).startsWith(basename + "/")) slug = slug.slice(basename.length);
-      slug = slug.replace(/^\//, "");
+      const slug = deriveSlug(url.pathname);
       try {
-        return new Response(await renderPage(slug), { headers: { "content-type": "text/html; charset=utf-8" } });
+        return new Response(await renderPage(slug, url.search), { headers: { "content-type": "text/html; charset=utf-8" } });
       } catch (e: any) {
         console.error(`render error for /${slug}:`, e);
         return new Response(`<pre>render error for /${slug}\n\n${e?.stack || e}</pre>`, {

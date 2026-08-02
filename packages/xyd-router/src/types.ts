@@ -32,6 +32,7 @@ export interface RouterStore {
 export interface RouterInit {
   location: RLoc;
   matches: RMatch[];
-  /** Browser-only page-data fetcher; omitted on the server. */
-  loadPageData?: (url: URL) => Promise<{ matches: RMatch[] }>;
+  /** Browser-only page-data fetcher; omitted on the server. `signal` aborts a
+   *  superseded fetch (rapid nav) so its side effects (title) don't apply. */
+  loadPageData?: (url: URL, signal?: AbortSignal) => Promise<{ matches: RMatch[] }>;
 }

@@ -2,7 +2,7 @@ import React from "react";
 import { hydrateRoot } from "react-dom/client";
 import { createRouterStore, RouterProvider } from "@xyd-js/router";
 
-import { seedGlobals, ShellProviders } from "./render-tree";
+import { seedGlobals, ShellProviders, slugToPathname } from "./render-tree";
 
 /**
  * Client hydration entry (S1/S2). Reads the SSR data embedded by `renderShell`,
@@ -27,32 +27,38 @@ export function bootClient(ThemeCtor: any) {
   seedGlobals(ThemeCtor);
 
   // Router store. Location is basename-STRIPPED (RR semantics; matches the
-  // server's "/"+slug so useLocation-driven active-state hydrates identically),
-  // and matches carry the server-computed routeId + loaderData.
+  // server's normalized pathname so useLocation-driven active-state hydrates
+  // identically), and matches carry the server-computed routeId + loaderData.
   const basename = (data.settings?.advanced?.basename || "").replace(/\/$/, "");
-  const stripBase = (p: string) => (basename && p.startsWith(basename + "/") ? p.slice(basename.length) : p) || "/";
-  const pathnameToSlug = (pathname: string) => {
-    let p = pathname;
-    if (basename && p.startsWith(basename + "/")) p = p.slice(basename.length);
-    return p.replace(/^\/+/, "") || "index";
+  // Strip basename (prefix OR exact match → root); root → "/".
+  const stripBase = (p: string) => {
+    if (basename) {
+      if (p === basename || p === basename + "/") return "/";
+      if (p.startsWith(basename + "/")) p = p.slice(basename.length);
+    }
+    return p.startsWith("/") ? p : "/" + p;
   };
+  const pathnameToSlug = (pathname: string) => stripBase(pathname).replace(/^\/+/, "") || "index";
 
   // Client-side page swap: fetch the new route's loaderData JSON, update the
-  // title, return the new match. On failure the store hard-navs (MPA fallback).
-  const loadPageData = async (url: URL) => {
+  // title, return the new match. `signal` cancels a superseded fetch (rapid nav)
+  // so its title write doesn't apply. On failure the store hard-navs (MPA).
+  const loadPageData = async (url: URL, signal?: AbortSignal) => {
     const slug = pathnameToSlug(url.pathname);
-    const r = await fetch(`/_xyd/data?slug=${encodeURIComponent(slug)}`);
+    const r = await fetch(`/_xyd/data?slug=${encodeURIComponent(slug)}`, { signal });
     if (!r.ok) throw new Error(`data ${r.status}`);
     const { loaderData, routeId } = await r.json();
-    document.title =
-      loaderData?.metadata?.seoTitle || loaderData?.metadata?.title || data.settings?.seo?.title || "xyd";
-    return { matches: [{ id: routeId, pathname: "/" + slug, params: {}, data: loaderData }] };
+    if (!signal?.aborted) {
+      document.title =
+        loaderData?.metadata?.seoTitle || loaderData?.metadata?.title || data.settings?.seo?.title || "xyd";
+    }
+    return { matches: [{ id: routeId, pathname: slugToPathname(slug), params: {}, data: loaderData }] };
   };
 
   const w = new URL(window.location.href);
   const store = createRouterStore({
     location: { pathname: stripBase(w.pathname), search: w.search, hash: w.hash },
-    matches: [{ id: data.routeId, pathname: "/" + data.slug, params: {}, data: data.loaderData }],
+    matches: [{ id: data.routeId, pathname: slugToPathname(data.slug), params: {}, data: data.loaderData }],
     loadPageData,
   });
 

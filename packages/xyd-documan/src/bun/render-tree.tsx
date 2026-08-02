@@ -11,7 +11,7 @@ import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
 import { Composer } from "@xyd-js/composer";
 import { Analytics, useAnalytics } from "@xyd-js/analytics";
 
-import { useLocation, useNavigate, useNavigation, useLoaderData } from "@xyd-js/router";
+import { useLocation, useNavigate, useNavigation, useLoaderData, ScrollRestoration } from "@xyd-js/router";
 import { mdxContent } from "./mdx";
 
 /**
@@ -87,6 +87,12 @@ export function seedGlobals(ThemeCtor: any) {
  * `/<page>` path; index → `/`. basename-free (RR ids are basename-independent).
  * Consumed by useActivePage/useActivePageRoute/useMatchedSegment via match.id.
  */
+/** Slug → RR-style location pathname: index → "/" (so useLocation()/match.pathname
+ *  === "/" home checks hydrate identically), else "/<slug>". */
+export function slugToPathname(slug: string): string {
+  return slug === "index" || slug === "" ? "/" : "/" + String(slug).replace(/^\/+/, "");
+}
+
 export function matchRoute(pathname: string, navigation: any): string {
   const norm = (x: string) => (x === "index" || x === "/index" ? "/" : "/" + String(x).replace(/^\/+/, ""));
   const target = norm(pathname === "/" ? "index" : pathname.replace(/^\/+/, ""));
@@ -156,6 +162,8 @@ export function ShellProviders() {
   const variantToggles = [{ key: "symbolName", defaultValue: "" }];
   return (
     <Analytics settings={settings} loader={loadProvider as any}>
+      {/* Scroll to top on client PUSH navigation (react-router parity). */}
+      <ScrollRestoration />
       <IconProvider value={{ iconSet: (globalThis as any).__xydIconSet || {} }}>
         <Framework
           settings={settings}
