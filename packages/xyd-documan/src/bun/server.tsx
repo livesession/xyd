@@ -26,6 +26,15 @@ async function buildClient(): Promise<string> {
   return await entry!.text();
 }
 
+// Resolve the pre-extracted @xyd-js/components Linaria CSS (proves R3: the CSS
+// pipeline runs at package build, so the app just serves plain dist/index.css).
+let componentsCssPath = "";
+try {
+  componentsCssPath = Bun.resolveSync("@xyd-js/components/index.css", import.meta.dir);
+} catch {
+  componentsCssPath = new URL("../../../xyd-components/dist/index.css", import.meta.url).pathname;
+}
+
 function shell(appHtml: string): string {
   return `<!doctype html>
 <html>
@@ -33,6 +42,7 @@ function shell(appHtml: string): string {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>xyd bun dev</title>
+    <link rel="stylesheet" href="/_bun/components.css" />
   </head>
   <body>
     <div id="root">${appHtml}</div>
@@ -52,6 +62,11 @@ const server = Bun.serve({
     if (url.pathname === "/_bun/client.js") {
       return new Response(clientJs, {
         headers: { "content-type": "text/javascript; charset=utf-8" },
+      });
+    }
+    if (url.pathname === "/_bun/components.css") {
+      return new Response(Bun.file(componentsCssPath), {
+        headers: { "content-type": "text/css; charset=utf-8" },
       });
     }
     const appHtml = renderToString(<App />);
