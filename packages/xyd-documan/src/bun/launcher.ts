@@ -33,19 +33,19 @@ console.error("[launcher] host:", HOST, "| theme:", themeName);
 
 // Generated entry with a STATIC theme import so react + the theme dedupe into
 // one bundle (a runtime dynamic import would load a second react from disk).
-const entryPath = path.join(DIR, ".entry.tsx");
-fs.writeFileSync(
-  entryPath,
-  `import Theme from "@xyd-js/theme-${themeName}";\nimport { start } from "./renderPage";\nstart(Theme);\n`
-);
-
 // Optional packages only present when a feature (e.g. diagrams) is enabled;
 // stub to empty so the bundle builds without them.
 const OPTIONAL = /^(rehype-mermaid|rehype-graphviz|@hpcc-js\/wasm|playwright|puppeteer)(\/|$)/;
 
-const shims: BunPlugin = {
+// @xyd-js/composer is server-only (pulls node built-ins via babel) — stub it out
+// of the CLIENT bundle (never instantiated there; seedGlobals guards it).
+const SERVER_ONLY = /^@xyd-js\/composer(\/|$)/;
+
+function makeShims(isClient: boolean): BunPlugin {
+  return {
   name: "xyd-render-shims",
   setup(b) {
+    if (isClient) b.onResolve({ filter: SERVER_ONLY }, () => ({ path: path.join(DIR, "composer-stub.js") }));
     b.onResolve({ filter: OPTIONAL }, () => ({ path: path.join(DIR, "empty.js") }));
     b.onResolve({ filter: /^react-router(-dom)?$/ }, () => ({ path: path.join(DIR, "rr-shim.tsx") }));
     b.onResolve({ filter: /^(react$|react\/|react-dom$|react-dom\/|@xyd-js\/)/ }, (args) => {
@@ -57,23 +57,48 @@ const shims: BunPlugin = {
     });
     b.onLoad({ filter: /\.css$/ }, () => ({ contents: "export default {};", loader: "js" }));
   },
-};
+  };
+}
 
-console.error("[launcher] bundling render…");
-const out = await Bun.build({
-  entrypoints: [entryPath],
-  target: "bun",
-  outdir: path.join(DIR, ".bundle"),
-  plugins: [shims],
-  sourcemap: "inline",
+// STATIC theme import so react + the theme dedupe into ONE bundle.
+async function buildBundle(name: string, entrySrc: string, target: "bun" | "browser", external: string[], isClient = false) {
+  const entryPath = path.join(DIR, `.entry.${name}.tsx`);
+  fs.writeFileSync(entryPath, entrySrc);
+  const res = await Bun.build({
+    entrypoints: [entryPath],
+    target,
+    outdir: path.join(DIR, ".bundle", name),
+    plugins: [makeShims(isClient)],
+    sourcemap: "inline",
+    external,
+  });
+  if (!res.success) {
+    console.error(`[launcher] ${name} bundle FAILED:`);
+    for (const l of res.logs) console.error(String(l));
+    process.exit(1);
+  }
+  return res.outputs.find((o) => o.kind === "entry-point")!.path;
+}
+
+console.error("[launcher] bundling client (browser)…");
+const clientBundle = await buildBundle(
+  "client",
+  `import Theme from "@xyd-js/theme-${themeName}";\nimport { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
+  "browser",
+  [],
+  true
+);
+process.env.XYD_CLIENT_BUNDLE = clientBundle;
+console.error("[launcher] client bundle ok →", clientBundle);
+
+console.error("[launcher] bundling server (bun)…");
+const serverBundle = await buildBundle(
+  "server",
+  `import Theme from "@xyd-js/theme-${themeName}";\nimport { start } from "./renderPage";\nstart(Theme);\n`,
+  "bun",
   // Heavy/self-referential tools that read their own files via import.meta.url
   // break when inlined — load them from disk instead. Not needed to render prose.
-  external: ["typedoc", "@xyd-js/sources", "shiki", "vscode-oniguruma", "vscode-textmate"],
-});
-if (!out.success) {
-  console.error("[launcher] bundle FAILED:");
-  for (const l of out.logs) console.error(String(l));
-  process.exit(1);
-}
-console.error("[launcher] bundle ok; starting server…");
-await import(out.outputs.find((o) => o.kind === "entry-point")!.path);
+  ["typedoc", "@xyd-js/sources", "shiki", "vscode-oniguruma", "vscode-textmate"]
+);
+console.error("[launcher] server bundle ok; starting server…");
+await import(serverBundle);

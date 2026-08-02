@@ -1,125 +1,30 @@
-import React from "react";
 import { renderToString } from "react-dom/server";
+import React from "react";
 import * as path from "node:path";
 
-import { Surfaces } from "@xyd-js/framework";
-import { Framework, FrameworkPage, FwLink, FwLogo } from "@xyd-js/framework/react";
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
-import { ReactContent } from "@xyd-js/components/content";
-import { IconProvider } from "@xyd-js/components/writer";
-import { CoderProvider } from "@xyd-js/components/coder";
-import { SearchButton } from "@xyd-js/components/system";
-import { Atlas, AtlasContext } from "@xyd-js/atlas";
-import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
-import { Composer } from "@xyd-js/composer";
-import { Analytics, useAnalytics } from "@xyd-js/analytics";
 import { markdownPlugins } from "@xyd-js/content/md";
 import { ContentFS } from "@xyd-js/content";
 
-import { useLocation, useNavigate, useNavigation, setLocation, setMatches } from "./rr-shim";
-import { mdxContent } from "./mdx";
+import { seedGlobals, ShellProviders, getSettings, applyLocation } from "./render-tree";
 
 /**
- * The S1 render (SSR-only slice). This module is bundled by `bun/launcher.ts`
- * with a build-time `onResolve` plugin that resolves react/@xyd-js/theme from
- * `.xyd/host` (one deduped react) and aliases `react-router` → `./rr-shim`.
- * `appInit` runs in the launcher (documan dist) and sets the globals we read.
+ * Server render (SSR). Reuses the browser-safe tree in `render-tree.tsx` so the
+ * SSR HTML matches the client hydration exactly. Bundled by `launcher.ts`
+ * (target bun). `appInit` (in the launcher) already set the globals.
  */
-
-let theme: any;
-let settings: any;
-let surfaces: Surfaces;
-const loadProvider = async () => null;
-const iconSet = {};
-
-function DocsBody({ loaderData }: { loaderData: any }) {
-  const analytics = useAnalytics();
-  const themeContent = theme.reactContentComponents();
-  const themeFile = theme.reactFileComponents();
-  const globalAPI = { analytics };
-
-  const content = mdxContent(loaderData.code, themeContent, themeFile, globalAPI);
-  const contentOriginal = mdxContent(loaderData.code, themeContent, undefined, globalAPI);
-  const ContentOriginal = contentOriginal.component;
-  const { Page } = theme;
-
-  let userComponents: any = {};
-  if (loaderData.canPassComponents) {
-    userComponents = (globalThis.__xydUserComponents || []).reduce((a: any, c: any) => {
-      a[c.name] = c.component;
-      return a;
-    }, {});
-  }
-
-  return (
-    <FrameworkPage
-      metadata={content.metadata}
-      breadcrumbs={loaderData.breadcrumbs}
-      rawPage={loaderData.rawPage}
-      toc={content.toc || []}
-      navlinks={loaderData.navlinks}
-      ContentComponent={content.component}
-      ContentOriginal={ContentOriginal}
-      editLink={loaderData.editLink}
-    >
-      <Page>
-        <ContentOriginal
-          components={{ ...themeContent, wrapper: (p: any) => <>{p.children}</>, ...userComponents }}
-        />
-      </Page>
-    </FrameworkPage>
-  );
-}
-
-function ShellProviders({ loaderData }: { loaderData: any }) {
-  const variantToggles = [{ key: "symbolName", defaultValue: "" }];
-  const { Layout } = theme;
-  return (
-    <Analytics settings={settings} loader={loadProvider as any}>
-      <IconProvider value={{ iconSet }}>
-        <Framework
-          settings={settings}
-          sidebarGroups={loaderData.sidebarGroups || []}
-          metadata={loaderData.metadata || {}}
-          surfaces={surfaces}
-          BannerContent={null}
-          components={{ Search: SearchButton, Logo: FwLogo }}
-        >
-          <AtlasContext
-            value={
-              {
-                Link: FwLink,
-                syntaxHighlight: settings.theme?.coder?.syntaxHighlight || null,
-                baseMatch: "",
-                variantToggles,
-              } as any
-            }
-          >
-            <CoderProvider lines scroll>
-              <Layout>
-                <DocsBody loaderData={loaderData} />
-              </Layout>
-            </CoderProvider>
-          </AtlasContext>
-        </Framework>
-      </IconProvider>
-    </Analytics>
-  );
-}
-
-function matchRouteId(_s: any, slug: string): string {
-  return "/" + slug;
-}
 
 function esc(x: any): string {
   return String(x).replace(/[&<>]/g, (c) => (({ "&": "&amp;", "<": "&lt;", ">": "&gt;" } as any)[c]));
 }
 
-function renderShell({ settings, metadata, bodyHtml }: any): string {
+function renderShell({ settings, bodyHtml, data }: any): string {
   const colorScheme = settings?.theme?.appearance?.colorScheme || "os";
+  const metadata = data.loaderData.metadata;
   const title = metadata?.seoTitle || metadata?.title || settings?.seo?.title || "xyd";
   const layer =
     "@layer reset, defaults, defaultfix, components, fabric, templates, decorators, themes, themedecorator, presets, user, overrides;";
+  const json = JSON.stringify(data).replace(/</g, "\\u003c"); // safe inside <script>
   return (
     `<!doctype html><html data-color-scheme="${colorScheme}"><head>` +
     `<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">` +
@@ -129,13 +34,17 @@ function renderShell({ settings, metadata, bodyHtml }: any): string {
     `<link rel="stylesheet" href="/_xyd/components.css">` +
     `<link rel="stylesheet" href="/_xyd/atlas.css">` +
     `<link rel="stylesheet" href="/_xyd/ui.css">` +
-    `</head><body>${bodyHtml}<script type="module" src="/_bun/client.js"></script></body></html>`
+    `</head><body>` +
+    `<div id="root">${bodyHtml}</div>` +
+    `<script id="__xyd_data" type="application/json">${json}</script>` +
+    `<script type="module" src="/_bun/client.js"></script>` +
+    `</body></html>`
   );
 }
 
 export async function renderPage(slug: string): Promise<string> {
   slug = slug || "index";
-  const s = settings;
+  const s = getSettings();
   const locale = "";
 
   const props: any = await mapSettingsToProps(s, globalThis.__xydPagePathMapping, slug, undefined as any, locale);
@@ -169,35 +78,21 @@ export async function renderPage(slug: string): Promise<string> {
     sidebarGroups, breadcrumbs, navlinks, slug, code, metadata, rawPage, editLink, canPassComponents, shellOnly: false,
   };
 
-  setLocation({ pathname: "/" + slug, search: "", hash: "" });
-  setMatches([{ id: matchRouteId(s, slug), pathname: "/" + slug, params: {}, data: loaderData, handle: {} }]);
-
+  applyLocation(slug, loaderData);
   const bodyHtml = renderToString(<ShellProviders loaderData={loaderData} />);
-  return renderShell({ settings: s, metadata: loaderData.metadata, bodyHtml });
+
+  // Data the client needs to hydrate the same tree.
+  const data = {
+    slug,
+    settings: s,
+    loaderData,
+    userComponents: [], // plugin components not serialized in this slice
+    userHooks: {},
+  };
+  return renderShell({ settings: s, bodyHtml, data });
 }
 
-// ---- seed + serve (theme injected by the launcher's generated entry) ----
-
-function seedGlobals(ThemeCtor: any) {
-  settings = globalThis.__xydSettings;
-  surfaces = new Surfaces();
-  const atlasXyd = (AtlasXydPlugin as any)()(settings);
-  const sir = atlasXyd?.customComponents?.["AtlasSidebarItemRight"];
-  if (sir) surfaces.define(sir.surface, sir.component);
-
-  globalThis.__xydReactContent = new ReactContent(settings, {
-    Link: FwLink, components: { Atlas }, useLocation, useNavigate, useNavigation,
-  } as any);
-  globalThis.__xydThemeSettings = settings.theme;
-  globalThis.__xydNavigation = settings.navigation;
-  globalThis.__xydWebeditor = settings.webeditor;
-  globalThis.__xydSurfaces = surfaces;
-  (globalThis as any).__xydUserPreferences ??= {};
-
-  new Composer();
-  theme = new ThemeCtor();
-  if (theme.mergeUserAppearance) theme.mergeUserAppearance();
-}
+// ---- CSS + client-bundle serving ----
 
 function cssResolver(HOST: string, themeName: string) {
   const tryResolve = (...specs: string[]) => {
@@ -227,13 +122,15 @@ function cssResolver(HOST: string, themeName: string) {
   } as Record<string, (string | null)[]>;
 }
 
-/** Entry point called by the launcher's generated entry, with the resolved theme class. */
+/** Called by the launcher's generated server entry with the theme class. */
 export function start(ThemeCtor: any) {
   seedGlobals(ThemeCtor);
+  const s = getSettings();
 
   const HOST = process.env.XYD_HOST || path.resolve(process.cwd(), ".xyd/host");
-  const themeName = (settings?.theme?.name || "poetry").replace(/^npm:/, "");
+  const themeName = (s?.theme?.name || "poetry").replace(/^npm:/, "");
   const CSS = cssResolver(HOST, themeName);
+  const clientBundlePath = process.env.XYD_CLIENT_BUNDLE || "";
 
   async function serveCss(paths: (string | null)[]): Promise<Response> {
     let out = "";
@@ -252,7 +149,12 @@ export function start(ThemeCtor: any) {
       const url = new URL(req.url);
       if (CSS[url.pathname]) return serveCss(CSS[url.pathname]);
       if (url.pathname === "/_bun/client.js") {
-        return new Response("/* SSR-only slice (S1) */", { headers: { "content-type": "text/javascript; charset=utf-8" } });
+        if (clientBundlePath) {
+          return new Response(Bun.file(clientBundlePath), {
+            headers: { "content-type": "text/javascript; charset=utf-8" },
+          });
+        }
+        return new Response("/* no client bundle */", { headers: { "content-type": "text/javascript" } });
       }
       const slug = decodeURIComponent(url.pathname.replace(/^\//, ""));
       try {
@@ -266,5 +168,5 @@ export function start(ThemeCtor: any) {
       }
     },
   });
-  console.error(`xyd bun dev (S1 render) → ${server.url}  [theme: ${themeName}]`);
+  console.error(`xyd bun dev (S1 render+hydrate) → ${server.url}  [theme: ${themeName}]`);
 }
