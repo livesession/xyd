@@ -230,6 +230,17 @@ export function start(ThemeCtor: any) {
         }
         return new Response("/* no client bundle */", { headers: { "content-type": "text/javascript" } });
       }
+      if (url.pathname.startsWith("/_bun/") && url.pathname.endsWith(".map")) {
+        // External sourcemap for the client bundle — the browser fetches this
+        // (relative to /_bun/client.js) only when devtools open. One client
+        // bundle → one map at `${XYD_CLIENT_BUNDLE}.map`.
+        const map = (process.env.XYD_CLIENT_BUNDLE || "") + ".map";
+        const f = Bun.file(map);
+        if (map && (await f.exists())) {
+          return new Response(f, { headers: { "content-type": "application/json; charset=utf-8" } });
+        }
+        return new Response("{}", { status: 404, headers: { "content-type": "application/json" } });
+      }
       const asset = await serveStatic(url.pathname);
       if (asset) return asset;
       let slug = decodeURIComponent(url.pathname.replace(/^\//, ""));

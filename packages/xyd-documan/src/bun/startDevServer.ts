@@ -75,7 +75,13 @@ async function buildBundle(
     target,
     outdir: path.join(DIR, ".bundle", name),
     plugins: [makeShims(isClient)],
-    sourcemap: "inline",
+    // The CLIENT bundle is served to the browser on every page load — minify it
+    // and keep the sourcemap EXTERNAL (a `.map` file fetched only when devtools
+    // open) instead of inline, which was ~66% of the payload. The SERVER bundle
+    // runs in-process (never served) so size is irrelevant — keep its inline map
+    // for readable stack traces.
+    minify: target === "browser",
+    sourcemap: target === "browser" ? "linked" : "inline",
     external,
   });
   if (!res.success) {
