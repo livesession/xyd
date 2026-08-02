@@ -14,6 +14,20 @@ import { seedGlobals, ShellProviders, getSettings, applyLocation } from "./rende
  * (target bun). `appInit` (in the launcher) already set the globals.
  */
 
+// React elements can't cross the SSR→CSR boundary via JSON (the $$typeof Symbol
+// is dropped, leaving an invalid child object). Strip them before serializing;
+// the client re-derives them (e.g. webeditor icons the theme injects).
+function stripReactElements(o: any): any {
+  if (o == null || typeof o !== "object") return o;
+  if (React.isValidElement(o)) return null;
+  // Already-broken serialized element (lost its $$typeof Symbol): shape {props, _owner|_store}.
+  if (("_owner" in o || "_store" in o) && "props" in o) return null;
+  if (Array.isArray(o)) return o.map(stripReactElements);
+  const out: any = {};
+  for (const k of Object.keys(o)) out[k] = stripReactElements(o[k]);
+  return out;
+}
+
 function esc(x: any): string {
   return String(x).replace(/[&<>]/g, (c) => (({ "&": "&amp;", "<": "&lt;", ">": "&gt;" } as any)[c]));
 }
@@ -81,7 +95,10 @@ export async function renderPage(slug: string): Promise<string> {
   applyLocation(slug, loaderData);
   const bodyHtml = renderToString(<ShellProviders loaderData={loaderData} />);
 
-  // Data the client needs to hydrate the same tree.
+  // Data the client needs to hydrate the same tree. Use the CLEAN pre-theme
+  // clone (appInit's __xydSettingsClone) — the live settings has React elements
+  // injected into webeditor by the theme, which don't survive JSON. The client
+  // theme rebuilds webeditor itself, matching the server.
   const data = {
     slug,
     settings: s,
@@ -89,7 +106,7 @@ export async function renderPage(slug: string): Promise<string> {
     userComponents: [], // plugin components not serialized in this slice
     userHooks: {},
   };
-  return renderShell({ settings: s, bodyHtml, data });
+  return renderShell({ settings: s, bodyHtml, data: stripReactElements(data) });
 }
 
 // ---- CSS + client-bundle serving ----
@@ -124,6 +141,13 @@ function cssResolver(HOST: string, themeName: string) {
 
 /** Called by the launcher's generated server entry with the theme class. */
 export function start(ThemeCtor: any) {
+  // Strip pre-resolved React-element icons from settings BEFORE the theme builds
+  // webeditor — so the server render and the (element-stripped) client hydration
+  // match. String-name icons are untouched and render on both sides.
+  globalThis.__xydSettings = stripReactElements(globalThis.__xydSettings);
+  if (globalThis.__xydSettingsClone) {
+    globalThis.__xydSettingsClone = stripReactElements(globalThis.__xydSettingsClone);
+  }
   seedGlobals(ThemeCtor);
   const s = getSettings();
 

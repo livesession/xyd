@@ -14,6 +14,7 @@ export function bootClient(ThemeCtor: any) {
   const data = JSON.parse(el!.textContent || "{}");
 
   globalThis.__xydSettings = data.settings;
+  globalThis.__xydSettingsClone = data.settings; // Theme ctor reads __xydSettingsClone
   globalThis.__xydUserComponents = data.userComponents || [];
   globalThis.__xydUserHooks = data.userHooks || {};
   globalThis.__xydPagePathMapping = {};
