@@ -346,6 +346,11 @@ export interface ApitoolchainRegistryConnection {
   packageName: string;
   /** Publish automatically when a release for this target is merged. */
   autoPublish: boolean;
+  /**
+   * The PUBLISHER's own log (extract → apply name → push → result) — reset each
+   * publish + appended live, so the dashboard can tail it.
+   */
+  publishLogs: string;
   lastPublishedVersion?: string;
   lastPublishedAt?: string;
   lastPublishStatus?: ApitoolchainBuildStatus;
@@ -483,8 +488,24 @@ export interface ApitoolchainSdkTarget {
   output: string;
   version: string;
   status: ApitoolchainBuildStatus;
+  /**
+   * The target's own generation log (`[<lang>] …` lines) — reset each build and
+   * appended live, so the dashboard can tail the current (re)generation.
+   */
+  buildLogs: string;
   lastPublishedAt?: string;
   registryUrl?: string;
+  /**
+   * The custom sdk.json applied at generation (the "wizard" config), serialized;
+   * empty when the target used the auto-derived config.
+   */
+  sdkJson?: string;
+  /**
+   * The saved sdk.json config has UNBUILT changes — set when the config is edited
+   * (the wizard "Save"), cleared when a build applies it. Drives the persistent
+   * "pending changes, waiting for a build" status in the UI.
+   */
+  configPending: boolean;
 }
 
 export type ApitoolchainSdkLanguage = "go" | "python" | "node" | "ruby" | "java" | "dotnet";
@@ -528,6 +549,12 @@ export interface ApitoolchainAddSdkTargetInput {
   packageName?: string;
   /** API version to generate from; defaults to the API's current version. */
   version?: string;
+  /**
+   * A full custom sdk.json (behavior + per-language emitter options), serialized.
+   * When set it's applied over the derived defaults during generation (the
+   * "wizard" flow); empty → the auto-derived config.
+   */
+  sdkJson?: string;
 }
 
 /**

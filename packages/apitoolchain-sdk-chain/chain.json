@@ -48,6 +48,12 @@
       "output": "../apitoolchain-api-node",
       "sdkName": "api",
       "options": { "packageName": "@apitoolchain/api-node", "tests": false }
+    },
+    "api-cli": {
+      "target": "rust-cli",
+      "source": "api",
+      "output": "../apitoolchain-api-cli",
+      "options": { "cliName": "apitoolchain" }
     }
   }
 }
