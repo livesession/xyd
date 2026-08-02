@@ -1,8 +1,6 @@
 import React from "react";
 import { renderToString } from "react-dom/server";
-
-// Internal documan imports (appInit is NOT in @xyd-js/documan's exports map).
-import { appInit } from "../utils";
+import * as path from "node:path";
 
 import { Surfaces } from "@xyd-js/framework";
 import { Framework, FrameworkPage, FwLink, FwLogo } from "@xyd-js/framework/react";
@@ -22,71 +20,17 @@ import { useLocation, useNavigate, useNavigation, setLocation, setMatches } from
 import { mdxContent } from "./mdx";
 
 /**
- * The real S1 render: reproduces xyd's docs-page render (loader → theme +
- * framework providers → compiled MDX → renderToString) WITHOUT React Router,
- * for the Bun dev server. Built from the verified render-pipeline spec.
- * First slice: SSR-only (no client hydration yet), plain-prose routes.
+ * The S1 render (SSR-only slice). This module is bundled by `bun/launcher.ts`
+ * with a build-time `onResolve` plugin that resolves react/@xyd-js/theme from
+ * `.xyd/host` (one deduped react) and aliases `react-router` → `./rr-shim`.
+ * `appInit` runs in the launcher (documan dist) and sets the globals we read.
  */
 
 let theme: any;
 let settings: any;
 let surfaces: Surfaces;
-let themeName = "poetry";
-
-// Virtual-module substitutions for the SSR-only first slice (see spec D4).
 const loadProvider = async () => null;
 const iconSet = {};
-
-function resolveThemeName(name?: string): string {
-  if (!name) return "poetry";
-  if (name.startsWith("npm:")) return name.slice("npm:".length);
-  return name;
-}
-
-export function getSettings() {
-  return settings;
-}
-export function getThemeName() {
-  return themeName;
-}
-
-/** Boot once at server start (cwd = a docs project). Sets every global the
- *  render reads, then instantiates the theme. */
-export async function bootRender() {
-  console.error("[boot] appInit…");
-  await appInit(); // sets __xydSettings, __xydPagePathMapping, __xydUser*, __xydSettingsClone
-  console.error("[boot] appInit done");
-  settings = globalThis.__xydSettings;
-
-  // --- replicate layout.tsx module-load globals (before `new Theme()`) ---
-  surfaces = new Surfaces();
-  const atlasXyd = (AtlasXydPlugin as any)()(settings);
-  const sir = atlasXyd?.customComponents?.["AtlasSidebarItemRight"];
-  if (sir) surfaces.define(sir.surface, sir.component);
-
-  globalThis.__xydReactContent = new ReactContent(settings, {
-    Link: FwLink,
-    components: { Atlas },
-    useLocation,
-    useNavigate,
-    useNavigation,
-  } as any);
-  globalThis.__xydThemeSettings = settings.theme; // live object; Theme ctor mutates it
-  globalThis.__xydNavigation = settings.navigation;
-  globalThis.__xydWebeditor = settings.webeditor;
-  globalThis.__xydSurfaces = surfaces;
-  (globalThis as any).__xydUserPreferences ??= {};
-
-  new Composer(); // registers @metaComponent transforms used by the markdown chain
-  console.error("[boot] seeded globals + composer");
-
-  themeName = resolveThemeName(settings.theme?.name);
-  console.error("[boot] loading @xyd-js/theme-" + themeName);
-  const Ctor = (await import(`@xyd-js/theme-${themeName}`)).default;
-  theme = new Ctor();
-  if (theme.mergeUserAppearance) theme.mergeUserAppearance();
-  console.error("[boot] theme ready");
-}
 
 function DocsBody({ loaderData }: { loaderData: any }) {
   const analytics = useAnalytics();
@@ -164,7 +108,7 @@ function ShellProviders({ loaderData }: { loaderData: any }) {
 }
 
 function matchRouteId(_s: any, slug: string): string {
-  return "/" + slug; // first cut; refine to the SidebarRoute prefix for active state
+  return "/" + slug;
 }
 
 function esc(x: any): string {
@@ -192,15 +136,9 @@ function renderShell({ settings, metadata, bodyHtml }: any): string {
 export async function renderPage(slug: string): Promise<string> {
   slug = slug || "index";
   const s = settings;
-  const locale = ""; // no __xydI18n for apps/docs
+  const locale = "";
 
-  const props: any = await mapSettingsToProps(
-    s,
-    globalThis.__xydPagePathMapping,
-    slug,
-    undefined as any,
-    locale
-  );
+  const props: any = await mapSettingsToProps(s, globalThis.__xydPagePathMapping, slug, undefined as any, locale);
   const { groups: sidebarGroups, breadcrumbs, navlinks, metadata } = props;
 
   const md: any = await markdownPlugins(
@@ -209,18 +147,10 @@ export async function renderPage(slug: string): Promise<string> {
   );
   const remark = [...md.remarkPlugins];
   const rehype = [...md.rehypePlugins];
-  if (globalThis.__xydUserMarkdownPlugins?.remark?.length)
-    remark.push(globalThis.__xydUserMarkdownPlugins.remark as any);
-  if (globalThis.__xydUserMarkdownPlugins?.rehype?.length)
-    rehype.push(globalThis.__xydUserMarkdownPlugins.rehype as any);
+  if (globalThis.__xydUserMarkdownPlugins?.remark?.length) remark.push(globalThis.__xydUserMarkdownPlugins.remark as any);
+  if (globalThis.__xydUserMarkdownPlugins?.rehype?.length) rehype.push(globalThis.__xydUserMarkdownPlugins.rehype as any);
 
-  const fs = new ContentFS(
-    s,
-    remark,
-    rehype,
-    md.recmaPlugins,
-    globalThis.__xydUserMarkdownPlugins?.remarkRehypeHandlers || {}
-  );
+  const fs = new ContentFS(s, remark, rehype, md.recmaPlugins, globalThis.__xydUserMarkdownPlugins?.remarkRehypeHandlers || {});
   const pagePath = globalThis.__xydPagePathMapping[slug];
   if (!pagePath) throw new Error(`No page mapping for slug: ${slug}`);
   const code = await fs.compile(pagePath);
@@ -236,16 +166,7 @@ export async function renderPage(slug: string): Promise<string> {
   }
 
   const loaderData = {
-    sidebarGroups,
-    breadcrumbs,
-    navlinks,
-    slug,
-    code,
-    metadata,
-    rawPage,
-    editLink,
-    canPassComponents,
-    shellOnly: false,
+    sidebarGroups, breadcrumbs, navlinks, slug, code, metadata, rawPage, editLink, canPassComponents, shellOnly: false,
   };
 
   setLocation({ pathname: "/" + slug, search: "", hash: "" });
@@ -253,4 +174,97 @@ export async function renderPage(slug: string): Promise<string> {
 
   const bodyHtml = renderToString(<ShellProviders loaderData={loaderData} />);
   return renderShell({ settings: s, metadata: loaderData.metadata, bodyHtml });
+}
+
+// ---- seed + serve (theme injected by the launcher's generated entry) ----
+
+function seedGlobals(ThemeCtor: any) {
+  settings = globalThis.__xydSettings;
+  surfaces = new Surfaces();
+  const atlasXyd = (AtlasXydPlugin as any)()(settings);
+  const sir = atlasXyd?.customComponents?.["AtlasSidebarItemRight"];
+  if (sir) surfaces.define(sir.surface, sir.component);
+
+  globalThis.__xydReactContent = new ReactContent(settings, {
+    Link: FwLink, components: { Atlas }, useLocation, useNavigate, useNavigation,
+  } as any);
+  globalThis.__xydThemeSettings = settings.theme;
+  globalThis.__xydNavigation = settings.navigation;
+  globalThis.__xydWebeditor = settings.webeditor;
+  globalThis.__xydSurfaces = surfaces;
+  (globalThis as any).__xydUserPreferences ??= {};
+
+  new Composer();
+  theme = new ThemeCtor();
+  if (theme.mergeUserAppearance) theme.mergeUserAppearance();
+}
+
+function cssResolver(HOST: string, themeName: string) {
+  const tryResolve = (...specs: string[]) => {
+    for (const s of specs) {
+      try {
+        return Bun.resolveSync(s, HOST);
+      } catch {}
+    }
+    return null;
+  };
+  const pkgDist = (pkg: string, file: string) => {
+    try {
+      return Bun.resolveSync(pkg + "/package.json", HOST).replace(/package\.json$/, "") + file;
+    } catch {
+      return null;
+    }
+  };
+  return {
+    "/_xyd/theme.css": [tryResolve(`@xyd-js/theme-${themeName}/index.css`) || pkgDist(`@xyd-js/theme-${themeName}`, "dist/index.css")],
+    "/_xyd/components.css": [tryResolve("@xyd-js/components/index.css") || pkgDist("@xyd-js/components", "dist/index.css")],
+    "/_xyd/atlas.css": [
+      tryResolve("@xyd-js/atlas/index.css") || pkgDist("@xyd-js/atlas", "index.css"),
+      tryResolve("@xyd-js/atlas/tokens.css") || pkgDist("@xyd-js/atlas", "tokens.css"),
+      tryResolve("@xyd-js/atlas/styles.css") || pkgDist("@xyd-js/atlas", "styles.css"),
+    ],
+    "/_xyd/ui.css": [tryResolve("@xyd-js/ui/index.css") || pkgDist("@xyd-js/ui", "dist/index.css")],
+  } as Record<string, (string | null)[]>;
+}
+
+/** Entry point called by the launcher's generated entry, with the resolved theme class. */
+export function start(ThemeCtor: any) {
+  seedGlobals(ThemeCtor);
+
+  const HOST = process.env.XYD_HOST || path.resolve(process.cwd(), ".xyd/host");
+  const themeName = (settings?.theme?.name || "poetry").replace(/^npm:/, "");
+  const CSS = cssResolver(HOST, themeName);
+
+  async function serveCss(paths: (string | null)[]): Promise<Response> {
+    let out = "";
+    for (const p of paths) {
+      if (!p) continue;
+      const f = Bun.file(p);
+      if (await f.exists()) out += (await f.text()) + "\n";
+    }
+    return new Response(out, { headers: { "content-type": "text/css; charset=utf-8" } });
+  }
+
+  const server = Bun.serve({
+    port: Number(process.env.XYD_PORT ?? 5185),
+    development: true,
+    async fetch(req) {
+      const url = new URL(req.url);
+      if (CSS[url.pathname]) return serveCss(CSS[url.pathname]);
+      if (url.pathname === "/_bun/client.js") {
+        return new Response("/* SSR-only slice (S1) */", { headers: { "content-type": "text/javascript; charset=utf-8" } });
+      }
+      const slug = decodeURIComponent(url.pathname.replace(/^\//, ""));
+      try {
+        return new Response(await renderPage(slug), { headers: { "content-type": "text/html; charset=utf-8" } });
+      } catch (e: any) {
+        console.error(`render error for /${slug}:`, e);
+        return new Response(`<pre>render error for /${slug}\n\n${e?.stack || e}</pre>`, {
+          status: 500,
+          headers: { "content-type": "text/html; charset=utf-8" },
+        });
+      }
+    },
+  });
+  console.error(`xyd bun dev (S1 render) → ${server.url}  [theme: ${themeName}]`);
 }
