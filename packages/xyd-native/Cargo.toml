@@ -1,0 +1,23 @@
+[package]
+name = "xyd_native"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+# The ONE napi crate → becomes @xyd-js/native's .node addon. Standalone (built
+# by @napi-rs/cli); path-depends on the pure crate in crates/.
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+napi = { version = "3", default-features = false, features = ["napi4"] }
+napi-derive = "3"
+xyd_core_rs = { path = "../../crates/xyd_core_rs" }
+xyd_watch = { path = "../../crates/xyd_watch" }
+
+[build-dependencies]
+napi-build = "2"
+
+[profile.release]
+lto = true
+strip = true

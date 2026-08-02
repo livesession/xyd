@@ -1,0 +1,35 @@
+{
+  "name": "@xyd-js/native",
+  "version": "0.0.0",
+  "description": "xyd Rust core (napi) — the one native module embedded into the bun-compiled binary",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "*.node"
+  ],
+  "napi": {
+    "binaryName": "xyd-native",
+    "targets": [
+      "aarch64-apple-darwin",
+      "x86_64-apple-darwin",
+      "x86_64-unknown-linux-gnu",
+      "aarch64-unknown-linux-gnu",
+      "x86_64-unknown-linux-musl",
+      "aarch64-unknown-linux-musl",
+      "x86_64-pc-windows-msvc"
+    ]
+  },
+  "scripts": {
+    "//": "build:native (NOT build) so the default `pnpm build` fan-out skips it until Rust is wired into CI and this package is consumed (plan S5).",
+    "build:native": "napi build --platform --release",
+    "build:native:debug": "napi build --platform",
+    "test": "pnpm build:native && node -e \"const n=require('./index.js'); if(n.classify('docs.json')!=='settings')throw new Error('classify broken'); console.log('ok:', n.hello('xyd'))\""
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^3.8.2"
+  }
+}
