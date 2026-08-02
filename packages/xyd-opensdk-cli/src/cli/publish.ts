@@ -12,6 +12,7 @@ import { publishPython } from '@xyd-js/opensdk-python';
 import { publishRuby } from '@xyd-js/opensdk-ruby';
 import { publishRust } from '@xyd-js/opensdk-rust';
 
+import { isCliTarget } from './cli-targets';
 import type { ResolvedConfig } from './config/types';
 
 /**
@@ -36,6 +37,14 @@ const PUBLISHERS: Record<string, (dir: string, opts: EmitterPublishOptions) => v
 
 /** Package + publish ONE already-generated SDK at `dir` for `lang` via its emitter's publisher. */
 export function publishTarget(lang: string, dir: string, opts: EmitterPublishOptions): void {
+  // CLI outputs have no registry publisher — skip (not error) so a mixed chain
+  // with --publish never aborts halfway through its SDK targets.
+  if (isCliTarget(lang)) {
+    console.warn(
+      `Skipping publish for "${lang}" — CLI targets have no registry publisher (ship the generated project via its own repo / goreleaser / cargo publish).`,
+    );
+    return;
+  }
   const canonical = resolveLanguage(lang);
   if (!fs.existsSync(dir)) {
     throw new Error(`No generated SDK at ${dir}. Run \`opensdk generate\` first (or pass --spec to regenerate).`);

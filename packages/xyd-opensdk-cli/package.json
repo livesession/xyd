@@ -16,7 +16,11 @@
     "format": "bunx biome check --write src"
   },
   "dependencies": {
+    "@xyd-js/openapi2opencli": "workspace:*",
     "@xyd-js/openapi2opensdk": "workspace:*",
+    "@xyd-js/opencli": "workspace:*",
+    "@xyd-js/opencli2go": "workspace:*",
+    "@xyd-js/opencli2rust": "workspace:*",
     "@xyd-js/opensdk-core": "workspace:*",
     "@xyd-js/opensdk-framework": "workspace:*",
     "@xyd-js/opensdk-go": "workspace:*",
@@ -31,6 +35,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.9.0",
+    "@xyd-js/opensdk-ci": "workspace:*",
     "rimraf": "^3.0.2",
     "tsup": "^8.3.0",
     "typescript": "^5.6.2",

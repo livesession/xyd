@@ -104,6 +104,15 @@ const LANG_OPTIONS = {
       targetFramework: str('The .csproj target framework moniker (default: "net8.0").'),
     },
   },
+  // packages/xyd-opensdk-rust/src/types.ts
+  rust: {
+    aliases: ['rust', 'rs'],
+    options: {
+      packageName: str('The Cargo package + lib crate name (snake_case; default: crate_name of info.title).'),
+      moduleName: str('Alias kept for cross-emitter symmetry — same value as the crate/lib name.'),
+      edition: str('Rust edition written to Cargo.toml (default: "2021").'),
+    },
+  },
 };
 
 // Shared fields on every language section (from the emitters' common options).
@@ -126,6 +135,79 @@ for (const [lang, { aliases, options }] of Object.entries(LANG_OPTIONS)) {
   };
   const pattern = `^(${aliases.map((a) => a.replace(/[.^$*+?()[\]{}|\\]/g, '\\$&')).join('|')})$`;
   patternProperties[pattern] = { $ref: `#/$defs/${defName}` };
+}
+
+// ── CLI OUTPUT targets — the OpenCLI pipeline (openapi2opencli → opencli2go /
+// opencli2rust) surfaced as go-cli / rust-cli target ids. A section is one FLAT
+// bag: converter keys (shared) + that backend's own keys; the CLI splits them by
+// allowlist (packages/xyd-opensdk-cli/src/cli/cli-targets.ts — keep in sync). ──
+const CLI_CONVERTER_PROPS = {
+  cliName: str('The CLI name (root command; default: the sdkName / spec title).'),
+  version: str('CLI version override (default: the spec info.version; a `publish.version` also flows in).'),
+  grouping: {
+    type: 'string',
+    enum: ['path', 'tag', 'operationId'],
+    description: 'How operations group into the command tree (default: path).',
+  },
+  bodyStrategy: {
+    type: 'string',
+    enum: ['flatten', 'json', 'hybrid'],
+    description: 'Request-body flags: flatten top-level props, one JSON flag, or hybrid (default: flatten).',
+  },
+  includeMethods: { type: 'array', items: { type: 'string' }, description: 'Only these HTTP methods.' },
+  includeHeaders: { type: 'boolean', description: 'Emit flags for header parameters (default: false).' },
+  flagCase: { type: 'string', enum: ['kebab', 'camel'], description: 'Flag naming style (default: kebab).' },
+  actionAliases: { type: 'boolean', description: 'Emit action-verb aliases (e.g. `get` for `retrieve`).' },
+  verbMap: {
+    type: 'object',
+    additionalProperties: { type: 'string' },
+    description: 'Override the derived action verbs (listCollection/getItem/createCollection/updateItem/deleteItem).',
+  },
+  customActionVerbs: { type: 'array', items: { type: 'string' }, description: 'Extra trailing-verb path segments treated as actions.' },
+  includePaths: { type: 'array', items: { type: 'string' }, description: 'Only operations under these path prefixes.' },
+  maxBodyDepth: { type: 'number', description: 'Flatten body properties up to this depth; deeper ones become JSON flags.' },
+  authEnvVar: str('Env var the generated CLI reads credentials from (default: from the spec security scheme).'),
+};
+const CLI_LANG_OPTIONS = {
+  // packages/xyd-opencli2go/src/types.ts
+  'go-cli': {
+    options: {
+      modulePath: str('Go module path (default: example.com/<binName>).'),
+      binName: str('Binary name (default: slug of the CLI name).'),
+      goVersion: str('`go` directive in go.mod (default: "1.22").'),
+      baseURL: str('Default API base URL baked into the runtime (overridable via <BIN>_BASE_URL).'),
+    },
+  },
+  // packages/xyd-opencli2rust/src/types.ts
+  'rust-cli': {
+    options: {
+      crateName: str('Cargo package name (default: crate_name of the CLI name).'),
+      binName: str('Binary name (default: slug of the CLI name).'),
+      edition: str('Rust edition in Cargo.toml (default: "2021").'),
+      baseURL: str('Default API base URL baked into the runtime (overridable via <BIN>_BASE_URL).'),
+    },
+  },
+};
+for (const [lang, { options }] of Object.entries(CLI_LANG_OPTIONS)) {
+  const defName = `${lang
+    .split('-')
+    .map((w) => w[0].toUpperCase() + w.slice(1))
+    .join('')}Section`;
+  $defs[defName] = {
+    type: 'object',
+    description: `Options for the ${lang} CLI output target (the OpenCLI pipeline — a command-line tool, not an SDK).`,
+    properties: {
+      output: str("Output directory for this target's generated CLI project."),
+      publish: {
+        $ref: '#/$defs/PublishTarget',
+        description: 'Only `version` is consumed (the emitted CLI version); `opensdk publish` skips CLI targets.',
+      },
+      ...CLI_CONVERTER_PROPS,
+      ...options,
+    },
+    additionalProperties: false,
+  };
+  patternProperties[`^(${lang})$`] = { $ref: `#/$defs/${defName}` };
 }
 
 const schema = {
@@ -163,7 +245,7 @@ const schema = {
 
 writeFileSync(outPath, `${JSON.stringify(schema, null, 2)}\n`);
 console.log(
-  `Wrote ${outPath} (${BEHAVIOR_DEFS.length} behavior defs + ${Object.keys(LANG_OPTIONS).length} language sections)`,
+  `Wrote ${outPath} (${BEHAVIOR_DEFS.length} behavior defs + ${Object.keys(LANG_OPTIONS).length} language sections + ${Object.keys(CLI_LANG_OPTIONS).length} CLI target sections)`,
 );
 
 // ── chain.schema.json — the `opensdk run` pipeline config (sources → targets),
@@ -216,7 +298,7 @@ const chainSchema = {
         type: 'object',
         required: ['target', 'source'],
         properties: {
-          target: str('Emitter language or alias (typescript, go, csharp, ...).'),
+          target: str('Emitter language or alias (typescript, go, csharp, ...) — or a CLI output target (go-cli, rust-cli).'),
           source: str('Name of the `sources` entry this target generates from.'),
           output: str('SDK output directory (default ./sdk/<target-name>).'),
           sdkName: str('SDK name passed to the converter.'),

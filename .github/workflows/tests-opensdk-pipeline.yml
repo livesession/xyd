@@ -265,6 +265,11 @@ jobs:
       env:
         E2E_SDK_CHAIN: '1'
 
+    - name: Chain e2e — CLI output targets (opensdk run: go-cli + rust-cli, each compiles)
+      run: pnpm --filter @xyd-js/opensdk-cli exec vitest run __tests__/e2e/cli-chain.test.ts
+      env:
+        E2E_SDK_CHAIN: '1'
+
     # ── Publish e2e ──────────────────────────────────────────────────────────
     # Prove each generated SDK can be published → installed back → loaded. The 3
     # HTTP registries (npm/PyPI/RubyGems) run natively on the runner; dotnet/Maven
