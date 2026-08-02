@@ -22,6 +22,14 @@ export async function cli(argv = process.argv.slice(2)) {
 
     process.env.XYD_CLI = 'true';
 
+    // `opensdk` is a passthrough to an optionally installed toolchain whose own
+    // flags (e.g. `--lang`) `arg` would reject as unknown — hand it the raw
+    // argv before any parsing. (argv.slice(1), not process.argv: respects the
+    // injectable `argv` parameter of cli().)
+    if (argv[0] === 'opensdk') {
+        return globalCommands.opensdk(argv.slice(1));
+    }
+
     const { globalFlags, commands } = parseArgs(argv);
 
     if (globalFlags.help) {
@@ -49,6 +57,12 @@ export async function cli(argv = process.argv.slice(2)) {
         case 'components':
             // Handle subcommands for components
             await globalCommands.components(commandArgs, globalFlags);
+            break;
+        case 'opensdk':
+            // Reached only when a known global flag preceded the command (e.g.
+            // `xyd --verbose opensdk gen`) — globals are consumed by `arg` and
+            // not forwarded; the canonical form is `xyd opensdk ...` first.
+            await globalCommands.opensdk(commandArgs);
             break;
         case 'completion':
             // Pass the raw args array (shell name / subcommand)

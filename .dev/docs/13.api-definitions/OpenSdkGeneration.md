@@ -179,6 +179,11 @@ Representative generated layout (go): `go.mod`, `client.go`, `types.go`, `<resou
 
 ## The `opensdk` CLI (`@xyd-js/opensdk-cli`)
 
+Also reachable through the main `xyd` CLI as an opt-in component: `xyd components install
+opensdk` downloads the toolchain into `~/.config/xyd/components/`, after which
+`xyd opensdk <command>` passes through to it (the default `xyd` install ships none of it —
+see `3.cli/InstallationAndCli.md` § Optional Components).
+
 | Command | Purpose / key flags |
 |---------|---------------------|
 | `opensdk parse` | OpenAPI → IR JSON. `--spec` (required), `--output`, `--sdk-name`, `--grouping` |

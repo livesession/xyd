@@ -147,6 +147,27 @@ publish = ".xyd/build/client"
 }
 ```
 
+## Optional Components
+
+Heavy toolchains are NOT bundled with the CLI — the default install stays lean. They are
+installed on demand into `~/.config/xyd/components/` (override: `XYD_COMPONENTS_DIR`) and
+surface as new `xyd` subcommands:
+
+```bash
+xyd components install opensdk   # downloads @xyd-js/opensdk-cli into the components dir
+xyd opensdk generate --lang typescript --spec ./openapi.yaml   # passthrough to the toolchain
+xyd components uninstall opensdk # removes it again
+```
+
+Before installation, `xyd opensdk ...` prints an install hint and exits non-zero. Under
+`XYD_DEV_MODE=1` the component resolves from the monorepo build instead of npm. The
+"lean by default" contract is enforced by tests (`packages/xyd-cli/src/__tests__/bundle-size.test.ts`:
+dist budget, zero opensdk dependencies, footprint appears only after install). See
+`13.api-definitions/OpenSdkGeneration.md` for the toolchain itself.
+
+(`xyd components install diagrams` remains the docs-project component flow — it installs
+rendering packages into `.xyd/host`, not CLI toolchains.)
+
 ## Advanced Usage
 
 ### Development Mode

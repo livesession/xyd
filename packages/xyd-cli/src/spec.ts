@@ -50,10 +50,28 @@ export const cliSpec: CLI = {
                             required: true,
                             description: 'Name of the component to install',
                             example: 'diagrams',
+                            acceptedValues: ['diagrams', 'opensdk'],
+                        },
+                    ],
+                },
+                uninstall: {
+                    description: 'Remove an installed xyd component',
+                    usage: 'xyd components uninstall <component> [flags]',
+                    arguments: [
+                        {
+                            name: 'component',
+                            required: true,
+                            description: 'Name of the component to remove',
+                            example: 'opensdk',
+                            acceptedValues: ['opensdk'],
                         },
                     ],
                 },
             },
+        },
+        opensdk: {
+            description: 'Run the OpenSDK toolchain (requires `xyd components install opensdk`)',
+            usage: 'xyd opensdk <command> [flags]',
         },
         completion: {
             description:

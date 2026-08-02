@@ -40,6 +40,7 @@ describe('cliToOpencli', () => {
                 name: 'component',
                 required: true,
                 description: 'Name of the component to install',
+                acceptedValues: ['diagrams', 'opensdk'],
                 metadata: [{ name: 'example', value: 'diagrams' }],
             },
         ]);
