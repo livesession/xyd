@@ -11,14 +11,15 @@ import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
 import { Composer } from "@xyd-js/composer";
 import { Analytics, useAnalytics } from "@xyd-js/analytics";
 
-import { useLocation, useNavigate, useNavigation, setLocation, setMatches } from "./rr-shim";
+import { useLocation, useNavigate, useNavigation, useLoaderData } from "@xyd-js/router";
 import { mdxContent } from "./mdx";
 
 /**
  * The browser-safe render tree — shared by the SSR path (`renderPage.tsx`) and
  * the client hydration entry (`client-entry.tsx`) so both produce identical
- * markup. NO node/Bun/ContentFS here; the loader data (incl. the compiled MDX
- * `code`) is passed in as props.
+ * markup. NO node/Bun/ContentFS here; per-page loader data flows through the
+ * @xyd-js/router store (useLoaderData), so a client navigation swaps the page
+ * without a full reload.
  */
 
 // Module-scoped render state (per-bundle: separate on server vs client).
@@ -79,17 +80,36 @@ export function seedGlobals(ThemeCtor: any) {
   if (state.theme.mergeUserAppearance) state.theme.mergeUserAppearance();
 }
 
-export function matchRouteId(_s: any, slug: string): string {
-  return "/" + slug;
+/**
+ * Route id parity with pathRoutes.ts: the most-specific enclosing `SidebarRoute`
+ * section collapses to its `/<route>` prefix (every nested page shares it, like
+ * the `/<route>/*` wildcard route); a plain page outside any section → its exact
+ * `/<page>` path; index → `/`. basename-free (RR ids are basename-independent).
+ * Consumed by useActivePage/useActivePageRoute/useMatchedSegment via match.id.
+ */
+export function matchRoute(pathname: string, navigation: any): string {
+  const norm = (x: string) => (x === "index" || x === "/index" ? "/" : "/" + String(x).replace(/^\/+/, ""));
+  const target = norm(pathname === "/" ? "index" : pathname.replace(/^\/+/, ""));
+  if (target === "/") return "/";
+  let best = "";
+  const walk = (items: any[]) => {
+    for (const it of items || []) {
+      if (it && typeof it === "object" && it.route) {
+        const prefix = it.route.startsWith("/") ? it.route : "/" + it.route;
+        if ((target + "/").startsWith(prefix + "/") && prefix.length > best.length) best = prefix;
+        if (Array.isArray(it.pages)) walk(it.pages);
+      } else if (it && typeof it === "object" && Array.isArray(it.pages)) {
+        walk(it.pages);
+      }
+    }
+  };
+  const sidebar = navigation?.sidebar || [];
+  walk(Array.isArray(sidebar) ? sidebar : sidebar?.pages || []);
+  return best || target; // fall back to the exact plain-page id
 }
 
-/** Set the per-request/-page location the shim reports (call before rendering). */
-export function applyLocation(slug: string, loaderData: any) {
-  setLocation({ pathname: "/" + slug, search: "", hash: "" });
-  setMatches([{ id: matchRouteId(null, slug), pathname: "/" + slug, params: {}, data: loaderData, handle: {} }]);
-}
-
-function DocsBody({ loaderData }: { loaderData: any }) {
+function DocsBody() {
+  const loaderData = useLoaderData();
   const theme = state.theme;
   const analytics = useAnalytics();
   const themeContent = theme.reactContentComponents();
@@ -129,7 +149,8 @@ function DocsBody({ loaderData }: { loaderData: any }) {
   );
 }
 
-export function ShellProviders({ loaderData }: { loaderData: any }) {
+export function ShellProviders() {
+  const loaderData = useLoaderData();
   const settings = state.settings;
   const { Layout } = state.theme;
   const variantToggles = [{ key: "symbolName", defaultValue: "" }];
@@ -156,7 +177,9 @@ export function ShellProviders({ loaderData }: { loaderData: any }) {
           >
             <CoderProvider lines scroll>
               <Layout>
-                <DocsBody loaderData={loaderData} />
+                {/* Key on slug so FrameworkPage remounts per page (its setMetadata
+                    runs on empty deps) → title/nav-active/TOC refresh on client nav. */}
+                <DocsBody key={loaderData.slug} />
               </Layout>
             </CoderProvider>
           </AtlasContext>

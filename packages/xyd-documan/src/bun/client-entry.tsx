@@ -1,13 +1,15 @@
 import React from "react";
 import { hydrateRoot } from "react-dom/client";
+import { createRouterStore, RouterProvider } from "@xyd-js/router";
 
-import { seedGlobals, ShellProviders, applyLocation } from "./render-tree";
+import { seedGlobals, ShellProviders } from "./render-tree";
 
 /**
- * Client hydration entry (S1). Reads the SSR data embedded by `renderShell`,
- * re-seeds the same globals/theme, and hydrates the identical tree. Called by
- * the launcher's generated client entry with the resolved theme class.
- * MPA slice: no client-side routing yet (links are full loads).
+ * Client hydration entry (S1/S2). Reads the SSR data embedded by `renderShell`,
+ * re-seeds the same globals/theme, builds the @xyd-js/router store, and hydrates
+ * the identical tree under <RouterProvider>. `loadPageData` (client-side page
+ * swap) is wired in a later step; until then navigate() hard-nav falls back to a
+ * full load (MPA), so nothing regresses.
  */
 export function bootClient(ThemeCtor: any) {
   const el = document.getElementById("__xyd_data");
@@ -23,7 +25,22 @@ export function bootClient(ThemeCtor: any) {
   globalThis.__xydPagePathMapping = {};
 
   seedGlobals(ThemeCtor);
-  applyLocation(data.slug, data.loaderData);
 
-  hydrateRoot(document.getElementById("root")!, <ShellProviders loaderData={data.loaderData} />);
+  // Router store. Location is basename-STRIPPED (RR semantics; matches the
+  // server's "/"+slug so useLocation-driven active-state hydrates identically),
+  // and matches carry the server-computed routeId + loaderData.
+  const basename = (data.settings?.advanced?.basename || "").replace(/\/$/, "");
+  const stripBase = (p: string) => (basename && p.startsWith(basename + "/") ? p.slice(basename.length) : p) || "/";
+  const w = new URL(window.location.href);
+  const store = createRouterStore({
+    location: { pathname: stripBase(w.pathname), search: w.search, hash: w.hash },
+    matches: [{ id: data.routeId, pathname: "/" + data.slug, params: {}, data: data.loaderData }],
+  });
+
+  hydrateRoot(
+    document.getElementById("root")!,
+    <RouterProvider store={store}>
+      <ShellProviders />
+    </RouterProvider>
+  );
 }

@@ -30,6 +30,7 @@
     "@xyd-js/plugin-access-control": "workspace:*",
     "@xyd-js/plugin-docs": "workspace:*",
     "@xyd-js/plugins": "workspace:*",
+    "@xyd-js/router": "workspace:*",
     "@xyd-js/uniform": "workspace:*",
     "cli-spinners": "^3.0.0",
     "gray-matter": "^4.0.3",

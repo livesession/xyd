@@ -36,6 +36,19 @@ let HOST = "";
 let themeName = "poetry";
 let iconSetJson = "{}";
 
+/** Resolve @xyd-js/router (the react-router replacement) — HOST first, then
+ *  documan's own tree (both resolve the same workspace package in dev). */
+function resolveRouter(): string {
+  for (const base of [HOST, DIR]) {
+    if (!base) continue;
+    try {
+      return Bun.resolveSync("@xyd-js/router", base);
+    } catch {}
+  }
+  // Last resort: the workspace source dist relative to documan.
+  return path.resolve(DIR, "../../../xyd-router/dist/index.js");
+}
+
 export interface DevServerHandle {
   server: any; // Bun.Server
   rebuild: (kind: string, paths: string[]) => Promise<void>;
@@ -48,8 +61,17 @@ function makeShims(isClient: boolean): BunPlugin {
     setup(b) {
       if (isClient) b.onResolve({ filter: SERVER_ONLY }, () => ({ path: path.join(DIR, "composer-stub.js") }));
       b.onResolve({ filter: OPTIONAL }, () => ({ path: path.join(DIR, "empty.js") }));
-      b.onResolve({ filter: /^react-router(-dom)?$/ }, () => ({ path: path.join(DIR, "rr-shim.tsx") }));
+      // react-router → @xyd-js/router (S2). One point redirects BOTH third-party
+      // leaf imports and xyd's own, for client + server bundles. Resolve from
+      // HOST (production .xyd/host declares it) with a fallback to documan's own
+      // tree (dev: repo .xyd/host may be stale but documan depends on it); its
+      // `react` still dedupes via the react onResolve below.
+      b.onResolve({ filter: /^react-router(-dom)?$/ }, () => ({ path: resolveRouter() }));
       b.onResolve({ filter: /^(react$|react\/|react-dom$|react-dom\/|@xyd-js\/)/ }, (args) => {
+        // @xyd-js/router isn't in the (possibly stale) HOST tree — resolve it the
+        // same way the react-router alias does, so the direct import here and the
+        // aliased leaf imports collapse to ONE module (one RouterContext).
+        if (args.path === "@xyd-js/router") return { path: resolveRouter() };
         try {
           return { path: Bun.resolveSync(args.path, HOST) };
         } catch {

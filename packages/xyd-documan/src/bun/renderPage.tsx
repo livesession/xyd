@@ -6,7 +6,9 @@ import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 import { markdownPlugins } from "@xyd-js/content/md";
 import { ContentFS } from "@xyd-js/content";
 
-import { seedGlobals, ShellProviders, getSettings, getSettingsClone, applyLocation } from "./render-tree";
+import { createRouterStore, RouterProvider } from "@xyd-js/router";
+
+import { seedGlobals, ShellProviders, getSettings, getSettingsClone, matchRoute } from "./render-tree";
 
 /**
  * Server render (SSR). Reuses the browser-safe tree in `render-tree.tsx` so the
@@ -71,7 +73,13 @@ function renderShell({ settings, bodyHtml, data }: any): string {
   );
 }
 
-export async function renderPage(slug: string): Promise<string> {
+/**
+ * Build the per-route loader data — the same payload for the SSR HTML route AND
+ * the client-nav JSON endpoint (`GET /_xyd/data`), so both are byte-identical.
+ * Pure function of `slug` + the live server globals; ContentFS reads files fresh
+ * per request, so the watcher's reinit/reseed keeps it current with no caching.
+ */
+export async function buildPageData(slug: string) {
   slug = slug || "index";
   const s = getSettings();
   const locale = "";
@@ -103,24 +111,41 @@ export async function renderPage(slug: string): Promise<string> {
     for (const h of hooks) if (!h({ metadata })) canPassComponents = false;
   }
 
-  const loaderData = {
+  return {
     sidebarGroups, breadcrumbs, navlinks, slug, code, metadata, rawPage, editLink, canPassComponents, shellOnly: false,
   };
+}
 
-  applyLocation(slug, loaderData);
-  const bodyHtml = renderToString(<ShellProviders loaderData={loaderData} />);
+export async function renderPage(slug: string): Promise<string> {
+  slug = slug || "index";
+  const s = getSettings();
+  const loaderData = await buildPageData(slug);
+  const routeId = matchRoute("/" + slug, s?.navigation);
+
+  // Per-request router store (in context, not module scope → concurrent-render
+  // safe). No loadPageData server-side; getServerSnapshot returns this frozen
+  // snapshot so SSR markup === the client's first snapshot.
+  const store = createRouterStore({
+    location: { pathname: "/" + slug, search: "", hash: "" },
+    matches: [{ id: routeId, pathname: "/" + slug, params: {}, data: loaderData }],
+  });
+  const bodyHtml = renderToString(
+    <RouterProvider store={store}>
+      <ShellProviders />
+    </RouterProvider>
+  );
 
   // Data the client needs to hydrate the same tree. Serialize BOTH settings the
-  // theme/framework read: `settings` (the live, theme-mutated __xydSettings, used
-  // by Framework) AND `settingsClone` (the PRISTINE appInit clone the theme reads
-  // via __xydSettingsClone to rebuild webeditor — social-anchor icons etc.). The
-  // live copy gets mutated during render, so the client must seed the clone from
-  // the pristine copy, not the mutated one, or the theme diverges (SSR≠CSR).
+  // theme/framework read: `settings` (the live, theme-mutated __xydSettings) AND
+  // `settingsClone` (the PRISTINE appInit clone the theme reads via
+  // __xydSettingsClone to rebuild webeditor). Plus `routeId` so the client store
+  // uses the same match id without re-deriving.
   const data = {
     slug,
     settings: s,
-    settingsClone: getSettingsClone() || s, // atomic snapshot (seeded with `s`), not the live global
+    settingsClone: getSettingsClone() || s,
     loaderData,
+    routeId,
     userComponents: [], // plugin components not serialized in this slice
     userHooks: {},
   };
