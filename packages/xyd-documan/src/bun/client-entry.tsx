@@ -14,7 +14,10 @@ export function bootClient(ThemeCtor: any) {
   const data = JSON.parse(el!.textContent || "{}");
 
   globalThis.__xydSettings = data.settings;
-  globalThis.__xydSettingsClone = data.settings; // Theme ctor reads __xydSettingsClone
+  // The theme rebuilds webeditor from __xydSettingsClone — seed it from the
+  // PRISTINE server clone (not the live/mutated `settings`) so the client theme
+  // builds the identical webeditor (social-anchor icons) the server rendered.
+  globalThis.__xydSettingsClone = data.settingsClone || data.settings;
   globalThis.__xydUserComponents = data.userComponents || [];
   globalThis.__xydUserHooks = data.userHooks || {};
   globalThis.__xydPagePathMapping = {};

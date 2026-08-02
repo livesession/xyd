@@ -95,13 +95,16 @@ export async function renderPage(slug: string): Promise<string> {
   applyLocation(slug, loaderData);
   const bodyHtml = renderToString(<ShellProviders loaderData={loaderData} />);
 
-  // Data the client needs to hydrate the same tree. Use the CLEAN pre-theme
-  // clone (appInit's __xydSettingsClone) — the live settings has React elements
-  // injected into webeditor by the theme, which don't survive JSON. The client
-  // theme rebuilds webeditor itself, matching the server.
+  // Data the client needs to hydrate the same tree. Serialize BOTH settings the
+  // theme/framework read: `settings` (the live, theme-mutated __xydSettings, used
+  // by Framework) AND `settingsClone` (the PRISTINE appInit clone the theme reads
+  // via __xydSettingsClone to rebuild webeditor — social-anchor icons etc.). The
+  // live copy gets mutated during render, so the client must seed the clone from
+  // the pristine copy, not the mutated one, or the theme diverges (SSR≠CSR).
   const data = {
     slug,
     settings: s,
+    settingsClone: globalThis.__xydSettingsClone || s,
     loaderData,
     userComponents: [], // plugin components not serialized in this slice
     userHooks: {},
@@ -155,6 +158,25 @@ export function start(ThemeCtor: any) {
   const themeName = (s?.theme?.name || "poetry").replace(/^npm:/, "");
   const CSS = cssResolver(HOST, themeName);
   const clientBundlePath = process.env.XYD_CLIENT_BUNDLE || "";
+  const CWD = process.cwd();
+  const basename = (s?.advanced?.basename || "").replace(/\/$/, "");
+
+  // Static assets (logo, images, favicon) referenced by settings/content. Vite
+  // served `public/` at root; here we strip the basename and try the path on
+  // disk (both verbatim and under `public/`) before treating it as a page slug —
+  // otherwise `/…/logo.svg` gets compiled as MDX and 500s.
+  async function serveStatic(pathname: string): Promise<Response | null> {
+    let rel = decodeURIComponent(pathname);
+    if (basename && rel.startsWith(basename + "/")) rel = rel.slice(basename.length);
+    rel = rel.replace(/^\//, "");
+    if (!rel || !/\.[a-zA-Z0-9]+$/.test(rel)) return null; // only extension'd paths
+    const bare = rel.replace(/^public\//, "");
+    for (const cand of [path.join(CWD, rel), path.join(CWD, "public", bare)]) {
+      const f = Bun.file(cand);
+      if (await f.exists()) return new Response(f);
+    }
+    return null;
+  }
 
   async function serveCss(paths: (string | null)[]): Promise<Response> {
     let out = "";
@@ -180,7 +202,11 @@ export function start(ThemeCtor: any) {
         }
         return new Response("/* no client bundle */", { headers: { "content-type": "text/javascript" } });
       }
-      const slug = decodeURIComponent(url.pathname.replace(/^\//, ""));
+      const asset = await serveStatic(url.pathname);
+      if (asset) return asset;
+      let slug = decodeURIComponent(url.pathname.replace(/^\//, ""));
+      if (basename && ("/" + slug).startsWith(basename + "/")) slug = slug.slice(basename.length);
+      slug = slug.replace(/^\//, "");
       try {
         return new Response(await renderPage(slug), { headers: { "content-type": "text/html; charset=utf-8" } });
       } catch (e: any) {
