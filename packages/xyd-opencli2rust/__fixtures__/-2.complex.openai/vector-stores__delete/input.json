@@ -1,0 +1,57 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "vector-stores",
+      "commands": [
+        {
+          "name": "delete",
+          "description": "Delete a vector store.",
+          "arguments": [
+            {
+              "name": "vector-store-id",
+              "required": true,
+              "description": "The ID of the vector store to delete."
+            }
+          ],
+          "x-openapi": {
+            "method": "delete",
+            "path": "/vector_stores/{vector_store_id}",
+            "operationId": "deleteVectorStore",
+            "params": [
+              {
+                "in": "path",
+                "name": "vector_store_id",
+                "from": "argument:vector-store-id",
+                "required": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

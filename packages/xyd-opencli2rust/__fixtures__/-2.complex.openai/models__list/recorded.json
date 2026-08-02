@@ -1,0 +1,13 @@
+{
+  "args": [
+    "models",
+    "list"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/models",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,16 +1,19 @@
 name: tests:opencli-pipeline
 
-# Verifies the OpenAPI → OpenCLI → Go pipeline end to end:
+# Verifies the OpenAPI → OpenCLI → CLI pipeline end to end:
 #   @xyd-js/opencli (core model) · @xyd-js/openapi2opencli (Stage A)
-#   · @xyd-js/opencli2go (Go generator)
+#   · @xyd-js/opencli2go (Go generator) · @xyd-js/opencli2rust (Rust generator)
 #
 # The root vitest config (tests:unit) already runs each package's offline unit
-# tests, but it EXCLUDES `**/__tests__/e2e/**`. This job adds a Go toolchain so
-# the gated layers can run where generated binaries actually execute (Linux):
-#   - O2G_GO_SMOKE=1 — a sample of generated Go projects `go build`/`go vet`
-#   - E2E_CLI=1      — assemble the whole CLI, run it against a recording server,
-#                      diff the real HTTP requests against the committed fixtures
-# (O2G_BUILD_DOCS / E2E_RECORD regenerate goldens and are deliberately NOT set.)
+# tests, but it EXCLUDES `**/__tests__/e2e/**`. This job adds Go + Rust
+# toolchains so the gated layers can run where generated binaries actually
+# execute (Linux):
+#   - O2G_GO_SMOKE=1    — a sample of generated Go projects `go build`/`go vet`
+#   - O2R_CARGO_SMOKE=1 — generated Rust projects `cargo check`
+#   - E2E_CLI=1         — assemble the whole CLI, run it against a recording server,
+#                         diff the real HTTP requests against the committed fixtures
+# (O2G_BUILD_DOCS / O2R_BUILD_DOCS / E2E_RECORD regenerate goldens and are
+# deliberately NOT set.)
 
 on:
   push:
@@ -19,6 +22,7 @@ on:
       - 'packages/xyd-opencli/**'
       - 'packages/xyd-openapi2opencli/**'
       - 'packages/xyd-opencli2go/**'
+      - 'packages/xyd-opencli2rust/**'
       - '.github/workflows/tests-opencli-pipeline.yml'
   pull_request:
     branches: [ master, canary ]
@@ -26,6 +30,7 @@ on:
       - 'packages/xyd-opencli/**'
       - 'packages/xyd-openapi2opencli/**'
       - 'packages/xyd-opencli2go/**'
+      - 'packages/xyd-opencli2rust/**'
       - '.github/workflows/tests-opencli-pipeline.yml'
 
 jobs:
@@ -62,6 +67,22 @@ jobs:
         # The generated CLIs vendor urfave/cli v3; cache its module downloads.
         cache: false
 
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    # The generated Rust CLIs share one target dir so clap/reqwest/tokio compile
+    # once across the cargo-check smoke samples and the e2e CLI build.
+    - name: Setup cargo cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          /tmp/o2r-target
+        key: ${{ runner.os }}-o2r-cargo-${{ hashFiles('packages/xyd-opencli2rust/src/runtime.ts') }}
+        restore-keys: |
+          ${{ runner.os }}-o2r-cargo-
+
     - name: Get pnpm store directory
       shell: bash
       run: |
@@ -84,6 +105,7 @@ jobs:
         --filter "@xyd-js/opencli..."
         --filter "@xyd-js/openapi2opencli..."
         --filter "@xyd-js/opencli2go..."
+        --filter "@xyd-js/opencli2rust..."
         build
 
     - name: Test @xyd-js/opencli (core model + schema round-trip)
@@ -112,3 +134,10 @@ jobs:
       env:
         O2G_GO_SMOKE: '1'
         E2E_CLI: '1'
+
+    - name: Test @xyd-js/opencli2rust (regen guard + cargo check + e2e CLI)
+      run: pnpm --filter @xyd-js/opencli2rust ci:test
+      env:
+        O2R_CARGO_SMOKE: '1'
+        E2E_CLI: '1'
+        CARGO_TARGET_DIR: /tmp/o2r-target

@@ -1,0 +1,15 @@
+{
+  "args": [
+    "skills",
+    "versions",
+    "list",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/skills/{skill_id}/versions",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

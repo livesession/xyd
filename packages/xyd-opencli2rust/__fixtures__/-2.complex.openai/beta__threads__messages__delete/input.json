@@ -1,0 +1,73 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "threads",
+      "commands": [
+        {
+          "name": "messages",
+          "commands": [
+            {
+              "name": "delete",
+              "description": "Deletes a message.",
+              "arguments": [
+                {
+                  "name": "thread-id",
+                  "required": true,
+                  "description": "The ID of the thread to which this message belongs."
+                },
+                {
+                  "name": "message-id",
+                  "required": true,
+                  "description": "The ID of the message to delete."
+                }
+              ],
+              "x-openapi": {
+                "method": "delete",
+                "path": "/threads/{thread_id}/messages/{message_id}",
+                "operationId": "deleteMessage",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "thread_id",
+                    "from": "argument:thread-id",
+                    "required": true
+                  },
+                  {
+                    "in": "path",
+                    "name": "message_id",
+                    "from": "argument:message-id",
+                    "required": true
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

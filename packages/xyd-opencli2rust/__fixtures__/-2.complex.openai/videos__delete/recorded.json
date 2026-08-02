@@ -1,0 +1,14 @@
+{
+  "args": [
+    "videos",
+    "delete",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "delete",
+    "path": "/videos/{video_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

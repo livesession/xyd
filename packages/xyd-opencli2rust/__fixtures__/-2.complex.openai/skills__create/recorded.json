@@ -1,0 +1,18 @@
+{
+  "args": [
+    "skills",
+    "create",
+    "--files",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/skills",
+    "query": [],
+    "bodyFields": [
+      "files"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

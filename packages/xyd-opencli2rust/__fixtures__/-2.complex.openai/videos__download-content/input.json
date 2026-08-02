@@ -1,0 +1,95 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "videos",
+      "commands": [
+        {
+          "name": "list",
+          "description": "List recently generated videos for the current project.",
+          "options": [
+            {
+              "name": "limit",
+              "description": "Number of items to retrieve",
+              "group": "query",
+              "arguments": [
+                {
+                  "name": "integer"
+                }
+              ]
+            },
+            {
+              "name": "order",
+              "description": "Sort order of results by timestamp. Use `asc` for ascending order or `desc` for descending order.",
+              "group": "query",
+              "arguments": [
+                {
+                  "name": "string",
+                  "acceptedValues": [
+                    "asc",
+                    "desc"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "after",
+              "description": "Identifier for the last item from the previous pagination request",
+              "group": "query",
+              "arguments": [
+                {
+                  "name": "string"
+                }
+              ]
+            }
+          ],
+          "x-openapi": {
+            "method": "get",
+            "path": "/videos",
+            "operationId": "ListVideos",
+            "params": [
+              {
+                "in": "query",
+                "name": "limit",
+                "from": "option:limit"
+              },
+              {
+                "in": "query",
+                "name": "order",
+                "from": "option:order"
+              },
+              {
+                "in": "query",
+                "name": "after",
+                "from": "option:after"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "args": [
+    "organization",
+    "groups",
+    "list"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/organization/groups",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "args": [
+    "vector-stores",
+    "file-batches",
+    "retrieve",
+    "EXAMPLE",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/vector_stores/{vector_store_id}/file_batches/{batch_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

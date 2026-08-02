@@ -1,0 +1,61 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "admin-api-keys",
+          "commands": [
+            {
+              "name": "delete",
+              "description": "Delete an organization admin API key",
+              "arguments": [
+                {
+                  "name": "key-id",
+                  "required": true
+                }
+              ],
+              "x-openapi": {
+                "method": "delete",
+                "path": "/organization/admin_api_keys/{key_id}",
+                "operationId": "admin-api-keys-delete",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "key_id",
+                    "from": "argument:key-id",
+                    "required": true
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

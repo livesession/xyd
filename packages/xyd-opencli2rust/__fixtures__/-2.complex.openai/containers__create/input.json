@@ -1,0 +1,161 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "containers",
+      "commands": [
+        {
+          "name": "create",
+          "description": "Create Container",
+          "options": [
+            {
+              "name": "name",
+              "group": "body",
+              "required": true,
+              "description": "Name of the container to create.",
+              "arguments": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "file-ids",
+              "group": "body",
+              "description": "IDs of files to copy to the container.",
+              "arguments": [
+                {
+                  "name": "string",
+                  "arity": {
+                    "minimum": 0
+                  }
+                }
+              ]
+            },
+            {
+              "name": "expires-after",
+              "group": "body",
+              "description": "Container expiration time in seconds relative to the 'anchor' time.",
+              "arguments": [
+                {
+                  "name": "json"
+                }
+              ]
+            },
+            {
+              "name": "skills",
+              "group": "body",
+              "description": "An optional list of skills referenced by id or inline data.",
+              "arguments": [
+                {
+                  "name": "value",
+                  "arity": {
+                    "minimum": 0
+                  }
+                }
+              ]
+            },
+            {
+              "name": "memory-limit",
+              "group": "body",
+              "description": "Optional memory limit for the container. Defaults to \"1g\".",
+              "arguments": [
+                {
+                  "name": "string",
+                  "acceptedValues": [
+                    "1g",
+                    "4g",
+                    "16g",
+                    "64g"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "network-policy",
+              "group": "body",
+              "description": "Network access policy for the container.",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            }
+          ],
+          "x-openapi": {
+            "method": "post",
+            "path": "/containers",
+            "operationId": "CreateContainer",
+            "contentType": "application/json",
+            "body": {
+              "style": "flatten",
+              "contentType": "application/json",
+              "properties": [
+                {
+                  "name": "name",
+                  "from": "option:name",
+                  "jsonPath": "name",
+                  "encoding": "string",
+                  "required": true
+                },
+                {
+                  "name": "file_ids",
+                  "from": "option:file-ids",
+                  "jsonPath": "file_ids",
+                  "encoding": "array"
+                },
+                {
+                  "name": "expires_after",
+                  "from": "option:expires-after",
+                  "jsonPath": "expires_after",
+                  "encoding": "json"
+                },
+                {
+                  "name": "skills",
+                  "from": "option:skills",
+                  "jsonPath": "skills",
+                  "encoding": "array"
+                },
+                {
+                  "name": "memory_limit",
+                  "from": "option:memory-limit",
+                  "jsonPath": "memory_limit",
+                  "encoding": "string"
+                },
+                {
+                  "name": "network_policy",
+                  "from": "option:network-policy",
+                  "jsonPath": "network_policy",
+                  "encoding": "json"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

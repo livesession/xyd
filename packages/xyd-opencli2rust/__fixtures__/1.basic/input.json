@@ -1,0 +1,74 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "sample-api",
+    "version": "1.2.0",
+    "description": "A tiny sample API for testing openapi2opencli.",
+    "contact": {
+      "name": "API Support",
+      "url": "https://example.com/support",
+      "email": "support@example.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.example.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "SAMPLE_API_API_KEY",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "models",
+      "commands": [
+        {
+          "name": "list",
+          "description": "Lists the currently available models.",
+          "x-openapi": {
+            "method": "get",
+            "path": "/models",
+            "operationId": "listModels"
+          }
+        },
+        {
+          "name": "retrieve",
+          "aliases": [
+            "get"
+          ],
+          "description": "Retrieves a model instance.",
+          "arguments": [
+            {
+              "name": "model",
+              "required": true,
+              "description": "The ID of the model to use for this request."
+            }
+          ],
+          "x-openapi": {
+            "method": "get",
+            "path": "/models/{model}",
+            "operationId": "retrieveModel",
+            "params": [
+              {
+                "in": "path",
+                "name": "model",
+                "from": "argument:model",
+                "required": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

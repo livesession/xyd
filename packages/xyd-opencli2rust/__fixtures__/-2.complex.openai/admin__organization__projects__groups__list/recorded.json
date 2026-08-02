@@ -1,0 +1,16 @@
+{
+  "args": [
+    "organization",
+    "projects",
+    "groups",
+    "list",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/organization/projects/{project_id}/groups",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

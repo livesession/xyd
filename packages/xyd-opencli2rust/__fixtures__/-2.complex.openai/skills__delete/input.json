@@ -1,0 +1,57 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "skills",
+      "commands": [
+        {
+          "name": "delete",
+          "description": "Delete a skill by its ID.",
+          "arguments": [
+            {
+              "name": "skill-id",
+              "required": true,
+              "description": "The identifier of the skill to delete."
+            }
+          ],
+          "x-openapi": {
+            "method": "delete",
+            "path": "/skills/{skill_id}",
+            "operationId": "DeleteSkill",
+            "params": [
+              {
+                "in": "path",
+                "name": "skill_id",
+                "from": "argument:skill-id",
+                "required": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

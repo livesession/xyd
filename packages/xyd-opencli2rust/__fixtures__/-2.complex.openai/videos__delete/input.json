@@ -1,0 +1,57 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "videos",
+      "commands": [
+        {
+          "name": "delete",
+          "description": "Permanently delete a completed or failed video and its stored assets.",
+          "arguments": [
+            {
+              "name": "video-id",
+              "required": true,
+              "description": "The identifier of the video to delete."
+            }
+          ],
+          "x-openapi": {
+            "method": "delete",
+            "path": "/videos/{video_id}",
+            "operationId": "DeleteVideo",
+            "params": [
+              {
+                "in": "path",
+                "name": "video_id",
+                "from": "argument:video-id",
+                "required": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

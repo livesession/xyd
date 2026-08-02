@@ -1,0 +1,14 @@
+{
+  "args": [
+    "organization",
+    "roles",
+    "list"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/organization/roles",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

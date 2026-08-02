@@ -1,0 +1,15 @@
+{
+  "args": [
+    "organization",
+    "certificates",
+    "delete",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "delete",
+    "path": "/organization/certificates/{certificate_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

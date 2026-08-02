@@ -1,0 +1,13 @@
+{
+  "args": [
+    "batches",
+    "list"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/batches",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "stores-api",
+    "version": "1.0.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.stores.test/v2"
+    ]
+  },
+  "commands": [
+    {
+      "name": "stores",
+      "commands": [
+        {
+          "name": "items",
+          "commands": [
+            {
+              "name": "list",
+              "description": "List items in a store.",
+              "arguments": [
+                {
+                  "name": "store-id",
+                  "required": true
+                }
+              ],
+              "options": [
+                {
+                  "name": "limit",
+                  "group": "query",
+                  "arguments": [
+                    {
+                      "name": "integer"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "get",
+                "path": "/stores/{store_id}/items",
+                "operationId": "listStoreItems",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "store_id",
+                    "from": "argument:store-id",
+                    "required": true
+                  },
+                  {
+                    "in": "query",
+                    "name": "limit",
+                    "from": "option:limit"
+                  }
+                ]
+              }
+            },
+            {
+              "name": "create",
+              "description": "Create an item in a store.",
+              "arguments": [
+                {
+                  "name": "store-id",
+                  "required": true
+                }
+              ],
+              "options": [
+                {
+                  "name": "sku",
+                  "group": "body",
+                  "required": true,
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "quantity",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "integer"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/stores/{store_id}/items",
+                "operationId": "createStoreItem",
+                "contentType": "application/json",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "store_id",
+                    "from": "argument:store-id",
+                    "required": true
+                  }
+                ],
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "sku",
+                      "from": "option:sku",
+                      "jsonPath": "sku",
+                      "encoding": "string",
+                      "required": true
+                    },
+                    {
+                      "name": "quantity",
+                      "from": "option:quantity",
+                      "jsonPath": "quantity",
+                      "encoding": "integer"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "retrieve",
+              "aliases": [
+                "get"
+              ],
+              "description": "Retrieve a store item.",
+              "arguments": [
+                {
+                  "name": "store-id",
+                  "required": true
+                },
+                {
+                  "name": "item-id",
+                  "required": true
+                }
+              ],
+              "x-openapi": {
+                "method": "get",
+                "path": "/stores/{store_id}/items/{item_id}",
+                "operationId": "retrieveStoreItem",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "store_id",
+                    "from": "argument:store-id",
+                    "required": true
+                  },
+                  {
+                    "in": "path",
+                    "name": "item_id",
+                    "from": "argument:item-id",
+                    "required": true
+                  }
+                ]
+              }
+            },
+            {
+              "name": "archive",
+              "description": "Archive a store item.",
+              "arguments": [
+                {
+                  "name": "store-id",
+                  "required": true
+                },
+                {
+                  "name": "item-id",
+                  "required": true
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/stores/{store_id}/items/{item_id}/archive",
+                "operationId": "archiveStoreItem",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "store_id",
+                    "from": "argument:store-id",
+                    "required": true
+                  },
+                  {
+                    "in": "path",
+                    "name": "item_id",
+                    "from": "argument:item-id",
+                    "required": true
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

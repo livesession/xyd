@@ -1,0 +1,65 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "chatkit",
+      "commands": [
+        {
+          "name": "threads",
+          "commands": [
+            {
+              "name": "retrieve",
+              "aliases": [
+                "get"
+              ],
+              "description": "Retrieve a ChatKit thread by its identifier.",
+              "arguments": [
+                {
+                  "name": "thread-id",
+                  "required": true,
+                  "description": "Identifier of the ChatKit thread to retrieve."
+                }
+              ],
+              "x-openapi": {
+                "method": "get",
+                "path": "/chatkit/threads/{thread_id}",
+                "operationId": "GetThreadMethod",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "thread_id",
+                    "from": "argument:thread-id",
+                    "required": true
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
