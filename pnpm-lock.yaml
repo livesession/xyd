@@ -89,9 +89,15 @@ importers:
       '@xyd-js/plugin-orama':
         specifier: workspace:*
         version: link:../../packages/xyd-plugin-orama
+      '@xyd-js/plugin-supademo':
+        specifier: 0.1.0-build.29
+        version: 0.1.0-build.29
       '@xyd-js/theme-cosmo':
         specifier: workspace:*
         version: link:../../packages/xyd-theme-cosmo
+      '@xyd-js/theme-opener':
+        specifier: workspace:*
+        version: link:../../packages/xyd-theme-opener
       '@xyd-js/themes':
         specifier: workspace:*
         version: link:../../packages/xyd-themes
@@ -1066,6 +1072,9 @@ importers:
       '@xyd-js/host':
         specifier: workspace:*
         version: link:../xyd-host
+      '@xyd-js/native':
+        specifier: workspace:*
+        version: link:../xyd-native
       '@xyd-js/plugin-access-control':
         specifier: workspace:*
         version: link:../xyd-plugin-access-control
@@ -9716,6 +9725,9 @@ packages:
   '@xhmikosr/downloader@13.0.1':
     resolution: {integrity: sha512-mBvWew1kZJHfNQVVfVllMjUDwCGN9apPa0t4/z1zaUJ9MzpXjRL3w8fsfJKB8gHN/h4rik9HneKfDbh2fErN+w==}
     engines: {node: ^14.14.0 || >=16.0.0}
+
+  '@xyd-js/plugin-supademo@0.1.0-build.29':
+    resolution: {integrity: sha512-EKIM2PoTR8g5UapzQ2sup3fuyCkvJfm3fqGh4Xk5uJ1wcALhI/ta4XOgcz+Xgy8dIaWtO2Y/d6yWt1Hk791kOg==}
 
   '@yarnpkg/lockfile@1.1.0':
     resolution: {integrity: sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==}
@@ -25278,6 +25290,14 @@ snapshots:
     optionalDependencies:
       vite: 5.4.21(@types/node@20.9.0)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
 
+  '@vitest/mocker@2.1.9(vite@5.4.21(@types/node@24.12.3)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1))':
+    dependencies:
+      '@vitest/spy': 2.1.9
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      vite: 5.4.21(@types/node@24.12.3)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
+
   '@vitest/pretty-format@2.0.5':
     dependencies:
       tinyrainbow: 1.2.0
@@ -25613,6 +25633,8 @@ snapshots:
       - bare-abort-controller
       - bare-buffer
       - react-native-b4a
+
+  '@xyd-js/plugin-supademo@0.1.0-build.29': {}
 
   '@yarnpkg/lockfile@1.1.0': {}
 
@@ -25995,9 +26017,17 @@ snapshots:
       '@fastify/error': 3.4.1
       fastq: 1.20.1
 
-  axios@1.15.2(debug@4.3.4):
+  axios@1.15.2:
     dependencies:
       follow-redirects: 1.16.0(debug@4.3.7)
+      form-data: 4.0.5
+      proxy-from-env: 2.1.0
+    transitivePeerDependencies:
+      - debug
+
+  axios@1.15.2(debug@4.3.4):
+    dependencies:
+      follow-redirects: 1.16.0(debug@4.3.4)
       form-data: 4.0.5
       proxy-from-env: 2.1.0
     transitivePeerDependencies:
@@ -28563,6 +28593,10 @@ snapshots:
     dependencies:
       from2: 2.3.0
 
+  follow-redirects@1.16.0(debug@4.3.4):
+    optionalDependencies:
+      debug: 4.3.4
+
   follow-redirects@1.16.0(debug@4.3.7):
     optionalDependencies:
       debug: 4.3.7
@@ -29449,7 +29483,7 @@ snapshots:
       jsonwebtoken: 9.0.3
       load-esm: 1.0.3
       mime-types: 2.1.35
-      retry-axios: 2.6.0(axios@1.15.2(debug@4.3.4))
+      retry-axios: 2.6.0(axios@1.15.2)
       tough-cookie: 4.1.3
     transitivePeerDependencies:
       - supports-color
@@ -30155,7 +30189,7 @@ snapshots:
       lodash.isstring: 4.0.1
       lodash.once: 4.1.1
       ms: 2.1.3
-      semver: 7.8.0
+      semver: 7.8.5
 
   junk@4.0.1: {}
 
@@ -33774,9 +33808,9 @@ snapshots:
 
   ret@0.4.3: {}
 
-  retry-axios@2.6.0(axios@1.15.2(debug@4.3.4)):
+  retry-axios@2.6.0(axios@1.15.2):
     dependencies:
-      axios: 1.15.2(debug@4.3.4)
+      axios: 1.15.2
 
   retry@0.12.0: {}
 
@@ -36091,7 +36125,7 @@ snapshots:
   vitest@2.1.9(@types/node@24.12.3)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1):
     dependencies:
       '@vitest/expect': 2.1.9
-      '@vitest/mocker': 2.1.9(vite@5.4.21(@types/node@20.9.0)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1))
+      '@vitest/mocker': 2.1.9(vite@5.4.21(@types/node@24.12.3)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1))
       '@vitest/pretty-format': 2.1.9
       '@vitest/runner': 2.1.9
       '@vitest/snapshot': 2.1.9

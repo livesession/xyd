@@ -6,10 +6,12 @@
     "./package.json": "./package.json",
     ".": "./dist/index.js",
     "./dev": "./dist/dev.js",
-    "./build": "./dist/build.js"
+    "./build": "./dist/build.js",
+    "./bun-launcher": "./src/bun/launcher.ts"
   },
   "files": [
     "dist",
+    "src/bun",
     "package.json"
   ],
   "scripts": {
@@ -24,6 +26,7 @@
     "@react-router/serve": "^7.15.0",
     "@xyd-js/content": "workspace:*",
     "@xyd-js/core": "workspace:*",
+    "@xyd-js/native": "workspace:*",
     "@xyd-js/plugin-access-control": "workspace:*",
     "@xyd-js/plugin-docs": "workspace:*",
     "@xyd-js/plugins": "workspace:*",

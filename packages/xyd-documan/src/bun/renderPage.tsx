@@ -32,6 +32,20 @@ function esc(x: any): string {
   return String(x).replace(/[&<>]/g, (c) => (({ "&": "&amp;", "<": "&lt;", ">": "&gt;" } as any)[c]));
 }
 
+// Dev-only live-reload client: connects to /_xyd/livereload, reloads on a
+// "reload" message (broadcast by the watcher's rebuild), and — after the socket
+// drops (a full server restart) — reloads once it reconnects. Reconnect loop
+// keeps it resilient across restarts. Stripped in production builds.
+const LIVE_RELOAD =
+  process.env.NODE_ENV === "production"
+    ? ""
+    : `<script>(function(){var t,seen=false;function c(){` +
+      `var ws=new WebSocket((location.protocol==='https:'?'wss':'ws')+'://'+location.host+'/_xyd/livereload');` +
+      `ws.onopen=function(){if(seen)location.reload();};` +
+      `ws.onmessage=function(e){if(e.data==='reload')location.reload();};` +
+      `ws.onclose=function(){seen=true;clearTimeout(t);t=setTimeout(c,1000);};` +
+      `ws.onerror=function(){try{ws.close();}catch(_){}}}c();})();</script>`;
+
 function renderShell({ settings, bodyHtml, data }: any): string {
   const colorScheme = settings?.theme?.appearance?.colorScheme || "os";
   const metadata = data.loaderData.metadata;
@@ -52,6 +66,7 @@ function renderShell({ settings, bodyHtml, data }: any): string {
     `<div id="root">${bodyHtml}</div>` +
     `<script id="__xyd_data" type="application/json">${json}</script>` +
     `<script type="module" src="/_bun/client.js"></script>` +
+    LIVE_RELOAD +
     `</body></html>`
   );
 }
@@ -189,10 +204,14 @@ export function start(ThemeCtor: any) {
   }
 
   const server = Bun.serve({
-    port: Number(process.env.XYD_PORT ?? 5185),
+    port: Number(process.env.XYD_PORT ?? 5175),
     development: true,
-    async fetch(req) {
+    async fetch(req, srv) {
       const url = new URL(req.url);
+      // Live-reload channel: the watcher's rebuild() broadcasts "reload" here.
+      if (url.pathname === "/_xyd/livereload") {
+        return srv.upgrade(req) ? undefined : new Response("upgrade failed", { status: 400 });
+      }
       if (CSS[url.pathname]) return serveCss(CSS[url.pathname]);
       if (url.pathname === "/_bun/client.js") {
         if (clientBundlePath) {
@@ -217,6 +236,29 @@ export function start(ThemeCtor: any) {
         });
       }
     },
+    websocket: {
+      open(ws) {
+        ws.subscribe("xyd-reload");
+      },
+      message() {},
+      close() {},
+    },
   });
   console.error(`xyd bun dev (S1 render+hydrate) → ${server.url}  [theme: ${themeName}]`);
+  return server;
+}
+
+/**
+ * Re-seed the render globals after a hot re-appInit (settings/api/appearance
+ * change): re-strip pre-resolved React-element icons (or SSR≠CSR icon
+ * hydration mismatches return) and re-point state.settings + rebuild the theme.
+ * The running Bun.serve handler picks up the new settings on the next request
+ * (renderPage reads getSettings() + the __xyd* globals live).
+ */
+export function reseed(ThemeCtor: any) {
+  globalThis.__xydSettings = stripReactElements(globalThis.__xydSettings);
+  if (globalThis.__xydSettingsClone) {
+    globalThis.__xydSettingsClone = stripReactElements(globalThis.__xydSettingsClone);
+  }
+  seedGlobals(ThemeCtor);
 }
