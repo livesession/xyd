@@ -1,79 +1,88 @@
-import React from "react";
-import { renderToString } from "react-dom/server";
-
-import App from "./App";
+import { bootRender, renderPage, getThemeName } from "./renderPage";
 
 /**
- * WIP Bun-native dev server (plan S1). This is the seed that will replace the
- * Vite + React-Router dev path: `Bun.serve` handles HTTP, `react-dom/server`
- * renders each route server-side, and `Bun.build` produces the client bundle
- * that hydrates it — no Vite, no React Router. Not yet wired into `xyd dev`;
- * run directly with `bun packages/xyd-documan/src/bun/server.tsx`.
+ * WIP Bun-native dev server (plan S1). Boots the render pipeline once, then
+ * serves each route via `renderPage` (SSR, no Vite, no React Router). Run with
+ * the shim preloaded, cwd = a docs project:
+ *
+ *   cd apps/docs && XYD_DEV_MODE=1 bun \
+ *     --preload ../../packages/xyd-documan/src/bun/preload.ts \
+ *     ../../packages/xyd-documan/src/bun/server.tsx
  */
 
-const CLIENT_ENTRY = new URL("./client.tsx", import.meta.url).pathname;
+const base = import.meta.dir;
 
-async function buildClient(): Promise<string> {
-  const out = await Bun.build({
-    entrypoints: [CLIENT_ENTRY],
-    target: "browser",
-    minify: false,
-  });
-  if (!out.success) {
-    throw new AggregateError(out.logs, "client bundle failed");
+function tryResolve(...specs: string[]): string | null {
+  for (const s of specs) {
+    try {
+      return Bun.resolveSync(s, base);
+    } catch {
+      /* next */
+    }
   }
-  const entry = out.outputs.find((o) => o.kind === "entry-point");
-  return await entry!.text();
+  return null;
 }
 
-// Resolve the pre-extracted @xyd-js/components Linaria CSS (proves R3: the CSS
-// pipeline runs at package build, so the app just serves plain dist/index.css).
-let componentsCssPath = "";
-try {
-  componentsCssPath = Bun.resolveSync("@xyd-js/components/index.css", import.meta.dir);
-} catch {
-  componentsCssPath = new URL("../../../xyd-components/dist/index.css", import.meta.url).pathname;
+function pkgDist(pkg: string, file: string): string | null {
+  try {
+    const pj = Bun.resolveSync(pkg + "/package.json", base);
+    return pj.replace(/package\.json$/, "") + file;
+  } catch {
+    return null;
+  }
 }
 
-function shell(appHtml: string): string {
-  return `<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>xyd bun dev</title>
-    <link rel="stylesheet" href="/_bun/components.css" />
-  </head>
-  <body>
-    <div id="root">${appHtml}</div>
-    <script type="module" src="/_bun/client.js"></script>
-  </body>
-</html>`;
-}
+await bootRender();
+const themeName = getThemeName();
 
-// Built once at startup; the Rust dev-watch service (S5) will drive rebuilds.
-const clientJs = await buildClient();
+// Real CSS files served as <link> (CSS extraction happens at package build).
+const CSS: Record<string, (string | null)[]> = {
+  "/_xyd/theme.css": [
+    tryResolve(`@xyd-js/theme-${themeName}/index.css`) ||
+      pkgDist(`@xyd-js/theme-${themeName}`, "dist/index.css"),
+  ],
+  "/_xyd/components.css": [tryResolve("@xyd-js/components/index.css") || pkgDist("@xyd-js/components", "dist/index.css")],
+  "/_xyd/atlas.css": [
+    tryResolve("@xyd-js/atlas/index.css") || pkgDist("@xyd-js/atlas", "index.css"),
+    tryResolve("@xyd-js/atlas/tokens.css") || pkgDist("@xyd-js/atlas", "tokens.css"),
+    tryResolve("@xyd-js/atlas/styles.css") || pkgDist("@xyd-js/atlas", "styles.css"),
+  ],
+  "/_xyd/ui.css": [tryResolve("@xyd-js/ui/index.css") || pkgDist("@xyd-js/ui", "dist/index.css")],
+};
+
+async function serveCss(paths: (string | null)[]): Promise<Response> {
+  let out = "";
+  for (const p of paths) {
+    if (!p) continue;
+    const f = Bun.file(p);
+    if (await f.exists()) out += (await f.text()) + "\n";
+  }
+  return new Response(out, { headers: { "content-type": "text/css; charset=utf-8" } });
+}
 
 const server = Bun.serve({
-  port: Number(process.env.XYD_PORT ?? 5199),
+  port: Number(process.env.XYD_PORT ?? 5180),
   development: true,
   async fetch(req) {
     const url = new URL(req.url);
+    if (CSS[url.pathname]) return serveCss(CSS[url.pathname]);
     if (url.pathname === "/_bun/client.js") {
-      return new Response(clientJs, {
+      return new Response("/* SSR-only slice: no client hydration yet (S1) */", {
         headers: { "content-type": "text/javascript; charset=utf-8" },
       });
     }
-    if (url.pathname === "/_bun/components.css") {
-      return new Response(Bun.file(componentsCssPath), {
-        headers: { "content-type": "text/css; charset=utf-8" },
+    const slug = decodeURIComponent(url.pathname.replace(/^\//, ""));
+    try {
+      const html = await renderPage(slug);
+      return new Response(html, { headers: { "content-type": "text/html; charset=utf-8" } });
+    } catch (e: any) {
+      console.error(`render error for /${slug}:`, e);
+      return new Response(`<pre>render error for /${slug}\n\n${e?.stack || e}</pre>`, {
+        status: 500,
+        headers: { "content-type": "text/html; charset=utf-8" },
       });
     }
-    const appHtml = renderToString(<App />);
-    return new Response(shell(appHtml), {
-      headers: { "content-type": "text/html; charset=utf-8" },
-    });
   },
 });
 
-console.log(`xyd bun dev (S1 spike) → ${server.url}`);
+console.log(`xyd bun dev (S1 render) → ${server.url}  [theme: ${themeName}]`);
