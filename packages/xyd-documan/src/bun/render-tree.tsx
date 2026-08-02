@@ -29,7 +29,6 @@ const state: { theme: any; settings: any; surfaces: Surfaces | null } = {
 };
 
 const loadProvider = async () => null;
-const iconSet = {};
 
 export function getSettings() {
   return state.settings;
@@ -126,7 +125,7 @@ export function ShellProviders({ loaderData }: { loaderData: any }) {
   const variantToggles = [{ key: "symbolName", defaultValue: "" }];
   return (
     <Analytics settings={settings} loader={loadProvider as any}>
-      <IconProvider value={{ iconSet }}>
+      <IconProvider value={{ iconSet: (globalThis as any).__xydIconSet || {} }}>
         <Framework
           settings={settings}
           sidebarGroups={loaderData.sidebarGroups || []}

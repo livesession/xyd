@@ -3,7 +3,7 @@ import * as path from "node:path";
 import * as fs from "node:fs";
 
 // appInit + getHostPath from documan's BUILT dist (picocolors etc. bundled).
-import { appInit, getHostPath } from "../../dist/index.js";
+import { appInit, getHostPath, pluginIconSet } from "../../dist/index.js";
 
 /**
  * S1 dev-server launcher. Runs appInit (sets the runtime globals), then bundles
@@ -30,6 +30,26 @@ process.env.XYD_HOST = HOST;
 const rawName: string = settings?.theme?.name || "poetry";
 const themeName = rawName.startsWith("npm:") ? rawName.slice("npm:".length) : rawName;
 console.error("[launcher] host:", HOST, "| theme:", themeName);
+
+// Compute the real icon set (virtual:xyd-icon-set) so string-name icons
+// (e.g. "docs:slack") resolve identically on the server AND the client — the
+// stubbed {} caused a hydration mismatch. Set it on the server global here; it
+// is also inlined into the client entry below.
+async function computeIconSet(s: any): Promise<Record<string, { svg: string }>> {
+  try {
+    const plugin: any = pluginIconSet(s);
+    const code = await plugin.load.call(plugin, "virtual:xyd-icon-set");
+    const m = String(code).match(/export const iconSet = ([\s\S]*);/);
+    return m ? JSON.parse(m[1]) : {};
+  } catch (e) {
+    console.error("[launcher] iconSet compute failed (icons will be empty):", (e as any)?.message);
+    return {};
+  }
+}
+const iconSet = await computeIconSet(settings);
+(globalThis as any).__xydIconSet = iconSet;
+const iconSetJson = JSON.stringify(iconSet);
+console.error("[launcher] icon set:", Object.keys(iconSet).length, "icons");
 
 // Generated entry with a STATIC theme import so react + the theme dedupe into
 // one bundle (a runtime dynamic import would load a second react from disk).
@@ -83,7 +103,7 @@ async function buildBundle(name: string, entrySrc: string, target: "bun" | "brow
 console.error("[launcher] bundling client (browser)…");
 const clientBundle = await buildBundle(
   "client",
-  `import Theme from "@xyd-js/theme-${themeName}";\nimport { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
+  `globalThis.__xydIconSet = ${iconSetJson};\nimport Theme from "@xyd-js/theme-${themeName}";\nimport { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
   "browser",
   [],
   true
