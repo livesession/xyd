@@ -31,10 +31,29 @@ export function bootClient(ThemeCtor: any) {
   // and matches carry the server-computed routeId + loaderData.
   const basename = (data.settings?.advanced?.basename || "").replace(/\/$/, "");
   const stripBase = (p: string) => (basename && p.startsWith(basename + "/") ? p.slice(basename.length) : p) || "/";
+  const pathnameToSlug = (pathname: string) => {
+    let p = pathname;
+    if (basename && p.startsWith(basename + "/")) p = p.slice(basename.length);
+    return p.replace(/^\/+/, "") || "index";
+  };
+
+  // Client-side page swap: fetch the new route's loaderData JSON, update the
+  // title, return the new match. On failure the store hard-navs (MPA fallback).
+  const loadPageData = async (url: URL) => {
+    const slug = pathnameToSlug(url.pathname);
+    const r = await fetch(`/_xyd/data?slug=${encodeURIComponent(slug)}`);
+    if (!r.ok) throw new Error(`data ${r.status}`);
+    const { loaderData, routeId } = await r.json();
+    document.title =
+      loaderData?.metadata?.seoTitle || loaderData?.metadata?.title || data.settings?.seo?.title || "xyd";
+    return { matches: [{ id: routeId, pathname: "/" + slug, params: {}, data: loaderData }] };
+  };
+
   const w = new URL(window.location.href);
   const store = createRouterStore({
     location: { pathname: stripBase(w.pathname), search: w.search, hash: w.hash },
     matches: [{ id: data.routeId, pathname: "/" + data.slug, params: {}, data: data.loaderData }],
+    loadPageData,
   });
 
   hydrateRoot(

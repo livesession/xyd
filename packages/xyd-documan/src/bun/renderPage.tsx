@@ -266,6 +266,25 @@ export function start(ThemeCtor: any) {
         }
         return new Response("{}", { status: 404, headers: { "content-type": "application/json" } });
       }
+      if (url.pathname === "/_xyd/data") {
+        // Client-nav JSON: the SAME per-route payload renderPage builds, minus the
+        // app-wide settings. buildPageData reads files fresh per request, so the
+        // watcher's reinit/reseed keeps it current with no extra wiring.
+        let dslug = decodeURIComponent(url.searchParams.get("slug") || "index");
+        if (basename && ("/" + dslug).startsWith(basename + "/")) dslug = dslug.slice(basename.length);
+        dslug = dslug.replace(/^\/+/, "") || "index";
+        try {
+          const st = getSettings();
+          const loaderData = await buildPageData(dslug);
+          // stripReactElements is mandatory — metadata/sidebarGroups can't cross JSON otherwise.
+          return Response.json(stripReactElements({ loaderData, routeId: matchRoute("/" + dslug, st?.navigation) }));
+        } catch (e: any) {
+          return new Response(JSON.stringify({ error: String(e?.message || e) }), {
+            status: 404,
+            headers: { "content-type": "application/json" },
+          });
+        }
+      }
       const asset = await serveStatic(url.pathname);
       if (asset) return asset;
       let slug = decodeURIComponent(url.pathname.replace(/^\//, ""));
