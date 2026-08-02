@@ -23,18 +23,48 @@ type Rebuild = (kind: string, paths: string[]) => Promise<void>;
 
 export function startWatcher(cwd: string, rebuild: Rebuild): WatchHandle {
   // Coalesce a save-burst into one rebuild per kind (the native watcher already
-  // debounces; fs.watch does not, so this guards both paths).
+  // debounces; fs.watch does not, so this guards both paths) AND serialize
+  // rebuilds: the `running` guard + drain loop ensure only one rebuild runs at a
+  // time, so a slow reinit can never interleave with the next batch's
+  // reinit/reseed over the shared globalThis.__xyd* state.
   let pending: Record<string, string[]> = {};
   let timer: any;
-  const flush = () => {
-    const batch = pending;
-    pending = {};
-    for (const kind of Object.keys(batch)) rebuild(kind, batch[kind]).catch((e) => console.error("[watch] rebuild", e));
+  let running = false;
+  let stopped = false;
+  const flush = async () => {
+    if (stopped || running) return; // a running flush drains anything enqueued meanwhile
+    running = true;
+    try {
+      while (!stopped && Object.keys(pending).length) {
+        const batch = pending;
+        pending = {};
+        for (const kind of Object.keys(batch)) {
+          if (stopped) break;
+          try {
+            await rebuild(kind, batch[kind]);
+          } catch (e) {
+            console.error("[watch] rebuild", e);
+          }
+        }
+      }
+    } finally {
+      running = false;
+    }
   };
   const enqueue = (kind: string, p: string) => {
+    if (stopped) return;
     (pending[kind] ??= []).push(p);
     clearTimeout(timer);
-    timer = setTimeout(flush, 60);
+    timer = setTimeout(() => void flush(), 60);
+  };
+  // Tear down: mark stopped (late flush/enqueue no-op), clear the pending timer
+  // so a queued flush can't fire a stale rebuild against a stopped server, drop
+  // pending, then stop the underlying watcher.
+  const finalize = (underlyingStop: () => void) => {
+    stopped = true;
+    clearTimeout(timer);
+    pending = {};
+    underlyingStop();
   };
 
   const require = createRequire(import.meta.url);
@@ -54,7 +84,7 @@ export function startWatcher(cwd: string, rebuild: Rebuild): WatchHandle {
       }
     );
     console.error("[watch] using @xyd-js/native (Rust)");
-    return { stop: () => w.stop() };
+    return { stop: () => finalize(() => w.stop()) };
   } catch (e) {
     console.error("[watch] @xyd-js/native unavailable, falling back to fs.watch:", (e as any)?.message);
   }
@@ -69,7 +99,7 @@ export function startWatcher(cwd: string, rebuild: Rebuild): WatchHandle {
     enqueue(classify(p), p);
   });
   console.error("[watch] using node fs.watch (fallback)");
-  return { stop: () => w.close() };
+  return { stop: () => finalize(() => w.close()) };
 }
 
 function safeClassify(require: NodeRequire): (p: string) => string {

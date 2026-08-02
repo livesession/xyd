@@ -79,9 +79,10 @@ async function buildBundle(
     external,
   });
   if (!res.success) {
-    console.error(`[dev] ${name} bundle FAILED:`);
-    for (const l of res.logs) console.error(String(l));
-    process.exit(1);
+    // Throw (don't process.exit) — a hot rebuild (icon/theme) with a bad build
+    // must NOT tear down the running dev server; the caller decides (fatal only
+    // on first boot).
+    throw new Error(`${name} bundle failed:\n${res.logs.map((l) => String(l)).join("\n")}`);
   }
   return res.outputs.find((o) => o.kind === "entry-point")!.path;
 }
@@ -140,12 +141,18 @@ async function importFresh(bundlePath: string): Promise<void> {
   await import(href);
 }
 
-export async function startDevServer(cwd: string = process.cwd(), opts: { port?: number } = {}): Promise<DevServerHandle> {
+export async function startDevServer(
+  cwd: string = process.cwd(),
+  opts: { port?: number; skipInstall?: boolean } = {}
+): Promise<DevServerHandle> {
   process.chdir(cwd); // appInit + ContentFS are cwd-relative
   process.env.XYD_PORT ??= String(opts.port ?? 5175);
 
   console.error("[dev] appInit…");
-  await appInit();
+  // First boot may install plugin deps; a restart-triggered re-boot must NOT
+  // (blocking pm install while the server is down + lockfile writes on every
+  // .env/theme edit). skipInstall is set by restart().
+  await appInit(opts.skipInstall ? ({ doNotInstallPluginDependencies: true } as any) : undefined);
   const settings = (globalThis as any).__xydSettings;
   if (!settings) {
     console.error("[dev] appInit produced no settings");
@@ -159,10 +166,18 @@ export async function startDevServer(cwd: string = process.cwd(), opts: { port?:
   console.error("[dev] host:", HOST, "| theme:", themeName);
 
   await recomputeIconSet(settings);
-  console.error("[dev] bundling client (browser)…");
-  await rebundleClient();
-  console.error("[dev] bundling server (bun)…");
-  const serverBundle = await rebundleServer();
+  let serverBundle: string;
+  try {
+    console.error("[dev] bundling client (browser)…");
+    await rebundleClient();
+    console.error("[dev] bundling server (bun)…");
+    serverBundle = await rebundleServer();
+  } catch (e) {
+    // Can't serve without the initial bundles — this IS fatal (unlike a hot
+    // rebuild, where buildBundle's throw is caught and the old bundle retained).
+    console.error("[dev] initial bundle failed — cannot start dev server:\n", (e as any)?.message || e);
+    process.exit(1);
+  }
 
   await importFresh(serverBundle);
   const server = (globalThis as any).__xydBunStart();
@@ -197,17 +212,24 @@ function themeName_(): string {
  *             re-installing plugin deps (guard: utils.ts doNotInstallPluginDependencies)
  *   reseed  = re-strip element icons + rebuild the theme (SSR≠CSR safety)
  *   reload  = broadcast to the browser's live-reload socket
- *   restart = full re-boot (theme.name/env bake into the bundles)
+ *   restart = full re-boot (only theme.name — it's baked into both bundles)
  * Most kinds skip re-bundling: renderPage reads __xydPagePathMapping/plugins and
  * ContentFS reads files FRESH per request, so a plain reload re-renders new data.
  */
-function makeRebuild(ctx: { server: any; cwd: string; opts: { port?: number }; stop: () => void }) {
+function makeRebuild(ctx: {
+  server: any;
+  cwd: string;
+  opts: { port?: number; skipInstall?: boolean };
+  stop: () => void;
+}) {
   const reinit = () => appInit({ doNotInstallPluginDependencies: true } as any);
   const reseed = () => (globalThis as any).__xydBunReseed();
   const reload = () => ctx.server.publish("xyd-reload", "reload");
   const restart = async () => {
     ctx.stop();
-    await startDevServer(ctx.cwd, ctx.opts);
+    // skipInstall: a restart must not re-run the blocking pm install (the guard
+    // the hot-reload path already uses). Only the very first boot installs.
+    await startDevServer(ctx.cwd, { ...ctx.opts, skipInstall: true });
   };
 
   return async function rebuild(kind: string, paths: string[]): Promise<void> {
@@ -248,8 +270,14 @@ function makeRebuild(ctx: { server: any; cwd: string; opts: { port?: number }; s
           break;
         }
         case "env":
-          // .env* reorders settings from the start → hard restart.
-          return await restart();
+          // appInit → readSettings → loadEnvFiles re-reads .env (override:true)
+          // and re-substitutes $VARs, so reinit picks up env changes WITHOUT a
+          // full restart — no server-down window, no re-import module leak, no
+          // blocking install. (A full restart is reserved for theme.name.)
+          await reinit();
+          reseed();
+          reload();
+          break;
         case "public":
           reload();
           break;

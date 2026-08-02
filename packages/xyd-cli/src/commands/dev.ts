@@ -49,7 +49,24 @@ async function devBun(options: any = {}) {
                 XYD_PORT: String(options.port ?? process.env.XYD_PORT ?? 5175),
             },
         })
-        child.on("close", (code) => (code === 0 ? resolve() : reject(new Error(`xyd dev (bun) exited ${code}`))))
-        child.on("error", reject)
+        // Forward termination to the child so it isn't orphaned when the parent
+        // is killed via SIGTERM (a foreground Ctrl-C already reaches both).
+        const forward = (sig: NodeJS.Signals) => () => { try { child.kill(sig) } catch { } }
+        const onInt = forward("SIGINT")
+        const onTerm = forward("SIGTERM")
+        process.on("SIGINT", onInt)
+        process.on("SIGTERM", onTerm)
+        const cleanup = () => {
+            process.off("SIGINT", onInt)
+            process.off("SIGTERM", onTerm)
+        }
+        child.on("close", (code) => {
+            cleanup()
+            code === 0 ? resolve() : reject(new Error(`xyd dev (bun) exited ${code}`))
+        })
+        child.on("error", (e) => {
+            cleanup()
+            reject(e)
+        })
     })
 }

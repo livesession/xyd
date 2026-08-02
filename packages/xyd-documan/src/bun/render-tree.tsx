@@ -22,9 +22,10 @@ import { mdxContent } from "./mdx";
  */
 
 // Module-scoped render state (per-bundle: separate on server vs client).
-const state: { theme: any; settings: any; surfaces: Surfaces | null } = {
+const state: { theme: any; settings: any; settingsClone: any; surfaces: Surfaces | null } = {
   theme: null,
   settings: null,
+  settingsClone: null,
   surfaces: null,
 };
 
@@ -34,11 +35,20 @@ export function getSettings() {
   return state.settings;
 }
 
+// The pristine clone the theme reads (webeditor/social-anchor icons). Captured
+// atomically with `settings` in seedGlobals so a request served mid-reinit (after
+// appInit swapped globalThis.__xydSettingsClone but before reseed) can't serialize
+// a NEW clone against OLD settings/theme → SSR≠CSR mismatch.
+export function getSettingsClone() {
+  return state.settingsClone;
+}
+
 /** Populate the runtime globals + instantiate the theme. `settings` must already
  *  be on `globalThis.__xydSettings` (server: appInit; client: hydration data). */
 export function seedGlobals(ThemeCtor: any) {
   const settings = globalThis.__xydSettings;
   state.settings = settings;
+  state.settingsClone = globalThis.__xydSettingsClone;
 
   const surfaces = new Surfaces();
   const atlasXyd = (AtlasXydPlugin as any)()(settings);

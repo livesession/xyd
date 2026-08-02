@@ -6,7 +6,7 @@ import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 import { markdownPlugins } from "@xyd-js/content/md";
 import { ContentFS } from "@xyd-js/content";
 
-import { seedGlobals, ShellProviders, getSettings, applyLocation } from "./render-tree";
+import { seedGlobals, ShellProviders, getSettings, getSettingsClone, applyLocation } from "./render-tree";
 
 /**
  * Server render (SSR). Reuses the browser-safe tree in `render-tree.tsx` so the
@@ -32,19 +32,19 @@ function esc(x: any): string {
   return String(x).replace(/[&<>]/g, (c) => (({ "&": "&amp;", "<": "&lt;", ">": "&gt;" } as any)[c]));
 }
 
-// Dev-only live-reload client: connects to /_xyd/livereload, reloads on a
-// "reload" message (broadcast by the watcher's rebuild), and — after the socket
-// drops (a full server restart) — reloads once it reconnects. Reconnect loop
-// keeps it resilient across restarts. Stripped in production builds.
+// Live-reload client: connects to /_xyd/livereload, reloads on a "reload"
+// message (broadcast by the watcher's rebuild), and — after the socket drops (a
+// full server restart) — reloads once it reconnects. Reconnect loop keeps it
+// resilient across restarts. This module only ever runs inside the Bun dev
+// server (start()), so it's always injected — do NOT gate on NODE_ENV, which
+// `.env.production` can set even during `xyd dev` and would silently break HMR.
 const LIVE_RELOAD =
-  process.env.NODE_ENV === "production"
-    ? ""
-    : `<script>(function(){var t,seen=false;function c(){` +
-      `var ws=new WebSocket((location.protocol==='https:'?'wss':'ws')+'://'+location.host+'/_xyd/livereload');` +
-      `ws.onopen=function(){if(seen)location.reload();};` +
-      `ws.onmessage=function(e){if(e.data==='reload')location.reload();};` +
-      `ws.onclose=function(){seen=true;clearTimeout(t);t=setTimeout(c,1000);};` +
-      `ws.onerror=function(){try{ws.close();}catch(_){}}}c();})();</script>`;
+  `<script>(function(){var t,seen=false;function c(){` +
+  `var ws=new WebSocket((location.protocol==='https:'?'wss':'ws')+'://'+location.host+'/_xyd/livereload');` +
+  `ws.onopen=function(){if(seen)location.reload();};` +
+  `ws.onmessage=function(e){if(e.data==='reload')location.reload();};` +
+  `ws.onclose=function(){seen=true;clearTimeout(t);t=setTimeout(c,1000);};` +
+  `ws.onerror=function(){try{ws.close();}catch(_){}}}c();})();</script>`;
 
 function renderShell({ settings, bodyHtml, data }: any): string {
   const colorScheme = settings?.theme?.appearance?.colorScheme || "os";
@@ -119,7 +119,7 @@ export async function renderPage(slug: string): Promise<string> {
   const data = {
     slug,
     settings: s,
-    settingsClone: globalThis.__xydSettingsClone || s,
+    settingsClone: getSettingsClone() || s, // atomic snapshot (seeded with `s`), not the live global
     loaderData,
     userComponents: [], // plugin components not serialized in this slice
     userHooks: {},
@@ -179,14 +179,22 @@ export function start(ThemeCtor: any) {
   // served `public/` at root; here we strip the basename and try the path on
   // disk (both verbatim and under `public/`) before treating it as a page slug —
   // otherwise `/…/logo.svg` gets compiled as MDX and 500s.
+  const STATIC_ROOTS = [path.resolve(CWD), path.resolve(CWD, "public")];
   async function serveStatic(pathname: string): Promise<Response | null> {
     let rel = decodeURIComponent(pathname);
     if (basename && rel.startsWith(basename + "/")) rel = rel.slice(basename.length);
-    rel = rel.replace(/^\//, "");
+    rel = rel.replace(/^\/+/, "");
     if (!rel || !/\.[a-zA-Z0-9]+$/.test(rel)) return null; // only extension'd paths
+    // Path-traversal guard: `%2e%2e`/`%2f` survive URL normalization and decode
+    // to `..`/`/` here — reject any `..` segment BEFORE touching the FS, then
+    // confirm the resolved candidate stays under an allowed root. Bun.serve binds
+    // 0.0.0.0, so an unguarded join would expose arbitrary files (e.g. .env).
+    if (rel.split(/[\\/]/).some((seg) => seg === "..")) return null;
     const bare = rel.replace(/^public\//, "");
     for (const cand of [path.join(CWD, rel), path.join(CWD, "public", bare)]) {
-      const f = Bun.file(cand);
+      const abs = path.resolve(cand);
+      if (!STATIC_ROOTS.some((root) => abs === root || abs.startsWith(root + path.sep))) continue;
+      const f = Bun.file(abs);
       if (await f.exists()) return new Response(f);
     }
     return null;
@@ -202,10 +210,9 @@ export function start(ThemeCtor: any) {
     return new Response(out, { headers: { "content-type": "text/css; charset=utf-8" } });
   }
 
-  const server = Bun.serve({
-    port: Number(process.env.XYD_PORT ?? 5175),
+  const serveConfig: any = {
     development: true,
-    async fetch(req, srv) {
+    async fetch(req: Request, srv: any) {
       const url = new URL(req.url);
       // Live-reload channel: the watcher's rebuild() broadcasts "reload" here.
       if (url.pathname === "/_xyd/livereload") {
@@ -239,13 +246,34 @@ export function start(ThemeCtor: any) {
       }
     },
     websocket: {
-      open(ws) {
+      open(ws: any) {
         ws.subscribe("xyd-reload");
       },
       message() {},
       close() {},
     },
-  });
+  };
+
+  // Bind with graceful port fallback: the default 5175 matches Vite, and a stale
+  // server or a parallel dev instance makes Bun.serve throw EADDRINUSE
+  // synchronously. Retry the next few ports instead of crashing the dev command.
+  const basePort = Number(process.env.XYD_PORT ?? 5175);
+  let server: any = null;
+  for (let p = basePort; p < basePort + 20; p++) {
+    try {
+      server = Bun.serve({ ...serveConfig, port: p });
+      if (p !== basePort) console.error(`xyd bun dev: port ${basePort} in use → using ${p}`);
+      process.env.XYD_PORT = String(p); // a restart reuses the actually-bound port
+      break;
+    } catch (e: any) {
+      if (e?.code === "EADDRINUSE" || /EADDRINUSE|address already in use/i.test(String(e?.message || e))) continue;
+      throw e;
+    }
+  }
+  if (!server) {
+    console.error(`xyd bun dev: no free port in ${basePort}..${basePort + 19}. Set XYD_PORT.`);
+    process.exit(1);
+  }
   console.error(`xyd bun dev (S1 render+hydrate) → ${server.url}  [theme: ${themeName}]`);
   return server;
 }
