@@ -1,6 +1,7 @@
 import path, { dirname } from "node:path";
 import fs from "node:fs";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { createRequire } from "node:module";
 import { execSync, ExecSyncOptions } from "node:child_process";
 import crypto from "node:crypto";
 import { realpathSync } from "node:fs";
@@ -13,7 +14,6 @@ import matter from "gray-matter";
 // remark parsing no longer needed for frontmatter extraction here
 
 import {
-    createServer,
     PluginOption as VitePluginOption,
     Plugin as VitePlugin,
 } from "vite";
@@ -1318,46 +1318,19 @@ async function loadPlugins(settings: Settings, options?: PluginDocsOptions) {
       }
   
       try {
-        // For local files, use Vite's SSR loader
-        if (local) {
-          const pluginServer = await createServer({
-            root: process.cwd(),
-            server: { middlewareMode: true },
-            appType: 'custom',
-            optimizeDeps: {
-              include: []
-            },
-            ssr: {
-              noExternal: true // Process all files through Vite
-            }
-          });
-          
-          mod = await pluginServer.ssrLoadModule(pluginName);
-          await pluginServer.close();
-        } else {
-          mod = await import(pluginName);
-        }
+        // Native ESM import — Bun evaluates TS/TSX plugins directly, so we no
+        // longer spin up Vite's SSR loader (S0). Local plugins are absolute
+        // paths (need a file URL); npm plugins are bare specifiers.
+        mod = local
+          ? await import(pathToFileURL(pluginName).href)
+          : await import(pluginName);
       } catch (e) {
-        // Fallback: try from host node_modules
+        // Fallback: resolve the plugin from the docs project's
+        // .xyd/host/node_modules, then import the resolved entry file.
         try {
-          pluginName = path.join(
-            process.cwd(),
-            ".xyd/host/node_modules",
-            pluginName
-          );
-          
-          const pluginPreview = await createServer({
-            root: process.cwd(),
-            optimizeDeps: {
-              include: []
-            },
-            ssr: {
-              noExternal: true
-            }
-          });
-          
-          mod = await pluginPreview.ssrLoadModule(pluginName);
-          await pluginPreview.close();
+          const hostBase = path.join(process.cwd(), ".xyd/host/noop.js");
+          const resolved = createRequire(hostBase).resolve(pluginName);
+          mod = await import(pathToFileURL(resolved).href);
         } catch (fallbackError) {
           console.error("Fallback also failed:", fallbackError);
           continue;

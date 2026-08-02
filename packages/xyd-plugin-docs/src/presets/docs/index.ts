@@ -1,8 +1,8 @@
 import { promises as fs } from 'fs';
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
-import { createServer, Plugin as VitePlugin } from "vite";
+import { Plugin as VitePlugin } from "vite";
 import { route } from "@react-router/dev/routes";
 
 import { Settings } from "@xyd-js/core";
@@ -18,20 +18,11 @@ interface docsPluginOptions {
     appInit: any
 }
 
-// TODO: find better solution - maybe something what rr7 use?
 async function loadModule(filePath: string) {
-    const server = await createServer({
-        optimizeDeps: {
-            include: ["react/jsx-runtime"],
-        },
-    });
-
-    try {
-        const module = await server.ssrLoadModule(filePath);
-        return module.default;
-    } finally {
-        await server.close();
-    }
+    // Native ESM import — Bun transpiles TS/TSX directly, so we no longer spin
+    // up Vite's SSR module loader to evaluate the module (S0).
+    const module = await import(pathToFileURL(filePath).href);
+    return module.default;
 }
 
 function preinstall() {
