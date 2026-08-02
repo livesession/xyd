@@ -7,6 +7,7 @@ import { pathToFileURL } from "node:url";
 // etc. bundled). The bun/* sources are raw TSX run by Bun; the heavy engine
 // (settings/plugin loading) stays in the compiled dist.
 import { appInit, getHostPath, pluginIconSet } from "../../dist/index.js";
+import { startWatcher, type WatchHandle } from "./watcher";
 
 /**
  * S1 dev server (Bun.serve + Bun.build — no Vite, no React Router). Reusable
@@ -170,11 +171,105 @@ export async function startDevServer(cwd: string = process.cwd(), opts: { port?:
     process.exit(1);
   }
 
-  // rebuild + watcher are wired in a later step; for now expose a no-op rebuild.
-  const handle: DevServerHandle = {
-    server,
-    rebuild: async () => {},
-    close: () => server.stop(),
+  let watcher: WatchHandle | null = null;
+  const stop = () => {
+    watcher?.stop();
+    // Force-close active connections (true) — a graceful stop() keeps the
+    // live-reload websocket alive, so the browser never drops it and can't
+    // reconnect to the restarted server. Forcing the drop triggers the client's
+    // reconnect-and-reload recovery.
+    server.stop(true);
   };
-  return handle;
+  const rebuild = makeRebuild({ server, cwd, opts, stop });
+  watcher = startWatcher(cwd, rebuild);
+  console.error("[dev] watching for changes…");
+
+  return { server, rebuild, close: stop };
+}
+
+function themeName_(): string {
+  return (globalThis as any).__xydSettings?.theme?.name || "";
+}
+
+/**
+ * The single kind→action dispatcher the watcher drives. Small phases:
+ *   reinit  = re-run appInit (fresh settings/pagePathMapping/plugins) WITHOUT
+ *             re-installing plugin deps (guard: utils.ts doNotInstallPluginDependencies)
+ *   reseed  = re-strip element icons + rebuild the theme (SSR≠CSR safety)
+ *   reload  = broadcast to the browser's live-reload socket
+ *   restart = full re-boot (theme.name/env bake into the bundles)
+ * Most kinds skip re-bundling: renderPage reads __xydPagePathMapping/plugins and
+ * ContentFS reads files FRESH per request, so a plain reload re-renders new data.
+ */
+function makeRebuild(ctx: { server: any; cwd: string; opts: { port?: number }; stop: () => void }) {
+  const reinit = () => appInit({ doNotInstallPluginDependencies: true } as any);
+  const reseed = () => (globalThis as any).__xydBunReseed();
+  const reload = () => ctx.server.publish("xyd-reload", "reload");
+  const restart = async () => {
+    ctx.stop();
+    await startDevServer(ctx.cwd, ctx.opts);
+  };
+
+  return async function rebuild(kind: string, paths: string[]): Promise<void> {
+    try {
+      switch (kind) {
+        case "content": {
+          // ContentFS reads .md/.mdx FRESH per request → an edit needs only a
+          // reload. Add/rename/delete changes the page set → reinit to refresh
+          // pagePathMapping + sidebar first.
+          if (contentTopologyChanged(ctx.cwd, paths)) {
+            await reinit();
+            reseed();
+          }
+          reload();
+          break;
+        }
+        case "settings": {
+          // theme.name changes are baked into both bundles → need a full restart.
+          const before = themeName_();
+          await reinit();
+          if (themeName_() !== before) return await restart();
+          reseed();
+          reload();
+          break;
+        }
+        case "api": {
+          await reinit();
+          reseed();
+          reload();
+          break;
+        }
+        case "icon": {
+          // The icon set is inlined into the client bundle AND held on the server
+          // global — recompute both, re-bundle client, reload.
+          await recomputeIconSet((globalThis as any).__xydSettings);
+          await rebundleClient();
+          reload();
+          break;
+        }
+        case "env":
+          // .env* reorders settings from the start → hard restart.
+          return await restart();
+        case "public":
+          reload();
+          break;
+        default:
+          break; // "other" → ignore
+      }
+    } catch (e) {
+      console.error(`[dev] rebuild(${kind}) failed:`, e);
+    }
+  };
+}
+
+/** True when a content change added/renamed/deleted a page (not just an edit). */
+function contentTopologyChanged(cwd: string, paths: string[]): boolean {
+  const mapping = (globalThis as any).__xydPagePathMapping || {};
+  const known = new Set<string>(Object.values(mapping).map((v: any) => path.resolve(cwd, String(v))));
+  for (const p of paths) {
+    const abs = path.resolve(cwd, p);
+    if (!known.has(abs)) return true; // new/renamed (or path-form mismatch → safe reinit)
+    if (!fs.existsSync(abs)) return true; // deleted
+  }
+  return false;
 }

@@ -172,7 +172,6 @@ export function start(ThemeCtor: any) {
   const HOST = process.env.XYD_HOST || path.resolve(process.cwd(), ".xyd/host");
   const themeName = (s?.theme?.name || "poetry").replace(/^npm:/, "");
   const CSS = cssResolver(HOST, themeName);
-  const clientBundlePath = process.env.XYD_CLIENT_BUNDLE || "";
   const CWD = process.cwd();
   const basename = (s?.advanced?.basename || "").replace(/\/$/, "");
 
@@ -214,8 +213,11 @@ export function start(ThemeCtor: any) {
       }
       if (CSS[url.pathname]) return serveCss(CSS[url.pathname]);
       if (url.pathname === "/_bun/client.js") {
-        if (clientBundlePath) {
-          return new Response(Bun.file(clientBundlePath), {
+        // Read live — an icon rebuild re-bundles the client and updates this env,
+        // so the next request (after a reload) serves the fresh bundle.
+        const bundle = process.env.XYD_CLIENT_BUNDLE || "";
+        if (bundle) {
+          return new Response(Bun.file(bundle), {
             headers: { "content-type": "text/javascript; charset=utf-8" },
           });
         }
