@@ -1,0 +1,15 @@
+{
+  "args": [
+    "containers",
+    "files",
+    "list",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/containers/{container_id}/files",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

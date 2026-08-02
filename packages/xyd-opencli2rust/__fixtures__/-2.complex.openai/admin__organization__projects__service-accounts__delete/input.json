@@ -1,0 +1,78 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "projects",
+          "commands": [
+            {
+              "name": "service-accounts",
+              "commands": [
+                {
+                  "name": "delete",
+                  "description": "Deletes a service account from the project.\n\nReturns confirmation of service account deletion, or an error if the project\nis archived (archived projects have no service accounts).\n",
+                  "arguments": [
+                    {
+                      "name": "project-id",
+                      "required": true,
+                      "description": "The ID of the project."
+                    },
+                    {
+                      "name": "service-account-id",
+                      "required": true,
+                      "description": "The ID of the service account."
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "delete",
+                    "path": "/organization/projects/{project_id}/service_accounts/{service_account_id}",
+                    "operationId": "delete-project-service-account",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "project_id",
+                        "from": "argument:project-id",
+                        "required": true
+                      },
+                      {
+                        "in": "path",
+                        "name": "service_account_id",
+                        "from": "argument:service-account-id",
+                        "required": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

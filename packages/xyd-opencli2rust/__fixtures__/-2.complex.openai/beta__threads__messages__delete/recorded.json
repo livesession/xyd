@@ -1,0 +1,16 @@
+{
+  "args": [
+    "threads",
+    "messages",
+    "delete",
+    "EXAMPLE",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "delete",
+    "path": "/threads/{thread_id}/messages/{message_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

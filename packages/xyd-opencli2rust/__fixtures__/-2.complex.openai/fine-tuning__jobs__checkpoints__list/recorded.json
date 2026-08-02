@@ -1,0 +1,16 @@
+{
+  "args": [
+    "fine-tuning",
+    "jobs",
+    "checkpoints",
+    "list",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -62,6 +62,9 @@ docs.json / docs.ts
 
 ## E
 
+Emitter
+: The plugin contract in `@xyd-js/opensdk-framework` that a per-language SDK generator implements (`generateProject/Client/Types/Resources/Runtime` + optional `generateTests/Usage/TypeReference`). Capability methods are pure (IR in, files out); the orchestrator drives them and assembles the virtual file map. See `13.api-definitions/OpenSdkGeneration.md`.
+
 ExampleGroup
 : A Uniform data type that groups related code examples with a description. Contains an array of `Example` objects, each with a `CodeBlock` of multi-language tabs.
 
@@ -163,6 +166,12 @@ openapi2opencli
 
 opencli2go
 : The `@xyd-js/opencli2go` package. Generates a buildable Go CLI project (urfave/cli v3) from an OpenCLI document as a pure virtual file map. Functional handlers read `x-openapi` to make real HTTP requests.
+
+opencli2rust
+: The `@xyd-js/opencli2rust` package. Generates a buildable Rust CLI project (clap v4 + async reqwest) from an OpenCLI document, with regen-safe custom-code seams: a `src/gen/**` vs `src/custom/` split, the `CliOverrides` hook trait, custom-command grafting, and opt-in 3-way merge of hand-edits. See `13.api-definitions/OpenCliCliGeneration.md`.
+
+OpenSDK
+: The SDK-generation toolchain (`xyd-opensdk-*`): OpenAPI → OpenSDK IR (`OpensdkSpecJson`) → per-language SDKs via Emitter plugins (go, node, python, ruby, java, dotnet, rust), driven by the `opensdk` CLI, with declarative runtime behavior (`SdkBehavior`), chain pipelines + OpenAPI Overlays, and the regen-safe `writeProject` lifecycle. See `13.api-definitions/OpenSdkGeneration.md`.
 
 ## P
 

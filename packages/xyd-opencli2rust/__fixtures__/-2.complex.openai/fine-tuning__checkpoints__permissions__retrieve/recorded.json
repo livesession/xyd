@@ -1,0 +1,16 @@
+{
+  "args": [
+    "fine-tuning",
+    "checkpoints",
+    "permissions",
+    "list",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

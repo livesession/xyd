@@ -1,0 +1,13 @@
+{
+  "args": [
+    "videos",
+    "list"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/videos",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

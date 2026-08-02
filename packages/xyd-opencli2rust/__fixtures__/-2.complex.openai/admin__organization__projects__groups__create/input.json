@@ -1,0 +1,112 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "projects",
+          "commands": [
+            {
+              "name": "groups",
+              "commands": [
+                {
+                  "name": "create",
+                  "description": "Grants a group access to a project.",
+                  "arguments": [
+                    {
+                      "name": "project-id",
+                      "required": true,
+                      "description": "The ID of the project to update."
+                    }
+                  ],
+                  "options": [
+                    {
+                      "name": "group-id",
+                      "group": "body",
+                      "required": true,
+                      "description": "Identifier of the group to add to the project.",
+                      "arguments": [
+                        {
+                          "name": "string"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "role",
+                      "group": "body",
+                      "required": true,
+                      "description": "Identifier of the project role to grant to the group.",
+                      "arguments": [
+                        {
+                          "name": "string"
+                        }
+                      ]
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "post",
+                    "path": "/organization/projects/{project_id}/groups",
+                    "operationId": "add-project-group",
+                    "contentType": "application/json",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "project_id",
+                        "from": "argument:project-id",
+                        "required": true
+                      }
+                    ],
+                    "body": {
+                      "style": "flatten",
+                      "contentType": "application/json",
+                      "properties": [
+                        {
+                          "name": "group_id",
+                          "from": "option:group-id",
+                          "jsonPath": "group_id",
+                          "encoding": "string",
+                          "required": true
+                        },
+                        {
+                          "name": "role",
+                          "from": "option:role",
+                          "jsonPath": "role",
+                          "encoding": "string",
+                          "required": true
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -96,7 +96,7 @@
         "properties": {
           "target": {
             "type": "string",
-            "description": "Emitter language or alias (typescript, go, csharp, ...)."
+            "description": "Emitter language or alias (typescript, go, csharp, ...) — or a CLI output target (go-cli, rust-cli)."
           },
           "source": {
             "type": "string",
@@ -607,6 +607,263 @@
         "targetFramework": {
           "type": "string",
           "description": "The .csproj target framework moniker (default: \"net8.0\")."
+        }
+      },
+      "additionalProperties": false
+    },
+    "RustSection": {
+      "type": "object",
+      "description": "Options for the rust SDK target.",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output directory for this language's generated SDK."
+        },
+        "behavior": {
+          "$ref": "#/$defs/SdkBehavior",
+          "description": "Per-language behavior, deep-merged over the global `behavior`."
+        },
+        "baseURL": {
+          "type": "string",
+          "description": "Default API base URL baked into the runtime (default: the first `servers` entry)."
+        },
+        "tests": {
+          "type": "boolean",
+          "description": "Emit the SDK's own test suite (default: true)."
+        },
+        "publish": {
+          "$ref": "#/$defs/PublishTarget",
+          "description": "Per-language publish target, merged over the global `publish`."
+        },
+        "packageName": {
+          "type": "string",
+          "description": "The Cargo package + lib crate name (snake_case; default: crate_name of info.title)."
+        },
+        "moduleName": {
+          "type": "string",
+          "description": "Alias kept for cross-emitter symmetry — same value as the crate/lib name."
+        },
+        "edition": {
+          "type": "string",
+          "description": "Rust edition written to Cargo.toml (default: \"2021\")."
+        }
+      },
+      "additionalProperties": false
+    },
+    "GoCliSection": {
+      "type": "object",
+      "description": "Options for the go-cli CLI output target (the OpenCLI pipeline — a command-line tool, not an SDK).",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output directory for this target's generated CLI project."
+        },
+        "publish": {
+          "$ref": "#/$defs/PublishTarget",
+          "description": "Only `version` is consumed (the emitted CLI version); `opensdk publish` skips CLI targets."
+        },
+        "cliName": {
+          "type": "string",
+          "description": "The CLI name (root command; default: the sdkName / spec title)."
+        },
+        "version": {
+          "type": "string",
+          "description": "CLI version override (default: the spec info.version; a `publish.version` also flows in)."
+        },
+        "grouping": {
+          "type": "string",
+          "enum": [
+            "path",
+            "tag",
+            "operationId"
+          ],
+          "description": "How operations group into the command tree (default: path)."
+        },
+        "bodyStrategy": {
+          "type": "string",
+          "enum": [
+            "flatten",
+            "json",
+            "hybrid"
+          ],
+          "description": "Request-body flags: flatten top-level props, one JSON flag, or hybrid (default: flatten)."
+        },
+        "includeMethods": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Only these HTTP methods."
+        },
+        "includeHeaders": {
+          "type": "boolean",
+          "description": "Emit flags for header parameters (default: false)."
+        },
+        "flagCase": {
+          "type": "string",
+          "enum": [
+            "kebab",
+            "camel"
+          ],
+          "description": "Flag naming style (default: kebab)."
+        },
+        "actionAliases": {
+          "type": "boolean",
+          "description": "Emit action-verb aliases (e.g. `get` for `retrieve`)."
+        },
+        "verbMap": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Override the derived action verbs (listCollection/getItem/createCollection/updateItem/deleteItem)."
+        },
+        "customActionVerbs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Extra trailing-verb path segments treated as actions."
+        },
+        "includePaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Only operations under these path prefixes."
+        },
+        "maxBodyDepth": {
+          "type": "number",
+          "description": "Flatten body properties up to this depth; deeper ones become JSON flags."
+        },
+        "authEnvVar": {
+          "type": "string",
+          "description": "Env var the generated CLI reads credentials from (default: from the spec security scheme)."
+        },
+        "modulePath": {
+          "type": "string",
+          "description": "Go module path (default: example.com/<binName>)."
+        },
+        "binName": {
+          "type": "string",
+          "description": "Binary name (default: slug of the CLI name)."
+        },
+        "goVersion": {
+          "type": "string",
+          "description": "`go` directive in go.mod (default: \"1.22\")."
+        },
+        "baseURL": {
+          "type": "string",
+          "description": "Default API base URL baked into the runtime (overridable via <BIN>_BASE_URL)."
+        }
+      },
+      "additionalProperties": false
+    },
+    "RustCliSection": {
+      "type": "object",
+      "description": "Options for the rust-cli CLI output target (the OpenCLI pipeline — a command-line tool, not an SDK).",
+      "properties": {
+        "output": {
+          "type": "string",
+          "description": "Output directory for this target's generated CLI project."
+        },
+        "publish": {
+          "$ref": "#/$defs/PublishTarget",
+          "description": "Only `version` is consumed (the emitted CLI version); `opensdk publish` skips CLI targets."
+        },
+        "cliName": {
+          "type": "string",
+          "description": "The CLI name (root command; default: the sdkName / spec title)."
+        },
+        "version": {
+          "type": "string",
+          "description": "CLI version override (default: the spec info.version; a `publish.version` also flows in)."
+        },
+        "grouping": {
+          "type": "string",
+          "enum": [
+            "path",
+            "tag",
+            "operationId"
+          ],
+          "description": "How operations group into the command tree (default: path)."
+        },
+        "bodyStrategy": {
+          "type": "string",
+          "enum": [
+            "flatten",
+            "json",
+            "hybrid"
+          ],
+          "description": "Request-body flags: flatten top-level props, one JSON flag, or hybrid (default: flatten)."
+        },
+        "includeMethods": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Only these HTTP methods."
+        },
+        "includeHeaders": {
+          "type": "boolean",
+          "description": "Emit flags for header parameters (default: false)."
+        },
+        "flagCase": {
+          "type": "string",
+          "enum": [
+            "kebab",
+            "camel"
+          ],
+          "description": "Flag naming style (default: kebab)."
+        },
+        "actionAliases": {
+          "type": "boolean",
+          "description": "Emit action-verb aliases (e.g. `get` for `retrieve`)."
+        },
+        "verbMap": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Override the derived action verbs (listCollection/getItem/createCollection/updateItem/deleteItem)."
+        },
+        "customActionVerbs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Extra trailing-verb path segments treated as actions."
+        },
+        "includePaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Only operations under these path prefixes."
+        },
+        "maxBodyDepth": {
+          "type": "number",
+          "description": "Flatten body properties up to this depth; deeper ones become JSON flags."
+        },
+        "authEnvVar": {
+          "type": "string",
+          "description": "Env var the generated CLI reads credentials from (default: from the spec security scheme)."
+        },
+        "crateName": {
+          "type": "string",
+          "description": "Cargo package name (default: crate_name of the CLI name)."
+        },
+        "binName": {
+          "type": "string",
+          "description": "Binary name (default: slug of the CLI name)."
+        },
+        "edition": {
+          "type": "string",
+          "description": "Rust edition in Cargo.toml (default: \"2021\")."
+        },
+        "baseURL": {
+          "type": "string",
+          "description": "Default API base URL baked into the runtime (overridable via <BIN>_BASE_URL)."
         }
       },
       "additionalProperties": false

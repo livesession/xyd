@@ -7,8 +7,10 @@ import { mergeBehaviorOverrides, mergePublishTargets } from '@xyd-js/opensdk-cor
 import type { OpensdkSpecJson, PublishTarget, SdkBehavior, SdkInfo } from '@xyd-js/opensdk-core';
 import { generateFileMap, getEmitter, writeProject } from '@xyd-js/opensdk-framework';
 
+import { generateCliTarget, isCliTarget } from './cli-targets';
 import type { ResolvedConfig } from './config/types';
 import { type ConverterInputs, converterOptions } from './grouping';
+import { reportWriteResult } from './write-report';
 
 /**
  * Override the IR's package identity (`spec.info`) from a merged publish target.
@@ -46,21 +48,7 @@ async function emitToDisk(
     return;
   }
   const result = await writeProject(files, output, { merge });
-  console.log(`Generated ${Object.keys(files).length} files in ${output}`);
-  // Merge outcomes (--merge): clean 3-way merges + conflicts to resolve.
-  for (const rel of result.merged) {
-    console.log(`  ✓ merged your edits into ${rel}`);
-  }
-  for (const rel of result.mergeConflicts) {
-    console.warn(`  ⚠ merge conflict in ${rel} — resolve the <<<<<<< markers`);
-  }
-  // .sdkignore conflicts + kept-modified orphans: never silently overwritten/lost.
-  for (const rel of result.conflicts) {
-    console.warn(`  ⚠ .sdkignore: kept your ${rel} — generated output differs (not overwritten)`);
-  }
-  for (const rel of result.keptModified) {
-    console.warn(`  ⚠ kept locally-modified ${rel} — no longer generated, not pruned`);
-  }
+  reportWriteResult(Object.keys(files).length, output, result);
 }
 
 /** `opensdk generate --lang <x>` — single target. Behavior is threaded through the converter. */
@@ -80,6 +68,24 @@ export async function generateCommand(
     merge?: boolean;
   },
 ): Promise<void> {
+  // CLI output targets (go-cli/rust-cli) branch off BEFORE the OpenSDK IR: they
+  // consume the raw OpenAPI doc via the OpenCLI pipeline. This single seam also
+  // covers chain targets — the chain engine calls this same function.
+  if (isCliTarget(opts.lang)) {
+    return generateCliTarget({
+      spec: opts.spec,
+      lang: opts.lang,
+      output: opts.output,
+      sdkName: opts.sdkName,
+      options: opts.emitterOptions,
+      publish: opts.publish,
+      mountRules: opts.mountRules,
+      operationHints: opts.operationHints,
+      groupingFile: opts.grouping,
+      dryRun: opts.dryRun,
+      merge: opts.merge,
+    });
+  }
   const ir = await loadIR(opts.spec, converterOptions(opts));
   ir.info = applyPublishIdentity(ir.info, opts.publish);
   const emitterOptions = opts.noTests
@@ -115,11 +121,34 @@ export async function generateTargets(
       'No languages declared in the config. Add a language section (e.g. "typescript": { "output": "./sdk/ts" }) or pass --lang.',
     );
   }
+
+  // CLI output targets don't consume the OpenSDK IR — generate them first, and
+  // only run the converter when SDK languages remain (a CLI-only config must
+  // not pay for — or fail on — the IR conversion).
+  const sdkLangs = langs.filter((lang) => !isCliTarget(lang));
+  for (const lang of langs.filter(isCliTarget)) {
+    const target = config.targets?.[lang];
+    await generateCliTarget({
+      spec: opts.spec,
+      lang,
+      output: target?.output ?? path.join(opts.output, lang),
+      sdkName: opts.sdkName,
+      options: config.emitterOptions?.[lang],
+      publish: mergePublishTargets(config.publish, target?.publish),
+      mountRules: opts.mountRules,
+      operationHints: opts.operationHints,
+      groupingFile: opts.grouping,
+      dryRun: opts.dryRun,
+      merge: target?.merge ?? opts.merge,
+    });
+  }
+  if (!sdkLangs.length) return;
+
   const ir = await loadIR(opts.spec, converterOptions({ ...opts, sdk: config.sdk }));
   // Snapshot the converter's info so each language re-derives identity from a
   // clean base (a per-language publish never leaks into the next language).
   const baseInfo = ir.info;
-  for (const lang of langs) {
+  for (const lang of sdkLangs) {
     const target = config.targets?.[lang];
     ir.sdk = mergeBehaviorOverrides(config.sdk, target?.behavior) as SdkBehavior;
     ir.info = applyPublishIdentity(baseInfo, mergePublishTargets(config.publish, target?.publish));

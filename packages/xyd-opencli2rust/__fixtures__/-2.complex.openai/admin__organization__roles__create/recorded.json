@@ -1,0 +1,22 @@
+{
+  "args": [
+    "organization",
+    "roles",
+    "create",
+    "--role-name",
+    "EXAMPLE",
+    "--permissions",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/organization/roles",
+    "query": [],
+    "bodyFields": [
+      "permissions",
+      "role_name"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "groups",
+          "commands": [
+            {
+              "name": "users",
+              "commands": [
+                {
+                  "name": "create",
+                  "description": "Adds a user to a group.",
+                  "arguments": [
+                    {
+                      "name": "group-id",
+                      "required": true,
+                      "description": "The ID of the group to update."
+                    }
+                  ],
+                  "options": [
+                    {
+                      "name": "user-id",
+                      "group": "body",
+                      "required": true,
+                      "description": "Identifier of the user to add to the group.",
+                      "arguments": [
+                        {
+                          "name": "string"
+                        }
+                      ]
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "post",
+                    "path": "/organization/groups/{group_id}/users",
+                    "operationId": "add-group-user",
+                    "contentType": "application/json",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "group_id",
+                        "from": "argument:group-id",
+                        "required": true
+                      }
+                    ],
+                    "body": {
+                      "style": "flatten",
+                      "contentType": "application/json",
+                      "properties": [
+                        {
+                          "name": "user_id",
+                          "from": "option:user-id",
+                          "jsonPath": "user_id",
+                          "encoding": "string",
+                          "required": true
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

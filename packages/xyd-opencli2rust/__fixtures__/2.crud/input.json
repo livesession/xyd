@@ -1,0 +1,281 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "widgets-api",
+    "version": "2.0.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.widgets.test"
+    ],
+    "security": [
+      {
+        "type": "apiKey",
+        "kind": "apiKey-header",
+        "envVar": "WIDGETS_API_API_KEY",
+        "in": "header",
+        "name": "X-Api-Key"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "widgets",
+      "commands": [
+        {
+          "name": "list",
+          "description": "List all widgets.",
+          "options": [
+            {
+              "name": "limit",
+              "description": "Maximum number of widgets to return.",
+              "group": "query",
+              "arguments": [
+                {
+                  "name": "integer"
+                }
+              ]
+            },
+            {
+              "name": "status",
+              "description": "Filter by status.",
+              "group": "query",
+              "arguments": [
+                {
+                  "name": "string",
+                  "acceptedValues": [
+                    "active",
+                    "archived",
+                    "draft"
+                  ]
+                }
+              ]
+            }
+          ],
+          "x-openapi": {
+            "method": "get",
+            "path": "/widgets",
+            "operationId": "listWidgets",
+            "params": [
+              {
+                "in": "query",
+                "name": "limit",
+                "from": "option:limit"
+              },
+              {
+                "in": "query",
+                "name": "status",
+                "from": "option:status"
+              }
+            ]
+          }
+        },
+        {
+          "name": "create",
+          "description": "Create a widget.",
+          "options": [
+            {
+              "name": "name",
+              "group": "body",
+              "required": true,
+              "description": "The widget name.",
+              "arguments": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "color",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "string",
+                  "acceptedValues": [
+                    "red",
+                    "green",
+                    "blue"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "tags",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "string",
+                  "arity": {
+                    "minimum": 0
+                  }
+                }
+              ]
+            },
+            {
+              "name": "enabled",
+              "group": "body"
+            },
+            {
+              "name": "config",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "json"
+                }
+              ]
+            }
+          ],
+          "x-openapi": {
+            "method": "post",
+            "path": "/widgets",
+            "operationId": "createWidget",
+            "contentType": "application/json",
+            "body": {
+              "style": "flatten",
+              "contentType": "application/json",
+              "properties": [
+                {
+                  "name": "name",
+                  "from": "option:name",
+                  "jsonPath": "name",
+                  "encoding": "string",
+                  "required": true
+                },
+                {
+                  "name": "color",
+                  "from": "option:color",
+                  "jsonPath": "color",
+                  "encoding": "string"
+                },
+                {
+                  "name": "tags",
+                  "from": "option:tags",
+                  "jsonPath": "tags",
+                  "encoding": "array"
+                },
+                {
+                  "name": "enabled",
+                  "from": "option:enabled",
+                  "jsonPath": "enabled",
+                  "encoding": "boolean"
+                },
+                {
+                  "name": "config",
+                  "from": "option:config",
+                  "jsonPath": "config",
+                  "encoding": "json"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "retrieve",
+          "aliases": [
+            "get"
+          ],
+          "description": "Retrieve a widget.",
+          "arguments": [
+            {
+              "name": "widget-id",
+              "required": true
+            }
+          ],
+          "x-openapi": {
+            "method": "get",
+            "path": "/widgets/{widget_id}",
+            "operationId": "retrieveWidget",
+            "params": [
+              {
+                "in": "path",
+                "name": "widget_id",
+                "from": "argument:widget-id",
+                "required": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "update",
+          "description": "Update a widget.",
+          "arguments": [
+            {
+              "name": "widget-id",
+              "required": true
+            }
+          ],
+          "options": [
+            {
+              "name": "name",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "enabled",
+              "group": "body"
+            }
+          ],
+          "x-openapi": {
+            "method": "patch",
+            "path": "/widgets/{widget_id}",
+            "operationId": "updateWidget",
+            "contentType": "application/json",
+            "params": [
+              {
+                "in": "path",
+                "name": "widget_id",
+                "from": "argument:widget-id",
+                "required": true
+              }
+            ],
+            "body": {
+              "style": "flatten",
+              "contentType": "application/json",
+              "properties": [
+                {
+                  "name": "name",
+                  "from": "option:name",
+                  "jsonPath": "name",
+                  "encoding": "string"
+                },
+                {
+                  "name": "enabled",
+                  "from": "option:enabled",
+                  "jsonPath": "enabled",
+                  "encoding": "boolean"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "delete",
+          "description": "Delete a widget.",
+          "arguments": [
+            {
+              "name": "widget-id",
+              "required": true
+            }
+          ],
+          "x-openapi": {
+            "method": "delete",
+            "path": "/widgets/{widget_id}",
+            "operationId": "deleteWidget",
+            "params": [
+              {
+                "in": "path",
+                "name": "widget_id",
+                "from": "argument:widget-id",
+                "required": true
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

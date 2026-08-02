@@ -76,6 +76,7 @@
 - @.dev/docs/13.api-definitions/ExamplesAndReferences.md
 - @.dev/docs/13.api-definitions/OpenApiProcessing.md
 - @.dev/docs/13.api-definitions/OpenCliCliGeneration.md
+- @.dev/docs/13.api-definitions/OpenSdkGeneration.md
 - @.dev/docs/13.api-definitions/PackageSources.md
 - @.dev/docs/13.api-definitions/TypeTransformationSystem.md
 - @.dev/docs/13.api-definitions/McpProcessing.md

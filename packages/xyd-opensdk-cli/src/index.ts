@@ -4,6 +4,10 @@
 export { main, registerBuiltinEmitters } from './cli/index';
 export { parseCommand } from './cli/parse';
 export { generateCommand, generateTargets, loadIR } from './cli/generate';
+// CLI output targets: the OpenCLI pipeline (openapi2opencli → opencli2go/rust)
+// surfaced as go-cli / rust-cli pseudo-language target ids.
+export { isCliTarget, generateCliTarget, splitCliOptions, cliBackendKeys, CLI_CONVERTER_KEYS } from './cli/cli-targets';
+export type { CliTargetOptions } from './cli/cli-targets';
 export { diffCommand } from './cli/diff';
 export type { DiffCommandOptions, DiffFailOn } from './cli/diff';
 export { publishCommand, publishTarget } from './cli/publish';

@@ -1,0 +1,85 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "moderations",
+      "commands": [
+        {
+          "name": "create",
+          "description": "Classifies if text and/or image inputs are potentially harmful. Learn\nmore in the [moderation guide](/docs/guides/moderation).\n",
+          "options": [
+            {
+              "name": "input",
+              "group": "body",
+              "required": true,
+              "description": "Input (or inputs) to classify. Can be a single string, an array of strings, or\nan array of multi-modal input objects similar to other models.\n",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "model",
+              "group": "body",
+              "description": "The content moderation model you would like to use. Learn more in\n[the moderation guide](/docs/guides/moderation), and learn about\navailable models [here](/docs/models#moderation).\n",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            }
+          ],
+          "x-openapi": {
+            "method": "post",
+            "path": "/moderations",
+            "operationId": "createModeration",
+            "contentType": "application/json",
+            "body": {
+              "style": "flatten",
+              "contentType": "application/json",
+              "properties": [
+                {
+                  "name": "input",
+                  "from": "option:input",
+                  "jsonPath": "input",
+                  "encoding": "json",
+                  "required": true
+                },
+                {
+                  "name": "model",
+                  "from": "option:model",
+                  "jsonPath": "model",
+                  "encoding": "json"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

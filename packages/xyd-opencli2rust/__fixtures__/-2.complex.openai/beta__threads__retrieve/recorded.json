@@ -1,0 +1,14 @@
+{
+  "args": [
+    "threads",
+    "retrieve",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/threads/{thread_id}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

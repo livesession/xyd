@@ -1,0 +1,22 @@
+{
+  "args": [
+    "chatkit",
+    "sessions",
+    "create",
+    "--workflow",
+    "EXAMPLE",
+    "--user",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/chatkit/sessions",
+    "query": [],
+    "bodyFields": [
+      "user",
+      "workflow"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

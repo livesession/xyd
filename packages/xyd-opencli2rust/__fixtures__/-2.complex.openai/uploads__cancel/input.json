@@ -1,0 +1,145 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "uploads",
+      "commands": [
+        {
+          "name": "create",
+          "description": "Creates an intermediate [Upload](/docs/api-reference/uploads/object) object\nthat you can add [Parts](/docs/api-reference/uploads/part-object) to.\nCurrently, an Upload can accept at most 8 GB in total and expires after an\nhour after you create it.\n\nOnce you complete the Upload, we will create a\n[File](/docs/api-reference/files/object) object that contains all the parts\nyou uploaded. This File is usable in the rest of our platform as a regular\nFile object.\n\nFor certain `purpose` values, the correct `mime_type` must be specified. \nPlease refer to documentation for the \n[supported MIME types for your use case](/docs/assistants/tools/file-search#supported-files).\n\nFor guidance on the proper filename extensions for each purpose, please\nfollow the documentation on [creating a\nFile](/docs/api-reference/files/create).\n\nReturns the Upload object with status `pending`.\n",
+          "options": [
+            {
+              "name": "filename",
+              "group": "body",
+              "required": true,
+              "description": "The name of the file to upload.\n",
+              "arguments": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "purpose",
+              "group": "body",
+              "required": true,
+              "description": "The intended purpose of the uploaded file.\n\nSee the [documentation on File\npurposes](/docs/api-reference/files/create#files-create-purpose).\n",
+              "arguments": [
+                {
+                  "name": "string",
+                  "acceptedValues": [
+                    "assistants",
+                    "batch",
+                    "fine-tune",
+                    "vision"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "bytes",
+              "group": "body",
+              "required": true,
+              "description": "The number of bytes in the file you are uploading.\n",
+              "arguments": [
+                {
+                  "name": "integer"
+                }
+              ]
+            },
+            {
+              "name": "mime-type",
+              "group": "body",
+              "required": true,
+              "description": "The MIME type of the file.\n\n\nThis must fall within the supported MIME types for your file purpose. See\nthe supported MIME types for assistants and vision.\n",
+              "arguments": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "expires-after",
+              "group": "body",
+              "description": "The expiration policy for a file. By default, files with `purpose=batch` expire after 30 days and all other files are persisted until they are manually deleted.",
+              "arguments": [
+                {
+                  "name": "json"
+                }
+              ]
+            }
+          ],
+          "x-openapi": {
+            "method": "post",
+            "path": "/uploads",
+            "operationId": "createUpload",
+            "contentType": "application/json",
+            "body": {
+              "style": "flatten",
+              "contentType": "application/json",
+              "properties": [
+                {
+                  "name": "filename",
+                  "from": "option:filename",
+                  "jsonPath": "filename",
+                  "encoding": "string",
+                  "required": true
+                },
+                {
+                  "name": "purpose",
+                  "from": "option:purpose",
+                  "jsonPath": "purpose",
+                  "encoding": "string",
+                  "required": true
+                },
+                {
+                  "name": "bytes",
+                  "from": "option:bytes",
+                  "jsonPath": "bytes",
+                  "encoding": "integer",
+                  "required": true
+                },
+                {
+                  "name": "mime_type",
+                  "from": "option:mime-type",
+                  "jsonPath": "mime_type",
+                  "encoding": "string",
+                  "required": true
+                },
+                {
+                  "name": "expires_after",
+                  "from": "option:expires-after",
+                  "jsonPath": "expires_after",
+                  "encoding": "json"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

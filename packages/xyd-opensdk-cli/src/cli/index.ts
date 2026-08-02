@@ -84,9 +84,14 @@ export async function main(argv: string[] = process.argv): Promise<void> {
 
   program
     .command('generate')
-    .description('Generate an SDK from an OpenAPI spec (or a pre-parsed IR json). With no --lang, every language declared in sdk.json is generated.')
+    .description(
+      'Generate an SDK from an OpenAPI spec (or a pre-parsed IR json) — or a CLI via the go-cli/rust-cli targets. With no --lang, every language declared in sdk.json is generated.',
+    )
     .requiredOption('--spec <path>', 'Path to the OpenAPI spec (yaml/json) or OpenSDK IR (.json)')
-    .option('--lang <language>', 'Emitter language/alias (go|python|typescript|ruby|java|csharp|rust|...); omit to build every language in sdk.json')
+    .option(
+      '--lang <language>',
+      'Emitter language/alias (go|python|typescript|ruby|java|csharp|rust|...) or a CLI target (go-cli|rust-cli); omit to build every language in sdk.json',
+    )
     .option('--output <dir>', 'Output directory (single --lang), or the base dir for per-language subfolders (multi-target)')
     .option('--sdk-name <name>', 'SDK name for the converter')
     .option('--grouping <path>', 'JSON grouping file ({mountRules, operationHints}); overrides the config values')

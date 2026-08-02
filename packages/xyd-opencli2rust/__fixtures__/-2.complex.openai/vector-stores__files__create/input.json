@@ -1,0 +1,120 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "vector-stores",
+      "commands": [
+        {
+          "name": "files",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Create a vector store file by attaching a [File](/docs/api-reference/files) to a [vector store](/docs/api-reference/vector-stores/object).",
+              "arguments": [
+                {
+                  "name": "vector-store-id",
+                  "required": true,
+                  "description": "The ID of the vector store for which to create a File.\n"
+                }
+              ],
+              "options": [
+                {
+                  "name": "file-id",
+                  "group": "body",
+                  "required": true,
+                  "description": "A [File](/docs/api-reference/files) ID that the vector store should use. Useful for tools like `file_search` that can access files. For multi-file ingestion, we recommend [`file_batches`](/docs/api-reference/vector-stores-file-batches/createBatch) to minimize per-vector-store write requests.",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "chunking-strategy",
+                  "group": "body",
+                  "description": "The chunking strategy used to chunk the file(s). If not set, will use the `auto` strategy.",
+                  "arguments": [
+                    {
+                      "name": "json"
+                    }
+                  ]
+                },
+                {
+                  "name": "attributes",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/vector_stores/{vector_store_id}/files",
+                "operationId": "createVectorStoreFile",
+                "contentType": "application/json",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "vector_store_id",
+                    "from": "argument:vector-store-id",
+                    "required": true
+                  }
+                ],
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "file_id",
+                      "from": "option:file-id",
+                      "jsonPath": "file_id",
+                      "encoding": "string",
+                      "required": true
+                    },
+                    {
+                      "name": "chunking_strategy",
+                      "from": "option:chunking-strategy",
+                      "jsonPath": "chunking_strategy",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "attributes",
+                      "from": "option:attributes",
+                      "jsonPath": "attributes",
+                      "encoding": "json"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

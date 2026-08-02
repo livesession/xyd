@@ -1,0 +1,21 @@
+{
+  "args": [
+    "organization",
+    "projects",
+    "service-accounts",
+    "create",
+    "EXAMPLE",
+    "--name",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/organization/projects/{project_id}/service_accounts",
+    "query": [],
+    "bodyFields": [
+      "name"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

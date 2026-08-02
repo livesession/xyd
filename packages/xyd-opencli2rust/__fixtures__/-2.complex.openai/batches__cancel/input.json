@@ -1,0 +1,149 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "batches",
+      "commands": [
+        {
+          "name": "create",
+          "description": "Creates and executes a batch from an uploaded file of requests",
+          "options": [
+            {
+              "name": "input-file-id",
+              "group": "body",
+              "required": true,
+              "description": "The ID of an uploaded file that contains requests for the new batch.\n\nSee [upload file](/docs/api-reference/files/create) for how to upload a file.\n\nYour input file must be formatted as a [JSONL file](/docs/api-reference/batch/request-input), and must be uploaded with the purpose `batch`. The file can contain up to 50,000 requests, and can be up to 200 MB in size.\n",
+              "arguments": [
+                {
+                  "name": "string"
+                }
+              ]
+            },
+            {
+              "name": "endpoint",
+              "group": "body",
+              "required": true,
+              "description": "The endpoint to be used for all requests in the batch. Currently `/v1/responses`, `/v1/chat/completions`, `/v1/embeddings`, `/v1/completions`, `/v1/moderations`, `/v1/images/generations`, `/v1/images/edits`, and `/v1/videos` are supported. Note that `/v1/embeddings` batches are also restricted to a maximum of 50,000 embedding inputs across all requests in the batch.",
+              "arguments": [
+                {
+                  "name": "string",
+                  "acceptedValues": [
+                    "/v1/responses",
+                    "/v1/chat/completions",
+                    "/v1/embeddings",
+                    "/v1/completions",
+                    "/v1/moderations",
+                    "/v1/images/generations",
+                    "/v1/images/edits",
+                    "/v1/videos"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "completion-window",
+              "group": "body",
+              "required": true,
+              "description": "The time frame within which the batch should be processed. Currently only `24h` is supported.",
+              "arguments": [
+                {
+                  "name": "string",
+                  "acceptedValues": [
+                    "24h"
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "metadata",
+              "group": "body",
+              "arguments": [
+                {
+                  "name": "value"
+                }
+              ]
+            },
+            {
+              "name": "output-expires-after",
+              "group": "body",
+              "description": "The expiration policy for the output and/or error file that are generated for a batch.",
+              "arguments": [
+                {
+                  "name": "json"
+                }
+              ]
+            }
+          ],
+          "x-openapi": {
+            "method": "post",
+            "path": "/batches",
+            "operationId": "createBatch",
+            "contentType": "application/json",
+            "body": {
+              "style": "flatten",
+              "contentType": "application/json",
+              "properties": [
+                {
+                  "name": "input_file_id",
+                  "from": "option:input-file-id",
+                  "jsonPath": "input_file_id",
+                  "encoding": "string",
+                  "required": true
+                },
+                {
+                  "name": "endpoint",
+                  "from": "option:endpoint",
+                  "jsonPath": "endpoint",
+                  "encoding": "string",
+                  "required": true
+                },
+                {
+                  "name": "completion_window",
+                  "from": "option:completion-window",
+                  "jsonPath": "completion_window",
+                  "encoding": "string",
+                  "required": true
+                },
+                {
+                  "name": "metadata",
+                  "from": "option:metadata",
+                  "jsonPath": "metadata",
+                  "encoding": "json"
+                },
+                {
+                  "name": "output_expires_after",
+                  "from": "option:output-expires-after",
+                  "jsonPath": "output_expires_after",
+                  "encoding": "json"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

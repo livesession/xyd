@@ -1,0 +1,118 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "projects",
+          "commands": [
+            {
+              "name": "groups",
+              "commands": [
+                {
+                  "name": "list",
+                  "description": "Lists the groups that have access to a project.",
+                  "arguments": [
+                    {
+                      "name": "project-id",
+                      "required": true,
+                      "description": "The ID of the project to inspect."
+                    }
+                  ],
+                  "options": [
+                    {
+                      "name": "limit",
+                      "description": "A limit on the number of project groups to return. Defaults to 20.",
+                      "group": "query",
+                      "arguments": [
+                        {
+                          "name": "integer"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "after",
+                      "description": "Cursor for pagination. Provide the ID of the last group from the previous response to fetch the next page.",
+                      "group": "query",
+                      "arguments": [
+                        {
+                          "name": "string"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "order",
+                      "description": "Sort order for the returned groups.",
+                      "group": "query",
+                      "arguments": [
+                        {
+                          "name": "string",
+                          "acceptedValues": [
+                            "asc",
+                            "desc"
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "get",
+                    "path": "/organization/projects/{project_id}/groups",
+                    "operationId": "list-project-groups",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "project_id",
+                        "from": "argument:project-id",
+                        "required": true
+                      },
+                      {
+                        "in": "query",
+                        "name": "limit",
+                        "from": "option:limit"
+                      },
+                      {
+                        "in": "query",
+                        "name": "after",
+                        "from": "option:after"
+                      },
+                      {
+                        "in": "query",
+                        "name": "order",
+                        "from": "option:order"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "args": [
+    "models",
+    "delete",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "delete",
+    "path": "/models/{model}",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "args": [
+    "containers",
+    "list"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/containers",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

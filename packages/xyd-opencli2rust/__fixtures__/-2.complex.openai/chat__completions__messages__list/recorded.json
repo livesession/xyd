@@ -1,0 +1,16 @@
+{
+  "args": [
+    "chat",
+    "completions",
+    "messages",
+    "list",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "get",
+    "path": "/chat/completions/{completion_id}/messages",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer"
+  }
+}

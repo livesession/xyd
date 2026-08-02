@@ -1,0 +1,21 @@
+{
+  "args": [
+    "completions",
+    "create",
+    "--model",
+    "EXAMPLE",
+    "--prompt",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/completions",
+    "query": [],
+    "bodyFields": [
+      "model",
+      "prompt"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

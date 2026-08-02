@@ -99,6 +99,7 @@ export interface SdkTargetCreateParams {
   language: ApitoolchainSdkLanguage;
   packageName?: string;
   version?: string;
+  sdkJson?: string;
 }
 
 export interface SdkVersionCreateParams {

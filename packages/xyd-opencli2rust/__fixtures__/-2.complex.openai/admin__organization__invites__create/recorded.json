@@ -1,0 +1,22 @@
+{
+  "args": [
+    "organization",
+    "invites",
+    "create",
+    "--email",
+    "EXAMPLE",
+    "--role",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/organization/invites",
+    "query": [],
+    "bodyFields": [
+      "email",
+      "role"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

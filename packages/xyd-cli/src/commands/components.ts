@@ -2,6 +2,8 @@ import colors from 'picocolors';
 
 import { componentsInstall } from '@xyd-js/documan';
 
+import { installOpensdk, uninstallOpensdk } from '../components/opensdk';
+
 /** A `components <subcommand>` handler. Receives the args *after* the subcommand. */
 type ComponentsSubcommand = (args: string[], flags: Record<string, unknown>) => Promise<void>;
 
@@ -15,8 +17,31 @@ const subcommands = {
     install: async (args) => {
         const componentName = args[0];
 
+        // CLI-level components (new toolchain commands) install into the
+        // user-global components dir; docs-project components (diagrams)
+        // delegate to documan's host-scoped installer.
+        if (componentName === 'opensdk') {
+            const ok = await installOpensdk();
+            if (!ok) {
+                process.exit(1);
+            }
+            return;
+        }
+
         const success = await componentsInstall(componentName);
         if (!success) {
+            process.exit(1);
+        }
+    },
+    // `components uninstall <component>`
+    uninstall: async (args) => {
+        const componentName = args[0];
+        if (componentName !== 'opensdk') {
+            console.error(colors.red(`Error: '${componentName ?? ''}' cannot be uninstalled (only: opensdk).`));
+            process.exit(1);
+            return;
+        }
+        if (!uninstallOpensdk()) {
             process.exit(1);
         }
     },

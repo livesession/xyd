@@ -1,0 +1,14 @@
+{
+  "args": [
+    "threads",
+    "create"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/threads",
+    "query": [],
+    "bodyFields": [],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

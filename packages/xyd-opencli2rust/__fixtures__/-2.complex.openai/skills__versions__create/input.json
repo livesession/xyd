@@ -1,0 +1,99 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "skills",
+      "commands": [
+        {
+          "name": "versions",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Create a new immutable skill version.",
+              "arguments": [
+                {
+                  "name": "skill-id",
+                  "required": true,
+                  "description": "The identifier of the skill to version."
+                }
+              ],
+              "options": [
+                {
+                  "name": "files",
+                  "group": "body",
+                  "required": true,
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "default",
+                  "group": "body",
+                  "description": "Whether to set this version as the default."
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/skills/{skill_id}/versions",
+                "operationId": "CreateSkillVersion",
+                "contentType": "application/json",
+                "params": [
+                  {
+                    "in": "path",
+                    "name": "skill_id",
+                    "from": "argument:skill-id",
+                    "required": true
+                  }
+                ],
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "files",
+                      "from": "option:files",
+                      "jsonPath": "files",
+                      "encoding": "json",
+                      "required": true
+                    },
+                    {
+                      "name": "default",
+                      "from": "option:default",
+                      "jsonPath": "default",
+                      "encoding": "boolean"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

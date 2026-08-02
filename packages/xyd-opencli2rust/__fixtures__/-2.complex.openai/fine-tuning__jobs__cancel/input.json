@@ -1,0 +1,206 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "fine-tuning",
+      "commands": [
+        {
+          "name": "jobs",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Creates a fine-tuning job which begins the process of creating a new model from a given dataset.\n\nResponse includes details of the enqueued job including job status and the name of the fine-tuned models once complete.\n\n[Learn more about fine-tuning](/docs/guides/model-optimization)\n",
+              "options": [
+                {
+                  "name": "model",
+                  "group": "body",
+                  "required": true,
+                  "description": "The name of the model to fine-tune. You can select one of the\n[supported models](/docs/guides/fine-tuning#which-models-can-be-fine-tuned).\n",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                },
+                {
+                  "name": "training-file",
+                  "group": "body",
+                  "required": true,
+                  "description": "The ID of an uploaded file that contains training data.\n\nSee [upload file](/docs/api-reference/files/create) for how to upload a file.\n\nYour dataset must be formatted as a JSONL file. Additionally, you must upload your file with the purpose `fine-tune`.\n\nThe contents of the file should differ depending on if the model uses the [chat](/docs/api-reference/fine-tuning/chat-input), [completions](/docs/api-reference/fine-tuning/completions-input) format, or if the fine-tuning method uses the [preference](/docs/api-reference/fine-tuning/preference-input) format.\n\nSee the [fine-tuning guide](/docs/guides/model-optimization) for more details.\n",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "hyperparameters",
+                  "group": "body",
+                  "description": "The hyperparameters used for the fine-tuning job.\nThis value is now deprecated in favor of `method`, and should be passed in under the `method` parameter.\n",
+                  "arguments": [
+                    {
+                      "name": "json"
+                    }
+                  ]
+                },
+                {
+                  "name": "suffix",
+                  "group": "body",
+                  "description": "A string of up to 64 characters that will be added to your fine-tuned model name.\n\nFor example, a `suffix` of \"custom-model-name\" would produce a model name like `ft:gpt-4o-mini:openai:custom-model-name:7p4lURel`.\n",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "validation-file",
+                  "group": "body",
+                  "description": "The ID of an uploaded file that contains validation data.\n\nIf you provide this file, the data is used to generate validation\nmetrics periodically during fine-tuning. These metrics can be viewed in\nthe fine-tuning results file.\nThe same data should not be present in both train and validation files.\n\nYour dataset must be formatted as a JSONL file. You must upload your file with the purpose `fine-tune`.\n\nSee the [fine-tuning guide](/docs/guides/model-optimization) for more details.\n",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "integrations",
+                  "group": "body",
+                  "description": "A list of integrations to enable for your fine-tuning job.",
+                  "arguments": [
+                    {
+                      "name": "json",
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "seed",
+                  "group": "body",
+                  "description": "The seed controls the reproducibility of the job. Passing in the same seed and job parameters should produce the same results, but may differ in rare cases.\nIf a seed is not specified, one will be generated for you.\n",
+                  "arguments": [
+                    {
+                      "name": "integer"
+                    }
+                  ]
+                },
+                {
+                  "name": "method",
+                  "group": "body",
+                  "description": "The method used for fine-tuning.",
+                  "arguments": [
+                    {
+                      "name": "json"
+                    }
+                  ]
+                },
+                {
+                  "name": "metadata",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "value"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/fine_tuning/jobs",
+                "operationId": "createFineTuningJob",
+                "contentType": "application/json",
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "model",
+                      "from": "option:model",
+                      "jsonPath": "model",
+                      "encoding": "json",
+                      "required": true
+                    },
+                    {
+                      "name": "training_file",
+                      "from": "option:training-file",
+                      "jsonPath": "training_file",
+                      "encoding": "string",
+                      "required": true
+                    },
+                    {
+                      "name": "hyperparameters",
+                      "from": "option:hyperparameters",
+                      "jsonPath": "hyperparameters",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "suffix",
+                      "from": "option:suffix",
+                      "jsonPath": "suffix",
+                      "encoding": "string"
+                    },
+                    {
+                      "name": "validation_file",
+                      "from": "option:validation-file",
+                      "jsonPath": "validation_file",
+                      "encoding": "string"
+                    },
+                    {
+                      "name": "integrations",
+                      "from": "option:integrations",
+                      "jsonPath": "integrations",
+                      "encoding": "array"
+                    },
+                    {
+                      "name": "seed",
+                      "from": "option:seed",
+                      "jsonPath": "seed",
+                      "encoding": "integer"
+                    },
+                    {
+                      "name": "method",
+                      "from": "option:method",
+                      "jsonPath": "method",
+                      "encoding": "json"
+                    },
+                    {
+                      "name": "metadata",
+                      "from": "option:metadata",
+                      "jsonPath": "metadata",
+                      "encoding": "json"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

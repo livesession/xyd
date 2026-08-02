@@ -2,8 +2,9 @@
 
 This document describes the **OpenAPI → OpenCLI → CLI** pipeline: how xyd turns an OpenAPI 3.x
 spec into a *functional* command-line interface that makes real HTTP requests. It covers the
-three packages involved, the `x-openapi` request-binding extension, the mapping algorithm, the
-Go generator, and the test/CI setup.
+packages involved, the `x-openapi` request-binding extension, the mapping algorithm, the
+Go and Rust generators (including the Rust generator's regen-safe custom-code seams), and the
+test/CI setup.
 
 > The user-facing guide is not published yet (the feature is merged without official user docs);
 > this page is the under-the-hood view.
@@ -20,6 +21,7 @@ HTTP request.
 graph LR
     OAS["OpenAPI 3.x"] -->|"@xyd-js/openapi2opencli\n(Stage A)"| OCLI["OpenCLI doc\n(+ x-openapi)"]
     OCLI -->|"@xyd-js/opencli2go"| GO["Go CLI project"]
+    OCLI -->|"@xyd-js/opencli2rust"| RUST["Rust CLI project\n(+ custom-code seams)"]
     OCLI -.->|"future: 2py / 2ts"| OTHER["other languages"]
 
     CORE["@xyd-js/opencli\n(core model + helpers)"] --- OCLI
@@ -27,6 +29,7 @@ graph LR
     style OAS fill:#fdcb6e,color:#333,stroke:#d4a94e
     style OCLI fill:#6c5ce7,color:#fff,stroke:#5a4bd4
     style GO fill:#00b894,color:#fff,stroke:#009a7a
+    style RUST fill:#00b894,color:#fff,stroke:#009a7a
     style OTHER fill:#dfe6e9,color:#333,stroke:#b2bec3
     style CORE fill:#636e72,color:#fff,stroke:#4a5558
 ```
@@ -38,6 +41,7 @@ graph LR
 | `@xyd-js/opencli` | Core OpenCLI model + helpers (extracted from `@xyd-js/opencli-remark`) | `OpencliSpecJson`, `Command`, `loadOpencliSpec()`, `findCommand()`, `generate*()` |
 | `@xyd-js/openapi2opencli` | **Stage A** — OpenAPI → OpenCLI (+ `x-openapi`) | `openapi2opencli()`, `openapi2opencliFromSource()`, `opencliToSurface()`, `diffSurfaces()` |
 | `@xyd-js/opencli2go` | OpenCLI → buildable Go CLI project | `opencli2go()`, `writeProject()` |
+| `@xyd-js/opencli2rust` | OpenCLI → buildable Rust CLI project with regen-safe custom-code seams | `opencli2rust()`, `writeProject()` |
 
 ### @xyd-js/opencli (core model)
 
@@ -98,6 +102,51 @@ and avoids a Go toolchain dependency at generation time).
   from positionals, set query params/body from flags, attach auth from the configured env var,
   call the vendored client, and print the response.
 
+### @xyd-js/opencli2rust (Rust generator)
+
+The Rust sibling of `opencli2go`: same layering (`project.ts` / `command.ts` / `handler.ts` /
+`flags.ts` / `model.ts` / `runtime.ts`), same templated-emitter approach (`rslit.ts` renders
+clap builder-method chains; Rust naming helpers copied from `xyd-opensdk-rust`). Stack:
+**clap v4 (builder API)** + async **reqwest/tokio**; the vendored runtime executes requests
+and returns the decoded value. Request-level behavior is e2e-verified byte-compatible with the
+Go generator against the shared `recorded.json` fixtures.
+
+Two deliberate divergences from the Go generator:
+
+1. **`ProjectFileMap` output + framework write lifecycle.** `opencli2rust()` returns the
+   `@xyd-js/opensdk-framework` `ProjectFileMap` (entries carry per-file `writeMode`), and its
+   `writeProject` re-exports the framework's — `.sdk/sdk.lock` manifest, guarded stale-prune,
+   `.sdkignore`, and opt-in `{ merge: true }` 3-way merge (instead of opencli2go's 10-line
+   file dumper).
+2. **Custom-code seams** (the Fern / Oxide-progenitor concept). The generated crate splits
+   `src/gen/**` (regenerated, "DO NOT EDIT") from `src/custom/mod.rs` (scaffolded once,
+   `skipIfExists`). Three extension points, wired through the generated `main.rs`:
+   - the `CliOverrides` trait (`before_request` / `transform_response` / `recover_error` /
+     `print_success` / `print_error`, all defaulted; printing lives ONLY in the trait, which
+     is why the runtime returns values instead of printing like Go's `runtime.Do`);
+   - the `CustomCommands` registry — `commands.add(&["tools"], Command::new("hello"), |ctx, m| async …)`
+     grafts new commands anywhere in the clap tree, and a registration on an EXISTING path
+     overrides that command's behavior (custom-first dispatch);
+   - `Context` (`execute` / `execute_raw`) so custom handlers reuse the CLI's base URL + auth.
+   The `5.custom-scaffold` fixture suite is the acceptance test: a customized scaffold survives
+   regen byte-identically, compiles, and merge-mode hand-edits to `src/gen/**` survive a
+   spec-changing regen via 3-way merge.
+
+### `opensdk` integration (`go-cli` / `rust-cli` targets)
+
+The pipeline has a command-line entry point through the **`opensdk` CLI** (see
+[OpenSDK Generation](./OpenSdkGeneration.md)): the pseudo-language target ids `go-cli` and
+`rust-cli` work in `opensdk generate --lang`, sdk.json sections, and `chain.json` targets.
+`opensdk-cli`'s `src/cli/cli-targets.ts` routes them before the emitter registry (CLI
+generation consumes the raw OpenAPI doc, not the OpenSDK IR), runs
+`openapi2opencliFromSource` → `opencli2go`/`opencli2rust`, and writes through the framework
+`writeProject` — so the regen lifecycle (lock, stale-prune, `.sdkignore`, `--merge`) applies to
+BOTH backends, including Go (whose own `write.ts` stays the naive standalone variant). Options
+are one flat bag split by allowlist (converter vs backend keys); `sdkName` defaults `cliName`.
+Chain example: `packages/apitoolchain-sdk-chain/chain.json` target `api-cli`
+(`target: "rust-cli"`). The `tests-opensdk-pipeline` CI job compiles chain-generated CLI
+targets for both backends.
+
 ## The `x-openapi` extension
 
 This is what makes generation *functional*. Shape:
@@ -117,7 +166,12 @@ following the repo's [fixture convention](../2.1.development/4.TESTS_AND_FIXTURE
 | Stage | Fixture dir | Files per method |
 |-------|-------------|------------------|
 | Stage A | `xyd-openapi2opencli/__fixtures__/-2.complex.openai/<method>/` | `input.json` (OpenAPI op) |
-| Generator | `xyd-opencli2go/__fixtures__/-2.complex.openai/<method>/` | `input.json` (OpenCLI), `output.go`, `recorded.json` |
+| Go generator | `xyd-opencli2go/__fixtures__/-2.complex.openai/<method>/` | `input.json` (OpenCLI), `output.go`, `recorded.json` |
+| Rust generator | `xyd-opencli2rust/__fixtures__/-2.complex.openai/<method>/` | `input.json` + `recorded.json` (synced COPIES from the Go package via `O2R_BUILD_DOCS=1`), `output.rs` |
+
+The Go package is the single source of truth for fixture generation (from the vendored OpenAPI
+oracle) and request recording (`E2E_RECORD`); the Rust package keeps independent copies of the
+language-neutral files so it stays self-contained.
 
 ### Conformance oracle
 
@@ -151,10 +205,12 @@ run stays offline and deterministic:
 
 | Env var | Effect | Runs in CI? |
 |---------|--------|-------------|
-| `O2G_GO_SMOKE=1` | `go build` / `go vet` a sample of generated projects | Yes (Go job) |
-| `E2E_CLI=1` | build the whole CLI, run it, diff requests vs fixtures | Yes (Go job) |
-| `O2G_BUILD_DOCS=1` | **regenerate** the Stage-B `input.json` / `output.go` goldens | No |
-| `E2E_RECORD=1` | **regenerate** the per-method `recorded.json` | No |
+| `O2G_GO_SMOKE=1` | `go build` / `go vet` a sample of generated Go projects | Yes (pipeline job) |
+| `O2R_CARGO_SMOKE=1` | `cargo check` generated Rust projects (shared `CARGO_TARGET_DIR`) | Yes (pipeline job) |
+| `E2E_CLI=1` | build the whole CLI (Go and/or Rust), run it, diff requests vs fixtures | Yes (pipeline job) |
+| `O2G_BUILD_DOCS=1` | **regenerate** the Go `input.json` / `output.go` goldens | No |
+| `O2R_BUILD_DOCS=1` | **re-sync** the Rust package's `input.json`/`recorded.json` copies + regen `output.rs` | No |
+| `E2E_RECORD=1` | **regenerate** the per-method `recorded.json` (Go package only) | No |
 
 > Known gap, surfaced by the fixtures: the generated runtime always assembles a JSON body
 > (multipart `--file` uploads are not wired yet). On macOS, generated urfave binaries may fail
@@ -166,11 +222,13 @@ run stays offline and deterministic:
 | Workflow | Covers | Toolchain |
 |----------|--------|-----------|
 | `tests-unit.yml` (`tests:unit`) | each package's **offline** unit tests (auto-discovered by the root `vitest.config.ts` glob) | Node + pnpm |
-| `tests-opencli-pipeline.yml` (`tests:opencli-pipeline`) | the **Go-gated** layers excluded by the root config: `O2G_GO_SMOKE=1` + `E2E_CLI=1` for `@xyd-js/opencli2go`, plus the e2e binding guard | Node + pnpm + **Go 1.22** |
+| `tests-opencli-pipeline.yml` (`tests:opencli-pipeline`) | the **toolchain-gated** layers excluded by the root config: `O2G_GO_SMOKE=1` + `E2E_CLI=1` for `@xyd-js/opencli2go`, `O2R_CARGO_SMOKE=1` + `E2E_CLI=1` for `@xyd-js/opencli2rust`, plus the e2e binding guards | Node + pnpm + **Go 1.22** + **Rust stable** |
 
 The root `vitest.config.ts` `include` glob (`packages/**/__tests__/**/*.test.ts`) already runs
-the three packages' offline tests in `tests:unit`, but it **excludes `**/__tests__/e2e/**`**.
-`tests-opencli-pipeline.yml` therefore sets up a Go toolchain and runs each package's
+the pipeline packages' offline tests in `tests:unit`, but it **excludes `**/__tests__/e2e/**`**.
+`tests-opencli-pipeline.yml` therefore sets up Go + Rust toolchains and runs each package's
 package-local `ci:test` (whose config does not exclude e2e) with the gate env vars, so the full
 pipeline — including the real generated-CLI requests — is verified where binaries execute. It is
-`paths`-scoped to the three packages to avoid running the heavier Go job on unrelated pushes.
+`paths`-scoped to the pipeline packages to avoid running the heavier toolchain job on unrelated
+pushes. The Rust job shares one `CARGO_TARGET_DIR` (cached with `~/.cargo`) so dependencies
+compile once across smoke samples and the e2e build.

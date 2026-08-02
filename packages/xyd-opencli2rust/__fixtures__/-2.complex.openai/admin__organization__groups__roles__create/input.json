@@ -1,0 +1,94 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "organization",
+      "commands": [
+        {
+          "name": "groups",
+          "commands": [
+            {
+              "name": "roles",
+              "commands": [
+                {
+                  "name": "create",
+                  "description": "Assigns an organization role to a group within the organization.",
+                  "arguments": [
+                    {
+                      "name": "group-id",
+                      "required": true,
+                      "description": "The ID of the group that should receive the organization role."
+                    }
+                  ],
+                  "options": [
+                    {
+                      "name": "role-id",
+                      "group": "body",
+                      "required": true,
+                      "description": "Identifier of the role to assign.",
+                      "arguments": [
+                        {
+                          "name": "string"
+                        }
+                      ]
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "post",
+                    "path": "/organization/groups/{group_id}/roles",
+                    "operationId": "assign-group-role",
+                    "contentType": "application/json",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "group_id",
+                        "from": "argument:group-id",
+                        "required": true
+                      }
+                    ],
+                    "body": {
+                      "style": "flatten",
+                      "contentType": "application/json",
+                      "properties": [
+                        {
+                          "name": "role_id",
+                          "from": "option:role-id",
+                          "jsonPath": "role_id",
+                          "encoding": "string",
+                          "required": true
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

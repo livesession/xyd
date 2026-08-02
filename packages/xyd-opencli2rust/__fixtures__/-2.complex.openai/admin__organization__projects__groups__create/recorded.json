@@ -1,0 +1,24 @@
+{
+  "args": [
+    "organization",
+    "projects",
+    "groups",
+    "create",
+    "EXAMPLE",
+    "--group-id",
+    "EXAMPLE",
+    "--role",
+    "EXAMPLE"
+  ],
+  "request": {
+    "method": "post",
+    "path": "/organization/projects/{project_id}/groups",
+    "query": [],
+    "bodyFields": [
+      "group_id",
+      "role"
+    ],
+    "auth": "bearer",
+    "contentType": "application/json"
+  }
+}

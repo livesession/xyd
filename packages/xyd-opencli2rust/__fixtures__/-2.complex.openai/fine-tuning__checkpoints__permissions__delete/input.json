@@ -1,0 +1,78 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.openai.com/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      },
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "OPENAI_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "fine-tuning",
+      "commands": [
+        {
+          "name": "checkpoints",
+          "commands": [
+            {
+              "name": "permissions",
+              "commands": [
+                {
+                  "name": "delete",
+                  "description": "**NOTE:** This endpoint requires an [admin API key](../admin-api-keys).\n\nOrganization owners can use this endpoint to delete a permission for a fine-tuned model checkpoint.\n",
+                  "arguments": [
+                    {
+                      "name": "fine-tuned-model-checkpoint",
+                      "required": true,
+                      "description": "The ID of the fine-tuned model checkpoint to delete a permission for.\n"
+                    },
+                    {
+                      "name": "permission-id",
+                      "required": true,
+                      "description": "The ID of the fine-tuned model checkpoint permission to delete.\n"
+                    }
+                  ],
+                  "x-openapi": {
+                    "method": "delete",
+                    "path": "/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id}",
+                    "operationId": "deleteFineTuningCheckpointPermission",
+                    "params": [
+                      {
+                        "in": "path",
+                        "name": "fine_tuned_model_checkpoint",
+                        "from": "argument:fine-tuned-model-checkpoint",
+                        "required": true
+                      },
+                      {
+                        "in": "path",
+                        "name": "permission_id",
+                        "from": "argument:permission-id",
+                        "required": true
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
