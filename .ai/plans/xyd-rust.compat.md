@@ -5,6 +5,16 @@ find where our Rust+Bun work diverges from the Vite/React-Router path.
 
 ## Method (important)
 
+## Final result
+
+**Full Playwright e2e suite under `XYD_BUN=1`: 73 passed, 1 failed.** The single failure is
+`8.opencli/1.basic` test 2, which **fails identically on the Vite engine** (a `.first()` locator
+that grabs the hidden mobile-sidebar link — see Gap 6 below). Every test that passes on Vite also
+passes on Bun → the Rust+Bun engine is at **parity** with the Vite/React-Router path.
+(Verdaccio must be running for the `7.themes/2,3` custom-npm-theme publish step.)
+
+## Method (important)
+
 A real compat gap = **a test that passes on Vite but fails on Bun**. A test that fails on
 BOTH engines is a pre-existing bug, NOT a Bun gap — "fixing" it in Bun would make Bun *diverge*
 from the current engine. So each suspected gap is verified against the **Vite baseline** first.
