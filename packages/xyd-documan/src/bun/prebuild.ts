@@ -19,8 +19,15 @@ export interface ThemeArtifacts {
   clientJs: string;
   cssFiles: { src: string; out: string }[];
   cssLinks: string[];
-  /** absolute path to the prebuilt server render bundle */
+}
+
+export interface EmbedManifest {
+  /** ONE multi-theme server render bundle (imports every theme; the render graph —
+   *  React/framework/atlas/content — is bundled ONCE, not per theme). Selected at
+   *  runtime by __xydSeedForBuild(themeName). */
   server: string;
+  /** per-theme browser client + CSS (a browser must not download 6 themes). */
+  themes: Record<string, ThemeArtifacts>;
 }
 
 // Deps that are 'external' in the dev/build server bundle (they read their own
@@ -93,23 +100,23 @@ async function prebuildCss(host: string, themeName: string, outDir: string): Pro
 /** Prebuild client + server + css for each theme into `prebuiltDir/<theme>/`.
  *  `host` must resolve react/react-dom/@xyd-js runtime + every theme (the monorepo
  *  root works — all workspace-linked). Returns the per-theme artifact manifest. */
-export async function prebuildThemes(host: string, themes: string[], prebuiltDir: string): Promise<Record<string, ThemeArtifacts>> {
+export async function prebuildThemes(host: string, themes: string[], prebuiltDir: string): Promise<EmbedManifest> {
   process.env.XYD_HOST = host;
-  const manifest: Record<string, ThemeArtifacts> = {};
+  const themesMap: Record<string, ThemeArtifacts> = {};
 
+  // Per-theme CLIENT + CSS (a browser must not download 6 themes).
   for (const theme of themes) {
-    console.error(`[prebuild] theme=${theme}`);
+    console.error(`[prebuild] client+css theme=${theme}`);
     setBuildContext(host, theme);
 
-    // Default (empty) icon set baked into the client for the proof; step 10 lifts
-    // the project-specific set into the runtime __xyd_data payload.
+    // Default icon set baked into the client; step 10 lifts the project-specific
+    // set into the runtime __xyd_data payload for projects with custom theme.icons.
     const iconSetJson = await recomputeIconSet({ theme: { name: theme } } as any);
 
     const themeDir = path.join(prebuiltDir, theme);
     fs.rmSync(themeDir, { recursive: true, force: true });
     fs.mkdirSync(themeDir, { recursive: true });
 
-    // CLIENT (browser, hashed, minified, no sourcemap) — same entry buildStatic uses.
     const clientRes: any = await buildBundle(
       `client-${theme}`,
       `globalThis.__xydIconSet = ${iconSetJson};\n` +
@@ -133,70 +140,72 @@ export async function prebuildThemes(host: string, themes: string[], prebuiltDir
       out: path.relative(themeDir, o.path).replace(/\\/g, "/"),
     }));
 
-    // CSS — concat + hash the 4 dist groups into themeDir/assets/*.css.
     const { links: cssLinks, files: cssFiles } = await prebuildCss(host, theme, themeDir);
-
-    // SERVER render bundle (bun, sourcemap NONE — inline would be ~100MB; the dead
-    // server-only deps are stubbed, not external, so the binary needs no node_modules).
-    const serverBundle: string = await buildBundle(
-      `server-${theme}`,
-      `import Theme from "@xyd-js/theme-${theme}";\n` +
-        `import { renderPageStatic, seedForBuild } from "./renderPage";\n` +
-        `globalThis.__xydSeedForBuild = () => seedForBuild(Theme);\n` +
-        `globalThis.__xydRenderStatic = (slug, opts) => renderPageStatic(slug, opts);\n`,
-      "bun",
-      [],
-      false,
-      { outdir: path.join(themeDir, "server"), sourcemap: "none", extraPlugins: [stubServerDeps()] }
-    );
-
-    manifest[theme] = { clientFiles, clientJs, cssFiles, cssLinks, server: serverBundle };
-    console.error(`[prebuild]   client ${clientFiles.length} file(s), css ${cssFiles.length}, server ${(fs.statSync(serverBundle).size / 1e6).toFixed(1)}MB`);
+    themesMap[theme] = { clientFiles, clientJs, cssFiles, cssLinks };
+    console.error(`[prebuild]   ${theme}: client ${clientFiles.length} file(s), css ${cssFiles.length}`);
   }
-  return manifest;
+
+  // ONE multi-theme SERVER render bundle: import every theme, select at runtime by
+  // name. The heavy render graph (React/framework/atlas/content) is bundled ONCE
+  // instead of ×N — the dominant binary-size cost. sourcemap:none (inline ≈100MB).
+  const themeImports = themes.map((t, i) => `import t${i} from "@xyd-js/theme-${t}";`).join("\n");
+  const themeDict = "{" + themes.map((t, i) => `${JSON.stringify(t)}: t${i}`).join(", ") + "}";
+  setBuildContext(host, themes[0]); // theme-agnostic for the multi bundle
+  const server: string = await buildBundle(
+    "server-multi",
+    `${themeImports}\n` +
+      `const THEMES = ${themeDict};\n` +
+      `import { renderPageStatic, seedForBuild } from "./renderPage";\n` +
+      `globalThis.__xydSeedForBuild = (name) => seedForBuild(THEMES[name] || THEMES[${JSON.stringify(themes[0])}]);\n` +
+      `globalThis.__xydRenderStatic = (slug, opts) => renderPageStatic(slug, opts);\n`,
+    "bun",
+    [],
+    false,
+    { outdir: path.join(prebuiltDir, "_server"), sourcemap: "none", extraPlugins: [stubServerDeps()] }
+  );
+  console.error(`[prebuild] server (multi-theme, ${themes.length} themes) ${(fs.statSync(server).size / 1e6).toFixed(1)}MB`);
+
+  return { server, themes: themesMap };
 }
 
 /** Generate `embedTsPath` (packages/xyd-cli/src/embed.generated.ts): a module of
  *  `import … with { type: "file" }` statements (a STATIC edge so `bun --compile`
  *  embeds each artifact into the executable) that assigns globalThis.__xydEmbed. */
-export function generateEmbedModule(manifest: Record<string, ThemeArtifacts>, embedTsPath: string): void {
+export function generateEmbedModule(manifest: EmbedManifest, embedTsPath: string): void {
   const dir = path.dirname(embedTsPath);
   const rel = (abs: string) => "./" + path.relative(dir, abs).replace(/\\/g, "/");
   const imports: string[] = [];
   let n = 0;
-  const id = () => `f${n++}`;
+  const emit = (abs: string) => {
+    const v = `f${n++}`;
+    imports.push(`import ${v} from ${JSON.stringify(rel(abs))} with { type: "file" };`);
+    return v;
+  };
 
+  const srv = emit(manifest.server);
   const themesObj: string[] = [];
-  for (const [theme, a] of Object.entries(manifest)) {
-    const clientFiles = a.clientFiles.map((f) => {
-      const v = id();
-      imports.push(`import ${v} from ${JSON.stringify(rel(f.src))} with { type: "file" };`);
-      return `{ src: ${v}, out: ${JSON.stringify(f.out)} }`;
-    });
-    const cssFiles = a.cssFiles.map((f) => {
-      const v = id();
-      imports.push(`import ${v} from ${JSON.stringify(rel(f.src))} with { type: "file" };`);
-      return `{ src: ${v}, out: ${JSON.stringify(f.out)} }`;
-    });
-    const srv = id();
-    imports.push(`import ${srv} from ${JSON.stringify(rel(a.server))} with { type: "file" };`);
+  for (const [theme, a] of Object.entries(manifest.themes)) {
+    const clientFiles = a.clientFiles.map((f) => `{ src: ${emit(f.src)}, out: ${JSON.stringify(f.out)} }`);
+    const cssFiles = a.cssFiles.map((f) => `{ src: ${emit(f.src)}, out: ${JSON.stringify(f.out)} }`);
     themesObj.push(
-      `  ${JSON.stringify(theme)}: {\n` +
-        `    clientFiles: [${clientFiles.join(", ")}],\n` +
-        `    clientJs: ${JSON.stringify(a.clientJs)},\n` +
-        `    cssFiles: [${cssFiles.join(", ")}],\n` +
-        `    cssLinks: ${JSON.stringify(a.cssLinks)},\n` +
-        `    server: ${srv},\n` +
-        `  },`
+      `    ${JSON.stringify(theme)}: {\n` +
+        `      clientFiles: [${clientFiles.join(", ")}],\n` +
+        `      clientJs: ${JSON.stringify(a.clientJs)},\n` +
+        `      cssFiles: [${cssFiles.join(", ")}],\n` +
+        `      cssLinks: ${JSON.stringify(a.cssLinks)},\n` +
+        `    },`
     );
   }
 
   const src =
     `// AUTO-GENERATED by @xyd-js/documan prebuild at compile time — DO NOT EDIT.\n` +
     `// Committed as an empty stub; \`bun scripts/compile.ts\` overwrites it with the\n` +
-    `// per-theme \`with { type: "file" }\` imports that bun --compile embeds.\n` +
+    `// \`with { type: "file" }\` imports that bun --compile embeds.\n` +
     imports.join("\n") + (imports.length ? "\n" : "") +
-    `(globalThis as any).__xydEmbed = {\n${themesObj.join("\n")}\n};\n`;
+    `(globalThis as any).__xydEmbed = {\n` +
+    `  server: ${srv},\n` +
+    `  themes: {\n${themesObj.join("\n")}\n  },\n` +
+    `};\n`;
   fs.writeFileSync(embedTsPath, src);
-  console.error(`[prebuild] wrote ${embedTsPath} (${Object.keys(manifest).length} theme(s), ${n} embedded files)`);
+  console.error(`[prebuild] wrote ${embedTsPath} (${Object.keys(manifest.themes).length} theme(s), ${n} embedded files)`);
 }

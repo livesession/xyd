@@ -64,7 +64,8 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   // Bun.build against; the client/css/server render bundles were PREBUILT at
   // compile time and embedded (globalThis.__xydEmbed). Consume them instead.
   const isBin = !!(globalThis as any).__xydCompiledBinary;
-  const emb = isBin ? (globalThis as any).__xydEmbed?.[themeName] : null;
+  const embRoot = isBin ? (globalThis as any).__xydEmbed : null;
+  const emb = isBin ? embRoot?.themes?.[themeName] : null;
   if (isBin && !emb) {
     console.error(
       `[build] no prebuilt render bundle embedded for theme "${themeName}".\n` +
@@ -131,9 +132,9 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     // state. (Direct import of the bunfs path also works but is unguaranteed for
     // file-typed assets; extract-to-tmp is the certain path.)
     const os = await import("node:os");
-    const tmp = path.join(os.tmpdir(), `xyd-srv-${Bun.hash(emb.server).toString(16)}.js`);
-    await Bun.write(tmp, Bun.file(emb.server));
-    console.error("[build] server render (embedded) →", path.basename(emb.server));
+    const tmp = path.join(os.tmpdir(), `xyd-srv-${Bun.hash(embRoot.server).toString(16)}.js`);
+    await Bun.write(tmp, Bun.file(embRoot.server));
+    console.error("[build] server render (embedded, multi-theme) →", path.basename(embRoot.server));
     await import(pathToFileURL(tmp).href);
   } else {
     console.error("[build] bundling server render…");
@@ -148,7 +149,9 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     );
     await import(pathToFileURL(serverBundle).href);
   }
-  (globalThis as any).__xydSeedForBuild();
+  // The multi-theme server bundle selects the theme by name; the non-binary
+  // single-theme entry ignores the arg — so passing themeName is safe for both.
+  (globalThis as any).__xydSeedForBuild(themeName);
 
   // 5) PUBLIC assets. Content references public files WITH the `public/` segment
   // (e.g. /public/assets/logo.svg) and — because presets prefix logo/favicon and
