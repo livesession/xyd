@@ -1,0 +1,16 @@
+{
+  "name": "@xyd-js/native-darwin-x64",
+  "version": "0.0.0",
+  "cpu": [
+    "x64"
+  ],
+  "main": "xyd-native.darwin-x64.node",
+  "files": [
+    "xyd-native.darwin-x64.node"
+  ],
+  "description": "xyd Rust core (napi) — the one native module embedded into the bun-compiled binary",
+  "license": "MIT",
+  "os": [
+    "darwin"
+  ]
+}

@@ -1,0 +1,154 @@
+name: release:native
+
+# S6+ distribution for @xyd-js/native: build the per-platform .node artifacts and
+# publish @xyd-js/native + its per-platform packages (npm/<platform>/, wired as
+# optionalDependencies). Non-binary npm consumers of migrated packages resolve
+# their platform's .node through these; until a package's JS fallback is reaped,
+# a missing platform package silently falls back to the frozen JS impl.
+#
+# SEQUENCING CONSTRAINT (from the S6+ plan): this must have shipped and survived
+# a release before the FIRST `impl-js/` reap — nothing else waits on it.
+#
+# Manual dispatch with an explicit version + dry-run default; the version is
+# stamped across @xyd-js/native and every npm/<platform>/package.json.
+#
+# TODO(musl): x86_64/aarch64-unknown-linux-musl need a zig/napi-cross lane.
+# TODO(windows): x86_64-pc-windows-msvc needs a windows-2022 lane (same explicit
+# TODO as binary-targets.yml).
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g. 0.1.0) — stamped on @xyd-js/native + platform packages'
+        required: true
+        type: string
+      dry-run:
+        description: 'Build + pack everything but do NOT publish'
+        required: true
+        type: boolean
+        default: true
+
+jobs:
+  build:
+    name: build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-14
+            target: aarch64-apple-darwin
+          - os: macos-14
+            target: x86_64-apple-darwin
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.10.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Setup cargo cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/xyd-native/target
+          key: ${{ runner.os }}-${{ matrix.target }}-cargo-release-${{ hashFiles('crates/**/Cargo.toml', 'packages/xyd-native/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.target }}-cargo-release-
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Build .node for target
+        working-directory: packages/xyd-native
+        run: pnpm exec napi build --platform --release --target ${{ matrix.target }}
+
+      - name: Upload .node artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-${{ matrix.target }}
+          path: packages/xyd-native/*.node
+          if-no-files-found: error
+
+  publish:
+    name: publish (${{ inputs.dry-run && 'DRY RUN' || 'npm' }})
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.10.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Download all .node artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: native-*
+          merge-multiple: true
+          path: packages/xyd-native/artifacts
+
+      - name: Stamp version
+        working-directory: packages/xyd-native
+        run: |
+          npm version ${{ inputs.version }} --no-git-tag-version --allow-same-version
+          for p in npm/*/package.json; do
+            node -e "
+              const fs = require('fs');
+              const j = JSON.parse(fs.readFileSync('$p', 'utf8'));
+              j.version = '${{ inputs.version }}';
+              fs.writeFileSync('$p', JSON.stringify(j, null, 2) + '\n');
+            "
+          done
+          # optionalDependencies pins → the published version
+          node -e "
+            const fs = require('fs');
+            const j = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+            for (const k of Object.keys(j.optionalDependencies || {})) j.optionalDependencies[k] = '${{ inputs.version }}';
+            fs.writeFileSync('package.json', JSON.stringify(j, null, 2) + '\n');
+          "
+
+      - name: Move artifacts into platform dirs
+        working-directory: packages/xyd-native
+        run: pnpm exec napi artifacts --output-dir artifacts
+
+      - name: Publish platform packages + @xyd-js/native
+        working-directory: packages/xyd-native
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ "${{ inputs.dry-run }}" = "true" ]; then
+            pnpm exec napi prepublish --dry-run --no-gh-release
+            npm publish --access public --dry-run
+          else
+            pnpm exec napi prepublish --no-gh-release
+            npm publish --access public
+          fi

@@ -31,5 +31,14 @@
   },
   "devDependencies": {
     "@napi-rs/cli": "^3.8.2"
+  },
+  "optionalDependencies": {
+    "@xyd-js/native-darwin-arm64": "0.0.0",
+    "@xyd-js/native-darwin-x64": "0.0.0",
+    "@xyd-js/native-linux-x64-gnu": "0.0.0",
+    "@xyd-js/native-linux-arm64-gnu": "0.0.0",
+    "@xyd-js/native-linux-x64-musl": "0.0.0",
+    "@xyd-js/native-linux-arm64-musl": "0.0.0",
+    "@xyd-js/native-win32-x64-msvc": "0.0.0"
   }
 }

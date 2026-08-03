@@ -1,0 +1,133 @@
+name: tests:native
+
+# S6+ per-PR native gate (cheap, single runner — the heavy 3-target embed matrix
+# lives in binary-targets.yml):
+#   tier 1 — cargo fmt/clippy/test on the crates/ workspace, including the
+#            fixture-parity + oracle round-trip tests (they read the committed
+#            packages/*/__fixtures__ oracles from the checkout).
+#   tier 2 — build the napi .node (debug — parity is value-equality, not perf)
+#            and run the through-shim vitest suites of MIGRATED packages in both
+#            modes (XYD_NATIVE=1 native / XYD_NATIVE=0 frozen JS fallback).
+
+on:
+  push:
+    branches: [ master, canary ]
+    paths:
+      - 'crates/**'
+      - 'packages/xyd-native/**'
+      - 'packages/xyd-gql/**'
+      - 'packages/xyd-openapi/**'
+      - 'packages/xyd-uniform/**'
+      - 'packages/xyd-mcp-uniform/**'
+      - '.github/workflows/tests-native.yml'
+  pull_request:
+    branches: [ master, canary ]
+    paths:
+      - 'crates/**'
+      - 'packages/xyd-native/**'
+      - 'packages/xyd-gql/**'
+      - 'packages/xyd-openapi/**'
+      - 'packages/xyd-uniform/**'
+      - 'packages/xyd-mcp-uniform/**'
+      - '.github/workflows/tests-native.yml'
+  workflow_dispatch:
+
+jobs:
+  cargo:
+    name: cargo (fmt + clippy + parity tests)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Setup cargo cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            crates/target
+          key: ${{ runner.os }}-cargo-crates-${{ hashFiles('crates/**/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-crates-
+
+      - name: fmt
+        working-directory: crates
+        run: cargo fmt --all -- --check
+
+      - name: clippy
+        working-directory: crates
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: test (incl. fixture parity + oracle round-trip)
+        working-directory: crates
+        run: cargo test --workspace
+
+  ffi:
+    name: ffi (napi build + through-shim vitest, both modes)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.10.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup cargo cache (napi crate)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/xyd-native/target
+          key: ${{ runner.os }}-cargo-native-debug-${{ hashFiles('crates/**/Cargo.toml', 'packages/xyd-native/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-native-debug-
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Build native core (debug)
+        run: pnpm --filter @xyd-js/native build:native:debug
+
+      - name: Native smoke (classify + hello)
+        run: node -e "const n=require('./packages/xyd-native/index.js'); if(n.classify('docs.json')!=='settings')throw new Error('classify broken'); console.log('ok:', n.hello('ci'))"
+
+      # Through-shim parity of MIGRATED packages, both modes. Grows one block per
+      # migrated package (W1: xyd-gql). Uses vitest directly — the shims resolve
+      # @xyd-js/native from the workspace-linked debug build above.
+      - name: xyd-gql vitest (XYD_NATIVE=1 then =0)
+        run: |
+          if [ -d packages/xyd-gql/__tests__ ] && grep -rq "XYD_NATIVE" packages/xyd-gql/src 2>/dev/null; then
+            cd packages/xyd-gql
+            XYD_NATIVE=1 npx vitest run
+            XYD_NATIVE=0 npx vitest run
+          else
+            echo "xyd-gql not migrated yet — skipping through-shim tier"
+          fi

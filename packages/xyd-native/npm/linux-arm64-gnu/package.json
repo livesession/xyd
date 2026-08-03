@@ -1,0 +1,19 @@
+{
+  "name": "@xyd-js/native-linux-arm64-gnu",
+  "version": "0.0.0",
+  "cpu": [
+    "arm64"
+  ],
+  "main": "xyd-native.linux-arm64-gnu.node",
+  "files": [
+    "xyd-native.linux-arm64-gnu.node"
+  ],
+  "description": "xyd Rust core (napi) — the one native module embedded into the bun-compiled binary",
+  "license": "MIT",
+  "os": [
+    "linux"
+  ],
+  "libc": [
+    "glibc"
+  ]
+}
