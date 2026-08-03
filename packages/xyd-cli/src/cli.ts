@@ -15,8 +15,10 @@ export async function cli(argv = process.argv.slice(2)) {
 
     // Only check for updates in an interactive terminal — never when output is
     // piped/redirected (e.g. `xyd completion zsh > _xyd`), so machine-readable
-    // output stays clean.
-    if (process.stdout.isTTY) {
+    // output stays clean. Skip entirely in the compiled binary: it isn't
+    // npm-installed (so checking npm for a newer `xyd-js` is meaningless) and has
+    // no package.json on disk for update-notifier to read.
+    if (process.stdout.isTTY && !(globalThis as any).__xydCompiledBinary) {
         await updateNotify()
     }
 

@@ -40,6 +40,11 @@ let packageJson: any = {};
     if (!packageJson.version && typeof __XYD_CLI_VERSION__ !== 'undefined') {
         packageJson.version = __XYD_CLI_VERSION__
     }
+    // Fallback name for the compiled binary (no package.json on disk) — keeps any
+    // pkg.name reader (e.g. update-notifier) from throwing.
+    if (!packageJson.name) {
+        packageJson.name = 'xyd-js'
+    }
 })();
 
 export function getPackageJson() {
