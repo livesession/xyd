@@ -104,3 +104,28 @@ if (!res.success) {
   process.exit(1);
 }
 console.error("[compile] ok →", outfile);
+
+// macOS (S4.5): ad-hoc codesign with the JIT + library-validation entitlements.
+// REQUIRED, not optional — without `allow-jit` the hardened runtime hangs a large
+// bun --compile binary in dyld at launch (Bun JITs; the kernel stalls/kills it).
+// Bun's own ad-hoc signature lacks these entitlements. Only when compiling a
+// darwin target ON a mac (codesign is macOS-only).
+if (target.includes("darwin") && process.platform === "darwin") {
+  const os = await import("node:os");
+  const entPath = path.join(os.tmpdir(), `xyd-entitlements-${target}.plist`);
+  writeFileSync(
+    entPath,
+    `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+<key>com.apple.security.cs.allow-jit</key><true/>
+<key>com.apple.security.cs.disable-library-validation</key><true/>
+</dict></plist>\n`
+  );
+  const sign = Bun.spawnSync(["codesign", "--force", "--sign", "-", "--entitlements", entPath, outfile]);
+  if (sign.exitCode !== 0) {
+    console.error("[compile] codesign FAILED:", sign.stderr.toString());
+    process.exit(1);
+  }
+  console.error("[compile] codesigned (ad-hoc, allow-jit + disable-library-validation)");
+}

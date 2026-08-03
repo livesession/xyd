@@ -417,7 +417,10 @@ export async function appInit(options?: PluginDocsOptions) {
             : readPreloadSettings;
 
     {
-        if (!preloadSettings.integrations?.search) {
+        // Default search = Orama — EXCEPT in the compiled binary, where the plugin
+        // isn't bundled yet (auto-adding it just fails to load). Search degrades
+        // off there until @xyd-js/plugin-orama is embedded (S4.4).
+        if (!preloadSettings.integrations?.search && !(globalThis as any).__xydCompiledBinary) {
             preloadSettings.integrations = {
                 ...(preloadSettings.integrations || {}),
                 search: {
@@ -427,7 +430,7 @@ export async function appInit(options?: PluginDocsOptions) {
         }
 
         const plugins = [
-            ...integrationsToPlugins(preloadSettings.integrations),
+            ...integrationsToPlugins(preloadSettings.integrations || {}),
             ...accessControlToPlugins(preloadSettings.accessControl),
         ];
         if (preloadSettings.plugins) {
@@ -1340,6 +1343,14 @@ async function loadPlugins(settings: Settings, options?: PluginDocsOptions) {
           ? await import(pathToFileURL(pluginName).href)
           : await import(pluginName);
       } catch (e) {
+        // Compiled binary: there's no on-disk node_modules / .xyd/host to fall back
+        // to, so a plugin that isn't bundled just degrades — a clean one-line note,
+        // not a scary "Fallback also failed" stack. (Only bundled/embedded plugins
+        // work in the standalone binary for now.)
+        if ((globalThis as any).__xydCompiledBinary) {
+          console.warn(`⚠️  plugin "${pluginName}" isn't bundled in the standalone binary — skipping (its feature is disabled).`);
+          continue;
+        }
         // Fallback: resolve the plugin from the docs project's
         // .xyd/host/node_modules, then import the resolved entry file.
         try {
