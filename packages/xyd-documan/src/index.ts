@@ -4,7 +4,7 @@ export { dev } from "./dev"
 
 export { install } from "./install"
 
-export { nodeInstallPackages, pmInstall, getHostPath, getCLIComponentsJsonPath, appInit, pluginIconSet } from "./utils"
+export { nodeInstallPackages, pmInstall, getHostPath, getBuildPath, getPublicPath, getCLIComponentsJsonPath, appInit, pluginIconSet } from "./utils"
 
 export { componentsInstall } from "./componentsInstall"
 

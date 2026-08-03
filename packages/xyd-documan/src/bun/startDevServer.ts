@@ -36,9 +36,17 @@ let HOST = "";
 let themeName = "poetry";
 let iconSetJson = "{}";
 
+/** Set the module-scoped bundler context (HOST + theme) so the exported
+ *  primitives (makeShims/buildBundle/recomputeIconSet) work when called from
+ *  buildStatic — mirrors what startDevServer sets during a dev boot. */
+export function setBuildContext(host: string, theme: string) {
+  HOST = host;
+  themeName = theme;
+}
+
 /** Resolve @xyd-js/router (the react-router replacement) — HOST first, then
  *  documan's own tree (both resolve the same workspace package in dev). */
-function resolveRouter(): string {
+export function resolveRouter(): string {
   for (const base of [HOST, DIR]) {
     if (!base) continue;
     try {
@@ -55,7 +63,7 @@ export interface DevServerHandle {
   close: () => void;
 }
 
-function makeShims(isClient: boolean): BunPlugin {
+export function makeShims(isClient: boolean): BunPlugin {
   return {
     name: "xyd-render-shims",
     setup(b) {
@@ -83,27 +91,38 @@ function makeShims(isClient: boolean): BunPlugin {
   };
 }
 
-async function buildBundle(
+export interface BundleOverrides {
+  outdir?: string;
+  naming?: any;
+  minify?: boolean;
+  sourcemap?: "none" | "linked" | "external" | "inline";
+  returnResult?: boolean; // return the full Bun.build result (for hashed asset paths)
+}
+
+export async function buildBundle(
   name: string,
   entrySrc: string,
   target: "bun" | "browser",
   external: string[],
-  isClient = false
-): Promise<string> {
+  isClient = false,
+  overrides?: BundleOverrides
+): Promise<any> {
   const entryPath = path.join(DIR, `.entry.${name}.tsx`);
   fs.writeFileSync(entryPath, entrySrc);
   const res = await Bun.build({
     entrypoints: [entryPath],
     target,
-    outdir: path.join(DIR, ".bundle", name),
+    outdir: overrides?.outdir ?? path.join(DIR, ".bundle", name),
     plugins: [makeShims(isClient)],
     // The CLIENT bundle is served to the browser on every page load — minify it
     // and keep the sourcemap EXTERNAL (a `.map` file fetched only when devtools
     // open) instead of inline, which was ~66% of the payload. The SERVER bundle
     // runs in-process (never served) so size is irrelevant — keep its inline map
-    // for readable stack traces.
-    minify: target === "browser",
-    sourcemap: target === "browser" ? "linked" : "inline",
+    // for readable stack traces. The static build overrides these (hashed names,
+    // minified, no sourcemap).
+    minify: overrides?.minify ?? target === "browser",
+    sourcemap: overrides?.sourcemap ?? (target === "browser" ? "linked" : "inline"),
+    ...(overrides?.naming ? { naming: overrides.naming } : {}),
     external,
   });
   if (!res.success) {
@@ -112,12 +131,14 @@ async function buildBundle(
     // on first boot).
     throw new Error(`${name} bundle failed:\n${res.logs.map((l) => String(l)).join("\n")}`);
   }
+  if (overrides?.returnResult) return res;
   return res.outputs.find((o) => o.kind === "entry-point")!.path;
 }
 
 /** Compute the real icon set (virtual:xyd-icon-set) so string-name icons
- *  (e.g. "docs:slack") resolve identically on the server AND the client. */
-async function recomputeIconSet(s: any): Promise<void> {
+ *  (e.g. "docs:slack") resolve identically on the server AND the client.
+ *  Returns the JSON string (inlined into the client bundle entry). */
+export async function recomputeIconSet(s: any): Promise<string> {
   let iconSet: Record<string, { svg: string }> = {};
   try {
     const plugin: any = pluginIconSet(s);
@@ -130,6 +151,7 @@ async function recomputeIconSet(s: any): Promise<void> {
   (globalThis as any).__xydIconSet = iconSet;
   iconSetJson = JSON.stringify(iconSet);
   console.error("[dev] icon set:", Object.keys(iconSet).length, "icons");
+  return iconSetJson;
 }
 
 async function rebundleClient(): Promise<string> {

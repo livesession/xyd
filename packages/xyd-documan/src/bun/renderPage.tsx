@@ -19,7 +19,7 @@ import { seedGlobals, ShellProviders, getSettings, getSettingsClone, matchRoute,
 // React elements can't cross the SSR→CSR boundary via JSON (the $$typeof Symbol
 // is dropped, leaving an invalid child object). Strip them before serializing;
 // the client re-derives them (e.g. webeditor icons the theme injects).
-function stripReactElements(o: any): any {
+export function stripReactElements(o: any): any {
   if (o == null || typeof o !== "object") return o;
   if (React.isValidElement(o)) return null;
   // Already-broken serialized element (lost its $$typeof Symbol): shape {props, _owner|_store}.
@@ -79,13 +79,23 @@ function renderShell({ settings, bodyHtml, data }: any): string {
  * Pure function of `slug` + the live server globals; ContentFS reads files fresh
  * per request, so the watcher's reinit/reseed keeps it current with no caching.
  */
-export async function buildPageData(slug: string) {
+export async function buildPageData(slug: string, opts: { shellOnly?: boolean } = {}) {
   slug = slug || "index";
   const s = getSettings();
   const locale = "";
 
   const props: any = await mapSettingsToProps(s, globalThis.__xydPagePathMapping, slug, undefined as any, locale);
   const { groups: sidebarGroups, breadcrumbs, navlinks, metadata } = props;
+
+  // SECURITY (S3 SSG): a protected page with no server-side deploy adapter must
+  // NEVER compile/emit its MDX into the static HTML — render an empty shell; the
+  // client's ProtectedPageShell fetches the content chunk after auth.
+  if (opts.shellOnly) {
+    return {
+      sidebarGroups, breadcrumbs, navlinks, slug, code: "", metadata,
+      rawPage: "", editLink: undefined, canPassComponents: false, shellOnly: true,
+    };
+  }
 
   const md: any = await markdownPlugins(
     { maxDepth: metadata?.maxTocDepth || s?.theme?.writer?.maxTocDepth || 2 } as any,
@@ -157,7 +167,7 @@ export async function renderPage(slug: string, search: string = ""): Promise<str
 
 // ---- CSS + client-bundle serving ----
 
-function cssResolver(HOST: string, themeName: string) {
+export function cssResolver(HOST: string, themeName: string) {
   const tryResolve = (...specs: string[]) => {
     for (const s of specs) {
       try {
@@ -183,6 +193,72 @@ function cssResolver(HOST: string, themeName: string) {
     ],
     "/_xyd/ui.css": [tryResolve("@xyd-js/ui/index.css") || pkgDist("@xyd-js/ui", "dist/index.css")],
   } as Record<string, (string | null)[]>;
+}
+
+// ---- S3: static build (SSG) render ----
+
+/** Production HTML shell for `xyd build`: same skeleton as renderShell() but with
+ *  real hashed asset hrefs (from globalThis.__xydBuildAssets, seeded by
+ *  buildStatic) and NO live-reload script. */
+function renderStaticShell({ settings, bodyHtml, data }: any): string {
+  const a = (globalThis as any).__xydBuildAssets as { clientJs: string; cssLinks: string[] };
+  const colorScheme = settings?.theme?.appearance?.colorScheme || "os";
+  const metadata = data.loaderData.metadata;
+  const title = metadata?.seoTitle || metadata?.title || settings?.seo?.title || "xyd";
+  const layer =
+    "@layer reset, defaults, defaultfix, components, fabric, templates, decorators, themes, themedecorator, presets, user, overrides;";
+  const json = JSON.stringify(data).replace(/</g, "\\u003c");
+  return (
+    `<!doctype html><html data-color-scheme="${colorScheme}"><head>` +
+    `<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">` +
+    `<title>${esc(title)}</title>` +
+    `<style>${layer}</style>` + // @layer declaration MUST be the first head child
+    (a?.cssLinks || []).map((h: string) => `<link rel="stylesheet" href="${h}">`).join("") +
+    `</head><body>` +
+    `<div id="root">${bodyHtml}</div>` +
+    `<script id="__xyd_data" type="application/json">${json}</script>` +
+    `<script type="module" src="${a?.clientJs || "/assets/client.js"}"></script>` +
+    `</body></html>`
+  );
+}
+
+/** Build-time per-slug render. Mirrors renderPage() but uses the static shell and
+ *  a caller-supplied shellOnly (protected pages). `renderToString` (not
+ *  renderToStaticMarkup) so bootClient's hydrateRoot matches. */
+export async function renderPageStatic(slug: string, opts: { shellOnly?: boolean } = {}): Promise<string> {
+  slug = slug || "index";
+  const s = getSettings();
+  const loaderData = await buildPageData(slug, opts);
+  const pathname = slugToPathname(slug);
+  const routeId = matchRoute(pathname, s?.navigation);
+  const store = createRouterStore({
+    location: { pathname, search: "", hash: "" },
+    matches: [{ id: routeId, pathname, params: {}, data: loaderData }],
+  });
+  const bodyHtml = renderToString(
+    <RouterProvider store={store}>
+      <ShellProviders />
+    </RouterProvider>
+  );
+  const data = {
+    slug,
+    settings: s,
+    settingsClone: getSettingsClone() || s,
+    loaderData,
+    routeId,
+    userComponents: [],
+    userHooks: {},
+  };
+  return renderStaticShell({ settings: s, bodyHtml, data: stripReactElements(data) });
+}
+
+/** Seed the render globals for a static build (same head as start(), no serve). */
+export function seedForBuild(ThemeCtor: any) {
+  globalThis.__xydSettings = stripReactElements(globalThis.__xydSettings);
+  if (globalThis.__xydSettingsClone) {
+    globalThis.__xydSettingsClone = stripReactElements(globalThis.__xydSettingsClone);
+  }
+  seedGlobals(ThemeCtor);
 }
 
 /** Called by the launcher's generated server entry with the theme class. */
