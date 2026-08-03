@@ -294,12 +294,18 @@ function renderStaticShell({ settings, bodyHtml, data }: any): string {
 /** Build-time per-slug render. Mirrors renderPage() but uses the static shell and
  *  a caller-supplied shellOnly (protected pages). `renderToString` (not
  *  renderToStaticMarkup) so bootClient's hydrateRoot matches. */
-export async function renderPageStatic(slug: string, opts: { shellOnly?: boolean } = {}): Promise<string> {
+export async function renderPageStatic(slug: string, opts: { shellOnly?: boolean; asRootIndex?: boolean } = {}): Promise<string> {
   slug = slug || "index";
   const s = getSettings();
   const loaderData = await buildPageData(slug, opts);
-  const pathname = slugToPathname(slug);
-  const routeId = matchRoute(pathname, s?.navigation);
+  // Root fallback (a site with no explicit index page): index.html carries the
+  // FIRST page's content but is served at "/". SSR + client must agree on the
+  // router location or useLocation-driven active-state hydrates differently →
+  // mismatch. Seed location/routeId/client-slug as the ROOT ("/","index"), not the
+  // source page's path, so both sides render this content at "/" identically.
+  const pathname = opts.asRootIndex ? "/" : slugToPathname(slug);
+  const routeId = opts.asRootIndex ? "/" : matchRoute(pathname, s?.navigation);
+  const dataSlug = opts.asRootIndex ? "index" : slug;
   const store = createRouterStore({
     location: { pathname, search: "", hash: "" },
     matches: [{ id: routeId, pathname, params: {}, data: loaderData }],
@@ -310,7 +316,7 @@ export async function renderPageStatic(slug: string, opts: { shellOnly?: boolean
     </RouterProvider>
   );
   const data = {
-    slug,
+    slug: dataSlug,
     loaderData,
     routeId,
     userComponents: [],

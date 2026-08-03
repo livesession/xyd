@@ -252,7 +252,9 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     const first = slugs.find((k) => k !== "index" && !((accessMap["/" + k] || accessMap[k]) && (accessMap["/" + k] || accessMap[k]) !== "public"));
     if (first) {
       try {
-        const html = await (globalThis as any).__xydRenderStatic(first, { shellOnly: false });
+        // asRootIndex: render `first`'s content but seed location/slug as "/"/"index"
+        // so the client (which loads this at "/") hydrates without a mismatch.
+        const html = await (globalThis as any).__xydRenderStatic(first, { shellOnly: false, asRootIndex: true });
         writeHtml(clientDir, "index", html);
         console.error(`[build] root index.html → ${first}`);
       } catch { /* non-fatal */ }
