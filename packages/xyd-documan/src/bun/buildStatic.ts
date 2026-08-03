@@ -4,6 +4,7 @@ import { pathToFileURL } from "node:url";
 
 import { appInit, getHostPath, getBuildPath, getPublicPath } from "../../dist/index.js";
 import { buildBundle, recomputeIconSet, setBuildContext } from "./startDevServer";
+import { robotsTxt, sitemapXml, sitemapRoutes } from "./seo";
 
 /**
  * S3 static build (SSG). `XYD_BUN=1 xyd build` runs this instead of the two Vite
@@ -205,37 +206,18 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   process.exit(0);
 }
 
-/** sitemap.xml — port of host/app/sitemap.ts (access-filtered). Uses the actual
- *  prerendered page set + seo.domain for absolute URLs. */
+/** sitemap.xml — via the shared ./seo helpers (identical to the dev server). */
 function emitSitemap(clientDir: string, settings: any, accessMap: Record<string, string>, slugs: string[]) {
-  if (!settings?.navigation?.sidebar && !settings?.navigation?.languages?.length) return; // loader 404s otherwise
-  const baseUrl = settings?.seo?.domain || "";
-  const routes: string[] = [];
-  if ((globalThis as any).__xydHasIndexPage) routes.push("/");
-  for (const slug of slugs) {
-    if (slug === "index") continue;
-    const acc = accessMap["/" + slug] || accessMap[slug];
-    if (acc && acc !== "public") continue; // exclude protected
-    routes.push("/" + slug);
-  }
-  const xml =
-    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-    routes
-      .map((r) => {
-        const full = `${baseUrl}${r}`.replace(/([^:]\/)\/+/g, "$1");
-        return `  <url>\n    <loc>${full}</loc>\n    <changefreq>daily</changefreq>\n    <priority>0.7</priority>\n  </url>`;
-      })
-      .join("\n") +
-    `\n</urlset>`;
+  const routes = sitemapRoutes(slugs, accessMap, !!(globalThis as any).__xydHasIndexPage);
+  const xml = sitemapXml(settings, routes); // build: no request origin — seo.domain or ""
+  if (!xml) return; // no navigation → loader would 404
   fs.writeFileSync(path.join(clientDir, "sitemap.xml"), xml);
   console.error(`[build] sitemap → ${routes.length} urls`);
 }
 
-/** robots.txt — port of host/app/robots.ts. */
+/** robots.txt — via the shared ./seo helper (identical to the dev server). */
 function emitRobots(clientDir: string, settings: any) {
-  const baseUrl = settings?.seo?.domain || "";
-  const content = `# https://www.robotstxt.org/robotstxt.html\nUser-agent: *\nAllow: /\n\n# Sitemap\nSitemap: ${baseUrl}/sitemap.xml`;
-  fs.writeFileSync(path.join(clientDir, "robots.txt"), content);
+  fs.writeFileSync(path.join(clientDir, "robots.txt"), robotsTxt(settings));
 }
 
 /** /llms.txt + raw .md/.mdx (keys of __xydRawRouteFiles; protected pages were

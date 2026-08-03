@@ -9,6 +9,7 @@ import { ContentFS } from "@xyd-js/content";
 import { createRouterStore, RouterProvider } from "@xyd-js/router";
 
 import { seedGlobals, ShellProviders, getSettings, getSettingsClone, matchRoute, slugToPathname } from "./render-tree";
+import { metaTagsHtml, robotsTxt, sitemapXml, sitemapRoutes } from "./seo";
 
 /**
  * Server render (SSR). Reuses the browser-safe tree in `render-tree.tsx` so the
@@ -65,15 +66,22 @@ function renderShell({ settings, bodyHtml, data }: any): string {
   const layer =
     "@layer reset, defaults, defaultfix, components, fabric, templates, decorators, themes, themedecorator, presets, user, overrides;";
   const json = JSON.stringify(data).replace(/</g, "\\u003c"); // safe inside <script>
+  const favicon = settings?.theme?.favicon;
   return (
     `<!doctype html><html data-color-scheme="${colorScheme}"><head>` +
     `<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">` +
+    // Same SEO/head surface as the static build shell (parity): color-scheme
+    // prehydration, title, meta tags, favicon, theme.head.
+    `<script>window.__xydColorSchemeSettings=${JSON.stringify({ defaultColorScheme: colorScheme })};${COLOR_SCHEME_SCRIPT}</script>` +
     `<title>${esc(title)}</title>` +
+    metaTagsHtml(metadata, settings) +
+    (favicon ? `<link rel="icon" href="${esc(favicon)}">` : "") +
     `<style>${layer}</style>` +
     `<link rel="stylesheet" href="/_xyd/theme.css">` +
     `<link rel="stylesheet" href="/_xyd/components.css">` +
     `<link rel="stylesheet" href="/_xyd/atlas.css">` +
     `<link rel="stylesheet" href="/_xyd/ui.css">` +
+    themeHeadHtml(settings) +
     `</head><body>` +
     `<div id="root">${bodyHtml}</div>` +
     `<script src="/_xyd/iconset.js"></script>` +
@@ -216,27 +224,6 @@ const COLOR_SCHEME_SCRIPT =
   `var t=localStorage.getItem('xyd-color-scheme')||d||'auto';var m=window.matchMedia('(prefers-color-scheme: dark)').matches;` +
   `document.documentElement.setAttribute('data-color-scheme',t==='auto'?(m?'dark':'light'):t)}` +
   `catch(e){document.documentElement.setAttribute('data-color-scheme',window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}})();`;
-
-/** SEO/social meta tags from page frontmatter + settings.seo (parity with
- *  plugin-docs page.tsx meta()). og:/article:/fb: → property=, else name=. */
-function metaTagsHtml(metadata: any, settings: any): string {
-  const seo = settings?.seo || {};
-  const desc = metadata?.seoDescription || metadata?.description || seo?.description;
-  const ogTitle = metadata?.seoTitle || metadata?.title;
-  const out: string[] = [];
-  if (desc) out.push(`<meta name="description" content="${esc(desc)}">`);
-  if (ogTitle) out.push(`<meta property="og:title" content="${esc(ogTitle)}">`);
-  if (desc) out.push(`<meta property="og:description" content="${esc(desc)}">`);
-  out.push(`<meta property="og:type" content="website">`);
-  if (metadata?.noindex) out.push(`<meta name="robots" content="noindex">`);
-  const tags = { ...(seo?.metatags || {}), ...(metadata?.metatags || {}) };
-  for (const [k, v] of Object.entries(tags)) {
-    if (v == null) continue;
-    const attr = /^(og:|article:|fb:)/.test(k) ? "property" : "name";
-    out.push(`<meta ${attr}="${esc(k)}" content="${esc(String(v))}">`);
-  }
-  return out.join("");
-}
 
 /** Serialize settings.theme.head (["script",{src}] / ["meta",{...}] / ["script",{},"code"]).
  *  Carries site-verification tags, analytics/third-party scripts, plugin head. */
@@ -451,6 +438,29 @@ export function start(ThemeCtor: any) {
           });
         }
       }
+      // SEO artifacts — parity with the static build (buildStatic emits these to
+      // disk; the dev server generates them on the fly from the same helpers).
+      if (url.pathname === "/robots.txt") {
+        return new Response(robotsTxt(getSettings(), url.origin), { headers: { "content-type": "text/plain; charset=utf-8" } });
+      }
+      if (url.pathname === "/sitemap.xml") {
+        const routes = sitemapRoutes(
+          Object.keys(globalThis.__xydPagePathMapping || {}),
+          (globalThis as any).__xydAccessMap || {},
+          !!(globalThis as any).__xydHasIndexPage
+        );
+        const xml = sitemapXml(getSettings(), routes, url.origin);
+        return xml
+          ? new Response(xml, { headers: { "content-type": "application/xml; charset=utf-8" } })
+          : new Response("", { status: 404, headers: { "content-type": "text/plain" } });
+      }
+      if (url.pathname === "/llms.txt") {
+        const raw = ((globalThis as any).__xydRawRouteFiles || {})["/llms.txt"];
+        return raw
+          ? new Response(raw, { headers: { "content-type": "text/plain; charset=utf-8" } })
+          : new Response("", { status: 404, headers: { "content-type": "text/plain" } });
+      }
+
       const asset = await serveStatic(url.pathname);
       if (asset) return asset;
       const slug = deriveSlug(url.pathname);
