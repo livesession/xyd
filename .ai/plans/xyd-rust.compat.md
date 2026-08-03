@@ -22,7 +22,7 @@ from the current engine. So each suspected gap is verified against the **Vite ba
 | # | Gap | State | Evidence |
 |---|-----|-------|----------|
 | 1–3 | **dev/build SEO parity** (meta tags, robots/sitemap/llms in dev; `metaTagsHtml` parity) | ✅ **FIXED** | `4.writing/2.seo` 5/5 on Bun |
-| 4 | **`npm:` external themes** broke `Bun.build` (hardcoded `@xyd-js/theme-${name}`) | ✅ **FIXED** | `themePkg.ts`; `7.themes/1` 2/2; `npm:@xyd-js/theme-cosmo` verified |
+| 4 | **`npm:` external themes** — broke `Bun.build` (hardcoded specifier); also never *installed* into `.xyd/host`, and `makeShims` didn't route non-`@xyd-js` themes through HOST | ✅ **FIXED** | `themePkg.ts` + `ensureThemeInstalled()` (on-demand install, parity with Vite postWorkspaceSetup) + makeShims themePkg resolver; `7.themes/1,2,3` **8/8** on Bun |
 | 5 | **i18n** catalogs / overrides / locale-switcher not wired (locale hardcoded `""`) | ✅ **FIXED** | `8.i18n` 24/24 on Bun |
 | 7 | **settings as external asset** (tests grep `/assets/virtual_xyd-settings-*.js`; raw all-locale settings must not leak into page HTML) | ✅ **FIXED** | `serialize.ts settingsBundleJs`; i18n 6/7 pass |
 | — | **9.mcp** (tools/resources/auth/manifest/composition) | ✅ **PASS** | `9.mcp` 10/10 on Bun (no changes needed) |

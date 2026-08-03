@@ -6,7 +6,7 @@ import { pathToFileURL } from "node:url";
 // appInit + getHostPath + pluginIconSet from documan's BUILT dist (picocolors
 // etc. bundled). The bun/* sources are raw TSX run by Bun; the heavy engine
 // (settings/plugin loading) stays in the compiled dist.
-import { appInit, getHostPath, pluginIconSet } from "../../dist/index.js";
+import { appInit, getHostPath, pluginIconSet, postWorkspaceSetup } from "../../dist/index.js";
 import { startWatcher, type WatchHandle } from "./watcher";
 import { themePackage, themeShortName } from "./themePkg";
 import { pluginPagesEntrySrc } from "./pluginPages";
@@ -49,6 +49,35 @@ export function setBuildContext(host: string, rawName: string) {
   themePkg = themePackage(rawName);
 }
 
+/** Ensure the active theme package is installed in .xyd/host so Bun.build can
+ *  resolve it. Built-in themes are already there (baked at framework install);
+ *  an EXTERNAL `npm:` theme (or a plugin/integration dep) may be missing on the
+ *  first build — run the shared postWorkspaceSetup (writes host package.json +
+ *  installs) exactly like the Vite build/dev path does. Gated on resolvability so
+ *  the common (built-in) case skips the install entirely. */
+/** Node-style resolution by filesystem walk: is `pkg` reachable in a node_modules
+ *  from `fromDir` upward? Pure `fs` (handles pnpm symlinks + workspace hoisting) so
+ *  it does NOT touch Bun's resolver cache — a failed `Bun.resolveSync` here would
+ *  poison the negative cache and make the later Bun.build (makeShims) fail to
+ *  resolve the package even AFTER postWorkspaceSetup installs it. */
+function pkgInstalled(fromDir: string, pkg: string): boolean {
+  const segs = pkg.split("/");
+  let dir = fromDir;
+  for (;;) {
+    if (fs.existsSync(path.join(dir, "node_modules", ...segs, "package.json"))) return true;
+    const parent = path.dirname(dir);
+    if (parent === dir) return false;
+    dir = parent;
+  }
+}
+
+export async function ensureThemeInstalled(host: string, themePkg: string, settings: any): Promise<void> {
+  if ((globalThis as any).__xydCompiledBinary) return; // binary: themes are embedded, no install
+  if (pkgInstalled(host, themePkg)) return; // built-in (workspace-hoisted) or already installed
+  console.error(`[bun] theme "${themePkg}" not installed in host — running workspace setup…`);
+  await postWorkspaceSetup(settings);
+}
+
 /** Resolve @xyd-js/router (the react-router replacement) — HOST first, then
  *  documan's own tree (both resolve the same workspace package in dev). */
 export function resolveRouter(): string {
@@ -80,6 +109,19 @@ export function makeShims(isClient: boolean): BunPlugin {
       // tree (dev: repo .xyd/host may be stale but documan depends on it); its
       // `react` still dedupes via the react onResolve below.
       b.onResolve({ filter: /^react-router(-dom)?$/ }, () => ({ path: resolveRouter() }));
+      // External (npm:) theme — its bare package name isn't @xyd-js/* so the broad
+      // resolver below won't catch it. Route the themePkg (+ subpaths) through HOST
+      // so Bun.build finds the on-demand-installed package in .xyd/host/node_modules.
+      if (themePkg && !/^@xyd-js\//.test(themePkg)) {
+        const themeFilter = new RegExp("^" + themePkg.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(/|$)");
+        b.onResolve({ filter: themeFilter }, (args) => {
+          try {
+            return { path: Bun.resolveSync(args.path, HOST) };
+          } catch {
+            return undefined;
+          }
+        });
+      }
       b.onResolve({ filter: /^(react$|react\/|react-dom$|react-dom\/|@xyd-js\/)/ }, (args) => {
         // @xyd-js/router isn't in the (possibly stale) HOST tree — resolve it the
         // same way the react-router alias does, so the direct import here and the
@@ -229,6 +271,10 @@ export async function startDevServer(
   themeName = themeShortName(rawName);
   themePkg = themePackage(rawName);
   console.error("[dev] host:", HOST, "| theme:", themeName);
+
+  // External (npm:) themes aren't baked into .xyd/host — install on demand so
+  // Bun.build can resolve them (parity with the Vite postWorkspaceSetup step).
+  await ensureThemeInstalled(HOST, themePkg, settings);
 
   await recomputeIconSet(settings); // sets globalThis.__xydIconSet (project set; the SSR shell emits it)
 

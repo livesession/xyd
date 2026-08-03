@@ -3,7 +3,7 @@ import * as fs from "node:fs";
 import { pathToFileURL } from "node:url";
 
 import { appInit, getHostPath, getBuildPath, getPublicPath } from "../../dist/index.js";
-import { buildBundle, recomputeIconSet, setBuildContext } from "./startDevServer";
+import { buildBundle, recomputeIconSet, setBuildContext, ensureThemeInstalled } from "./startDevServer";
 import { robotsTxt, sitemapXml, sitemapRoutes } from "./seo";
 import { themePackage, themeShortName } from "./themePkg";
 import { settingsBundleJs } from "./serialize";
@@ -50,6 +50,9 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   const themePkg = themePackage(rawName);    // import specifier (npm: → bare pkg)
   setBuildContext(HOST, rawName);
   console.error("[build] host:", HOST, "| theme:", themeName);
+  // Install an external (npm:) theme into .xyd/host if missing (parity with the
+  // Vite postWorkspaceSetup step) so Bun.build can resolve it below.
+  await ensureThemeInstalled(HOST, themePkg, settings);
   await recomputeIconSet(settings); // side-effect: globalThis.__xydIconSet = project set (the SSR shell emits it)
 
   const clientDir = path.join(getBuildPath(), "client");
