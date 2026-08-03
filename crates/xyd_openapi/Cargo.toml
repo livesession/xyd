@@ -1,0 +1,22 @@
+[package]
+name = "xyd_openapi"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish = false
+
+# W2 of the S6+ Rust migration: OpenAPI 3.x → Uniform Reference[] — the Rust
+# port of packages/xyd-openapi's conversion pipeline. Endpoint code-sample
+# generation (@readme/oas-to-snippet) intentionally stays a JS post-pass in the
+# shim; component-schema JSON examples ARE generated here. The frozen fixtures
+# are the spec (tier-1 compares with endpoint examples stripped; tier-2 through
+# the shim covers the combined output).
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = "0.9"
+xyd_uniform = { path = "../xyd_uniform" }
+
+[dev-dependencies]
+xyd_parity = { path = "../xyd_parity" }
