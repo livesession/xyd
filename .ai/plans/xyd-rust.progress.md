@@ -69,15 +69,30 @@ not inlined — pages 17KB not 856KB; fixes custom icons + hydration); step 11 d
 node-free off the SAME embedded bundles, multi-theme server exposes start/reseed, `startDevServer`
 branches on `__xydCompiledBinary`; Rust watcher not embedded → fs.watch fallback). **S4 COMPLETE.**
 
-1. **S4.4/S4.5/dist** — runOpensdk in-process + `npm:` theme degrade (+ optionally embed the
-   `@xyd-js/native` watcher `.node` for Rust dev-watch in the binary); macOS codesign
-   (`allow-jit` + `disable-library-validation`; dyld `LC_UUID` risk); darwin-arm64 GitHub release +
-   install.sh + per-platform-npm fallback + 2-runner CI matrix (R5).
-3. **S3 parity tail** (unchanged): full basename page-URL prefixing; appearance CSS; full
-   access-control-in-SSG; non-atomic build-to-temp+swap; the pre-existing frontmatter-access-map bug.
-2. **S3 parity tail** (can run in parallel / as needed): full basename page-URL prefixing; appearance
-   CSS (primary color/cssTokens/fonts/presets); full access-control-in-SSG (plugin login/auth pages +
-   protected-content chunks + nav filtering — currently fail-closed); non-atomic build-to-temp+swap;
-   the pre-existing shared frontmatter-access-map bug (`utils.ts` — affects Vite too).
-3. Cross-target embed CI matrix (R5) — reuses the `crates/` build; unblocks S4 distribution.
-4. Optional: Bun-execution rung in `XydServer` to e2e the `XYD_BUN` dev+build paths in CI.
+**R5 DONE — cross-target napi embed validated** (commit `859304d1`): the cross chain proven from a
+darwin-arm64 host — Docker-built ELF `.node`s (aarch64 + x86_64) staged via the new
+`packages/xyd-cli/native/<bun-target>/core.node` convention, `bun scripts/compile.ts bun-linux-{arm64,x64}`
+on the mac, and BOTH binaries ran in bare `debian:bookworm-slim` containers (no node/bun):
+`__nativecheck` answered from the embedded Rust core and a full `xyd build` wrote 2/2 real HTML pages.
+CI: `.github/workflows/binary-targets.yml` — 3-runner NATIVE matrix (ubuntu-24.04 / ubuntu-24.04-arm /
+macos-14): pnpm build → `napi build:native` → stage → compile → native smoke (`__nativecheck` greps +
+node-free `xyd build` emitting marker HTML w/ highlighting; macos asserts the allow-jit codesign) →
+upload artifact. compile.ts hard-errors on a cross-target compile without a staged matching `.node`.
+Windows = explicit TODO in the workflow. **All stages S0–S5 + every S4 sub-goal + R1/R5 are done.**
+
+## What's left (post-plan tail)
+1. **Distribution** — GitHub Releases wiring (the binary:targets artifacts → release assets),
+   `install.sh` (curl|sh), per-platform npm (`@xyd-js/cli-<platform>` + `xyd-js` wrapper), windows
+   target, non-adhoc codesign/notarization for distribution outside the machine that built it.
+2. **Binary feature-degradations (S4.4)** — embed `@xyd-js/plugin-orama` (search currently degrades
+   off in the binary); `opensdk` in-process; `npm:` external themes in the BINARY (the non-binary Bun
+   engine now installs them — commit `31fa55f1` — but the binary only carries the 6 built-ins).
+3. **S3/SSG parity tail** — appearance CSS (`generateUserCss`/fonts/presets) in SSG; full basename
+   page-URL prefixing; AC Layer-2 edge deploy adapters (Layer-1 landed — `a2be73ab`); atomic
+   build-to-temp+swap; the pre-existing empty-metadata `__xydAccessMap` frontmatter bug (affects Vite too).
+4. **Flip the default** — Bun engine is still opt-in behind `XYD_BUN=1`; Vite remains default. The
+   2.0-alpha work: `advanced.vite` deprecation, plugin-contract `bundler`/`loaders`/`virtualModules`,
+   react-router shim policy, `XydServer` XYD_BUN rung in CI e2e (73/74 already pass ad hoc).
+5. **S6+ progressive Rust ports** (the multi-month tail) — OpenAPI→Uniform, markdown/MDX hot path,
+   SSG render-loop driver; each gated on byte-for-byte fixture parity. → to be scoped as its own
+   multi-chunk plan.
