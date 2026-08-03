@@ -113,11 +113,60 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   console.error(`[build] wrote ${ok}/${slugs.length} pages`);
   if (missing.length) console.error("[build] render failures:\n  " + missing.slice(0, 10).join("\n  "));
 
-  // TODO (next batch): sitemap.xml, robots.txt, llms.txt, raw .md, plugin pages,
-  // protected-content chunks.
+  // 7) NON-PAGE emits (access-filtered where relevant).
+  emitSitemap(clientDir, settings, accessMap, slugs);
+  emitRobots(clientDir, settings);
+  emitRawRouteFiles(clientDir); // /llms.txt + raw .md (already protected-filtered at appInit)
 
   console.error(`[build] done → ${clientDir}`);
   process.exit(0);
+}
+
+/** sitemap.xml — port of host/app/sitemap.ts (access-filtered). Uses the actual
+ *  prerendered page set + seo.domain for absolute URLs. */
+function emitSitemap(clientDir: string, settings: any, accessMap: Record<string, string>, slugs: string[]) {
+  if (!settings?.navigation?.sidebar && !settings?.navigation?.languages?.length) return; // loader 404s otherwise
+  const baseUrl = settings?.seo?.domain || "";
+  const routes: string[] = [];
+  if ((globalThis as any).__xydHasIndexPage) routes.push("/");
+  for (const slug of slugs) {
+    if (slug === "index") continue;
+    const acc = accessMap["/" + slug] || accessMap[slug];
+    if (acc && acc !== "public") continue; // exclude protected
+    routes.push("/" + slug);
+  }
+  const xml =
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+    routes
+      .map((r) => {
+        const full = `${baseUrl}${r}`.replace(/([^:]\/)\/+/g, "$1");
+        return `  <url>\n    <loc>${full}</loc>\n    <changefreq>daily</changefreq>\n    <priority>0.7</priority>\n  </url>`;
+      })
+      .join("\n") +
+    `\n</urlset>`;
+  fs.writeFileSync(path.join(clientDir, "sitemap.xml"), xml);
+  console.error(`[build] sitemap → ${routes.length} urls`);
+}
+
+/** robots.txt — port of host/app/robots.ts. */
+function emitRobots(clientDir: string, settings: any) {
+  const baseUrl = settings?.seo?.domain || "";
+  const content = `# https://www.robotstxt.org/robotstxt.html\nUser-agent: *\nAllow: /\n\n# Sitemap\nSitemap: ${baseUrl}/sitemap.xml`;
+  fs.writeFileSync(path.join(clientDir, "robots.txt"), content);
+}
+
+/** /llms.txt + raw .md/.mdx (keys of __xydRawRouteFiles; protected pages were
+ *  already excluded when the map was built in appInit). */
+function emitRawRouteFiles(clientDir: string) {
+  const raw: Record<string, string> = (globalThis as any).__xydRawRouteFiles || {};
+  let n = 0;
+  for (const key of Object.keys(raw)) {
+    const abs = path.join(clientDir, key.replace(/^\/+/, ""));
+    fs.mkdirSync(path.dirname(abs), { recursive: true });
+    fs.writeFileSync(abs, raw[key]);
+    n++;
+  }
+  console.error(`[build] raw files → ${n} (incl. llms.txt)`);
 }
 
 /** Resolve the 4 package-dist CSS groups (same order the dev server serves),
