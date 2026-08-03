@@ -96,3 +96,31 @@ Windows = explicit TODO in the workflow. **All stages S0–S5 + every S4 sub-goa
 5. **S6+ progressive Rust ports** (the multi-month tail) — OpenAPI→Uniform, markdown/MDX hot path,
    SSG render-loop driver; each gated on byte-for-byte fixture parity. → to be scoped as its own
    multi-chunk plan.
+
+## S6+ execution (branch feat/rust-bun-restack-packages)
+
+**W0 DONE** (commits `242281d2`, `7a1ebb32`, `b6959803`): openapi oracle FROZEN (writer gated behind
+OAS_BUILD_FIXTURES=1, full 10-fixture matrix re-enabled + regenerated once — the committed outputs had
+drifted badly while disabled, incl. the http:// URL-join fix and kind:/type: fields);
+`crates/xyd_uniform` (serde mirror of the Uniform model — the roundtrip drift-alarm caught 3 real
+type-vs-reality deviations: optional name/description, undeclared typeDef, explicit-null Meta.value) +
+`crates/xyd_parity` (canon equality + JSON-pointer diffs); `tests-native.yml` + `release-native.yml`
++ napi per-platform npm dirs as optionalDependencies.
+
+**W1 DONE — xyd-gql is Rust-backed, the migration pattern is PROVEN** (commits `b798510e`, `730dce57`):
+`crates/xyd_gql` (async-graphql-parser; mergeTypeDefs union-merge, docDirectiveChain metadata, the
+faithful __definitionProperties circular-cache, graphql-js-print-compatible samples, preserved quirks
+incl. the subscription "mutation" region prefix) — cargo 14/14 fixture parity. napi surface
+(xyd-native/src/gql.rs, JSON envelope {references, route}); shim (src/impl-js frozen + native.ts
+loader + dispatcher). Gates: vitest 14/14 BOTH modes; a GraphQL site built through the Bun engine is
+BYTE-IDENTICAL Rust-vs-JS; the recompiled node-free binary (core.node 1.1MB) builds the site 4/4;
+apps/docs 89/89 unaffected.
+
+**BUG FOUND (pre-existing, unfixed)**: an UNROUTED `api.graphql` project fails on the SECOND build —
+`composeFileMap` (plugin-docs presets/uniform) walks the previous `.xyd/build` output when
+matchRoute="" and trips on a bare-name .md read (ENOENT getBooks.md). Both modes, pre-shim too.
+
+**NEXT (W2)**: xyd-openapi → crates/xyd_openapi — deref module FIRST (the __UNSAFE_refPath circular
+semantics) against -2.complex.openai/-3.random; oapExamples stays a JS post-pass at its single call
+site (oas-schema.ts:83); rider xyd-openapi2opensdk. Then W3 uniform runtime + mcp-uniform + fused
+endpoints, W4 frontmatter fast path, W5 content mdast core, W6 settings, W7 codegen track.
