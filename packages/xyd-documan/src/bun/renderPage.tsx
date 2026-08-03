@@ -10,6 +10,7 @@ import { createRouterStore, RouterProvider } from "@xyd-js/router";
 
 import { seedGlobals, ShellProviders, getSettings, getSettingsClone, matchRoute, slugToPathname } from "./render-tree";
 import { metaTagsHtml, robotsTxt, sitemapXml, sitemapRoutes } from "./seo";
+import { themePackage, themeShortName } from "./themePkg";
 
 /**
  * Server render (SSR). Reuses the browser-safe tree in `render-tree.tsx` so the
@@ -186,7 +187,7 @@ export async function renderPage(slug: string, search: string = ""): Promise<str
 
 // ---- CSS + client-bundle serving ----
 
-export function cssResolver(HOST: string, themeName: string) {
+export function cssResolver(HOST: string, themePkg: string) {
   const tryResolve = (...specs: string[]) => {
     for (const s of specs) {
       try {
@@ -203,7 +204,7 @@ export function cssResolver(HOST: string, themeName: string) {
     }
   };
   return {
-    "/_xyd/theme.css": [tryResolve(`@xyd-js/theme-${themeName}/index.css`) || pkgDist(`@xyd-js/theme-${themeName}`, "dist/index.css")],
+    "/_xyd/theme.css": [tryResolve(`${themePkg}/index.css`) || pkgDist(themePkg, "dist/index.css")],
     "/_xyd/components.css": [tryResolve("@xyd-js/components/index.css") || pkgDist("@xyd-js/components", "dist/index.css")],
     "/_xyd/atlas.css": [
       tryResolve("@xyd-js/atlas/index.css") || pkgDist("@xyd-js/atlas", "index.css"),
@@ -331,10 +332,12 @@ export function start(ThemeCtor: any) {
   const s = getSettings();
 
   const HOST = process.env.XYD_HOST || path.resolve(process.cwd(), ".xyd/host");
-  const themeName = (s?.theme?.name || "poetry").replace(/^npm:/, "");
+  const rawName = s?.theme?.name || "poetry";
+  const themeName = themeShortName(rawName);
+  const themePkg = themePackage(rawName);
   // In the compiled binary the CSS is embedded (Bun.file reads the bunfs paths in
   // __xydDevCss directly); otherwise resolve from HOST node_modules as usual.
-  const CSS = (globalThis as any).__xydDevCss || cssResolver(HOST, themeName);
+  const CSS = (globalThis as any).__xydDevCss || cssResolver(HOST, themePkg);
   const CWD = process.cwd();
   const basename = (s?.advanced?.basename || "").replace(/\/$/, "");
 

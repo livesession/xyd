@@ -5,6 +5,7 @@ import { pathToFileURL } from "node:url";
 import { appInit, getHostPath, getBuildPath, getPublicPath } from "../../dist/index.js";
 import { buildBundle, recomputeIconSet, setBuildContext } from "./startDevServer";
 import { robotsTxt, sitemapXml, sitemapRoutes } from "./seo";
+import { themePackage, themeShortName } from "./themePkg";
 
 /**
  * S3 static build (SSG). `XYD_BUN=1 xyd build` runs this instead of the two Vite
@@ -50,8 +51,9 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   const HOST = getHostPath();
   process.env.XYD_HOST = HOST;
   const rawName: string = settings?.theme?.name || "poetry";
-  const themeName = rawName.startsWith("npm:") ? rawName.slice("npm:".length) : rawName;
-  setBuildContext(HOST, themeName);
+  const themeName = themeShortName(rawName); // short label / embed key
+  const themePkg = themePackage(rawName);    // import specifier (npm: → bare pkg)
+  setBuildContext(HOST, rawName);
   console.error("[build] host:", HOST, "| theme:", themeName);
   await recomputeIconSet(settings); // side-effect: globalThis.__xydIconSet = project set (the SSR shell emits it)
 
@@ -88,7 +90,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     const clientRes: any = await buildBundle(
       "client",
       // iconSet is NOT baked — the SSR shell injects the project set (step 10).
-      `import Theme from "@xyd-js/theme-${themeName}";\n` +
+      `import Theme from "${themePkg}";\n` +
         `import { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
       "browser",
       [],
@@ -118,7 +120,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     cssLinks = emb.cssLinks;
     console.error(`[build] css (embedded) → ${cssLinks.length} files`);
   } else {
-    cssLinks = await emitCss(HOST, themeName, clientDir);
+    cssLinks = await emitCss(HOST, themePkg, clientDir);
   }
 
   // 2b) Icon set as ONE hashed, cached asset (project-specific) — NOT inlined per
@@ -147,7 +149,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     console.error("[build] bundling server render…");
     const serverBundle: string = await buildBundle(
       "buildserver",
-      `import Theme from "@xyd-js/theme-${themeName}";\n` +
+      `import Theme from "${themePkg}";\n` +
         `import { renderPageStatic, seedForBuild } from "./renderPage";\n` +
         `globalThis.__xydSeedForBuild = () => seedForBuild(Theme);\n` +
         `globalThis.__xydRenderStatic = (slug, opts) => renderPageStatic(slug, opts);\n`,
@@ -236,7 +238,7 @@ function emitRawRouteFiles(clientDir: string) {
 
 /** Resolve the 4 package-dist CSS groups (same order the dev server serves),
  *  concat, content-hash, write to assets/, return the hrefs (order preserved). */
-async function emitCss(HOST: string, themeName: string, clientDir: string): Promise<string[]> {
+async function emitCss(HOST: string, themePkg: string, clientDir: string): Promise<string[]> {
   const rs = (spec: string) => {
     try {
       return Bun.resolveSync(spec, HOST);
@@ -252,7 +254,7 @@ async function emitCss(HOST: string, themeName: string, clientDir: string): Prom
     }
   };
   const groups: [string, (string | null)[]][] = [
-    ["theme", [rs(`@xyd-js/theme-${themeName}/index.css`) || pkgDist(`@xyd-js/theme-${themeName}`, "dist/index.css")]],
+    ["theme", [rs(`${themePkg}/index.css`) || pkgDist(themePkg, "dist/index.css")]],
     ["components", [rs("@xyd-js/components/index.css") || pkgDist("@xyd-js/components", "dist/index.css")]],
     [
       "atlas",

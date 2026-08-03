@@ -8,6 +8,7 @@ import { pathToFileURL } from "node:url";
 // (settings/plugin loading) stays in the compiled dist.
 import { appInit, getHostPath, pluginIconSet } from "../../dist/index.js";
 import { startWatcher, type WatchHandle } from "./watcher";
+import { themePackage, themeShortName } from "./themePkg";
 
 /**
  * S1 dev server (Bun.serve + Bun.build — no Vite, no React Router). Reusable
@@ -34,14 +35,17 @@ const SERVER_ONLY = /^@xyd-js\/composer(\/|$)/;
 // Module-scoped so rebuild() (in startWatcher) can re-bundle without re-reading args.
 let HOST = "";
 let themeName = "poetry";
+let themePkg = "@xyd-js/theme-poetry"; // import specifier (npm: themes resolve to the bare pkg)
 let iconSetJson = "{}";
 
 /** Set the module-scoped bundler context (HOST + theme) so the exported
  *  primitives (makeShims/buildBundle/recomputeIconSet) work when called from
- *  buildStatic — mirrors what startDevServer sets during a dev boot. */
-export function setBuildContext(host: string, theme: string) {
+ *  buildStatic — mirrors what startDevServer sets during a dev boot. Pass the RAW
+ *  theme name (incl. any `npm:` prefix); themeName/themePkg are derived. */
+export function setBuildContext(host: string, rawName: string) {
   HOST = host;
-  themeName = theme;
+  themeName = themeShortName(rawName);
+  themePkg = themePackage(rawName);
 }
 
 /** Resolve @xyd-js/router (the react-router replacement) — HOST first, then
@@ -164,7 +168,7 @@ async function rebundleClient(): Promise<string> {
   const bundle = await buildBundle(
     "client",
     // iconSet is NOT baked — the SSR shell injects the project set (step 10).
-    `import Theme from "@xyd-js/theme-${themeName}";\nimport { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
+    `import Theme from "${themePkg}";\nimport { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
     "browser",
     [],
     true
@@ -179,7 +183,7 @@ async function rebundleServer(): Promise<string> {
   // trigger a re-seed after a hot re-appInit.
   return buildBundle(
     "server",
-    `import Theme from "@xyd-js/theme-${themeName}";\n` +
+    `import Theme from "${themePkg}";\n` +
       `import { start, reseed } from "./renderPage";\n` +
       `globalThis.__xydBunStart  = () => start(Theme);\n` +
       `globalThis.__xydBunReseed = () => reseed(Theme);\n`,
@@ -219,7 +223,8 @@ export async function startDevServer(
   HOST = getHostPath();
   process.env.XYD_HOST = HOST;
   const rawName: string = settings?.theme?.name || "poetry";
-  themeName = rawName.startsWith("npm:") ? rawName.slice("npm:".length) : rawName;
+  themeName = themeShortName(rawName);
+  themePkg = themePackage(rawName);
   console.error("[dev] host:", HOST, "| theme:", themeName);
 
   await recomputeIconSet(settings); // sets globalThis.__xydIconSet (project set; the SSR shell emits it)
