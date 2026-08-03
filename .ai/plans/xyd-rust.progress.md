@@ -47,10 +47,28 @@ grep -rn ssrLoadModule packages/xyd-documan/src packages/xyd-plugin-docs/src   #
 ## Next
 S0 ✅ · S5 ✅ · **S1 ✅** (Bun dev server, `XYD_BUN=1`, minified) · **S2 ✅** (`@xyd-js/router`,
 react-router gone from the client) · **S3 core ✅** (`xyd build` SSG without Vite/RR: 89/89 pages
-hydrate, hashed assets, sitemap/robots/llms, SEO head, AC fail-closed). Vite still the default.
-1. **S4 (next)** — single `bun --compile` binary: compile per target, embed the `.node` (proven in
-   the R1 spike), embed the host template via `--asset`. Acceptance: `./xyd build` on a Node-free box.
-   +2–5 days over S3 per the plan; per-platform-npm is the always-green fallback.
+hydrate, hashed assets, sitemap/robots/llms, SEO head, AC fail-closed) · **S4.0/S4.1 ✅** (commit
+`0ec50a95`: `bun --compile` binary embeds the Rust core; node-free `--version`/`--help` +
+`hello()`/`classify()` from a pristine dir) · **S4.2 ✅** (commit `18119400`: full CLI graph loads +
+Bun engine runs in-process — from a clean dir the binary runs appInit, resolves the theme + icon
+set, and reaches the client-bundle step). Vite still the default.
+
+1. **S4.3 (NEXT — the crux, RISKIEST)** — prebuilt per-theme render bundles. Runtime `Bun.build`
+   render can't work in the compiled binary: `buildBundle` writes `.entry.*.tsx` to the read-only
+   `/$bunfs/root/`, and its entry references `./client-entry`/`./renderPage` (bundled INTO binary.js,
+   not on disk) + `@xyd-js/theme-*`/react (from `.xyd/host` node_modules, absent in a clean dir).
+   `buildStatic` needs 3 things prebuilt+embedded PER THEME: the **client** bundle, the **server**
+   render bundle (`await import` → `__xydRenderStatic`/`__xydSeedForBuild`), and the **4 CSS groups**
+   (`emitCss` resolves them from HOST). Design: a `prebuild-render.ts` (run at compile time,
+   node_modules present) writes `prebuilt/<theme>/{client.js,server.js,styles.css}`; embed via
+   `import … with {type:"file"}`; `buildStatic`/`startDevServer` load the prebuilt set for the
+   configured theme when `__xydCompiledBinary`. `npm:` themes degrade (can't prebuild). Watch: two-React
+   isolation, embedded-file import semantics, per-theme binary bloat.
+2. **S4.4/S4.5/dist** — runOpensdk in-process + `npm:` theme degrade; macOS codesign
+   (`allow-jit` + `disable-library-validation`; dyld `LC_UUID` risk); darwin-arm64 GitHub release +
+   install.sh + per-platform-npm fallback + 2-runner CI matrix.
+3. **S3 parity tail** (unchanged): full basename page-URL prefixing; appearance CSS; full
+   access-control-in-SSG; non-atomic build-to-temp+swap; the pre-existing frontmatter-access-map bug.
 2. **S3 parity tail** (can run in parallel / as needed): full basename page-URL prefixing; appearance
    CSS (primary color/cssTokens/fonts/presets); full access-control-in-SSG (plugin login/auth pages +
    protected-content chunks + nav filtering — currently fail-closed); non-atomic build-to-temp+swap;
