@@ -63,12 +63,16 @@ Lessons: --compile follows `type:file` only across a static edge; server-only ex
 (typedoc/sources/shiki/vscode-*) must be STUBBED not external (new `buildBundle` `extraPlugins`,
 ordered before makeShims); codehike (not shiki) highlights.
 
-1. **S4.3 refinements** — step 10 lift iconSet out of the prebuilt client (custom-icon correctness +
-   avoid a client hydration mismatch; SSR already correct); step 9 shared-split CSS (components/atlas/ui
-   embedded 6×); step 11 dev-in-binary (needs a 2nd prebuilt server variant exposing start/reseed).
-2. **S4.4/S4.5/dist** — runOpensdk in-process + `npm:` theme degrade; macOS codesign
+**S4.3 refinements DONE** (commit `72650dfd`): step 9 shared-CSS split (16 embedded files not 31,
+120MB); step 10 project-icon lift (one cached `/assets/iconset-<hash>.js` / `/_xyd/iconset.js` asset,
+not inlined — pages 17KB not 856KB; fixes custom icons + hydration); step 11 dev-in-binary (`xyd dev`
+node-free off the SAME embedded bundles, multi-theme server exposes start/reseed, `startDevServer`
+branches on `__xydCompiledBinary`; Rust watcher not embedded → fs.watch fallback). **S4 COMPLETE.**
+
+1. **S4.4/S4.5/dist** — runOpensdk in-process + `npm:` theme degrade (+ optionally embed the
+   `@xyd-js/native` watcher `.node` for Rust dev-watch in the binary); macOS codesign
    (`allow-jit` + `disable-library-validation`; dyld `LC_UUID` risk); darwin-arm64 GitHub release +
-   install.sh + per-platform-npm fallback + 2-runner CI matrix.
+   install.sh + per-platform-npm fallback + 2-runner CI matrix (R5).
 3. **S3 parity tail** (unchanged): full basename page-URL prefixing; appearance CSS; full
    access-control-in-SSG; non-atomic build-to-temp+swap; the pre-existing frontmatter-access-map bug.
 2. **S3 parity tail** (can run in parallel / as needed): full basename page-URL prefixing; appearance
