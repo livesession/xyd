@@ -11,7 +11,6 @@
       "group": [
         ""
       ],
-      "fullPath": "/users",
       "scopes": []
     },
     "examples": {
@@ -45,7 +44,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -62,13 +62,15 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
     "definitions": [
       {
         "title": "Response",
+        "type": "return",
         "variants": [
           {
             "title": "200",

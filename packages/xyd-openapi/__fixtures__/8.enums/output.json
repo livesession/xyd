@@ -11,7 +11,7 @@
       "group": [
         ""
       ],
-      "fullPath": "http:/api.example.com/v1/users",
+      "fullPath": "http://api.example.com/v1/users",
       "servers": [
         "http://api.example.com/v1"
       ],
@@ -48,7 +48,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "A sample JSON response",
@@ -65,7 +66,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
@@ -124,10 +126,12 @@
           }
         ],
         "properties": [],
-        "meta": []
+        "meta": [],
+        "type": "$rest.request.body"
       },
       {
         "title": "Response",
+        "type": "return",
         "variants": [
           {
             "title": "200",
