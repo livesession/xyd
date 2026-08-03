@@ -32,7 +32,8 @@
     "@xyd-js/cli-sdk": "workspace:*",
     "codehike": "^1.0.3",
     "@code-hike/lighter": "^1.0.3",
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "gray-matter": "^4.0.3"
   },
   "peerDependencies": {
     "@xyd-js/framework": "workspace:*",

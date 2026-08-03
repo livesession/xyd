@@ -24,6 +24,16 @@ export async function dev(options: any = {}) {
  * child (a long-lived server) keeps `xyd dev` alive.
  */
 async function devBun(options: any = {}) {
+    // Compiled binary (S4.2): the binary IS bun — run the dev server in-process
+    // (no external bun to spawn, no on-disk launcher to resolve). The literal
+    // specifier lets `bun --compile` bundle the whole engine graph in.
+    if ((globalThis as any).__xydCompiledBinary) {
+        const { startDevServer } = await import("@xyd-js/documan/bun-engine")
+        await startDevServer(process.cwd(), { port: options.port })
+        await new Promise(() => {}) // keep `xyd dev` alive
+        return
+    }
+
     const probe = spawnSync("bun", ["--version"], { stdio: "ignore" })
     if (probe.status !== 0) {
         console.error("XYD_BUN is set but Bun is not on PATH. Install Bun: https://bun.sh")

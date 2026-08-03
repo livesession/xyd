@@ -8,7 +8,8 @@
     "./dev": "./dist/dev.js",
     "./build": "./dist/build.js",
     "./bun-launcher": "./src/bun/launcher.ts",
-    "./bun-build-launcher": "./src/bun/buildLauncher.ts"
+    "./bun-build-launcher": "./src/bun/buildLauncher.ts",
+    "./bun-engine": "./src/bun/bunEngine.ts"
   },
   "files": [
     "dist",

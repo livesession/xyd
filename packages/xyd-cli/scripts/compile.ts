@@ -59,6 +59,11 @@ const stubOptionals: BunPlugin = {
 console.error(`[compile] target=${target} → ${outfile}`);
 const res = await Bun.build({
   entrypoints: [path.resolve(DIR, "..", "src", "binary.ts")],
+  // Bundler target MUST be "bun" — without it Bun.build defaults to "browser",
+  // under which Node CJS deps (gray-matter → js-yaml, …) are externalized and
+  // then fail to resolve at runtime inside the bunfs. `compile.target` is the
+  // platform triple (a separate axis).
+  target: "bun",
   // @ts-ignore - compile is a Bun.build option (standalone executable)
   compile: { target, outfile },
   plugins: [stubOptionals],

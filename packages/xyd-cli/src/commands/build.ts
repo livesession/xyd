@@ -45,6 +45,15 @@ export async function build() {
  * only Bun can run — spawn a bun child on @xyd-js/documan/bun-build-launcher.
  */
 async function buildBun() {
+    // Compiled binary (S4.2): the binary IS bun — run the engine in-process.
+    // There's no external bun to spawn and no on-disk launcher to resolve. The
+    // literal specifier lets `bun --compile` bundle the whole engine graph in.
+    if ((globalThis as any).__xydCompiledBinary) {
+        const { buildStatic } = await import('@xyd-js/documan/bun-engine');
+        await buildStatic(process.cwd());
+        return;
+    }
+
     const probe = spawnSync('bun', ['--version'], { stdio: 'ignore' });
     if (probe.status !== 0) {
         console.error('XYD_BUN is set but Bun is not on PATH. Install Bun: https://bun.sh');

@@ -2,7 +2,13 @@ import path from "path";
 import { promises as fs } from "fs";
 import { fileURLToPath } from "node:url";
 
-import matterStringify from "gray-matter/lib/stringify";
+// gray-matter is externalized (declared in dependencies) so tsup does NOT bundle
+// its CJS-with-dynamic-require source into this ESM dist (which throws under
+// node's ESM loader). The subpath needs an explicit `.js` — gray-matter ships no
+// `exports` map, so node ESM does file resolution and rejects the extensionless
+// specifier. Both static imports are still followed + bundled by `bun --compile`.
+import matterStringify from "gray-matter/lib/stringify.js";
+import matter from "gray-matter";
 import { Plugin as VitePlugin } from "vite"
 import { route } from "@react-router/dev/routes";
 
@@ -25,12 +31,8 @@ import { uniformPluginXDocsSidebar } from "@xyd-js/openapi";
 
 import { Preset, PresetData } from "../../types";
 
-import { createRequire } from 'module';
 import { VIRTUAL_CONTENT_FOLDER } from "../../const";
 import { getHostPath } from "../../utils";
-
-const require = createRequire(import.meta.url);
-const matter = require('gray-matter'); // TODO: !!! BETTER SOLUTION !!!
 
 export async function ensureAndCleanupVirtualFolder() {
     try {
