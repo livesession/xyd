@@ -28,7 +28,7 @@ from the current engine. So each suspected gap is verified against the **Vite ba
 | — | **9.mcp** (tools/resources/auth/manifest/composition) | ✅ **PASS** | `9.mcp` 10/10 on Bun (no changes needed) |
 | 9 | **`advanced.vite.server.allowedHosts`** — disallowed host got 200 not 403 (no Vite host-check) | ✅ **FIXED** | `hostAllowed()` in `renderPage.tsx`; `6.custom-vite-options` 3/3 on Bun |
 | 6 | ~~sidebar active-group auto-expand~~ (opencli `a[href$=install]` present but hidden) | ⓘ **NOT A GAP** | **Fails identically on Vite** — pre-existing broken test: its `.first()` grabs the hidden `part="mobile-sidebar"` link (`display:none` on desktop on BOTH engines). Bun is compatible. |
-| 8 | **access-control** — build fail-closes; dev has no `shellOnly` SSR exclusion, `/login`+`/auth/*` plugin pages, or access-filtered sitemap | 🚧 **IN PROGRESS** | Vite baseline 22/22; Bun: dev SSR-exclusion + build support being ported |
+| 8 | **access-control** (Layer-1) — build fail-closed; dev had no `shellOnly` SSR exclusion, `/login`+`/auth/*` plugin pages, or access-filtered sitemap | ✅ **FIXED** | `5.access-control` **22/22** on Bun (dev + build). Layer-2 edge deploy adapters still deferred (accepted). |
 
 ## Gap 6 detail (false positive — kept as a record)
 
@@ -40,18 +40,27 @@ Verified on a **Vite** build: mobile-sidebar first in DOM, `display:none`, `.fir
 the exact failure. So this is a bug in the test (`.first()` should target the desktop sidebar or
 filter to visible), equally broken on both engines — not a Bun incompatibility.
 
-## Gap 8 (access-control) — scope of the remaining port
+## Gap 8 (access-control) — what was ported (Layer-1, all 22 tests)
 
-Layer-1 (static/SSR exclusion) is in scope for parity; edge deploy adapters are an accepted
-later slice. Needed in the Bun engine to reach the 22 Vite tests:
+New `bun/accessControl.ts` + `bun/pluginPages.ts`, wired through renderPage/buildStatic/render-tree:
 
-1. **`shellOnly` SSR exclusion** — read `globalThis.__xydAccessMap`; for a protected slug with no
-   deploy adapter, render an empty shell (no MDX compile) so protected content never lands in HTML.
-2. **Plugin pages** — render the AC plugin's `/login`, `/auth/jwt-callback`, `/auth/callback`
-   components (dev routes + build HTML), wrapped in `AccessControlProvider`, with `seoTags()`.
-3. **Pre-hydration auth head script** + client `AuthGuard`/`AccessControlProvider` so authenticated
-   users load protected content after hydration.
-4. **Sitemap filtering** by `__xydAccessMap` (the shared `sitemapRoutes` helper already takes it).
+1. **`shellOnly` SSR exclusion** — `resolveShellOnly(slug, cookie)` reads `globalThis.__xydAccessMap`
+   + decodes the JWT cookie (dev) / no cookie (build); a protected slug the viewer can't access
+   renders an empty `[data-auth-protected]` shell (no MDX compile) → content never in HTML. Wired in
+   dev `renderPage`, the `/_xyd/data` endpoint, and the build prerender loop.
+2. **Protected content chunks** — `/__xyd_protected_content/<enc-slug>.js` (dev route re-checks the
+   cookie; build emits static files). `ProtectedPageShell` fetches it after the pre-hydration script
+   confirms auth → authenticated users see full content (build tests 17/18).
+3. **Plugin pages** — `pluginPagesEntrySrc()` bundles the AC plugin's `/login` + `/auth/jwt-callback`
+   components into the client + server bundles (empty string → no-op for non-AC projects) and
+   registers them on `__xydPluginPageComponents`; `ShellProviders` renders them (wrapped in
+   `AccessControlProvider`) for dev routes + build HTML.
+4. **Pre-hydration auth head script + FOPC CSS** — already emitted via `themeHeadHtml`
+   (plugin `head` folded into `settings.theme.head`); only the build guard blocked it.
+5. **Sitemap filtering** by `__xydAccessMap` (shared `sitemapRoutes`).
+
+**Deferred (accepted):** Layer-2 edge deploy adapters (`server.mjs` / netlify / vercel / cloudflare)
+are not emitted — a `accessControl.deploy`-configured project should use the default build.
 
 ## Environment (test infra, not incompatibilities)
 

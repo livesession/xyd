@@ -120,6 +120,73 @@ export function matchRoute(pathname: string, navigation: any): string {
   return best || target; // fall back to the exact plain-page id
 }
 
+/** Access-control (Layer-1): a protected page the viewer can't see. Its MDX was
+ *  never compiled server-side (loaderData.code === ""), so the SSR HTML carries no
+ *  content — only an empty [data-auth-protected] placeholder. After hydration, if
+ *  the pre-hydration script marked the viewer authenticated, fetch the compiled
+ *  content chunk and render it client-side (parity with plugin-docs
+ *  ProtectedPageShell). SSR and first client render are identical (code === null). */
+function ProtectedPageShell() {
+  const loaderData = useLoaderData();
+  const theme = state.theme;
+  const analytics = useAnalytics();
+  const themeContent = theme.reactContentComponents();
+  const themeFile = theme.reactFileComponents();
+  const { Page } = theme;
+  const [code, setCode] = React.useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (!(window as any).__xydAuthState?.authenticated) return;
+    let alive = true;
+    fetch(`/__xyd_protected_content/${encodeURIComponent(loaderData.slug)}.js`)
+      .then((r) => (r.ok ? r.text() : null))
+      .then((t) => { if (alive && t) setCode(t); })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, [loaderData.slug]);
+
+  if (code) {
+    const content = mdxContent(code, themeContent, themeFile, { analytics });
+    const contentOriginal = mdxContent(code, themeContent, undefined, { analytics });
+    const ContentOriginal = contentOriginal.component;
+    return (
+      <FrameworkPage
+        metadata={content.metadata}
+        breadcrumbs={loaderData.breadcrumbs}
+        rawPage=""
+        toc={content.toc || []}
+        navlinks={loaderData.navlinks}
+        ContentComponent={content.component}
+        ContentOriginal={ContentOriginal}
+        editLink={loaderData.editLink}
+      >
+        <Page>
+          <ContentOriginal components={{ ...themeContent, wrapper: (p: any) => <>{p.children}</> }} />
+        </Page>
+      </FrameworkPage>
+    );
+  }
+
+  const Noop = () => null;
+  return (
+    <FrameworkPage
+      metadata={loaderData.metadata || {}}
+      breadcrumbs={loaderData.breadcrumbs}
+      rawPage=""
+      toc={[]}
+      navlinks={loaderData.navlinks}
+      ContentComponent={Noop}
+      ContentOriginal={Noop}
+      editLink={loaderData.editLink}
+    >
+      <Page>
+        <div data-auth-protected />
+      </Page>
+    </FrameworkPage>
+  );
+}
+
 function DocsBody() {
   const loaderData = useLoaderData();
   const theme = state.theme;
@@ -127,6 +194,8 @@ function DocsBody() {
   const themeContent = theme.reactContentComponents();
   const themeFile = theme.reactFileComponents();
   const globalAPI = { analytics };
+
+  if (loaderData.shellOnly) return <ProtectedPageShell />;
 
   const content = mdxContent(loaderData.code, themeContent, themeFile, globalAPI);
   const contentOriginal = mdxContent(loaderData.code, themeContent, undefined, globalAPI);
@@ -181,8 +250,23 @@ function buildFrameworkI18n(settings: any, currentLocale?: string): IFrameworkI1
   } as any;
 }
 
+/** Plugin page (access-control /login, /auth/jwt-callback, …). Rendered outside the
+ *  docs chrome (no sidebar/Framework) — parity with the Vite pluginPageLayout: just
+ *  theme CSS (from the shell) + the AccessControlProvider wrapper. The component is
+ *  bundled + registered on __xydPluginPageComponents by pluginPagesEntrySrc(). */
+function PluginPageRenderer({ route }: { route: string }) {
+  const comps = (globalThis as any).__xydPluginPageComponents || {};
+  const Provider = (globalThis as any).__xydAccessControlProvider;
+  const Comp = comps[route];
+  if (!Comp) return <div data-plugin-page-missing={route} />;
+  const inner = <Comp />;
+  return Provider ? <Provider>{inner}</Provider> : <>{inner}</>;
+}
+
 export function ShellProviders() {
   const loaderData = useLoaderData();
+  // Plugin page (login/auth callback) short-circuits the docs render tree.
+  if (loaderData.pluginPage) return <PluginPageRenderer route={loaderData.pluginPage} />;
   const settings = state.settings;
   // Per-locale settings overrides (catalog $-keys + languages[].overrides) so
   // useSettings() returns the locale-effective config; parity with layout.tsx.

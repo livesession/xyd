@@ -9,6 +9,7 @@ import { pathToFileURL } from "node:url";
 import { appInit, getHostPath, pluginIconSet } from "../../dist/index.js";
 import { startWatcher, type WatchHandle } from "./watcher";
 import { themePackage, themeShortName } from "./themePkg";
+import { pluginPagesEntrySrc } from "./pluginPages";
 
 /**
  * S1 dev server (Bun.serve + Bun.build — no Vite, no React Router). Reusable
@@ -168,7 +169,9 @@ async function rebundleClient(): Promise<string> {
   const bundle = await buildBundle(
     "client",
     // iconSet is NOT baked — the SSR shell injects the project set (step 10).
-    `import Theme from "${themePkg}";\nimport { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
+    // pluginPagesEntrySrc() (empty for most projects) registers login/auth-callback
+    // components before bootClient runs, so plugin routes hydrate.
+    `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}import { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
     "browser",
     [],
     true
@@ -183,7 +186,7 @@ async function rebundleServer(): Promise<string> {
   // trigger a re-seed after a hot re-appInit.
   return buildBundle(
     "server",
-    `import Theme from "${themePkg}";\n` +
+    `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}` +
       `import { start, reseed } from "./renderPage";\n` +
       `globalThis.__xydBunStart  = () => start(Theme);\n` +
       `globalThis.__xydBunReseed = () => reseed(Theme);\n`,

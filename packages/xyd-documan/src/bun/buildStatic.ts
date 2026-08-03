@@ -7,6 +7,7 @@ import { buildBundle, recomputeIconSet, setBuildContext } from "./startDevServer
 import { robotsTxt, sitemapXml, sitemapRoutes } from "./seo";
 import { themePackage, themeShortName } from "./themePkg";
 import { settingsBundleJs } from "./serialize";
+import { pluginPagesEntrySrc, pluginPageRoutes } from "./pluginPages";
 
 /**
  * S3 static build (SSG). `XYD_BUN=1 xyd build` runs this instead of the two Vite
@@ -35,19 +36,12 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   }
   const settings = (globalThis as any).__xydSettings;
 
-  // SECURITY (fail-closed): the Bun static build does not yet reproduce the full
-  // access-control emit path (plugin login/auth pages, per-page protected content
-  // chunks, frontmatter `public:false` gating, sidebar/navlink filtering). Rather
-  // than risk shipping a static site that leaks protected content or 404s the
-  // login flow, refuse an access-controlled project on the experimental XYD_BUN
-  // build and point at the default (Vite) build, which supports it.
-  if (settings?.accessControl) {
-    console.error(
-      "[build] accessControl is configured — the XYD_BUN static build does not support access control yet.\n" +
-        "        Run the default build (without XYD_BUN) for access-controlled sites."
-    );
-    process.exit(1);
-  }
+  // Access control (Layer-1): the prerender loop excludes protected content from
+  // HTML (shellOnly, resolveShellOnly), emits per-page protected-content chunks
+  // for post-auth client load, renders the plugin login/auth pages, and filters
+  // the sitemap by __xydAccessMap. Layer-2 edge deploy adapters (server.mjs etc.)
+  // are not emitted here yet — a deploy-configured project should use the default
+  // build until that lands.
 
   const HOST = getHostPath();
   process.env.XYD_HOST = HOST;
@@ -91,7 +85,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     const clientRes: any = await buildBundle(
       "client",
       // iconSet is NOT baked — the SSR shell injects the project set (step 10).
-      `import Theme from "${themePkg}";\n` +
+      `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}` +
         `import { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
       "browser",
       [],
@@ -159,10 +153,12 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     console.error("[build] bundling server render…");
     const serverBundle: string = await buildBundle(
       "buildserver",
-      `import Theme from "${themePkg}";\n` +
-        `import { renderPageStatic, seedForBuild } from "./renderPage";\n` +
+      `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}` +
+        `import { renderPageStatic, seedForBuild, buildPageData, renderPluginPageStatic } from "./renderPage";\n` +
         `globalThis.__xydSeedForBuild = () => seedForBuild(Theme);\n` +
-        `globalThis.__xydRenderStatic = (slug, opts) => renderPageStatic(slug, opts);\n`,
+        `globalThis.__xydRenderStatic = (slug, opts) => renderPageStatic(slug, opts);\n` +
+        `globalThis.__xydRenderPluginStatic = (route) => renderPluginPageStatic(route);\n` +
+        `globalThis.__xydCompileContent = (slug) => buildPageData(slug, { shellOnly: false }).then((d) => d.code || "");\n`,
       "bun",
       ["typedoc", "@xyd-js/sources", "shiki", "vscode-oniguruma", "vscode-textmate"]
     );
@@ -201,6 +197,49 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     }
   }
   console.error(`[build] wrote ${ok}/${slugs.length} pages`);
+
+  // 6a) PROTECTED CONTENT CHUNKS: for every protected page emit the compiled MDX at
+  // /__xyd_protected_content/<encodeURIComponent(slug)>.js. It was excluded from the
+  // page HTML (shellOnly); the client's ProtectedPageShell fetches it AFTER auth.
+  // Static host = no server re-check, so this mirrors Vite's Layer-1 model (the
+  // chunk is protected by obscurity + the edge adapter when Layer-2 is configured).
+  const compile = (globalThis as any).__xydCompileContent;
+  if (compile) {
+    let chunks = 0;
+    for (const slug of slugs) {
+      const acc = accessMap["/" + slug] || accessMap[slug];
+      if (!acc || acc === "public") continue;
+      try {
+        const code = await compile(slug);
+        if (code) {
+          const dir = path.join(clientDir, "__xyd_protected_content");
+          fs.mkdirSync(dir, { recursive: true });
+          fs.writeFileSync(path.join(dir, encodeURIComponent(slug) + ".js"), code);
+          chunks++;
+        }
+      } catch { /* a broken protected page just has no post-auth content */ }
+    }
+    if (chunks) console.error(`[build] protected content chunks → ${chunks}`);
+  }
+
+  // 6d) PLUGIN PAGES (access-control /login, /auth/jwt-callback, …) → their own
+  // HTML files (parity with the RR prerender of __xydPluginPages). Marked public in
+  // the access map, so they aren't shell-excluded.
+  const pluginRoutes = pluginPageRoutes();
+  const renderPlugin = (globalThis as any).__xydRenderPluginStatic;
+  if (pluginRoutes.length && renderPlugin) {
+    let pp = 0;
+    for (const route of pluginRoutes) {
+      try {
+        const html = await renderPlugin(route);
+        writeHtml(clientDir, route.replace(/^\/+/, ""), html);
+        pp++;
+      } catch (e: any) {
+        missing.push(`${route} (plugin page): ${e?.message || e}`);
+      }
+    }
+    if (pp) console.error(`[build] plugin pages → ${pp}`);
+  }
 
   // 6b) Root fallback: a project with no explicit index page still needs `/` to
   // serve something (parity with the RR ssr:false root shell; better than a 404 on

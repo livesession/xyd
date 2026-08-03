@@ -12,6 +12,8 @@ import { seedGlobals, ShellProviders, getSettings, getSettingsClone, matchRoute,
 import { metaTagsHtml, robotsTxt, sitemapXml, sitemapRoutes } from "./seo";
 import { themePackage, themeShortName } from "./themePkg";
 import { stripReactElements, settingsBundleJs } from "./serialize";
+import { resolveShellOnly, authFromCookie, accessAllowed, pageAccess } from "./accessControl";
+import { matchPluginPage, pluginPageMeta } from "./pluginPages";
 export { stripReactElements }; // re-exported for existing consumers
 
 /**
@@ -147,10 +149,14 @@ export async function buildPageData(slug: string, opts: { shellOnly?: boolean } 
   };
 }
 
-export async function renderPage(slug: string, search: string = ""): Promise<string> {
+export async function renderPage(slug: string, search: string = "", cookieHeader: string | null = null): Promise<string> {
   slug = slug || "index";
   const s = getSettings();
-  const loaderData = await buildPageData(slug);
+  // Access control (Layer-1): a protected page the viewer can't access renders as
+  // an empty shell — its MDX is never compiled into the HTML. Uses the request
+  // cookie so an authenticated user gets the full server-rendered content.
+  const shellOnly = resolveShellOnly(slug, cookieHeader);
+  const loaderData = await buildPageData(slug, { shellOnly });
   const pathname = slugToPathname(slug); // index → "/" so home active-state hydrates
   const routeId = matchRoute(pathname, s?.navigation);
 
@@ -313,6 +319,52 @@ export async function renderPageStatic(slug: string, opts: { shellOnly?: boolean
   return renderStaticShell({ settings: s, bodyHtml, data: stripReactElements(data) });
 }
 
+/** Loader payload for a plugin page (login/auth callback). No docs data — the flag
+ *  `pluginPage` makes ShellProviders render the registered component instead. */
+function pluginPageLoaderData(route: string) {
+  return {
+    pluginPage: route,
+    slug: route.replace(/^\/+/, "") || "index",
+    locale: "",
+    metadata: pluginPageMeta(route),
+    sidebarGroups: [],
+    breadcrumbs: [],
+    navlinks: {},
+    code: "",
+    rawPage: "",
+    editLink: undefined,
+    canPassComponents: false,
+  };
+}
+
+function renderPluginTree(route: string): { bodyHtml: string; data: any } {
+  const loaderData = pluginPageLoaderData(route);
+  const store = createRouterStore({
+    location: { pathname: route, search: "", hash: "" },
+    matches: [{ id: route, pathname: route, params: {}, data: loaderData }],
+  });
+  const bodyHtml = renderToString(
+    <RouterProvider store={store}>
+      <ShellProviders />
+    </RouterProvider>
+  );
+  return { bodyHtml, data: { slug: loaderData.slug, loaderData, routeId: route, userComponents: [], userHooks: {} } };
+}
+
+/** Dev: render a plugin page (login/auth callback) to a full HTML document. */
+export async function renderPluginPage(route: string): Promise<string> {
+  const s = getSettings();
+  const { bodyHtml, data } = renderPluginTree(route);
+  return renderShell({ settings: s, bodyHtml, data: stripReactElements(data) });
+}
+
+/** Build: render a plugin page with the static (hashed-asset) shell. */
+export async function renderPluginPageStatic(route: string): Promise<string> {
+  const s = getSettings();
+  const { bodyHtml, data } = renderPluginTree(route);
+  return renderStaticShell({ settings: s, bodyHtml, data: stripReactElements(data) });
+}
+
 /** Seed the render globals for a static build (same head as start(), no serve). */
 export function seedForBuild(ThemeCtor: any) {
   globalThis.__xydSettings = stripReactElements(globalThis.__xydSettings);
@@ -469,7 +521,8 @@ export function start(ThemeCtor: any) {
         const dslug = deriveSlug("/" + rawSlug.replace(/^\/+/, "")) || "index";
         try {
           const st = getSettings();
-          const loaderData = await buildPageData(dslug);
+          const shellOnly = resolveShellOnly(dslug, req.headers.get("cookie"));
+          const loaderData = await buildPageData(dslug, { shellOnly });
           // stripReactElements is mandatory — metadata/sidebarGroups can't cross JSON otherwise.
           return Response.json(stripReactElements({ loaderData, routeId: matchRoute(slugToPathname(dslug), st?.navigation) }));
         } catch (e: any) {
@@ -477,6 +530,24 @@ export function start(ThemeCtor: any) {
             status: 404,
             headers: { "content-type": "application/json" },
           });
+        }
+      }
+      // Access-control: compiled content chunk for a protected page, fetched by
+      // ProtectedPageShell AFTER the client confirms auth. Re-checks the cookie
+      // server-side so an unauthorized viewer gets 401, never the content.
+      if (url.pathname.startsWith("/__xyd_protected_content/") && url.pathname.endsWith(".js")) {
+        const enc = url.pathname.slice("/__xyd_protected_content/".length, -3);
+        const pslug = deriveSlug("/" + decodeURIComponent(enc).replace(/^\/+/, "")) || "index";
+        const access = pageAccess(pslug);
+        const { authed, groups } = authFromCookie(req.headers.get("cookie"));
+        if (access && access !== "public" && !accessAllowed(access, authed, groups)) {
+          return new Response("Unauthorized", { status: 401, headers: { "content-type": "text/plain" } });
+        }
+        try {
+          const data = await buildPageData(pslug, { shellOnly: false });
+          return new Response(data.code || "", { headers: { "content-type": "text/javascript; charset=utf-8" } });
+        } catch {
+          return new Response("", { status: 404, headers: { "content-type": "text/javascript" } });
         }
       }
       // SEO artifacts — parity with the static build (buildStatic emits these to
@@ -502,6 +573,23 @@ export function start(ThemeCtor: any) {
           : new Response("", { status: 404, headers: { "content-type": "text/plain" } });
       }
 
+      // Plugin pages (access-control /login, /auth/jwt-callback, …) — render the
+      // registered plugin component instead of a docs page. Basename-stripped first.
+      let acPath = decodeURIComponent(url.pathname);
+      if (basename && acPath.startsWith(basename + "/")) acPath = acPath.slice(basename.length);
+      const pluginRoute = matchPluginPage(acPath);
+      if (pluginRoute) {
+        try {
+          return new Response(await renderPluginPage(pluginRoute), { headers: { "content-type": "text/html; charset=utf-8" } });
+        } catch (e: any) {
+          console.error(`render error for plugin page ${pluginRoute}:`, e);
+          return new Response(`<pre>plugin page error ${pluginRoute}\n\n${e?.stack || e}</pre>`, {
+            status: 500,
+            headers: { "content-type": "text/html; charset=utf-8" },
+          });
+        }
+      }
+
       const asset = await serveStatic(url.pathname);
       if (asset) return asset;
       const slug = deriveSlug(url.pathname);
@@ -518,7 +606,7 @@ export function start(ThemeCtor: any) {
         return new Response("Not found", { status: 404, headers: { "content-type": "text/plain; charset=utf-8" } });
       }
       try {
-        return new Response(await renderPage(slug, url.search), { headers: { "content-type": "text/html; charset=utf-8" } });
+        return new Response(await renderPage(slug, url.search, req.headers.get("cookie")), { headers: { "content-type": "text/html; charset=utf-8" } });
       } catch (e: any) {
         console.error(`render error for /${slug}:`, e);
         return new Response(`<pre>render error for /${slug}\n\n${e?.stack || e}</pre>`, {
