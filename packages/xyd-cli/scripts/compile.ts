@@ -11,7 +11,7 @@ import * as path from "node:path";
  *   cd packages/xyd-cli && bun scripts/compile.ts [bun-darwin-arm64]
  */
 
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, copyFileSync } from "node:fs";
 
 const DIR = import.meta.dir;
 const target = process.argv[2] || `bun-${process.platform === "darwin" ? "darwin" : process.platform}-${process.arch}`;
@@ -19,6 +19,30 @@ const outfile = path.resolve(DIR, "..", "dist", `xyd-${target.replace(/^bun-/, "
 
 // Inject the version — no package.json on disk inside the compiled bunfs.
 const version = JSON.parse(readFileSync(path.resolve(DIR, "..", "package.json"), "utf8")).version || "0.0.0";
+
+// R5 — per-target Rust core staging (stage-then-compile). The literal require in
+// native-boot embeds whatever sits at src/core.node at compile time, so a
+// cross-target binary MUST have the MATCHING platform's .node staged there.
+// Convention: packages/xyd-cli/native/<bun-target>/core.node
+// (e.g. native/bun-linux-arm64/core.node — a renamed libxyd_native.so built for
+// that triple). Host-native compiles keep the checked-out src/core.node (from
+// `pnpm --filter @xyd-js/native build:native`). The original is restored after
+// the compile so the working tree stays host-native.
+const coreNode = path.resolve(DIR, "..", "src", "core.node");
+const targetNode = path.resolve(DIR, "..", "native", target, "core.node");
+const hostTarget = `bun-${process.platform}-${process.arch === "arm64" ? "arm64" : "x64"}`;
+let CORE_ORIG: Uint8Array | null = null;
+if (existsSync(targetNode)) {
+  CORE_ORIG = readFileSync(coreNode);
+  copyFileSync(targetNode, coreNode);
+  console.error(`[compile] staged native core for ${target} ← native/${target}/core.node`);
+} else if (target !== hostTarget) {
+  console.error(
+    `[compile] FATAL: cross-target ${target} needs ${targetNode}\n` +
+      `          (embedding the host's ${hostTarget} core.node would produce a binary whose Rust core can't load).`
+  );
+  process.exit(1);
+}
 
 // S4.3 — PREBUILD the per-theme render bundles + regenerate the embed manifest
 // BEFORE Bun.build, so the manifest's `with { type: "file" }` targets exist on
@@ -95,8 +119,10 @@ const res = await Bun.build({
 
 // Restore the committed empty stub so the working tree stays clean — the real
 // per-theme manifest only has to exist on disk DURING this compile (the artifacts
-// under prebuilt/ are gitignored + regenerated every run).
+// under prebuilt/ are gitignored + regenerated every run). Same for the staged
+// cross-target core.node: put the host-native one back.
 writeFileSync(embedTs, EMBED_STUB);
+if (CORE_ORIG) writeFileSync(coreNode, CORE_ORIG);
 
 if (!res.success) {
   console.error("[compile] FAILED:");
