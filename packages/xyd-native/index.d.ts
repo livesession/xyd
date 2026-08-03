@@ -37,6 +37,12 @@ export interface JsChange {
   path: string
 }
 
+/**
+ * Parity target: `oapSchemaToReferences(deferencedOpenAPI(path), options?)`
+ * for LOCAL FILE specs (the shim keeps URL specs on the JS impl).
+ */
+export declare function oapSchemaToReferencesFromFile(path: string, optionsJson?: string | undefined | null): string
+
 /** Options for `createWatcher`. */
 export interface WatchOpts {
   debounceMs?: number

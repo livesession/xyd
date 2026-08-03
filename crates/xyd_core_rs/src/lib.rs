@@ -81,7 +81,10 @@ mod tests {
         assert_eq!(classify(Path::new("api/openapi.yaml")), ChangeKind::Api);
         assert_eq!(classify(Path::new("api/spec.json")), ChangeKind::Api);
         assert_eq!(classify(Path::new(".env.local")), ChangeKind::Env);
-        assert_eq!(classify(Path::new("assets/icons/logo.svg")), ChangeKind::Icon);
+        assert_eq!(
+            classify(Path::new("assets/icons/logo.svg")),
+            ChangeKind::Icon
+        );
         assert_eq!(classify(Path::new("public/robots.txt")), ChangeKind::Public);
         assert_eq!(classify(Path::new("README.txt")), ChangeKind::Other);
     }

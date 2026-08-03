@@ -16,6 +16,7 @@ serde_json = { version = "1", features = ["preserve_order"] }
 xyd_core_rs = { path = "../../crates/xyd_core_rs" }
 xyd_watch = { path = "../../crates/xyd_watch" }
 xyd_gql = { path = "../../crates/xyd_gql" }
+xyd_openapi = { path = "../../crates/xyd_openapi" }
 
 [build-dependencies]
 napi-build = "2"

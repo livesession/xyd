@@ -42,7 +42,7 @@ pub fn schema_components_to_references(ctx: &DocCtx, options: &Options) -> Vec<R
         let mut visited = VisitedRefs::new();
         match schema_object_to_properties(ctx, component_schema, false, &mut visited) {
             PropsResult::List(list) => properties = list,
-            PropsResult::Single(single) => root_property = Some(single),
+            PropsResult::Single(single) => root_property = Some(*single),
             PropsResult::None => {}
         }
 

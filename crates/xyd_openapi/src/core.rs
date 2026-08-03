@@ -54,7 +54,7 @@ fn is_of_type(t: &str) -> bool {
 /// (None → the TS `null`).
 pub enum PropsResult {
     List(Vec<DefinitionProperty>),
-    Single(DefinitionProperty),
+    Single(Box<DefinitionProperty>),
     None,
 }
 
@@ -74,7 +74,7 @@ pub fn schema_object_to_properties(
             schema_object_to_property(ctx, "", schema_object, false, false, visited, None)
         {
             if root_property {
-                return PropsResult::Single(property);
+                return PropsResult::Single(Box::new(property));
             }
             properties.push(property);
         }

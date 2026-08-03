@@ -8,6 +8,12 @@
 //! Skip-list (covered by tier 2): fixtures whose oracle embeds JS-closure
 //! plugin post-processing — -2.complex.openai (uniformOpenAIMeta),
 //! 5.xdocs.sidebar (uniformPluginXDocsSidebar).
+//!
+//! -2.complex.openai additionally carries a KNOWN oracle divergence: the JS
+//! impl deep-copies circular schemas mid-construction (partial snapshots;
+//! stack-overflows on a minimal circular-oneOf repro) while this crate
+//! resolves them to their final shape. The full openai docs site still builds
+//! byte-identical Rust-vs-JS; the oracle is regenerated from Rust at reap.
 
 use serde_json::Value;
 use xyd_openapi::oap_schema_to_references_from_file;

@@ -1560,6 +1560,9 @@ importers:
       '@readme/oas-to-snippet':
         specifier: ^28.0.0
         version: 28.0.4
+      '@xyd-js/native':
+        specifier: workspace:*
+        version: link:../xyd-native
       '@xyd-js/openapi-sampler':
         specifier: workspace:*
         version: link:../openapi-sampler
@@ -1584,7 +1587,10 @@ importers:
         version: 3.0.2
       tsup:
         specifier: ^8.3.0
-        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@6.0.3)(yaml@2.8.4)
+        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@5.8.3)(yaml@2.8.4)
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
       vitest:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@24.12.3)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)

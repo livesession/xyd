@@ -102,7 +102,7 @@ pub fn slug(s: &str) -> String {
 /// JS `Object.keys` ordering: canonical array-index-like keys ascending FIRST,
 /// then the remaining keys in insertion order (drives response-code and
 /// enum-key ordering in the oracle).
-pub fn js_object_keys<'a>(map: &'a serde_json::Map<String, serde_json::Value>) -> Vec<&'a String> {
+pub fn js_object_keys(map: &serde_json::Map<String, serde_json::Value>) -> Vec<&String> {
     let mut numeric: Vec<(&String, u32)> = Vec::new();
     let mut rest: Vec<&String> = Vec::new();
     for k in map.keys() {

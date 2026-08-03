@@ -49,14 +49,89 @@ pub fn read_spec(path: &str) -> Result<Value, OasError> {
 /// Parse spec content by extension hint (or best-effort).
 pub fn parse_spec(content: &str, path_hint: &str) -> Result<Value, OasError> {
     let lower = path_hint.to_lowercase();
-    if lower.ends_with(".yaml") || lower.ends_with(".yml") {
-        serde_yaml::from_str(content).map_err(|e| OasError(format!("yaml: {e}")))
-    } else if lower.ends_with(".json") {
-        serde_json::from_str(content).map_err(|e| OasError(format!("json: {e}")))
-    } else if content.trim_start().starts_with('{') {
-        serde_json::from_str(content).map_err(|e| OasError(format!("json: {e}")))
-    } else {
-        serde_yaml::from_str(content).map_err(|e| OasError(format!("yaml: {e}")))
+    if lower.ends_with(".json")
+        || (!lower.ends_with(".yaml")
+            && !lower.ends_with(".yml")
+            && content.trim_start().starts_with('{'))
+    {
+        return serde_json::from_str(content).map_err(|e| OasError(format!("json: {e}")));
+    }
+    // YAML with JS number semantics: js-yaml coerces out-of-i64/u64-range
+    // integers to lossy floats (the OpenAI spec carries ±9223372036854776000
+    // bounds), while serde targets reject them — a custom visitor accepts
+    // i128/u128 lossily.
+    let js: JsValue = serde_yaml::from_str(content).map_err(|e| OasError(format!("yaml: {e}")))?;
+    Ok(js.0)
+}
+
+/// A serde_json::Value wrapper whose Deserialize mirrors js-yaml number
+/// coercion (i128/u128 → lossy f64) and stringifies non-string map keys.
+struct JsValue(Value);
+
+impl<'de> serde::Deserialize<'de> for JsValue {
+    fn deserialize<D: serde::Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        struct V;
+        impl<'de> serde::de::Visitor<'de> for V {
+            type Value = JsValue;
+            fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                f.write_str("any YAML value")
+            }
+            fn visit_unit<E>(self) -> Result<JsValue, E> {
+                Ok(JsValue(Value::Null))
+            }
+            fn visit_none<E>(self) -> Result<JsValue, E> {
+                Ok(JsValue(Value::Null))
+            }
+            fn visit_bool<E>(self, b: bool) -> Result<JsValue, E> {
+                Ok(JsValue(Value::Bool(b)))
+            }
+            fn visit_i64<E>(self, i: i64) -> Result<JsValue, E> {
+                Ok(JsValue(Value::from(i)))
+            }
+            fn visit_u64<E>(self, u: u64) -> Result<JsValue, E> {
+                Ok(JsValue(Value::from(u)))
+            }
+            fn visit_i128<E>(self, i: i128) -> Result<JsValue, E> {
+                Ok(JsValue(Value::from(i as f64)))
+            }
+            fn visit_u128<E>(self, u: u128) -> Result<JsValue, E> {
+                Ok(JsValue(Value::from(u as f64)))
+            }
+            fn visit_f64<E>(self, f: f64) -> Result<JsValue, E> {
+                Ok(JsValue(Value::from(f)))
+            }
+            fn visit_str<E>(self, s: &str) -> Result<JsValue, E> {
+                Ok(JsValue(Value::String(s.to_string())))
+            }
+            fn visit_seq<A: serde::de::SeqAccess<'de>>(
+                self,
+                mut seq: A,
+            ) -> Result<JsValue, A::Error> {
+                let mut out = Vec::new();
+                while let Some(JsValue(v)) = seq.next_element()? {
+                    out.push(v);
+                }
+                Ok(JsValue(Value::Array(out)))
+            }
+            fn visit_map<A: serde::de::MapAccess<'de>>(
+                self,
+                mut map: A,
+            ) -> Result<JsValue, A::Error> {
+                let mut out = serde_json::Map::new();
+                while let Some((JsValue(k), JsValue(v))) = map.next_entry()? {
+                    let key = match k {
+                        Value::String(s) => s,
+                        Value::Bool(b) => b.to_string(),
+                        Value::Number(n) => n.to_string(),
+                        Value::Null => "null".to_string(),
+                        other => other.to_string(),
+                    };
+                    out.insert(key, v);
+                }
+                Ok(JsValue(Value::Object(out)))
+            }
+        }
+        d.deserialize_any(V)
     }
 }
 

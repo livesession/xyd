@@ -192,7 +192,7 @@ fn request_definition(ctx: &DocCtx, oap_operation: &Value) -> Definition {
             let mut root_property: Option<DefinitionProperty> = None;
             match request_body_properties(ctx, req_body, content_type) {
                 PropsResult::List(list) => properties = list,
-                PropsResult::Single(single) => root_property = Some(single),
+                PropsResult::Single(single) => root_property = Some(*single),
                 PropsResult::None => {}
             }
 
@@ -273,14 +273,14 @@ fn request_body_properties(ctx: &DocCtx, req_body: &Value, content_type: &str) -
     if array {
         let list = match properties {
             PropsResult::List(l) => l,
-            PropsResult::Single(s) => vec![s],
+            PropsResult::Single(s) => vec![*s],
             PropsResult::None => vec![],
         };
-        return PropsResult::Single(DefinitionProperty {
+        return PropsResult::Single(Box::new(DefinitionProperty {
             property_type: property_type::ARRAY.to_string(),
             properties: Some(list),
             ..Default::default()
-        });
+        }));
     }
     properties
 }
@@ -319,7 +319,7 @@ pub fn response_definition(ctx: &DocCtx, oap_operation: &Value) -> Definition {
                 if let Some(resp) = response_properties(ctx, responses, code, content_type) {
                     match resp.properties {
                         PropsResult::List(list) => properties = list,
-                        PropsResult::Single(single) => root_property = Some(single),
+                        PropsResult::Single(single) => root_property = Some(*single),
                         PropsResult::None => {}
                     }
                     if let Some(d) = resp.description {
@@ -415,15 +415,15 @@ fn response_properties(
     if array {
         let list = match properties {
             PropsResult::List(l) => l,
-            PropsResult::Single(s) => vec![s],
+            PropsResult::Single(s) => vec![*s],
             PropsResult::None => vec![],
         };
         return Some(ResponseProps {
-            properties: PropsResult::Single(DefinitionProperty {
+            properties: PropsResult::Single(Box::new(DefinitionProperty {
                 property_type: property_type::ARRAY.to_string(),
                 properties: Some(list),
                 ..Default::default()
-            }),
+            })),
             description: None,
         });
     }

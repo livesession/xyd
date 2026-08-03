@@ -3,6 +3,7 @@
 //! lives in the pure crates (`xyd_core_rs`, `xyd_watch`, later `xyd_openapi`).
 
 mod gql;
+mod openapi;
 
 use std::path::Path;
 
