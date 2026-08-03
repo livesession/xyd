@@ -1,0 +1,19 @@
+[package]
+name = "xyd_gql"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish = false
+
+# W1 of the S6+ Rust migration: GraphQL SDL → Uniform Reference[] — the Rust
+# port of packages/xyd-gql (graphql-js replaced by async-graphql-parser). The
+# 19 committed fixtures are the spec; parity is gated in tests/parity.rs.
+
+[dependencies]
+serde_json = { workspace = true }
+xyd_uniform = { path = "../xyd_uniform" }
+async-graphql-parser = "7"
+async-graphql-value = "7"
+
+[dev-dependencies]
+xyd_parity = { path = "../xyd_parity" }
