@@ -323,6 +323,27 @@ export function seedForBuild(ThemeCtor: any) {
 }
 
 /** Called by the launcher's generated server entry with the theme class. */
+/** Vite-parity `server.allowedHosts` enforcement (advanced.vite.server.allowedHosts).
+ *  Loopback + IP literals are always allowed; `.example.com` entries match the
+ *  apex + any subdomain. Only enforced when the setting is explicitly configured
+ *  (undefined → allow all, so normal/remote dev isn't broken). */
+export function hostAllowed(hostHeader: string | null, allowed: string[] | boolean | undefined): boolean {
+  if (allowed === true) return true;
+  if (!hostHeader) return true; // no Host header (e.g. curl) — lenient, like a missing origin
+  let host = hostHeader.trim();
+  const v6 = host.match(/^\[(.+)\](?::\d+)?$/); // bracketed IPv6: [::1]:5175
+  host = (v6 ? v6[1] : host.replace(/:\d+$/, "")).toLowerCase();
+  if (host === "localhost" || host === "0.0.0.0") return true;
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(host)) return true; // IPv4 literal
+  if (host.includes(":")) return true; // IPv6 literal
+  for (const a of Array.isArray(allowed) ? allowed : []) {
+    const e = String(a).toLowerCase();
+    if (e === host) return true;
+    if (e[0] === "." && (host === e.slice(1) || host.endsWith(e))) return true;
+  }
+  return false;
+}
+
 export function start(ThemeCtor: any) {
   // Strip pre-resolved React-element icons from settings BEFORE the theme builds
   // webeditor — so the server render and the (element-stripped) client hydration
@@ -395,6 +416,13 @@ export function start(ThemeCtor: any) {
     development: true,
     async fetch(req: Request, srv: any) {
       const url = new URL(req.url);
+      // advanced.vite.server.allowedHosts (Vite parity): reject requests whose
+      // Host header isn't allowlisted (DNS-rebinding guard). Read live so a hot
+      // settings edit takes effect; only enforced when explicitly configured.
+      const allowedHosts = getSettings()?.advanced?.vite?.server?.allowedHosts;
+      if (allowedHosts !== undefined && !hostAllowed(req.headers.get("host"), allowedHosts)) {
+        return new Response("Host not allowed", { status: 403, headers: { "content-type": "text/plain; charset=utf-8" } });
+      }
       // Live-reload channel: the watcher's rebuild() broadcasts "reload" here.
       if (url.pathname === "/_xyd/livereload") {
         return srv.upgrade(req) ? undefined : new Response("upgrade failed", { status: 400 });
