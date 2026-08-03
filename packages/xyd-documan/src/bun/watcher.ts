@@ -68,29 +68,37 @@ export function startWatcher(cwd: string, rebuild: Rebuild): WatchHandle {
   };
 
   const require = createRequire(import.meta.url);
+  const native = loadNative(require);
 
-  // Preferred: the Rust watcher.
-  try {
-    const { createWatcher } = require("@xyd-js/native");
-    const w = createWatcher(
-      cwd,
-      { debounceMs: 40, ignoreDirs: IGNORE_DIRS },
-      (err: Error | null, batch: Array<{ kind: string; path: string }>) => {
-        if (err) {
-          console.error("[watch]", err);
-          return;
+  // Preferred: the Rust watcher. In the compiled binary the napi addon is embedded
+  // as core.node (globalThis.__xydNativeCore, set by native-boot) — the SAME module
+  // as @xyd-js/native; outside the binary it resolves from @xyd-js/native (needs
+  // `pnpm --filter @xyd-js/native build:native`).
+  if (typeof native?.createWatcher === "function") {
+    try {
+      const w = native.createWatcher(
+        cwd,
+        { debounceMs: 40, ignoreDirs: IGNORE_DIRS },
+        (err: Error | null, batch: Array<{ kind: string; path: string }>) => {
+          if (err) {
+            console.error("[watch]", err);
+            return;
+          }
+          for (const { kind, path } of batch) enqueue(kind, path);
         }
-        for (const { kind, path } of batch) enqueue(kind, path);
-      }
-    );
-    console.error("[watch] using @xyd-js/native (Rust)");
-    return { stop: () => finalize(() => w.stop()) };
-  } catch (e) {
-    console.error("[watch] @xyd-js/native unavailable, falling back to fs.watch:", (e as any)?.message);
+      );
+      const src = (globalThis as any).__xydNativeCore ? "embedded core.node" : "@xyd-js/native";
+      console.error(`[watch] using Rust watcher (${src})`);
+      return { stop: () => finalize(() => w.stop()) };
+    } catch (e) {
+      console.error("[watch] Rust watcher failed, falling back to fs.watch:", (e as any)?.message);
+    }
+  } else {
+    console.error("[watch] Rust watcher unavailable — using node fs.watch");
   }
 
-  // Fallback: node fs.watch + classify (native standalone fn if loadable, else JS mirror).
-  const classify = safeClassify(require);
+  // Fallback: node fs.watch + classify (native classifier if present, else JS mirror).
+  const classify = nativeClassify(native);
   const w = fsNode.watch(cwd, { recursive: true }, (_ev, filename) => {
     if (!filename) return;
     const p = String(filename);
@@ -102,11 +110,20 @@ export function startWatcher(cwd: string, rebuild: Rebuild): WatchHandle {
   return { stop: () => finalize(() => w.close()) };
 }
 
-function safeClassify(require: NodeRequire): (p: string) => string {
+/** The napi addon: the embedded core.node in the compiled binary
+ *  (globalThis.__xydNativeCore), else @xyd-js/native, else null. */
+function loadNative(require: NodeRequire): any {
+  const embedded = (globalThis as any).__xydNativeCore;
+  if (embedded && typeof embedded.createWatcher === "function") return embedded;
   try {
-    const { classify } = require("@xyd-js/native");
-    if (typeof classify === "function") return (p: string) => classify(p);
-  } catch {}
+    return require("@xyd-js/native");
+  } catch {
+    return null;
+  }
+}
+
+function nativeClassify(native: any): (p: string) => string {
+  if (native && typeof native.classify === "function") return (p: string) => native.classify(p);
   return jsClassify;
 }
 
