@@ -53,17 +53,19 @@ hydrate, hashed assets, sitemap/robots/llms, SEO head, AC fail-closed) · **S4.0
 Bun engine runs in-process — from a clean dir the binary runs appInit, resolves the theme + icon
 set, and reaches the client-bundle step). Vite still the default.
 
-1. **S4.3 (NEXT — the crux, RISKIEST)** — prebuilt per-theme render bundles. Runtime `Bun.build`
-   render can't work in the compiled binary: `buildBundle` writes `.entry.*.tsx` to the read-only
-   `/$bunfs/root/`, and its entry references `./client-entry`/`./renderPage` (bundled INTO binary.js,
-   not on disk) + `@xyd-js/theme-*`/react (from `.xyd/host` node_modules, absent in a clean dir).
-   `buildStatic` needs 3 things prebuilt+embedded PER THEME: the **client** bundle, the **server**
-   render bundle (`await import` → `__xydRenderStatic`/`__xydSeedForBuild`), and the **4 CSS groups**
-   (`emitCss` resolves them from HOST). Design: a `prebuild-render.ts` (run at compile time,
-   node_modules present) writes `prebuilt/<theme>/{client.js,server.js,styles.css}`; embed via
-   `import … with {type:"file"}`; `buildStatic`/`startDevServer` load the prebuilt set for the
-   configured theme when `__xydCompiledBinary`. `npm:` themes degrade (can't prebuild). Watch: two-React
-   isolation, embedded-file import semantics, per-theme binary bloat.
+**S4.3 DONE** (commits `00fe103c`,`724c9137`): node-free `xyd build` renders a real site for ALL 6
+themes. Prebuild (compile-time, `@xyd-js/documan/prebuild`) emits per-theme client+css + ONE
+multi-theme server bundle, generates `embed.generated.ts` (`import … with {type:"file"}`); `binary.ts`
+static-imports it (the static edge makes --compile embed the artifacts); `buildStatic` consumes
+`__xydEmbed` when `__xydCompiledBinary` (copy client/css, extract-to-tmp + await-import the server).
+125MB binary, node OFF PATH, clean dir → deployable `.xyd/build/client/` with highlighted code.
+Lessons: --compile follows `type:file` only across a static edge; server-only externals
+(typedoc/sources/shiki/vscode-*) must be STUBBED not external (new `buildBundle` `extraPlugins`,
+ordered before makeShims); codehike (not shiki) highlights.
+
+1. **S4.3 refinements** — step 10 lift iconSet out of the prebuilt client (custom-icon correctness +
+   avoid a client hydration mismatch; SSR already correct); step 9 shared-split CSS (components/atlas/ui
+   embedded 6×); step 11 dev-in-binary (needs a 2nd prebuilt server variant exposing start/reseed).
 2. **S4.4/S4.5/dist** — runOpensdk in-process + `npm:` theme degrade; macOS codesign
    (`allow-jit` + `disable-library-validation`; dyld `LC_UUID` risk); darwin-arm64 GitHub release +
    install.sh + per-platform-npm fallback + 2-runner CI matrix.
