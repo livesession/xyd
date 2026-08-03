@@ -4,3 +4,4 @@ cliComponents.json
 core.node
 dist/xyd-*
 src/core.node
+prebuilt/

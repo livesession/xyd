@@ -9,7 +9,8 @@
     "./build": "./dist/build.js",
     "./bun-launcher": "./src/bun/launcher.ts",
     "./bun-build-launcher": "./src/bun/buildLauncher.ts",
-    "./bun-engine": "./src/bun/bunEngine.ts"
+    "./bun-engine": "./src/bun/bunEngine.ts",
+    "./prebuild": "./src/bun/prebuild.ts"
   },
   "files": [
     "dist",

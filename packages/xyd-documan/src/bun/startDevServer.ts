@@ -97,6 +97,10 @@ export interface BundleOverrides {
   minify?: boolean;
   sourcemap?: "none" | "linked" | "external" | "inline";
   returnResult?: boolean; // return the full Bun.build result (for hashed asset paths)
+  // Extra Bun plugins applied BEFORE makeShims (so they win onResolve). The S4.3
+  // prebuild passes a stub plugin here to dead-stub server-only deps that CANNOT
+  // stay external in a compiled binary (typedoc/@xyd-js/sources/shiki/vscode-*).
+  extraPlugins?: BunPlugin[];
 }
 
 export async function buildBundle(
@@ -113,7 +117,9 @@ export async function buildBundle(
     entrypoints: [entryPath],
     target,
     outdir: overrides?.outdir ?? path.join(DIR, ".bundle", name),
-    plugins: [makeShims(isClient)],
+    // extraPlugins first so a stub's onResolve wins over makeShims' broad
+    // `@xyd-js/*` resolver (e.g. stubbing @xyd-js/sources before it resolves real).
+    plugins: [...(overrides?.extraPlugins ?? []), makeShims(isClient)],
     // The CLIENT bundle is served to the browser on every page load — minify it
     // and keep the sourcemap EXTERNAL (a `.map` file fetched only when devtools
     // open) instead of inline, which was ~66% of the payload. The SERVER bundle

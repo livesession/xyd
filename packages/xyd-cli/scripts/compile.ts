@@ -11,7 +11,7 @@ import * as path from "node:path";
  *   cd packages/xyd-cli && bun scripts/compile.ts [bun-darwin-arm64]
  */
 
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 
 const DIR = import.meta.dir;
 const target = process.argv[2] || `bun-${process.platform === "darwin" ? "darwin" : process.platform}-${process.arch}`;
@@ -19,6 +19,23 @@ const outfile = path.resolve(DIR, "..", "dist", `xyd-${target.replace(/^bun-/, "
 
 // Inject the version — no package.json on disk inside the compiled bunfs.
 const version = JSON.parse(readFileSync(path.resolve(DIR, "..", "package.json"), "utf8")).version || "0.0.0";
+
+// S4.3 — PREBUILD the per-theme render bundles + regenerate the embed manifest
+// BEFORE Bun.build, so the manifest's `with { type: "file" }` targets exist on
+// disk when --compile embeds them. Reference HOST = monorepo root (react +
+// all @xyd-js runtime + every theme are workspace-linked there). PROOF: poetry.
+const embedTs = path.resolve(DIR, "..", "src", "embed.generated.ts");
+const EMBED_STUB = readFileSync(embedTs, "utf8"); // the committed empty stub
+const REPO_ROOT = path.resolve(DIR, "..", "..", "..");
+const prebuiltDir = path.resolve(DIR, "..", "prebuilt");
+const PREBUILD_THEMES = (process.env.XYD_PREBUILD_THEMES || "poetry").split(",").map((s) => s.trim()).filter(Boolean);
+// Absolute path (not the package specifier) so it never resolves to a cached
+// published @xyd-js/documan instead of the workspace source.
+const prebuildMod = path.resolve(DIR, "..", "..", "xyd-documan", "src", "bun", "prebuild.ts");
+const { prebuildThemes, generateEmbedModule } = await import(prebuildMod);
+console.error(`[compile] prebuild themes: ${PREBUILD_THEMES.join(", ")} (host=${REPO_ROOT})`);
+const manifest = await prebuildThemes(REPO_ROOT, PREBUILD_THEMES, prebuiltDir);
+generateEmbedModule(manifest, embedTs);
 
 // Deps that are DEAD in the compiled binary (Bun-engine-only) but that --compile
 // would otherwise try to bundle — stub to empty:
@@ -72,6 +89,11 @@ const res = await Bun.build({
     __XYD_CLI_VERSION__: JSON.stringify(version),
   },
 });
+
+// Restore the committed empty stub so the working tree stays clean — the real
+// per-theme manifest only has to exist on disk DURING this compile (the artifacts
+// under prebuilt/ are gitignored + regenerated every run).
+writeFileSync(embedTs, EMBED_STUB);
 
 if (!res.success) {
   console.error("[compile] FAILED:");

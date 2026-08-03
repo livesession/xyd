@@ -60,47 +60,94 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   fs.rmSync(clientDir, { recursive: true, force: true });
   fs.mkdirSync(path.join(clientDir, "assets"), { recursive: true });
 
-  // 1) CLIENT bundle — hashed, minified, no live-reload.
-  console.error("[build] bundling client (hashed, minified)…");
-  const clientRes: any = await buildBundle(
-    "client",
-    `globalThis.__xydIconSet = ${iconSetJson};\n` +
-      `import Theme from "@xyd-js/theme-${themeName}";\n` +
-      `import { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
-    "browser",
-    [],
-    true,
-    {
-      outdir: clientDir,
-      naming: { entry: "assets/client-[hash].js", chunk: "assets/[name]-[hash].js", asset: "assets/[name]-[hash].[ext]" },
-      minify: true,
-      sourcemap: "none",
-      returnResult: true,
-    }
-  );
-  const clientEntry = clientRes.outputs.find((o: any) => o.kind === "entry-point").path;
-  const clientJs = "/" + path.relative(clientDir, clientEntry).replace(/\\/g, "/");
-  console.error("[build] client →", clientJs);
+  // S4.3 — in a compiled binary there is no node_modules / on-disk source to run
+  // Bun.build against; the client/css/server render bundles were PREBUILT at
+  // compile time and embedded (globalThis.__xydEmbed). Consume them instead.
+  const isBin = !!(globalThis as any).__xydCompiledBinary;
+  const emb = isBin ? (globalThis as any).__xydEmbed?.[themeName] : null;
+  if (isBin && !emb) {
+    console.error(
+      `[build] no prebuilt render bundle embedded for theme "${themeName}".\n` +
+        `        Built-in themes are supported; npm: themes require the default (Vite) build.`
+    );
+    process.exit(1);
+  }
 
-  // 2) CSS — resolve the same package-dist groups the dev server serves per
-  // /_xyd/*.css, concatenate (order preserved), content-hash, write.
-  const cssLinks = await emitCss(HOST, themeName, clientDir);
+  // 1) CLIENT bundle — hashed, minified, no live-reload.
+  let clientJs: string;
+  if (isBin) {
+    for (const f of emb.clientFiles) {
+      const dst = path.join(clientDir, f.out);
+      fs.mkdirSync(path.dirname(dst), { recursive: true });
+      await Bun.write(dst, Bun.file(f.src));
+    }
+    clientJs = emb.clientJs;
+    console.error(`[build] client (embedded, ${emb.clientFiles.length} file(s)) →`, clientJs);
+  } else {
+    console.error("[build] bundling client (hashed, minified)…");
+    const clientRes: any = await buildBundle(
+      "client",
+      `globalThis.__xydIconSet = ${iconSetJson};\n` +
+        `import Theme from "@xyd-js/theme-${themeName}";\n` +
+        `import { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
+      "browser",
+      [],
+      true,
+      {
+        outdir: clientDir,
+        naming: { entry: "assets/client-[hash].js", chunk: "assets/[name]-[hash].js", asset: "assets/[name]-[hash].[ext]" },
+        minify: true,
+        sourcemap: "none",
+        returnResult: true,
+      }
+    );
+    const clientEntry = clientRes.outputs.find((o: any) => o.kind === "entry-point").path;
+    clientJs = "/" + path.relative(clientDir, clientEntry).replace(/\\/g, "/");
+    console.error("[build] client →", clientJs);
+  }
+
+  // 2) CSS — the same package-dist groups the dev server serves per /_xyd/*.css,
+  // concatenated (order preserved), content-hashed. Embedded in the binary.
+  let cssLinks: string[];
+  if (isBin) {
+    for (const f of emb.cssFiles) {
+      const dst = path.join(clientDir, f.out);
+      fs.mkdirSync(path.dirname(dst), { recursive: true });
+      await Bun.write(dst, Bun.file(f.src));
+    }
+    cssLinks = emb.cssLinks;
+    console.error(`[build] css (embedded) → ${cssLinks.length} files`);
+  } else {
+    cssLinks = await emitCss(HOST, themeName, clientDir);
+  }
 
   // 3) Asset manifest for the (same-process) render bundle.
   (globalThis as any).__xydBuildAssets = { clientJs, cssLinks };
 
-  // 4) SERVER render bundle (makeShims via buildBundle) → drive renderPageStatic.
-  console.error("[build] bundling server render…");
-  const serverBundle: string = await buildBundle(
-    "buildserver",
-    `import Theme from "@xyd-js/theme-${themeName}";\n` +
-      `import { renderPageStatic, seedForBuild } from "./renderPage";\n` +
-      `globalThis.__xydSeedForBuild = () => seedForBuild(Theme);\n` +
-      `globalThis.__xydRenderStatic = (slug, opts) => renderPageStatic(slug, opts);\n`,
-    "bun",
-    ["typedoc", "@xyd-js/sources", "shiki", "vscode-oniguruma", "vscode-textmate"]
-  );
-  await import(pathToFileURL(serverBundle).href);
+  // 4) SERVER render bundle → registers globalThis.__xydRenderStatic/__xydSeedForBuild.
+  if (isBin) {
+    // Extract the embedded (read-only bunfs) bundle to a writable tmp path, then
+    // import it — a real module URL, in-process, sharing globalThis with appInit's
+    // state. (Direct import of the bunfs path also works but is unguaranteed for
+    // file-typed assets; extract-to-tmp is the certain path.)
+    const os = await import("node:os");
+    const tmp = path.join(os.tmpdir(), `xyd-srv-${Bun.hash(emb.server).toString(16)}.js`);
+    await Bun.write(tmp, Bun.file(emb.server));
+    console.error("[build] server render (embedded) →", path.basename(emb.server));
+    await import(pathToFileURL(tmp).href);
+  } else {
+    console.error("[build] bundling server render…");
+    const serverBundle: string = await buildBundle(
+      "buildserver",
+      `import Theme from "@xyd-js/theme-${themeName}";\n` +
+        `import { renderPageStatic, seedForBuild } from "./renderPage";\n` +
+        `globalThis.__xydSeedForBuild = () => seedForBuild(Theme);\n` +
+        `globalThis.__xydRenderStatic = (slug, opts) => renderPageStatic(slug, opts);\n`,
+      "bun",
+      ["typedoc", "@xyd-js/sources", "shiki", "vscode-oniguruma", "vscode-textmate"]
+    );
+    await import(pathToFileURL(serverBundle).href);
+  }
   (globalThis as any).__xydSeedForBuild();
 
   // 5) PUBLIC assets. Content references public files WITH the `public/` segment
