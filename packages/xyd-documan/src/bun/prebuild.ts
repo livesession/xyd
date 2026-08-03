@@ -10,7 +10,7 @@ import * as path from "node:path";
 import * as fs from "node:fs";
 import type { BunPlugin } from "bun";
 
-import { buildBundle, recomputeIconSet, setBuildContext } from "./startDevServer";
+import { buildBundle, setBuildContext } from "./startDevServer";
 
 export interface ThemeArtifacts {
   /** every client output file: {src=absolute on disk, out=rel path under build client/} */
@@ -56,10 +56,13 @@ function stubServerDeps(): BunPlugin {
   };
 }
 
-/** Replicated from buildStatic.emitCss but writing to an arbitrary outDir (the
- *  prebuilt theme dir) — resolves the 4 package-dist CSS groups from `host`,
- *  concatenates + content-hashes each group, returns {links, files}. */
-async function prebuildCss(host: string, themeName: string, outDir: string): Promise<{ links: string[]; files: { src: string; out: string }[] }> {
+/** Resolve the 4 package-dist CSS groups from `host`, concat + content-hash each.
+ *  The `theme` group is per-theme (→ themeDir); components/atlas/ui are theme-
+ *  INDEPENDENT so they're written ONCE to sharedDir (step 9 — identical content ⇒
+ *  identical hash ⇒ same path, so the embed dedups them across all 6 themes
+ *  instead of carrying 6 copies). Returns {links (theme,components,atlas,ui order),
+ *  files}. */
+async function prebuildCss(host: string, themeName: string, themeDir: string, sharedDir: string): Promise<{ links: string[]; files: { src: string; out: string }[] }> {
   const rs = (spec: string) => {
     try { return Bun.resolveSync(spec, host); } catch { return null; }
   };
@@ -88,9 +91,11 @@ async function prebuildCss(host: string, themeName: string, outDir: string): Pro
     if (!css) continue;
     const hash = Bun.hash(css).toString(16).slice(0, 8);
     const out = `assets/${label}-${hash}.css`;
-    const abs = path.join(outDir, out);
-    fs.mkdirSync(path.dirname(abs), { recursive: true });
-    fs.writeFileSync(abs, css);
+    const abs = path.join(label === "theme" ? themeDir : sharedDir, out);
+    if (!fs.existsSync(abs)) {
+      fs.mkdirSync(path.dirname(abs), { recursive: true });
+      fs.writeFileSync(abs, css);
+    }
     links.push("/" + out);
     files.push({ src: abs, out });
   }
@@ -103,15 +108,13 @@ async function prebuildCss(host: string, themeName: string, outDir: string): Pro
 export async function prebuildThemes(host: string, themes: string[], prebuiltDir: string): Promise<EmbedManifest> {
   process.env.XYD_HOST = host;
   const themesMap: Record<string, ThemeArtifacts> = {};
+  const sharedDir = path.join(prebuiltDir, "_shared"); // theme-independent CSS (step 9)
+  fs.rmSync(sharedDir, { recursive: true, force: true });
 
   // Per-theme CLIENT + CSS (a browser must not download 6 themes).
   for (const theme of themes) {
     console.error(`[prebuild] client+css theme=${theme}`);
     setBuildContext(host, theme);
-
-    // Default icon set baked into the client; step 10 lifts the project-specific
-    // set into the runtime __xyd_data payload for projects with custom theme.icons.
-    const iconSetJson = await recomputeIconSet({ theme: { name: theme } } as any);
 
     const themeDir = path.join(prebuiltDir, theme);
     fs.rmSync(themeDir, { recursive: true, force: true });
@@ -119,8 +122,10 @@ export async function prebuildThemes(host: string, themes: string[], prebuiltDir
 
     const clientRes: any = await buildBundle(
       `client-${theme}`,
-      `globalThis.__xydIconSet = ${iconSetJson};\n` +
-        `import Theme from "@xyd-js/theme-${theme}";\n` +
+      // Project-agnostic client — iconSet is NOT baked; the SSR shell injects the
+      // per-project set at render time (step 10). So one prebuilt client per theme
+      // is correct for every project, incl. custom theme.icons.
+      `import Theme from "@xyd-js/theme-${theme}";\n` +
         `import { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
       "browser",
       [],
@@ -140,7 +145,7 @@ export async function prebuildThemes(host: string, themes: string[], prebuiltDir
       out: path.relative(themeDir, o.path).replace(/\\/g, "/"),
     }));
 
-    const { links: cssLinks, files: cssFiles } = await prebuildCss(host, theme, themeDir);
+    const { links: cssLinks, files: cssFiles } = await prebuildCss(host, theme, themeDir, sharedDir);
     themesMap[theme] = { clientFiles, clientJs, cssFiles, cssLinks };
     console.error(`[prebuild]   ${theme}: client ${clientFiles.length} file(s), css ${cssFiles.length}`);
   }
@@ -155,9 +160,14 @@ export async function prebuildThemes(host: string, themes: string[], prebuiltDir
     "server-multi",
     `${themeImports}\n` +
       `const THEMES = ${themeDict};\n` +
-      `import { renderPageStatic, seedForBuild } from "./renderPage";\n` +
-      `globalThis.__xydSeedForBuild = (name) => seedForBuild(THEMES[name] || THEMES[${JSON.stringify(themes[0])}]);\n` +
-      `globalThis.__xydRenderStatic = (slug, opts) => renderPageStatic(slug, opts);\n`,
+      `const pick = (name) => THEMES[name] || THEMES[${JSON.stringify(themes[0])}];\n` +
+      `import { renderPageStatic, seedForBuild, start, reseed } from "./renderPage";\n` +
+      // build (SSG):
+      `globalThis.__xydSeedForBuild = (name) => seedForBuild(pick(name));\n` +
+      `globalThis.__xydRenderStatic = (slug, opts) => renderPageStatic(slug, opts);\n` +
+      // dev (S4.3 step 11): the SAME bundle also drives the in-binary dev server.
+      `globalThis.__xydBunStart = (name) => start(pick(name));\n` +
+      `globalThis.__xydBunReseed = (name) => reseed(pick(name));\n`,
     "bun",
     [],
     false,
@@ -176,8 +186,14 @@ export function generateEmbedModule(manifest: EmbedManifest, embedTsPath: string
   const rel = (abs: string) => "./" + path.relative(dir, abs).replace(/\\/g, "/");
   const imports: string[] = [];
   let n = 0;
+  // Dedup by source path: the shared CSS (components/atlas/ui) resolves to the same
+  // file for every theme, so it's imported (and embedded) ONCE (step 9).
+  const seen = new Map<string, string>();
   const emit = (abs: string) => {
+    const hit = seen.get(abs);
+    if (hit) return hit;
     const v = `f${n++}`;
+    seen.set(abs, v);
     imports.push(`import ${v} from ${JSON.stringify(rel(abs))} with { type: "file" };`);
     return v;
   };

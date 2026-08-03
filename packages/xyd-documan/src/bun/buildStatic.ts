@@ -19,8 +19,6 @@ import { buildBundle, recomputeIconSet, setBuildContext } from "./startDevServer
  * globalThis.__xydRenderStatic, exactly like dev's __xydBunStart.
  */
 
-const DIR = import.meta.dir;
-
 export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   process.chdir(cwd);
   process.env.NODE_ENV = "production";
@@ -54,7 +52,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   const themeName = rawName.startsWith("npm:") ? rawName.slice("npm:".length) : rawName;
   setBuildContext(HOST, themeName);
   console.error("[build] host:", HOST, "| theme:", themeName);
-  const iconSetJson = await recomputeIconSet(settings);
+  await recomputeIconSet(settings); // side-effect: globalThis.__xydIconSet = project set (the SSR shell emits it)
 
   const clientDir = path.join(getBuildPath(), "client");
   fs.rmSync(clientDir, { recursive: true, force: true });
@@ -88,8 +86,8 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     console.error("[build] bundling client (hashed, minified)…");
     const clientRes: any = await buildBundle(
       "client",
-      `globalThis.__xydIconSet = ${iconSetJson};\n` +
-        `import Theme from "@xyd-js/theme-${themeName}";\n` +
+      // iconSet is NOT baked — the SSR shell injects the project set (step 10).
+      `import Theme from "@xyd-js/theme-${themeName}";\n` +
         `import { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
       "browser",
       [],
@@ -122,8 +120,16 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     cssLinks = await emitCss(HOST, themeName, clientDir);
   }
 
+  // 2b) Icon set as ONE hashed, cached asset (project-specific) — NOT inlined per
+  // page: the default Iconify set is ~840KB, which would bloat every page's HTML.
+  const iconSetSrc = "globalThis.__xydIconSet=" + JSON.stringify((globalThis as any).__xydIconSet || {}) + ";";
+  const iconHash = Bun.hash(iconSetSrc).toString(16).slice(0, 8);
+  const iconSetOut = `assets/iconset-${iconHash}.js`;
+  fs.writeFileSync(path.join(clientDir, iconSetOut), iconSetSrc);
+  const iconSetJs = "/" + iconSetOut;
+
   // 3) Asset manifest for the (same-process) render bundle.
-  (globalThis as any).__xydBuildAssets = { clientJs, cssLinks };
+  (globalThis as any).__xydBuildAssets = { clientJs, cssLinks, iconSetJs };
 
   // 4) SERVER render bundle → registers globalThis.__xydRenderStatic/__xydSeedForBuild.
   if (isBin) {

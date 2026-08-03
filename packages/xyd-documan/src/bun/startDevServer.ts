@@ -163,7 +163,8 @@ export async function recomputeIconSet(s: any): Promise<string> {
 async function rebundleClient(): Promise<string> {
   const bundle = await buildBundle(
     "client",
-    `globalThis.__xydIconSet = ${iconSetJson};\nimport Theme from "@xyd-js/theme-${themeName}";\nimport { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
+    // iconSet is NOT baked — the SSR shell injects the project set (step 10).
+    `import Theme from "@xyd-js/theme-${themeName}";\nimport { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
     "browser",
     [],
     true
@@ -221,22 +222,54 @@ export async function startDevServer(
   themeName = rawName.startsWith("npm:") ? rawName.slice("npm:".length) : rawName;
   console.error("[dev] host:", HOST, "| theme:", themeName);
 
-  await recomputeIconSet(settings);
+  await recomputeIconSet(settings); // sets globalThis.__xydIconSet (project set; the SSR shell emits it)
+
+  // S4.3 step 11 — dev in the compiled binary: no Bun.build (read-only bunfs). Use
+  // the SAME prebuilt embedded bundles as the static build; serve them from their
+  // bunfs paths (Bun.file reads embedded assets directly).
+  const isBin = !!(globalThis as any).__xydCompiledBinary;
   let serverBundle: string;
-  try {
-    console.error("[dev] bundling client (browser)…");
-    await rebundleClient();
-    console.error("[dev] bundling server (bun)…");
-    serverBundle = await rebundleServer();
-  } catch (e) {
-    // Can't serve without the initial bundles — this IS fatal (unlike a hot
-    // rebuild, where buildBundle's throw is caught and the old bundle retained).
-    console.error("[dev] initial bundle failed — cannot start dev server:\n", (e as any)?.message || e);
-    process.exit(1);
+  if (isBin) {
+    const embRoot = (globalThis as any).__xydEmbed;
+    const emb = embRoot?.themes?.[themeName];
+    if (!emb) {
+      console.error(`[dev] no prebuilt render bundle embedded for theme "${themeName}". Built-in themes only in the binary.`);
+      process.exit(1);
+    }
+    // Client: point /_bun/client.js at the embedded entry (Bun.file(bunfsPath)).
+    const entry = emb.clientFiles.find((f: any) => "/" + f.out === emb.clientJs) || emb.clientFiles[0];
+    process.env.XYD_CLIENT_BUNDLE = entry.src;
+    // CSS: map each /_xyd/<label>.css to its embedded bunfs src (serveCss reads it).
+    const devCss: Record<string, string[]> = {};
+    for (const f of emb.cssFiles) {
+      const label = f.out.match(/assets\/([a-z]+)-/)?.[1];
+      if (label) devCss[`/_xyd/${label}.css`] = [f.src];
+    }
+    (globalThis as any).__xydDevCss = devCss;
+    // Server: extract the multi-theme bundle to a writable tmp path, then import.
+    const os = await import("node:os");
+    const tmp = path.join(os.tmpdir(), `xyd-devsrv-${Bun.hash(embRoot.server).toString(16)}.js`);
+    await Bun.write(tmp, Bun.file(embRoot.server));
+    serverBundle = tmp;
+    console.error(`[dev] using embedded render bundles (theme: ${themeName})`);
+  } else {
+    try {
+      console.error("[dev] bundling client (browser)…");
+      await rebundleClient();
+      console.error("[dev] bundling server (bun)…");
+      serverBundle = await rebundleServer();
+    } catch (e) {
+      // Can't serve without the initial bundles — this IS fatal (unlike a hot
+      // rebuild, where buildBundle's throw is caught and the old bundle retained).
+      console.error("[dev] initial bundle failed — cannot start dev server:\n", (e as any)?.message || e);
+      process.exit(1);
+    }
   }
 
-  await importFresh(serverBundle);
-  const server = (globalThis as any).__xydBunStart();
+  await importFresh(serverBundle!);
+  // Pass themeName so the multi-theme binary bundle selects the right theme; the
+  // non-binary single-theme entry ignores the arg.
+  const server = (globalThis as any).__xydBunStart(themeName);
   if (!server) {
     console.error("[dev] server handle is null — __xydBunStart did not return the Bun.serve instance");
     process.exit(1);
@@ -279,7 +312,7 @@ function makeRebuild(ctx: {
   stop: () => void;
 }) {
   const reinit = () => appInit({ doNotInstallPluginDependencies: true } as any);
-  const reseed = () => (globalThis as any).__xydBunReseed();
+  const reseed = () => (globalThis as any).__xydBunReseed(themeName); // themeName: pick the theme in the multi-theme binary bundle
   const reload = () => ctx.server.publish("xyd-reload", "reload");
   const restart = async () => {
     ctx.stop();

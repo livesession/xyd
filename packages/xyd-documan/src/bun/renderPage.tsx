@@ -34,6 +34,16 @@ function esc(x: any): string {
   return String(x).replace(/[&<>]/g, (c) => (({ "&": "&amp;", "<": "&lt;", ">": "&gt;" } as any)[c]));
 }
 
+// The PROJECT icon set must reach the client before the (deferred) client module
+// runs — the prebuilt client bundle is project-agnostic (bakes no icons). It is
+// served as ONE cached asset (a `<script src>` that sets globalThis.__xydIconSet),
+// NOT inlined per page: the default Iconify set is ~840KB, so inlining it into
+// every page would bloat the SSG output ~N×. Build → /assets/iconset-<hash>.js
+// (from __xydBuildAssets.iconSetJs); dev → /_xyd/iconset.js (served live).
+function iconSetJs(): string {
+  return "globalThis.__xydIconSet=" + JSON.stringify((globalThis as any).__xydIconSet || {}) + ";";
+}
+
 // Live-reload client: connects to /_xyd/livereload, reloads on a "reload"
 // message (broadcast by the watcher's rebuild), and — after the socket drops (a
 // full server restart) — reloads once it reconnects. Reconnect loop keeps it
@@ -66,6 +76,7 @@ function renderShell({ settings, bodyHtml, data }: any): string {
     `<link rel="stylesheet" href="/_xyd/ui.css">` +
     `</head><body>` +
     `<div id="root">${bodyHtml}</div>` +
+    `<script src="/_xyd/iconset.js"></script>` +
     `<script id="__xyd_data" type="application/json">${json}</script>` +
     `<script type="module" src="/_bun/client.js"></script>` +
     LIVE_RELOAD +
@@ -274,6 +285,7 @@ function renderStaticShell({ settings, bodyHtml, data }: any): string {
     themeHeadHtml(settings) +
     `</head><body>` +
     `<div id="root">${bodyHtml}</div>` +
+    (a?.iconSetJs ? `<script src="${esc(a.iconSetJs)}"></script>` : "") +
     `<script id="__xyd_data" type="application/json">${json}</script>` +
     `<script type="module" src="${a?.clientJs || "/assets/client.js"}"></script>` +
     `</body></html>`
@@ -333,7 +345,9 @@ export function start(ThemeCtor: any) {
 
   const HOST = process.env.XYD_HOST || path.resolve(process.cwd(), ".xyd/host");
   const themeName = (s?.theme?.name || "poetry").replace(/^npm:/, "");
-  const CSS = cssResolver(HOST, themeName);
+  // In the compiled binary the CSS is embedded (Bun.file reads the bunfs paths in
+  // __xydDevCss directly); otherwise resolve from HOST node_modules as usual.
+  const CSS = (globalThis as any).__xydDevCss || cssResolver(HOST, themeName);
   const CWD = process.cwd();
   const basename = (s?.advanced?.basename || "").replace(/\/$/, "");
 
@@ -393,6 +407,10 @@ export function start(ThemeCtor: any) {
         return srv.upgrade(req) ? undefined : new Response("upgrade failed", { status: 400 });
       }
       if (CSS[url.pathname]) return serveCss(CSS[url.pathname]);
+      if (url.pathname === "/_xyd/iconset.js") {
+        // Project icon set as one cached script (reflects hot reloads — read live).
+        return new Response(iconSetJs(), { headers: { "content-type": "text/javascript; charset=utf-8" } });
+      }
       if (url.pathname === "/_bun/client.js") {
         // Read live — an icon rebuild re-bundles the client and updates this env,
         // so the next request (after a reload) serves the fresh bundle.
