@@ -1,3 +1,6 @@
 /*/**/__fixtures__/.data
 cliComponents.json
 /opencli.json
+core.node
+dist/xyd-*
+src/core.node

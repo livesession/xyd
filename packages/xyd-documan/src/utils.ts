@@ -13,11 +13,16 @@ import { u } from "unist-builder";
 import matter from "gray-matter";
 // remark parsing no longer needed for frontmatter extraction here
 
-import {
+// Vite / @react-router are LAZY: the Bun engine (startDevServer/buildStatic) and
+// appInit live in this module but never touch Vite, so keeping these type-only /
+// dynamically-imported lets the compiled `bun --compile` binary (Bun-engine-only)
+// exclude Vite entirely — Vite reads its own package.json at module eval, which
+// crashes inside the read-only bunfs. Only the node CLI's Vite dev/build path
+// loads them (via commonVitePlugins, below).
+import type {
     PluginOption as VitePluginOption,
     Plugin as VitePlugin,
 } from "vite";
-import { reactRouter } from "@react-router/dev/vite";
 import { IconSet } from "@iconify/tools";
 
 import {
@@ -26,7 +31,6 @@ import {
     type PluginDocsOptions,
     PluginOutput,
 } from "@xyd-js/plugin-docs";
-import { vitePlugins as xydContentVitePlugins } from "@xyd-js/content/vite";
 import { AccessControl, HeadConfig, Integrations, Plugins, Settings } from "@xyd-js/core";
 import type { IconLibrary, WebEditorNavigationItem } from "@xyd-js/core";
 import type { Plugin, PluginConfig } from "@xyd-js/plugins";
@@ -826,6 +830,11 @@ export async function commonVitePlugins(
 ) {
     const userVitePlugins = resolvedPlugins.map((p) => p.vite).flat() || [];
 
+    // Lazy Vite imports (see the top-of-file note) — only reached on the node
+    // CLI's Vite dev/build path, never in the compiled Bun-engine binary.
+    const { reactRouter } = await import("@react-router/dev/vite");
+    const { vitePlugins: xydContentVitePlugins } = await import("@xyd-js/content/vite");
+
     return [
         ...((await xydContentVitePlugins({
             toc: {
@@ -1222,9 +1231,15 @@ export function getXydFolderPath() {
 }
 
 export function getCLIRoot(): string {
-    const cliPath = realpathSync(process.argv[1]);
-
-    return path.dirname(path.dirname(cliPath));
+    // Inside a `bun --compile` binary process.argv[1] is a bunfs arg/path that
+    // realpathSync can't resolve; fall back to the executable's dir (the CLI
+    // components model isn't used by the compiled binary anyway).
+    try {
+        const cliPath = realpathSync(process.argv[1]);
+        return path.dirname(path.dirname(cliPath));
+    } catch {
+        return path.dirname(process.execPath);
+    }
 }
 
 export function getCLIComponentsJsonPath(): string {

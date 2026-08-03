@@ -158,7 +158,16 @@ function resolvePackages(packages: ComponentConfigPackage[], settings: Settings)
   return resolved;
 }
 
-const xydContentPath = resolveModuleV2(getCLIRoot(), "@xyd-js/content");
+// Guarded: resolveModuleV2 walks the FS from the CLI root — meaningless inside a
+// compiled binary (no on-disk node_modules), and this is only used by the
+// `components install diagrams` docs-project flow, not the core commands.
+const xydContentPath = (() => {
+  try {
+    return resolveModuleV2(getCLIRoot(), "@xyd-js/content");
+  } catch {
+    return "";
+  }
+})();
 const COMPONENTS: Record<string, ComponentConfig> = {
   diagrams: {
     packages: [
