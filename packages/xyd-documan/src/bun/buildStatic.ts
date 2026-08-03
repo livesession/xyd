@@ -34,6 +34,20 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   }
   const settings = (globalThis as any).__xydSettings;
 
+  // SECURITY (fail-closed): the Bun static build does not yet reproduce the full
+  // access-control emit path (plugin login/auth pages, per-page protected content
+  // chunks, frontmatter `public:false` gating, sidebar/navlink filtering). Rather
+  // than risk shipping a static site that leaks protected content or 404s the
+  // login flow, refuse an access-controlled project on the experimental XYD_BUN
+  // build and point at the default (Vite) build, which supports it.
+  if (settings?.accessControl) {
+    console.error(
+      "[build] accessControl is configured — the XYD_BUN static build does not support access control yet.\n" +
+        "        Run the default build (without XYD_BUN) for access-controlled sites."
+    );
+    process.exit(1);
+  }
+
   const HOST = getHostPath();
   process.env.XYD_HOST = HOST;
   const rawName: string = settings?.theme?.name || "poetry";
@@ -111,12 +125,18 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     }
   }
   console.error(`[build] wrote ${ok}/${slugs.length} pages`);
-  if (missing.length) console.error("[build] render failures:\n  " + missing.slice(0, 10).join("\n  "));
 
   // 7) NON-PAGE emits (access-filtered where relevant).
   emitSitemap(clientDir, settings, accessMap, slugs);
   emitRobots(clientDir, settings);
   emitRawRouteFiles(clientDir); // /llms.txt + raw .md (already protected-filtered at appInit)
+
+  // FAIL LOUD on any page that failed to render — otherwise a broken page ships
+  // as a 404 while the build reports success (silent broken deploy).
+  if (missing.length) {
+    console.error(`[build] FAILED — ${missing.length} page(s) did not render:\n  ` + missing.join("\n  "));
+    process.exit(1);
+  }
 
   console.error(`[build] done → ${clientDir}`);
   process.exit(0);

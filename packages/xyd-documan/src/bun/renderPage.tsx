@@ -197,23 +197,81 @@ export function cssResolver(HOST: string, themeName: string) {
 
 // ---- S3: static build (SSG) render ----
 
-/** Production HTML shell for `xyd build`: same skeleton as renderShell() but with
- *  real hashed asset hrefs (from globalThis.__xydBuildAssets, seeded by
- *  buildStatic) and NO live-reload script. */
+// Synchronous color-scheme resolver (mirrors host/app/scripts/colorSchemeScript.ts).
+// Runs before paint: honors the saved preference / OS setting, so a static (MPA)
+// site doesn't flash the wrong scheme on every navigation.
+const COLOR_SCHEME_SCRIPT =
+  `(function(){try{var s=window.__xydColorSchemeSettings||{};var d=s.defaultColorScheme;` +
+  `var t=localStorage.getItem('xyd-color-scheme')||d||'auto';var m=window.matchMedia('(prefers-color-scheme: dark)').matches;` +
+  `document.documentElement.setAttribute('data-color-scheme',t==='auto'?(m?'dark':'light'):t)}` +
+  `catch(e){document.documentElement.setAttribute('data-color-scheme',window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light')}})();`;
+
+/** SEO/social meta tags from page frontmatter + settings.seo (parity with
+ *  plugin-docs page.tsx meta()). og:/article:/fb: → property=, else name=. */
+function metaTagsHtml(metadata: any, settings: any): string {
+  const seo = settings?.seo || {};
+  const desc = metadata?.seoDescription || metadata?.description || seo?.description;
+  const ogTitle = metadata?.seoTitle || metadata?.title;
+  const out: string[] = [];
+  if (desc) out.push(`<meta name="description" content="${esc(desc)}">`);
+  if (ogTitle) out.push(`<meta property="og:title" content="${esc(ogTitle)}">`);
+  if (desc) out.push(`<meta property="og:description" content="${esc(desc)}">`);
+  out.push(`<meta property="og:type" content="website">`);
+  if (metadata?.noindex) out.push(`<meta name="robots" content="noindex">`);
+  const tags = { ...(seo?.metatags || {}), ...(metadata?.metatags || {}) };
+  for (const [k, v] of Object.entries(tags)) {
+    if (v == null) continue;
+    const attr = /^(og:|article:|fb:)/.test(k) ? "property" : "name";
+    out.push(`<meta ${attr}="${esc(k)}" content="${esc(String(v))}">`);
+  }
+  return out.join("");
+}
+
+/** Serialize settings.theme.head (["script",{src}] / ["meta",{...}] / ["script",{},"code"]).
+ *  Carries site-verification tags, analytics/third-party scripts, plugin head. */
+function themeHeadHtml(settings: any): string {
+  const head = settings?.theme?.head;
+  if (!Array.isArray(head)) return "";
+  const voidTags = new Set(["meta", "link", "base"]);
+  return head
+    .map((entry: any) => {
+      if (!Array.isArray(entry)) return "";
+      const [tag, attrs, inner] = entry;
+      if (!tag) return "";
+      const a =
+        attrs && typeof attrs === "object"
+          ? Object.entries(attrs)
+              .map(([k, v]) => (v === true ? ` ${k}` : v == null || v === false ? "" : ` ${k}="${esc(String(v))}"`))
+              .join("")
+          : "";
+      return voidTags.has(tag) ? `<${tag}${a}>` : `<${tag}${a}>${inner || ""}</${tag}>`;
+    })
+    .join("");
+}
+
+/** Production HTML shell for `xyd build`: hashed asset hrefs (from
+ *  globalThis.__xydBuildAssets), color-scheme prehydration script, SEO meta,
+ *  favicon, theme.head — NO live-reload script. */
 function renderStaticShell({ settings, bodyHtml, data }: any): string {
   const a = (globalThis as any).__xydBuildAssets as { clientJs: string; cssLinks: string[] };
-  const colorScheme = settings?.theme?.appearance?.colorScheme || "os";
+  const defaultColorScheme = settings?.theme?.appearance?.colorScheme || "os";
   const metadata = data.loaderData.metadata;
   const title = metadata?.seoTitle || metadata?.title || settings?.seo?.title || "xyd";
+  const favicon = settings?.theme?.favicon;
   const layer =
     "@layer reset, defaults, defaultfix, components, fabric, templates, decorators, themes, themedecorator, presets, user, overrides;";
   const json = JSON.stringify(data).replace(/</g, "\\u003c");
   return (
-    `<!doctype html><html data-color-scheme="${colorScheme}"><head>` +
+    `<!doctype html><html data-color-scheme="${defaultColorScheme}"><head>` +
     `<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">` +
+    // Color scheme resolved synchronously before paint (no FOUC on MPA nav).
+    `<script>window.__xydColorSchemeSettings=${JSON.stringify({ defaultColorScheme })};${COLOR_SCHEME_SCRIPT}</script>` +
     `<title>${esc(title)}</title>` +
-    `<style>${layer}</style>` + // @layer declaration MUST be the first head child
+    metaTagsHtml(metadata, settings) +
+    (favicon ? `<link rel="icon" href="${esc(favicon)}">` : "") +
+    `<style>${layer}</style>` + // @layer declaration before the layer-using stylesheets
     (a?.cssLinks || []).map((h: string) => `<link rel="stylesheet" href="${h}">`).join("") +
+    themeHeadHtml(settings) +
     `</head><body>` +
     `<div id="root">${bodyHtml}</div>` +
     `<script id="__xyd_data" type="application/json">${json}</script>` +
