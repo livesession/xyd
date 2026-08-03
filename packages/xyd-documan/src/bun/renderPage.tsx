@@ -454,6 +454,18 @@ export function start(ThemeCtor: any) {
       const asset = await serveStatic(url.pathname);
       if (asset) return asset;
       const slug = deriveSlug(url.pathname);
+      // No page for this slug? The root with no index page → redirect to the first
+      // page (so `xyd dev` opening `/` lands somewhere); anything else (a stray
+      // browser request like /favicon.ico or a service worker /__sw__.js, or a real
+      // 404) → a QUIET 404, not a 500 with a scary stack trace.
+      const mapping: Record<string, string> = (globalThis as any).__xydPagePathMapping || {};
+      if (!mapping[slug || "index"]) {
+        if (slug === "" || slug === "index") {
+          const first = Object.keys(mapping).find((k) => k !== "index");
+          if (first) return Response.redirect(`/${first}`, 302);
+        }
+        return new Response("Not found", { status: 404, headers: { "content-type": "text/plain; charset=utf-8" } });
+      }
       try {
         return new Response(await renderPage(slug, url.search), { headers: { "content-type": "text/html; charset=utf-8" } });
       } catch (e: any) {
