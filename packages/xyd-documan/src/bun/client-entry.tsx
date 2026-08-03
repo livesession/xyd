@@ -15,11 +15,11 @@ export function bootClient(ThemeCtor: any) {
   const el = document.getElementById("__xyd_data");
   const data = JSON.parse(el!.textContent || "{}");
 
-  globalThis.__xydSettings = data.settings;
-  // The theme rebuilds webeditor from __xydSettingsClone — seed it from the
-  // PRISTINE server clone (not the live/mutated `settings`) so the client theme
-  // builds the identical webeditor (social-anchor icons) the server rendered.
-  globalThis.__xydSettingsClone = data.settingsClone || data.settings;
+  // globalThis.__xydSettings + __xydSettingsClone are already set by the external
+  // settings asset (<script src="…virtual_xyd-settings-*.js">) that runs before
+  // this module — the theme rebuilds webeditor from the PRISTINE clone so the
+  // client builds the identical markup the server rendered.
+  const settings = (globalThis as any).__xydSettings;
   globalThis.__xydUserComponents = data.userComponents || [];
   globalThis.__xydUserHooks = data.userHooks || {};
   globalThis.__xydPagePathMapping = {};
@@ -29,7 +29,7 @@ export function bootClient(ThemeCtor: any) {
   // Router store. Location is basename-STRIPPED (RR semantics; matches the
   // server's normalized pathname so useLocation-driven active-state hydrates
   // identically), and matches carry the server-computed routeId + loaderData.
-  const basename = (data.settings?.advanced?.basename || "").replace(/\/$/, "");
+  const basename = (settings?.advanced?.basename || "").replace(/\/$/, "");
   // Strip basename (prefix OR exact match → root); root → "/".
   const stripBase = (p: string) => {
     if (basename) {
@@ -50,7 +50,7 @@ export function bootClient(ThemeCtor: any) {
     const { loaderData, routeId } = await r.json();
     if (!signal?.aborted) {
       document.title =
-        loaderData?.metadata?.seoTitle || loaderData?.metadata?.title || data.settings?.seo?.title || "xyd";
+        loaderData?.metadata?.seoTitle || loaderData?.metadata?.title || settings?.seo?.title || "xyd";
     }
     return { matches: [{ id: routeId, pathname: slugToPathname(slug), params: {}, data: loaderData }] };
   };

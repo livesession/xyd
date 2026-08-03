@@ -11,26 +11,14 @@ import { createRouterStore, RouterProvider } from "@xyd-js/router";
 import { seedGlobals, ShellProviders, getSettings, getSettingsClone, matchRoute, slugToPathname } from "./render-tree";
 import { metaTagsHtml, robotsTxt, sitemapXml, sitemapRoutes } from "./seo";
 import { themePackage, themeShortName } from "./themePkg";
+import { stripReactElements, settingsBundleJs } from "./serialize";
+export { stripReactElements }; // re-exported for existing consumers
 
 /**
  * Server render (SSR). Reuses the browser-safe tree in `render-tree.tsx` so the
  * SSR HTML matches the client hydration exactly. Bundled by `launcher.ts`
  * (target bun). `appInit` (in the launcher) already set the globals.
  */
-
-// React elements can't cross the SSR→CSR boundary via JSON (the $$typeof Symbol
-// is dropped, leaving an invalid child object). Strip them before serializing;
-// the client re-derives them (e.g. webeditor icons the theme injects).
-export function stripReactElements(o: any): any {
-  if (o == null || typeof o !== "object") return o;
-  if (React.isValidElement(o)) return null;
-  // Already-broken serialized element (lost its $$typeof Symbol): shape {props, _owner|_store}.
-  if (("_owner" in o || "_store" in o) && "props" in o) return null;
-  if (Array.isArray(o)) return o.map(stripReactElements);
-  const out: any = {};
-  for (const k of Object.keys(o)) out[k] = stripReactElements(o[k]);
-  return out;
-}
 
 function esc(x: any): string {
   return String(x).replace(/[&<>]/g, (c) => (({ "&": "&amp;", "<": "&lt;", ">": "&gt;" } as any)[c]));
@@ -85,6 +73,7 @@ function renderShell({ settings, bodyHtml, data }: any): string {
     themeHeadHtml(settings) +
     `</head><body>` +
     `<div id="root">${bodyHtml}</div>` +
+    `<script src="/_xyd/settings.js"></script>` +
     `<script src="/_xyd/iconset.js"></script>` +
     `<script id="__xyd_data" type="application/json">${json}</script>` +
     `<script type="module" src="/_bun/client.js"></script>` +
@@ -99,10 +88,22 @@ function renderShell({ settings, bodyHtml, data }: any): string {
  * Pure function of `slug` + the live server globals; ContentFS reads files fresh
  * per request, so the watcher's reinit/reseed keeps it current with no caching.
  */
+/** Derive the i18n locale from a (locale-pre-prefixed) slug — parity with
+ *  plugin-docs getPathname(). Default locale for unprefixed slugs; the first
+ *  segment when it's a declared non-default locale. "" when i18n is off. */
+function deriveLocale(slug: string): string {
+  const i18n = (globalThis as any).__xydI18n as { defaultLocale?: string; locales?: string[] } | undefined;
+  if (!i18n?.locales?.length) return "";
+  let locale = i18n.defaultLocale ?? "";
+  const seg = (slug || "").replace(/^\/+/, "").split("/")[0];
+  if (seg && i18n.locales.includes(seg) && seg !== i18n.defaultLocale) locale = seg;
+  return locale;
+}
+
 export async function buildPageData(slug: string, opts: { shellOnly?: boolean } = {}) {
   slug = slug || "index";
   const s = getSettings();
-  const locale = "";
+  const locale = deriveLocale(slug);
 
   const props: any = await mapSettingsToProps(s, globalThis.__xydPagePathMapping, slug, undefined as any, locale);
   const { groups: sidebarGroups, breadcrumbs, navlinks, metadata } = props;
@@ -112,7 +113,7 @@ export async function buildPageData(slug: string, opts: { shellOnly?: boolean } 
   // client's ProtectedPageShell fetches the content chunk after auth.
   if (opts.shellOnly) {
     return {
-      sidebarGroups, breadcrumbs, navlinks, slug, code: "", metadata,
+      sidebarGroups, breadcrumbs, navlinks, slug, locale, code: "", metadata,
       rawPage: "", editLink: undefined, canPassComponents: false, shellOnly: true,
     };
   }
@@ -142,7 +143,7 @@ export async function buildPageData(slug: string, opts: { shellOnly?: boolean } 
   }
 
   return {
-    sidebarGroups, breadcrumbs, navlinks, slug, code, metadata, rawPage, editLink, canPassComponents, shellOnly: false,
+    sidebarGroups, breadcrumbs, navlinks, slug, locale, code, metadata, rawPage, editLink, canPassComponents, shellOnly: false,
   };
 }
 
@@ -173,10 +174,11 @@ export async function renderPage(slug: string, search: string = ""): Promise<str
   // `settingsClone` (the PRISTINE appInit clone the theme reads via
   // __xydSettingsClone to rebuild webeditor). Plus `routeId` so the client store
   // uses the same match id without re-deriving.
+  // Per-page data only — settings/settingsClone ship in the external settings
+  // asset (renderShell references it), NOT inlined per page, so the raw all-locale
+  // settings ("i18n:" keys, per-locale overrides) never land in the page HTML.
   const data = {
     slug,
-    settings: s,
-    settingsClone: getSettingsClone() || s,
     loaderData,
     routeId,
     userComponents: [], // plugin components not serialized in this slice
@@ -252,7 +254,9 @@ function themeHeadHtml(settings: any): string {
  *  globalThis.__xydBuildAssets), color-scheme prehydration script, SEO meta,
  *  favicon, theme.head — NO live-reload script. */
 function renderStaticShell({ settings, bodyHtml, data }: any): string {
-  const a = (globalThis as any).__xydBuildAssets as { clientJs: string; cssLinks: string[] };
+  const a = (globalThis as any).__xydBuildAssets as {
+    clientJs: string; cssLinks: string[]; iconSetJs?: string; settingsJs?: string;
+  };
   const defaultColorScheme = settings?.theme?.appearance?.colorScheme || "os";
   const metadata = data.loaderData.metadata;
   const title = metadata?.seoTitle || metadata?.title || settings?.seo?.title || "xyd";
@@ -273,6 +277,7 @@ function renderStaticShell({ settings, bodyHtml, data }: any): string {
     themeHeadHtml(settings) +
     `</head><body>` +
     `<div id="root">${bodyHtml}</div>` +
+    (a?.settingsJs ? `<script src="${esc(a.settingsJs)}"></script>` : "") +
     (a?.iconSetJs ? `<script src="${esc(a.iconSetJs)}"></script>` : "") +
     `<script id="__xyd_data" type="application/json">${json}</script>` +
     `<script type="module" src="${a?.clientJs || "/assets/client.js"}"></script>` +
@@ -300,8 +305,6 @@ export async function renderPageStatic(slug: string, opts: { shellOnly?: boolean
   );
   const data = {
     slug,
-    settings: s,
-    settingsClone: getSettingsClone() || s,
     loaderData,
     routeId,
     userComponents: [],
@@ -400,6 +403,13 @@ export function start(ThemeCtor: any) {
       if (url.pathname === "/_xyd/iconset.js") {
         // Project icon set as one cached script (reflects hot reloads — read live).
         return new Response(iconSetJs(), { headers: { "content-type": "text/javascript; charset=utf-8" } });
+      }
+      if (url.pathname === "/_xyd/settings.js") {
+        // The full settings as an EXTERNAL asset (not inlined per page) so raw
+        // all-locale settings never land in the page HTML. Read live (hot reload).
+        return new Response(settingsBundleJs(getSettings(), getSettingsClone()), {
+          headers: { "content-type": "text/javascript; charset=utf-8" },
+        });
       }
       if (url.pathname === "/_bun/client.js") {
         // Read live — an icon rebuild re-bundles the client and updates this env,

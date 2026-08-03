@@ -6,6 +6,7 @@ import { appInit, getHostPath, getBuildPath, getPublicPath } from "../../dist/in
 import { buildBundle, recomputeIconSet, setBuildContext } from "./startDevServer";
 import { robotsTxt, sitemapXml, sitemapRoutes } from "./seo";
 import { themePackage, themeShortName } from "./themePkg";
+import { settingsBundleJs } from "./serialize";
 
 /**
  * S3 static build (SSG). `XYD_BUN=1 xyd build` runs this instead of the two Vite
@@ -131,8 +132,17 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   fs.writeFileSync(path.join(clientDir, iconSetOut), iconSetSrc);
   const iconSetJs = "/" + iconSetOut;
 
+  // 2c) Settings as ONE hashed external asset (virtual_xyd-settings-<hash>.js) —
+  // parity with the Vite virtual:xyd-settings bundle. Keeps the raw, all-locale
+  // settings ("i18n:" keys, per-locale overrides) OUT of every page's HTML.
+  const settingsSrc = settingsBundleJs((globalThis as any).__xydSettings, (globalThis as any).__xydSettingsClone);
+  const settingsHash = Bun.hash(settingsSrc).toString(16).slice(0, 8);
+  const settingsOut = `assets/virtual_xyd-settings-${settingsHash}.js`;
+  fs.writeFileSync(path.join(clientDir, settingsOut), settingsSrc);
+  const settingsJs = "/" + settingsOut;
+
   // 3) Asset manifest for the (same-process) render bundle.
-  (globalThis as any).__xydBuildAssets = { clientJs, cssLinks, iconSetJs };
+  (globalThis as any).__xydBuildAssets = { clientJs, cssLinks, iconSetJs, settingsJs };
 
   // 4) SERVER render bundle → registers globalThis.__xydRenderStatic/__xydSeedForBuild.
   if (isBin) {
@@ -191,6 +201,21 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     }
   }
   console.error(`[build] wrote ${ok}/${slugs.length} pages`);
+
+  // 6b) Root fallback: a project with no explicit index page still needs `/` to
+  // serve something (parity with the RR ssr:false root shell; better than a 404 on
+  // the deployed site). Render the first page at index.html — it carries the same
+  // client bundle + settings asset, so the app boots there too.
+  if (!mapping["index"] && !(globalThis as any).__xydHasIndexPage && !missing.length) {
+    const first = slugs.find((k) => k !== "index" && !((accessMap["/" + k] || accessMap[k]) && (accessMap["/" + k] || accessMap[k]) !== "public"));
+    if (first) {
+      try {
+        const html = await (globalThis as any).__xydRenderStatic(first, { shellOnly: false });
+        writeHtml(clientDir, "index", html);
+        console.error(`[build] root index.html → ${first}`);
+      } catch { /* non-fatal */ }
+    }
+  }
 
   // 7) NON-PAGE emits (access-filtered where relevant).
   emitSitemap(clientDir, settings, accessMap, slugs);

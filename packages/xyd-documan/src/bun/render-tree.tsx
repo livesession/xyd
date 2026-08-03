@@ -1,7 +1,8 @@
 import React from "react";
 
 import { Surfaces } from "@xyd-js/framework";
-import { Framework, FrameworkPage, FwLink, FwLogo } from "@xyd-js/framework/react";
+import { Framework, FrameworkPage, FwLink, FwLogo, FwLocaleSwitcher, type IFrameworkI18n } from "@xyd-js/framework/react";
+import { resolveLocaleSettings } from "@xyd-js/framework/hydration/locale";
 import { ReactContent } from "@xyd-js/components/content";
 import { IconProvider } from "@xyd-js/components/writer";
 import { CoderProvider } from "@xyd-js/components/coder";
@@ -55,6 +56,11 @@ export function seedGlobals(ThemeCtor: any) {
   const atlasXyd = (AtlasXydPlugin as any)()(settings);
   const sir = atlasXyd?.customComponents?.["AtlasSidebarItemRight"];
   if (sir) surfaces.define(sir.surface, sir.component);
+  // i18n: auto-register the built-in locale switcher on nav.right when
+  // navigation.languages[] is configured (parity with plugin-docs layout.tsx).
+  if (settings?.navigation?.languages?.length) {
+    surfaces.define("nav.right", FwLocaleSwitcher as any, { append: true } as any);
+  }
   state.surfaces = surfaces;
 
   globalThis.__xydReactContent = new ReactContent(settings, {
@@ -155,18 +161,43 @@ function DocsBody() {
   );
 }
 
+/** IFrameworkI18n payload for <Framework> — parity with plugin-docs layout.tsx
+ *  buildFrameworkI18n. Drives the locale switcher + useT() catalog resolution. */
+function buildFrameworkI18n(settings: any, currentLocale?: string): IFrameworkI18n | undefined {
+  const langs = settings?.navigation?.languages;
+  if (!langs || langs.length === 0) return undefined;
+  const explicit = settings.i18n?.defaultLocale;
+  const flagged = langs.find((l: any) => l.default)?.language;
+  const defaultLocale = explicit ?? flagged ?? langs[0].language;
+  const byLocale: Record<string, any> = {};
+  for (const l of langs) byLocale[l.language] = l;
+  const catalogs = ((globalThis as any).__xydI18nTranslations || {}) as Record<string, any>;
+  return {
+    currentLocale: currentLocale || defaultLocale,
+    defaultLocale,
+    locales: langs.map((l: any) => ({ code: l.language, name: l.name })),
+    byLocale,
+    catalogs,
+  } as any;
+}
+
 export function ShellProviders() {
   const loaderData = useLoaderData();
   const settings = state.settings;
+  // Per-locale settings overrides (catalog $-keys + languages[].overrides) so
+  // useSettings() returns the locale-effective config; parity with layout.tsx.
+  const locale = loaderData.locale;
+  const effectiveSettings = locale ? resolveLocaleSettings(settings, locale) : settings;
   const { Layout } = state.theme;
   const variantToggles = [{ key: "symbolName", defaultValue: "" }];
   return (
-    <Analytics settings={settings} loader={loadProvider as any}>
+    <Analytics settings={effectiveSettings} loader={loadProvider as any}>
       {/* Scroll to top on client PUSH navigation (react-router parity). */}
       <ScrollRestoration />
       <IconProvider value={{ iconSet: (globalThis as any).__xydIconSet || {} }}>
         <Framework
-          settings={settings}
+          settings={effectiveSettings}
+          i18n={buildFrameworkI18n(settings, locale)}
           sidebarGroups={loaderData.sidebarGroups || []}
           metadata={loaderData.metadata || {}}
           surfaces={state.surfaces}
