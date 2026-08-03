@@ -103,8 +103,15 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   await import(pathToFileURL(serverBundle).href);
   (globalThis as any).__xydSeedForBuild();
 
-  // 5) PUBLIC assets → client root (content references them as root paths).
-  copyDir(getPublicPath(), clientDir);
+  // 5) PUBLIC assets. Content references public files WITH the `public/` segment
+  // (e.g. /public/assets/logo.svg) and — because presets prefix logo/favicon and
+  // some component images with the basename — ALSO as /<basename>/public/… . Mirror
+  // to both so every ref resolves on a static host (dev's serveStatic reconciled
+  // these at request time; a static build must place the files).
+  const publicSrc = getPublicPath();
+  copyDir(publicSrc, path.join(clientDir, "public"));
+  const baseDir = (settings?.advanced?.basename || "").replace(/^\/+|\/+$/g, "");
+  if (baseDir) copyDir(publicSrc, path.join(clientDir, baseDir, "public"));
 
   // 6) PRERENDER every content page (shellOnly-aware) → flat <slug>.html.
   const accessMap: Record<string, string> = (globalThis as any).__xydAccessMap || {};
