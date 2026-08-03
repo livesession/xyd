@@ -4,16 +4,28 @@
 # which are standalone crates built by their own `cargo` smoke tests.
 [workspace]
 resolver = "2"
-members = ["xyd_core_rs", "xyd_watch"]
+members = ["xyd_core_rs", "xyd_watch", "xyd_uniform", "xyd_parity"]
 # The napi adapter crate lives co-located in packages/xyd-native (idiomatic
 # napi-rs layout: crate + package.json together). It path-depends on
 # crates/xyd_core_rs and is built standalone by @napi-rs/cli, so it is NOT a
-# member of this workspace.
+# member of this workspace. RULE (S6+): the napi crate may depend only on
+# napi/napi-derive/napi-build/serde_json + path-deps on crates/* — all
+# logic/parser/IO deps live in the pure crates here, so the dual lockfile
+# (crates/Cargo.lock vs packages/xyd-native/Cargo.lock) can't skew behavior.
 
 [workspace.package]
 edition = "2021"
 version = "0.0.0"
 license = "MIT"
+
+# Shared third-party pins (S6+): every pure crate takes these via
+# `{ workspace = true }` so converter crates can't drift among themselves.
+# preserve_order: fixture-dump diffs stay minimal AND IndexMap equality is
+# order-insensitive — exactly the vitest `toEqual` oracle semantics.
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+thiserror = "2"
 
 [profile.release]
 lto = true

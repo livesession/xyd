@@ -1,0 +1,14 @@
+[package]
+name = "xyd_parity"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish = false
+
+# Dev-only fixture-parity harness (S6+): fixture discovery + assert_parity with
+# JSON-pointer diff printing. A dev-dependency of every converter crate — NEVER
+# linked into the napi cdylib.
+
+[dependencies]
+serde_json = { workspace = true }
+xyd_uniform = { path = "../xyd_uniform" }
