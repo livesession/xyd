@@ -3,8 +3,6 @@
 Ran the existing Playwright e2e suite + apps/docs against the Bun engine (`XYD_BUN=1`) to
 find where our Rust+Bun work diverges from the Vite/React-Router path.
 
-## Method (important)
-
 ## Final result
 
 **Full Playwright e2e suite under `XYD_BUN=1`: 73 passed, 1 failed.** The single failure is
@@ -12,6 +10,24 @@ find where our Rust+Bun work diverges from the Vite/React-Router path.
 that grabs the hidden mobile-sidebar link — see Gap 6 below). Every test that passes on Vite also
 passes on Bun → the Rust+Bun engine is at **parity** with the Vite/React-Router path.
 (Verdaccio must be running for the `7.themes/2,3` custom-npm-theme publish step.)
+
+## apps/docs (the framework's own docs — 89 pages, opener theme, OpenAPI + GraphQL)
+
+Built + crawled apps/docs through the Bun engine (`XYD_BUN`): **builds 89/89 pages**; a
+Playwright crawl of all 90 HTML routes shows **every page loads, 37 OpenAPI/GraphQL Atlas
+API-ref pages render, and client-side navigation works**. Two Bun-specific findings the e2e
+fixtures don't exercise:
+
+- **Home-page (`/`) hydration mismatch — FIXED** (`renderPageStatic({asRootIndex})`). apps/docs
+  has no explicit index page, so the build renders the first page's content into `index.html`;
+  the SSR seeded the location as the source page's path while the browser loads `/` →
+  active-state hydrated differently. Now seeded as `/` on both sides → clean.
+- **React.Fragment dev warning (open, cosmetic).** On pages using xyd file-components
+  (`/components/*` — Callout/Tabs; plain prose pages are clean), a React DEV warning fires
+  (`Invalid prop 'analytics' supplied to React.Fragment`). Dev-only (production React strips it),
+  does NOT affect rendering, and NOT from the DocsBody wrapper (verified). A deep
+  content-composition interaction between the `analytics` mdx scope var and file-component
+  rendering; root cause not yet pinned. Tracked as a follow-up.
 
 ## Method (important)
 
