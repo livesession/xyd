@@ -703,4 +703,5 @@ module.exports = nativeBinding
 module.exports.Watcher = nativeBinding.Watcher
 module.exports.classify = nativeBinding.classify
 module.exports.createWatcher = nativeBinding.createWatcher
+module.exports.gqlSchemaToReferences = nativeBinding.gqlSchemaToReferences
 module.exports.hello = nativeBinding.hello

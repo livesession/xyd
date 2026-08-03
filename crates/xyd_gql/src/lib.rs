@@ -13,10 +13,12 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::rc::Rc;
 
+use serde::Deserialize;
 use xyd_uniform::Reference;
 
-/// Port of `GQLSchemaToReferencesOptions`.
-#[derive(Debug, Clone, Default)]
+/// Port of `GQLSchemaToReferencesOptions` (deserializes the JS options object).
+#[derive(Debug, Clone, Default, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
 pub struct Options {
     pub regions: Option<Vec<String>>,
     pub flat: Option<bool>,
@@ -24,17 +26,30 @@ pub struct Options {
     pub route: Option<String>,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
 pub struct SortConfig {
     pub sort_stack: Option<Vec<Vec<String>>>,
     pub sort: Option<Vec<SortItem>>,
 }
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, Deserialize)]
+#[serde(rename_all = "camelCase", default)]
 pub struct SortItem {
     pub node: Option<String>,
     pub group: Option<Vec<String>>,
     pub stack: Option<usize>,
+}
+
+/// JS source resolution (minus URLs, which the shim fetches): an existing file
+/// path is read from disk; anything else is treated as raw SDL.
+pub fn resolve_source(location: &str) -> String {
+    if std::path::Path::new(location).exists() {
+        if let Ok(content) = std::fs::read_to_string(location) {
+            return content;
+        }
+    }
+    location.to_string()
 }
 
 fn default_sort_order() -> Vec<SortItem> {
@@ -77,6 +92,16 @@ pub fn gql_schema_to_references(
     sdl_sources: &[String],
     options: Option<Options>,
 ) -> Result<Vec<Reference>, GqlError> {
+    gql_schema_to_references_full(sdl_sources, options).map(|(refs, _)| refs)
+}
+
+/// Like [`gql_schema_to_references`] but also returns the EFFECTIVE route
+/// (code option overridden by `@docs(route:)`) — the shim reattaches it as the
+/// JS `__UNSAFE_route` thunk, which `JSON.stringify` can't carry.
+pub fn gql_schema_to_references_full(
+    sdl_sources: &[String],
+    options: Option<Options>,
+) -> Result<(Vec<Reference>, Option<String>), GqlError> {
     let docs: Vec<_> = sdl_sources
         .iter()
         .map(|s| {
@@ -125,7 +150,7 @@ pub fn gql_schema_to_references(
     let sort_stacks = sort_config.sort_stack.clone().unwrap_or_default();
     references.sort_by_key(|r| sort_order(r, &sort_items, &sort_stacks));
 
-    Ok(references)
+    Ok((references, options.route.clone()))
 }
 
 fn reference_groups(r: &Reference) -> Vec<String> {

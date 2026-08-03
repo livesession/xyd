@@ -21,6 +21,13 @@ export declare function classify(path: string): string
  */
 export declare function createWatcher(root: string, opts: WatchOpts, onChange: (err: Error | null, batch: JsChange[]) => void): Watcher
 
+/**
+ * Parity target: `gqlSchemaToReferences(schemaLocation, options?)`.
+ * `sources` are file paths or raw SDL (the shim pre-fetches http(s) URLs —
+ * no network in the native layer).
+ */
+export declare function gqlSchemaToReferences(sources: Array<string>, optionsJson?: string | undefined | null): string
+
 /** FFI smoke: proves the embedded Rust core is reachable from the Bun binary. */
 export declare function hello(name: string): string
 

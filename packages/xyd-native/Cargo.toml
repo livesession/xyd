@@ -12,8 +12,10 @@ crate-type = ["cdylib"]
 [dependencies]
 napi = { version = "3", default-features = false, features = ["napi4"] }
 napi-derive = "3"
+serde_json = { version = "1", features = ["preserve_order"] }
 xyd_core_rs = { path = "../../crates/xyd_core_rs" }
 xyd_watch = { path = "../../crates/xyd_watch" }
+xyd_gql = { path = "../../crates/xyd_gql" }
 
 [build-dependencies]
 napi-build = "2"

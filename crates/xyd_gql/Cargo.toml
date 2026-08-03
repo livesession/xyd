@@ -10,6 +10,7 @@ publish = false
 # 19 committed fixtures are the spec; parity is gated in tests/parity.rs.
 
 [dependencies]
+serde = { workspace = true }
 serde_json = { workspace = true }
 xyd_uniform = { path = "../xyd_uniform" }
 async-graphql-parser = "7"
