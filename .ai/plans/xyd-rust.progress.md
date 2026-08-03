@@ -120,7 +120,31 @@ apps/docs 89/89 unaffected.
 `composeFileMap` (plugin-docs presets/uniform) walks the previous `.xyd/build` output when
 matchRoute="" and trips on a bare-name .md read (ENOENT getBooks.md). Both modes, pre-shim too.
 
-**NEXT (W2)**: xyd-openapi → crates/xyd_openapi — deref module FIRST (the __UNSAFE_refPath circular
-semantics) against -2.complex.openai/-3.random; oapExamples stays a JS post-pass at its single call
-site (oas-schema.ts:83); rider xyd-openapi2opensdk. Then W3 uniform runtime + mcp-uniform + fused
-endpoints, W4 frontmatter fast path, W5 content mdast core, W6 settings, W7 codegen track.
+**W2 DONE — xyd-openapi is Rust-backed** (commits `3f0f8f6a`, shim commit after it):
+`crates/xyd_openapi` (doc.rs DocCtx: lazy $ref resolver + pre-crawled __UNSAFE_refPath stamps +
+preprocess() materializing $refParser-v12 $ref-with-siblings merges w/ MergedStamp companions;
+core.rs porting oas-core.ts incl. anyOf/oneOf/allOf/enum/array, visitedRefs clone-at-set, the
+nullable-PRESENCE and example-stringify quirks; paths.rs/components.rs/util.rs w/ js_object_keys
+numeric-key ordering, encodeURIComponent, github-slugger, oas.getTags ordering; custom JsValue
+serde visitor for the OpenAI spec's ±9223372036854776000 huge ints → lossy f64 like js-yaml) —
+cargo tier-1 8/8 (skip-list: the two plugin-bearing fixtures). Napi surface
+(xyd-native/src/openapi.rs: oapSchemaToReferencesFromFile, JSON transport); shim (impl-js frozen,
+native.ts loader + NATIVE_SOURCE symbol stash on deferencedOpenAPI docs, dispatcher +
+fillEndpointExamplesAndSelectors JS post-pass: oapExamples per endpoint, __UNSAFE_selector thunks,
+__internal_options). Gates: vitest XYD_NATIVE=0 10/10, =1 9/10 + one DOCUMENTED skip; Bun-engine
+site builds byte-identical Rust-vs-JS incl. the full 625-page OpenAI site; node-free binary
+(core.node 1.47MB) builds OpenAPI sites, pages identical modulo env paths/bundle hashes;
+apps/docs 89/89. Package also gained a pinned `typescript` devDep (^5.8.3) — without one, pnpm
+peer-resolved its tsup against TS 6.0.3 whose baseUrl/node10 deprecation errors kill DTS builds.
+
+**KNOWN DIVERGENCE (recorded, deliberate)**: `-2.complex.openai` native-vs-oracle — the JS impl
+deep-copies circular schemas MID-CONSTRUCTION (visitedRefs snapshot), embedding order-dependent
+partial garbage (wrong type/empty description/missing meta) across 608/625 refs of this
+circular-heavy spec, and STACK-OVERFLOWS on a minimal circular-oneOf repro (Compound.filters →
+oneOf[..., Compound]) that Rust handles; Rust resolves those nodes to their final well-formed
+shape. Rendered output is unaffected (625-page site byte-identical). The oracle is regenerated
+from Rust at the impl-js reap, removing the vitest skip.
+
+**NEXT**: W2 rider xyd-openapi2opensdk → crates/xyd_openapi2opensdk (reuses the OAS model). Then
+W3 uniform runtime + mcp-uniform + fused endpoints, W4 frontmatter fast path, W5 content mdast
+core, W6 settings, W7 codegen track.
