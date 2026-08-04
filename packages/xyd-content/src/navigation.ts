@@ -63,7 +63,27 @@ function mdxExport(code: string) {
     return fn(scope)
 }
 
+// Per-build/session frontmatter memo (S6+ W4 slice A — the "free" O(pages²)→
+// O(pages) win). getFrontmatter previously ran a FULL MDX compile per page,
+// and pageFrontMatters walks the ENTIRE filtered nav on every one of the N
+// per-page mapSettingsToProps calls in a build — so each file was compiled
+// ~N times. This caches by filePath, invalidated by mtime so a dev content
+// edit (which bumps mtime) is picked up without any explicit HMR wiring.
+const frontmatterCache = new Map<string, { mtimeMs: number; matter: Metadata }>()
+
 async function getFrontmatter(filePath: string): Promise<Metadata> {
+    let mtimeMs = -1
+    try {
+        mtimeMs = (await fs.stat(filePath)).mtimeMs
+        const cached = frontmatterCache.get(filePath)
+        if (cached && cached.mtimeMs === mtimeMs) {
+            return cached.matter
+        }
+    } catch {
+        // stat failed (e.g. file vanished mid-build) — fall through to the
+        // readFile below, which throws the original ENOENT the caller expects.
+    }
+
     const body = await fs.readFile(filePath, "utf-8");
 
     const vfile = new VFile({
@@ -81,7 +101,7 @@ async function getFrontmatter(filePath: string): Promise<Metadata> {
         recmaPlugins: [],
         outputFormat: 'function-body',
         development: false,
-        
+
         // outputFormat: "program",
         // jsx: true,
     });
@@ -105,6 +125,10 @@ async function getFrontmatter(filePath: string): Promise<Metadata> {
     }
     if (reactFrontmatter) {
         console.error("currently react frontmatter is not supported")
+    }
+
+    if (mtimeMs >= 0) {
+        frontmatterCache.set(filePath, { mtimeMs, matter })
     }
 
     return matter
