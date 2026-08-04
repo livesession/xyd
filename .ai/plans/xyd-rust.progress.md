@@ -184,13 +184,29 @@ first; its key findings reshaped scope:
   native probed in-runtime; engine byte-identical on an OpenAPI site AND an MCP local-manifest
   site; apps/docs 89/89; node-free binary (core.node 1.93MB) builds the MCP site.
 
-**NEXT (W3 tail — fused endpoints)**: one napi call per api source → virtual pages + sidebar.
-The seam map (from the workflow) is in this session's notes: fuse at uniformResolver
-[plugin-docs presets/uniform/index.ts:180-493]; inputs {root, sourceType, apiFile entries,
-urlPrefix opts, engineStore, disableFSWrite, existing sidebar routes, compose dir}; outputs
-per-source {files, sidebar, pageFrontMatter, pagePathMapping deltas, sidebarOp}; BAIL to JS
-when user uniform plugins are present; needs gray-matter YAML byte-parity (new fixtures) +
-xdocs pluginSidebar port; natural place to FIX the composeFileMap second-build bug (record the
-behavior change); big follow-up win available: return per-page Reference JSON keyed
-"<source>#<region>" so uniformProcessor stops re-parsing the spec per page. Then W4 frontmatter
-fast path, W5 content mdast core (extra-diagram probe first), W6 settings, W7 codegen track.
+**W3 TAIL DONE — the fused uniform endpoint ships** (commits `1d47d211` crates, `329b314b`
+integration). Design pivot vs the original sketch that ELIMINATED the yaml-parity risk: Rust
+returns per-page `{pagePath, region}` entries and JS keeps compose merging + gray-matter
+stringify + fs writes + sidebar wiring — no js-yaml byte-replication needed at all. For
+local-file OpenAPI sources with no user uniform plugins, uniformResolver makes ONE native call
+(`uniformOasPages`): convert → x-docs.route fileRouting/urlPrefix decision → the PORTED
+uniformPluginXDocsSidebar (crates/xyd_openapi/src/xdocs.rs — title/group/description/returns
+mutations, sidebar-driven ref rebuild, inherit path strategy, param-stripping joinPaths;
+x-docs EXAMPLES builders deliberately unported: they only touch ref.examples, which pages
+never read) → pluginNavigation (xyd_uniform) → page entries. References never materialize in
+JS and the endpoint code-sample post-pass no longer runs at boot. Bail-outs: URL sources, user
+uniform plugins (identity-filtered against the globally-pushed xdocs plugin), no native.
+Tier-1: tests/fused.rs 5/5 FIRST RUN vs goldens generated from the frozen JS impls (gated
+generator: packages/xyd-openapi/scripts/build-fused-goldens.ts, XYD_NATIVE=0 only). Gates:
+plugin-docs vitest 36/36 both modes; engine BYTE-IDENTICAL fused-vs-JS on 2.more, the
+5.xdocs.sidebar site and the 625-page OpenAI site (fused engagement verified via the
+XYD_VERBOSE marker in each); apps/docs 89/89; node-free binary (core.node 2.0MB) builds the
+xdocs site through the fused path.
+
+Deferred from the tail (recorded, not dropped): gql/mcp fusion (same pattern, small);
+composeFileMap second-build bug (compose stayed JS — fix is now orthogonal to fusion); the
+per-page Reference cache keyed "<source>#<region>" (kills uniformProcessor's per-page spec
+re-parse — the wall-clock win; the fused boot saving is real but render-dominated builds hide
+it). **NEXT: W4** frontmatter fast path (crates/xyd_frontmatter + the FREE pageFrontMatters
+memoization JS fix), then W5 content mdast core (extra-diagram probe first), W6 settings, W7
+codegen track.
