@@ -1550,7 +1550,7 @@ importers:
     devDependencies:
       '@napi-rs/cli':
         specifier: ^3.8.2
-        version: 3.8.2(@emnapi/runtime@1.9.2)(@types/node@24.12.3)(node-addon-api@7.1.1)
+        version: 3.8.2(@emnapi/runtime@1.11.2)(@types/node@24.12.3)(node-addon-api@7.1.1)
 
   packages/xyd-openapi:
     dependencies:
@@ -2500,6 +2500,9 @@ importers:
       '@xyd-js/mcp-uniform':
         specifier: workspace:*
         version: link:../xyd-mcp-uniform
+      '@xyd-js/native':
+        specifier: workspace:*
+        version: link:../xyd-native
       '@xyd-js/openapi':
         specifier: workspace:*
         version: link:../xyd-openapi
@@ -21229,7 +21232,7 @@ snapshots:
 
   '@msgpack/msgpack@3.1.3': {}
 
-  '@napi-rs/cli@3.8.2(@emnapi/runtime@1.9.2)(@types/node@24.12.3)(node-addon-api@7.1.1)':
+  '@napi-rs/cli@3.8.2(@emnapi/runtime@1.11.2)(@types/node@24.12.3)(node-addon-api@7.1.1)':
     dependencies:
       '@inquirer/prompts': 8.5.2(@types/node@24.12.3)
       '@napi-rs/cross-toolchain': 1.0.3
@@ -21245,7 +21248,7 @@ snapshots:
       typanion: 3.14.0
       typescript: 6.0.3
     optionalDependencies:
-      '@emnapi/runtime': 1.9.2
+      '@emnapi/runtime': 1.11.2
     transitivePeerDependencies:
       - '@napi-rs/cross-toolchain-arm64-target-aarch64'
       - '@napi-rs/cross-toolchain-arm64-target-armv7'

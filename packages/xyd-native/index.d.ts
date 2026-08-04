@@ -62,6 +62,15 @@ export declare function pluginJsonView(referencesJson: string): string
 export declare function pluginNavigation(inputJson: string): string
 
 /**
+ * The FUSED uniform endpoint (S6+ W3 tail): spec source → sidebar +
+ * pageFrontMatter + per-page {pagePath, region} in ONE call — conversion,
+ * the x-docs sidebar plugin and pluginNavigation run natively; references
+ * never materialize in JS. Input JSON:
+ * `{source, urlPrefix, matchRoute, optionsUrlPrefix, store}`.
+ */
+export declare function uniformOasPages(inputJson: string): string
+
+/**
  * `uniformToInputJsonSchema(reference)` — JSON in, JSON out ("null" when JS
  * returns null).
  */

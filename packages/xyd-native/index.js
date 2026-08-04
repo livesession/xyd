@@ -710,4 +710,5 @@ module.exports.oapSchemaToReferencesFromFile = nativeBinding.oapSchemaToReferenc
 module.exports.openapi2opensdk = nativeBinding.openapi2opensdk
 module.exports.pluginJsonView = nativeBinding.pluginJsonView
 module.exports.pluginNavigation = nativeBinding.pluginNavigation
+module.exports.uniformOasPages = nativeBinding.uniformOasPages
 module.exports.uniformToInputJsonSchema = nativeBinding.uniformToInputJsonSchema
