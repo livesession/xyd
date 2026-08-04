@@ -244,7 +244,49 @@ runs at the settings layer, NOT on page frontmatter — so disk YAML is exactly 
 sees (no env hazard). (6) virtual pages ARE on disk (matterStringify) before pageFrontMatters runs
 → the batch sees identical bytes (proven by the 625-page gate).
 
-**NEXT: W5** content mdast core (extra-diagram probe FIRST — cheapest proof markdown-rs mdast +
-position fidelity survive codehike), then W6 settings, W7 codegen track. Deferred W4 follow-ups:
+**W5 — EVALUATED, NO-GO (evidence-backed). Content stays JS.** A 5-agent map + an empirical probe
+(the `markdown` crate v1.0.0 + parse-timing over the apps/docs corpus) killed the mdast-injection
+approach. The merge criterion ("per-page compile time IMPROVES") is exactly the gate this trips.
+
+Evidence:
+1. **Hard fidelity blocker — markdown-rs cannot parse xyd's content.** `markdown::to_mdast` with the
+   MDX preset produced `mdxJsxFlowElement` for `<Foo/>` ✓ but rendered `:::callout` as PLAIN
+   PARAGRAPH TEXT, `$math$` as text, and GFM tables as text. Probe over all 84 apps/docs files:
+   **0 files produced a directive node.** Directives are a PARSE-TIME micromark construct — you
+   cannot run remark-directive on an already-parsed Rust mdast (the `:::` is text by then). And
+   `markdown-rs` constructs are a FIXED enum with no extension API. So reaching parity requires
+   FORKING markdown-rs to hand-write: (a) the directive family (`:::`/`::`/`:` container/leaf/text
+   tokenizers) and (b) the bespoke `outputVars` `<`-fence construct — both load-bearing
+   (mdComponentDirective #8, mdComposer #9, and the whole component-directive + output-variable
+   machinery consume nodes that ONLY these produce). gfm/math/frontmatter ARE reachable via
+   `opts.constructs.*` flags; directive + outputVars are not.
+2. **The saving is tiny and marshal eats it.** markdown-rs parse = 0.267ms/file vs JS mdast parse
+   3.3ms/file — a real ~3ms — BUT that's against the ~3.9ms BASE @mdx compile; the REAL xyd
+   per-page compile is dominated by the 14 custom remark transforms + rehype(katex/raw) + async
+   codehike highlighting + composer + mdMeta, which ALL stay JS. Parse is a small fraction of the
+   true denominator, and the mdast→JSON→JSON.parse marshal (per page) erodes most of the ~3ms.
+3. **Reach is 4/12.** Only mdHeadingId, remarkInjectCodeMeta, mdImage, remarkMdxToc are clean pure
+   Rust ports; the other 7 (the four @-function plugins, mdComponentDirective, mdComposer, mdMeta)
+   are async + deeply coupled to @xyd-js/{sources,uniform,composer,context} + codehike. Porting the
+   4 CHEAP transforms is a NET LOSS (marshal > compute saved). mdMeta reads file.data.outputVars
+   (VFile data, not the tree) and replaces the whole tree via the composer — a tree-only Rust
+   boundary can't carry it.
+4. **codehike is position-agnostic** (`highlight()` takes only `{value,lang,meta}` strings) — so the
+   plan's stated "position-fidelity risk" was a non-issue; NO custom transform reads node.position
+   (grep-confirmed across all 18). That removed the *only* argument that could have justified the
+   effort. It didn't save the approach.
+
+Decision: **xyd-content stays JS** — consistent with the plan already naming "the MDX JS tail" as
+permanent JS. The one big, safe content win was already banked in W4 (frontmatter fast path, 5.2×).
+The content pipeline's expensive parts (codehike highlighting, the MDX estree compile, the composer
+React trees) are either infeasible to byte-match in Rust or inherently JS. Revisit ONLY if MDX/
+directives leave the hot path or a Rust MDX parser with a public construct-extension API appears.
+
+**NEXT: W6** settings/engine data plane (crates/xyd_settings — readSettings JSON path, env
+substitution, preset merge, mapNavigationToPagePathMapping in one batched Rust walk killing
+N×existsSync + readSettings-called-twice, buildAccessMap; docs.ts eval + loadPlugins stay JS;
+fixture-first snapshot of readSettings output per e2e app). Then W7 codegen track (opencli*/opensdk*
+— large but mechanical, existing conformance suites as gates). Deferred W4 follow-ups still open:
 consolidate the llms.txt gray-matter pass (needs a js-yaml/1.1 parser, separate from the eemeli
-batch) and feed batch metadata into buildAccessMap to un-break frontmatter access rules.
+batch); feed frontmatter batch metadata into buildAccessMap to un-break frontmatter access rules
+(a behavior change — needs product sign-off, currently a no-op).
