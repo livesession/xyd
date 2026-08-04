@@ -8,8 +8,10 @@
 mod components;
 pub mod core;
 mod doc;
+pub mod fused;
 mod paths;
 mod util;
+pub mod xdocs;
 
 use serde::Deserialize;
 use serde_json::Value;
