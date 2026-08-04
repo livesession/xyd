@@ -4,7 +4,15 @@
 # which are standalone crates built by their own `cargo` smoke tests.
 [workspace]
 resolver = "2"
-members = ["xyd_core_rs", "xyd_watch", "xyd_uniform", "xyd_parity", "xyd_gql", "xyd_openapi"]
+members = [
+    "xyd_core_rs",
+    "xyd_watch",
+    "xyd_uniform",
+    "xyd_parity",
+    "xyd_gql",
+    "xyd_openapi",
+    "xyd_openapi2opensdk",
+]
 # The napi adapter crate lives co-located in packages/xyd-native (idiomatic
 # napi-rs layout: crate + package.json together). It path-depends on
 # crates/xyd_core_rs and is built standalone by @napi-rs/cli, so it is NOT a
