@@ -156,8 +156,41 @@ env-skip); node-free binary rebuilt (core.node 1.83MB) still green. Pre-existing
 recorded: the conformance-vs-openai suites fail locally in both modes when this package's
 oracle is decrypted but xyd-openapi2opencli's isn't (skip gate keys on the wrong file).
 
-**NEXT (W3)**: xyd-uniform portable runtime — markdown serializer (byte-golden .md gates +
-quirks.rs), built-in pluginNavigation/pluginJsonView, JSON-schema converters; plugin EXECUTOR +
-inspection Proxy + MDX content module stay JS. Rider: xyd-mcp-uniform. Then fused endpoints
-(uniform_from_oas / uniform_from_gql → pages+sidebar in ONE napi call). Then W4 frontmatter
-fast path, W5 content mdast core, W6 settings, W7 codegen track.
+**W3 CORE + RIDER DONE — xyd-uniform runtime + xyd-mcp-uniform are Rust-backed** (commits
+`3e584a52` oracle prep, `db72c7af` crates, `801a9bbe` shims). A 5-agent mapping workflow ran
+first; its key findings reshaped scope:
+- **SCOPE CHANGE — markdown serializer DEFERRED**: `referenceAST`/`compile`
+  (@xyd-js/uniform/markdown) is demo-only dead-end code — sole live consumer is the Atlas docs
+  demo (storybook's copy already bypasses it); plugin-docs pages are gray-matter frontmatter
+  POINTERS (not this serializer) and llms.txt uses a separate toMarkdown call in documan. Zero
+  tests. Porting it = byte-replicating mdast-util-to-markdown's escape engine for no product
+  path. Revisit only if a product consumer appears.
+- Ported instead (the real runtime): converters (uniformToInputJsonSchema),
+  pluginNavigation/pluginJsonView cores (closure wrappers stay JS — the factory defers one
+  native call over the full Reference[]), shared jsrt (js_object_keys/truthiness/path.join/JS
+  \s set). Rider: mcp tools/resources → Reference[] reusing xyd_openapi's
+  schema_object_to_property over a stamp-free DocCtx; RPC/auth/manifest IO stays JS
+  (impl-js resolveMcpSurface = the extracted seam).
+- Oracle prep: UNIFORM_BUILD_FIXTURES=1 gated writers added (there was NO regen path at all);
+  regen vs HEAD = zero diff; pluginNavigation got a 4-case fixture matrix backfilled from live
+  JS; stray git-tracked package-root output.json deleted. mcp's UPDATE_FIXTURES=1 gates were
+  already compliant.
+- **LESSON — isomorphic packages need bundler-invisible native loaders**: @xyd-js/uniform's
+  entry ships in the BROWSER bundle; a static `import {createRequire} from "node:module"` in
+  native.ts broke the Bun client build in BOTH modes. Fix: `process.getBuiltinModule("node:module")`
+  (Node ≥22.3, Bun, works under vite-node) + browser guard. Applies to any future isomorphic
+  shim (content/W5!).
+- Gates: tier-1 first-run green (uniform 10/10, mcp 6/6); tier-2 both modes (29/29, 6/6) with
+  native probed in-runtime; engine byte-identical on an OpenAPI site AND an MCP local-manifest
+  site; apps/docs 89/89; node-free binary (core.node 1.93MB) builds the MCP site.
+
+**NEXT (W3 tail — fused endpoints)**: one napi call per api source → virtual pages + sidebar.
+The seam map (from the workflow) is in this session's notes: fuse at uniformResolver
+[plugin-docs presets/uniform/index.ts:180-493]; inputs {root, sourceType, apiFile entries,
+urlPrefix opts, engineStore, disableFSWrite, existing sidebar routes, compose dir}; outputs
+per-source {files, sidebar, pageFrontMatter, pagePathMapping deltas, sidebarOp}; BAIL to JS
+when user uniform plugins are present; needs gray-matter YAML byte-parity (new fixtures) +
+xdocs pluginSidebar port; natural place to FIX the composeFileMap second-build bug (record the
+behavior change); big follow-up win available: return per-page Reference JSON keyed
+"<source>#<region>" so uniformProcessor stops re-parsing the spec per page. Then W4 frontmatter
+fast path, W5 content mdast core (extra-diagram probe first), W6 settings, W7 codegen track.
