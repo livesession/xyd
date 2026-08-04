@@ -701,15 +701,19 @@ if (!nativeBinding) {
 
 module.exports = nativeBinding
 module.exports.Watcher = nativeBinding.Watcher
+module.exports.buildAccessMap = nativeBinding.buildAccessMap
 module.exports.classify = nativeBinding.classify
 module.exports.createWatcher = nativeBinding.createWatcher
+module.exports.findIndexPage = nativeBinding.findIndexPage
 module.exports.frontmatterBatch = nativeBinding.frontmatterBatch
 module.exports.gqlSchemaToReferences = nativeBinding.gqlSchemaToReferences
 module.exports.hello = nativeBinding.hello
+module.exports.mapNavigationToPagePathMapping = nativeBinding.mapNavigationToPagePathMapping
 module.exports.mcpToReferences = nativeBinding.mcpToReferences
 module.exports.oapSchemaToReferencesFromFile = nativeBinding.oapSchemaToReferencesFromFile
 module.exports.openapi2opensdk = nativeBinding.openapi2opensdk
 module.exports.pluginJsonView = nativeBinding.pluginJsonView
 module.exports.pluginNavigation = nativeBinding.pluginNavigation
+module.exports.processSettings = nativeBinding.processSettings
 module.exports.uniformOasPages = nativeBinding.uniformOasPages
 module.exports.uniformToInputJsonSchema = nativeBinding.uniformToInputJsonSchema

@@ -8,6 +8,9 @@ export declare class Watcher {
   stop(): void
 }
 
+/** `buildAccessMap(pagePathMapping, metadataMap, config)`. */
+export declare function buildAccessMap(mappingJson: string, metadataJson: string, configJson: string): string
+
 /**
  * Classify a changed path into an xyd reload category — the pure kernel of the
  * dev-watch service (plan S5). Delegates to `xyd_core_rs::classify`.
@@ -20,6 +23,9 @@ export declare function classify(path: string): string
  * orchestrator (`dev.ts`) consumes this and never learns it is Rust.
  */
 export declare function createWatcher(root: string, opts: WatchOpts, onChange: (err: Error | null, batch: JsChange[]) => void): Watcher
+
+/** `findIndexPage()` — "" when neither index.md nor index.mdx exists under cwd. */
+export declare function findIndexPage(cwd: string): string
 
 export declare function frontmatterBatch(pathsJson: string): string
 
@@ -38,6 +44,12 @@ export interface JsChange {
   kind: string
   path: string
 }
+
+/**
+ * `mapNavigationToPagePathMapping` for one (already i18n-prefixed) navigation
+ * tree, probing files under `cwd`.
+ */
+export declare function mapNavigationToPagePathMapping(navJson: string, cwd: string): string
 
 export declare function mcpToReferences(surfaceJson: string): string
 
@@ -62,6 +74,12 @@ export declare function pluginJsonView(referencesJson: string): string
  * `{pageFrontMatter, sidebar}` JSON.
  */
 export declare function pluginNavigation(inputJson: string): string
+
+/**
+ * `postLoadSetup` for docs.json: replaceEnvVars + the sync presets. `env_json`
+ * is a snapshot of `process.env`. The async syntax-highlight step stays JS.
+ */
+export declare function processSettings(settingsJson: string, envJson: string): string
 
 /**
  * The FUSED uniform endpoint (S6+ W3 tail): spec source → sidebar +

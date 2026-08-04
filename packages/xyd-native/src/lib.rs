@@ -7,6 +7,7 @@ mod gql;
 mod mcp_uniform;
 mod openapi;
 mod openapi2opensdk;
+mod settings;
 mod uniform;
 
 use std::path::Path;
