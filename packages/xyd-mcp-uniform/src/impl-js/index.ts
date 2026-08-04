@@ -12,9 +12,9 @@ import type {
     JsonSchemaObject,
     McpResource,
     McpTool,
-} from "./types";
+} from "../types";
 
-export type { McpTool, McpResource, JsonSchemaObject } from "./types";
+export type { McpTool, McpResource, JsonSchemaObject } from "../types";
 
 /**
  * Minimal JSON-RPC fetcher signature. Defaults to global fetch; tests inject a stub.
@@ -46,14 +46,21 @@ export interface McpUrlToReferencesOptions {
  * TODO: prompts/list (MCP_PROMPT)
  * TODO: stdio transport (spawn local process)
  */
-export async function mcpUrlToReferences(
+/**
+ * The fetched MCP surface: what conversion needs after the RPC/manifest step.
+ * Extracted as the shim seam (S6+ W3) — the Rust core converts this shape.
+ */
+export interface McpSurface {
+    tools: McpTool[];
+    resources: McpResource[];
+    serverUrl: string;
+    transport: MCPReferenceContext["transport"];
+}
+
+export async function resolveMcpSurface(
     source: string,
     options: McpUrlToReferencesOptions = {},
-): Promise<Reference[]> {
-    if (!source) {
-        return [];
-    }
-
+): Promise<McpSurface> {
     const isUrl = /^https?:\/\//i.test(source);
 
     let tools: McpTool[] = [];
@@ -93,6 +100,19 @@ export async function mcpUrlToReferences(
         // it's irrelevant to consumers of the generated docs.
         serverUrl = manifest.serverUrl || "";
     }
+
+    return { tools, resources, serverUrl, transport };
+}
+
+export async function mcpUrlToReferences(
+    source: string,
+    options: McpUrlToReferencesOptions = {},
+): Promise<Reference[]> {
+    if (!source) {
+        return [];
+    }
+
+    const { tools, resources, serverUrl, transport } = await resolveMcpSurface(source, options);
 
     const references: Reference[] = [];
 

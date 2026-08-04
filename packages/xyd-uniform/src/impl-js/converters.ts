@@ -1,4 +1,4 @@
-import {DEFINED_DEFINITION_PROPERTY_TYPE, DefinitionProperty, Reference} from "./types";
+import {DEFINED_DEFINITION_PROPERTY_TYPE, DefinitionProperty, Reference} from "../types";
 import {JSONSchema7, JSONSchema7TypeName} from "json-schema";
 
 export function uniformToInputJsonSchema(reference: Reference): JSONSchema7 | null {

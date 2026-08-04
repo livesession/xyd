@@ -18,6 +18,8 @@ xyd_watch = { path = "../../crates/xyd_watch" }
 xyd_gql = { path = "../../crates/xyd_gql" }
 xyd_openapi = { path = "../../crates/xyd_openapi" }
 xyd_openapi2opensdk = { path = "../../crates/xyd_openapi2opensdk" }
+xyd_uniform = { path = "../../crates/xyd_uniform" }
+xyd_mcp_uniform = { path = "../../crates/xyd_mcp_uniform" }
 
 [build-dependencies]
 napi-build = "2"

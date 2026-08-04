@@ -3,8 +3,10 @@
 //! lives in the pure crates (`xyd_core_rs`, `xyd_watch`, later `xyd_openapi`).
 
 mod gql;
+mod mcp_uniform;
 mod openapi;
 mod openapi2opensdk;
+mod uniform;
 
 use std::path::Path;
 

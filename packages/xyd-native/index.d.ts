@@ -37,6 +37,8 @@ export interface JsChange {
   path: string
 }
 
+export declare function mcpToReferences(surfaceJson: string): string
+
 /**
  * Parity target: `oapSchemaToReferences(deferencedOpenAPI(path), options?)`
  * for LOCAL FILE specs (the shim keeps URL specs on the JS impl).
@@ -49,6 +51,21 @@ export declare function oapSchemaToReferencesFromFile(path: string, optionsJson?
  * boundary into `openapi2Opensdk`).
  */
 export declare function openapi2opensdk(docJson: string, optionsJson?: string | undefined | null): string
+
+/** pluginJsonView core: Reference[] JSON → string[] JSON. */
+export declare function pluginJsonView(referencesJson: string): string
+
+/**
+ * pluginNavigation core: `{settings, urlPrefix, references}` JSON →
+ * `{pageFrontMatter, sidebar}` JSON.
+ */
+export declare function pluginNavigation(inputJson: string): string
+
+/**
+ * `uniformToInputJsonSchema(reference)` — JSON in, JSON out ("null" when JS
+ * returns null).
+ */
+export declare function uniformToInputJsonSchema(referenceJson: string): string
 
 /** Options for `createWatcher`. */
 export interface WatchOpts {
