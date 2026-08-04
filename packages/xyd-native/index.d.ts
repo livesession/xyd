@@ -21,6 +21,8 @@ export declare function classify(path: string): string
  */
 export declare function createWatcher(root: string, opts: WatchOpts, onChange: (err: Error | null, batch: JsChange[]) => void): Watcher
 
+export declare function frontmatterBatch(pathsJson: string): string
+
 /**
  * Parity target: `gqlSchemaToReferences(schemaLocation, options?)`.
  * `sources` are file paths or raw SDL (the shim pre-fetches http(s) URLs —

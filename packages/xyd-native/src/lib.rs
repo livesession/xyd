@@ -2,6 +2,7 @@
 //! types cross the FFI boundary once here as `#[napi]` items; all real logic
 //! lives in the pure crates (`xyd_core_rs`, `xyd_watch`, later `xyd_openapi`).
 
+mod frontmatter;
 mod gql;
 mod mcp_uniform;
 mod openapi;
