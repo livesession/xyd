@@ -282,11 +282,39 @@ The content pipeline's expensive parts (codehike highlighting, the MDX estree co
 React trees) are either infeasible to byte-match in Rust or inherently JS. Revisit ONLY if MDX/
 directives leave the hot path or a Rust MDX parser with a public construct-extension API appears.
 
-**NEXT: W6** settings/engine data plane (crates/xyd_settings — readSettings JSON path, env
-substitution, preset merge, mapNavigationToPagePathMapping in one batched Rust walk killing
-N×existsSync + readSettings-called-twice, buildAccessMap; docs.ts eval + loadPlugins stay JS;
-fixture-first snapshot of readSettings output per e2e app). Then W7 codegen track (opencli*/opensdk*
-— large but mechanical, existing conformance suites as gates). Deferred W4 follow-ups still open:
-consolidate the llms.txt gray-matter pass (needs a js-yaml/1.1 parser, separate from the eemeli
-batch); feed frontmatter batch metadata into buildAccessMap to un-break frontmatter access rules
-(a behavior change — needs product sign-off, currently a no-op).
+**W6 DONE — settings data plane in Rust** (commits `3c6d4491` crate, `599c80b0` shim). Chosen by
+the user (AskUserQuestion) as ARCHITECTURAL-COMPLETENESS work after I surfaced the perf reality:
+the whole settings pipeline is ONE-SHOT at appInit (~11ms/build local — measured: N×existsSync
+10.73ms for 625 pages @17µs, replaceEnvVars 0.77ms), NOT a hot path, so the value is a
+publishable complete Rust settings foundation, not a speedup.
+- `crates/xyd_settings` (operates on serde_json::Value — no giant Settings mirror): `env`
+  (replaceEnvVars — env passed IN from JS as a process.env snapshot, so substitution is exact
+  regardless of dotenv/setenv addon-propagation), `presets` (the SYNC normalizations —
+  ensureNavigation/head-init/ensureBasename; handleSyntaxHighlight stays JS, async fetch/fs),
+  `pagemap` (mapNavigationToPagePathMapping — the batched walk; every JS quirk preserved:
+  md-wins-mdx, virtual-probed-by-`virtual`-keyed-by-`page`, the SidebarRoute-child asymmetry, the
+  flat-only break-then-reprocess, silent omission of missing files), `access` (buildAccessMap +
+  a backtracking glob matcher, no regex dep). 14/14 tests incl. a pagemap fixture over a real
+  content tree.
+- **Wired live: only pagemap** (the named "batched walk", cleanest + highest-value). Both call
+  sites (i18n per-locale + non-i18n) dispatch through resolvePagePathMapping. The other three
+  (env/presets/access) ship crate-complete + unit-tested but stay JS-wired for now: env/presets
+  have a messy DOUBLE settings.ts call site (documan + plugin-docs copies DIFFER) + microsecond
+  value; buildAccessMap only runs under accessControl. Rust path is docs.json-only by design
+  (docs.ts/tsx live modules carry non-serializable functions/React components a JSON boundary
+  drops — and they stay JS anyway).
+- Gates: plugin-docs vitest 36/36 both modes (native probed in-runtime); engine BYTE-IDENTICAL
+  native-vs-JS on i18n multi-locale prefixing, nested-groups, SidebarRoute, AND OpenAPI
+  virtual-pages; apps/docs 89/89; node-free binary (core.node 2.10MB) builds with the Rust
+  pagemap. CI tier-2 already covers plugin-docs (auto-detects @xyd-js/native).
+
+**LESSON (W5+W6 pattern)**: past W1–W4 (the domain-logic converters — real wins), the remaining
+pieces are either infeasible (W5 content) or one-shot cheap glue (W6 settings) where perf doesn't
+justify a port. W6 shipped anyway as an explicit user choice for crate completeness. The honest
+signal: the substantial remaining Rust value is **W7 (codegen)**, not more engine-glue waves.
+
+**NEXT: W7 codegen track** (opencli*/opensdk* — large but MECHANICAL LOC, REAL domain logic,
+existing conformance suites as gates; the genuinely-portable remaining value). Deferred: env/
+presets/access live-wiring (crate ready, low value); the W4 llms.txt js-yaml/1.1 consolidation;
+feed frontmatter batch metadata into buildAccessMap to un-break frontmatter access rules (behavior
+change — needs product sign-off).
