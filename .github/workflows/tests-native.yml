@@ -17,8 +17,11 @@ on:
       - 'packages/xyd-native/**'
       - 'packages/xyd-gql/**'
       - 'packages/xyd-openapi/**'
+      - 'packages/xyd-openapi2opensdk/**'
       - 'packages/xyd-uniform/**'
       - 'packages/xyd-mcp-uniform/**'
+      - 'packages/xyd-content/**'
+      - 'packages/xyd-plugin-docs/**'
       - '.github/workflows/tests-native.yml'
   pull_request:
     branches: [ master, canary ]
@@ -27,8 +30,11 @@ on:
       - 'packages/xyd-native/**'
       - 'packages/xyd-gql/**'
       - 'packages/xyd-openapi/**'
+      - 'packages/xyd-openapi2opensdk/**'
       - 'packages/xyd-uniform/**'
       - 'packages/xyd-mcp-uniform/**'
+      - 'packages/xyd-content/**'
+      - 'packages/xyd-plugin-docs/**'
       - '.github/workflows/tests-native.yml'
   workflow_dispatch:
 
@@ -119,15 +125,18 @@ jobs:
       - name: Native smoke (classify + hello)
         run: node -e "const n=require('./packages/xyd-native/index.js'); if(n.classify('docs.json')!=='settings')throw new Error('classify broken'); console.log('ok:', n.hello('ci'))"
 
-      # Through-shim parity of MIGRATED packages, both modes. Grows one block per
-      # migrated package (W1: xyd-gql). Uses vitest directly — the shims resolve
-      # @xyd-js/native from the workspace-linked debug build above.
-      - name: xyd-gql vitest (XYD_NATIVE=1 then =0)
+      # Through-shim parity of MIGRATED packages, both modes. One block per
+      # migrated package. Uses vitest directly — the shims resolve @xyd-js/native
+      # from the workspace-linked debug build above.
+      - name: through-shim vitest (XYD_NATIVE=1 then =0)
         run: |
-          if [ -d packages/xyd-gql/__tests__ ] && grep -rq "XYD_NATIVE" packages/xyd-gql/src 2>/dev/null; then
-            cd packages/xyd-gql
-            XYD_NATIVE=1 npx vitest run
-            XYD_NATIVE=0 npx vitest run
-          else
-            echo "xyd-gql not migrated yet — skipping through-shim tier"
-          fi
+          # W1 gql · W2 openapi (+ opensdk rider) · W3 uniform (+ mcp rider,
+          # fused endpoint via plugin-docs) · W4 content frontmatter batch.
+          for pkg in xyd-gql xyd-openapi xyd-openapi2opensdk xyd-uniform xyd-mcp-uniform xyd-content xyd-plugin-docs; do
+            if [ -d "packages/$pkg/__tests__" ] && grep -rlq "@xyd-js/native" "packages/$pkg/src" 2>/dev/null; then
+              echo "=== $pkg (native=1) ==="; (cd "packages/$pkg" && XYD_NATIVE=1 npx vitest run)
+              echo "=== $pkg (native=0) ==="; (cd "packages/$pkg" && XYD_NATIVE=0 npx vitest run)
+            else
+              echo "$pkg — no native shim, skipping"
+            fi
+          done
