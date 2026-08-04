@@ -1,0 +1,28 @@
+{
+  "settings": {
+    "engine": {
+      "uniform": {
+        "store": true
+      }
+    }
+  },
+  "options": {
+    "urlPrefix": "api"
+  },
+  "references": [
+    {
+      "title": "Ping",
+      "canonical": "ping",
+      "description": "",
+      "definitions": [],
+      "examples": {
+        "groups": []
+      },
+      "context": {
+        "group": [
+          "Misc"
+        ]
+      }
+    }
+  ]
+}

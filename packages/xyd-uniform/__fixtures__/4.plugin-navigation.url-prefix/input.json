@@ -1,0 +1,36 @@
+{
+  "settings": {},
+  "options": {
+    "urlPrefix": "docs/api-reference"
+  },
+  "references": [
+    {
+      "title": "List assistants",
+      "canonical": "listAssistants",
+      "description": "",
+      "definitions": [],
+      "examples": {
+        "groups": []
+      },
+      "context": {
+        "group": [
+          "Assistants"
+        ]
+      }
+    },
+    {
+      "title": "Create assistant",
+      "canonical": "createAssistant",
+      "description": "",
+      "definitions": [],
+      "examples": {
+        "groups": []
+      },
+      "context": {
+        "group": [
+          "Assistants"
+        ]
+      }
+    }
+  ]
+}

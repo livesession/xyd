@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import uniform from "../src";
+import { testPluginNavigation } from "./utils";
 import { pluginNavigation } from "../src/plugins/pluginNavigation";
 import type { Reference } from "../src/types";
 
@@ -59,4 +60,21 @@ describe("pluginNavigation", () => {
         expect(users.pages.map(pageOf).sort()).toEqual(["get-users", "post-users"]);
         expect(users.pages.every((p: any) => !p.group)).toBe(true);
     });
+});
+
+// Fixture-driven parity matrix — the oracle for the Rust port
+// (crates/xyd_uniform). Regen: UNIFORM_BUILD_FIXTURES=1 pnpm vitest run
+const fixtureTests = [
+    {name: "4.plugin-navigation.nested-subgroup", description: "direct pages + nested subgroup under one group"},
+    {name: "4.plugin-navigation.flat-groups", description: "single-level groups stay flat"},
+    {name: "4.plugin-navigation.url-prefix", description: "urlPrefix joins into page paths + virtual paths"},
+    {name: "4.plugin-navigation.store-mode", description: "engine.uniform.store emits plain page strings"},
+];
+
+describe("pluginNavigation fixtures", () => {
+    for (const t of fixtureTests) {
+        it(t.description, async () => {
+            await testPluginNavigation(t.name);
+        });
+    }
 });

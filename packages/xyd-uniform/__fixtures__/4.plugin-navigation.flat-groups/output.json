@@ -1,0 +1,37 @@
+{
+  "pageFrontMatter": {
+    "get-users": {
+      "title": "GET /users"
+    },
+    "post-users": {
+      "title": "POST /users"
+    },
+    "get-orgs": {
+      "title": "GET /orgs"
+    }
+  },
+  "sidebar": [
+    {
+      "group": "Users",
+      "pages": [
+        {
+          "virtual": ".xyd/.cache/.content/get-users",
+          "page": "get-users"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/post-users",
+          "page": "post-users"
+        }
+      ]
+    },
+    {
+      "group": "Organizations",
+      "pages": [
+        {
+          "virtual": ".xyd/.cache/.content/get-orgs",
+          "page": "get-orgs"
+        }
+      ]
+    }
+  ]
+}

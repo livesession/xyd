@@ -1,0 +1,52 @@
+{
+  "settings": {},
+  "options": {
+    "urlPrefix": ""
+  },
+  "references": [
+    {
+      "title": "dev",
+      "canonical": "dev",
+      "description": "",
+      "definitions": [],
+      "examples": {
+        "groups": []
+      },
+      "context": {
+        "group": [
+          "Commands"
+        ]
+      }
+    },
+    {
+      "title": "components",
+      "canonical": "components",
+      "description": "",
+      "definitions": [],
+      "examples": {
+        "groups": []
+      },
+      "context": {
+        "group": [
+          "Commands",
+          "components"
+        ]
+      }
+    },
+    {
+      "title": "components install",
+      "canonical": "components/install",
+      "description": "",
+      "definitions": [],
+      "examples": {
+        "groups": []
+      },
+      "context": {
+        "group": [
+          "Commands",
+          "components"
+        ]
+      }
+    }
+  ]
+}
