@@ -1,0 +1,14 @@
+[package]
+name = "xyd_frontmatter"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "Frontmatter fast path — YAML frontmatter batch extraction (Rust port of the getFrontmatter MDX-compile-as-YAML-parser)"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = "0.9"
+
+[dev-dependencies]
+xyd_parity = { path = "../xyd_parity" }
