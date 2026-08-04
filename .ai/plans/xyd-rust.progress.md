@@ -207,6 +207,44 @@ Deferred from the tail (recorded, not dropped): gql/mcp fusion (same pattern, sm
 composeFileMap second-build bug (compose stayed JS — fix is now orthogonal to fusion); the
 per-page Reference cache keyed "<source>#<region>" (kills uniformProcessor's per-page spec
 re-parse — the wall-clock win; the fused boot saving is real but render-dominated builds hide
-it). **NEXT: W4** frontmatter fast path (crates/xyd_frontmatter + the FREE pageFrontMatters
-memoization JS fix), then W5 content mdast core (extra-diagram probe first), W6 settings, W7
-codegen track.
+it).
+
+**W4 DONE — frontmatter fast path** (commits `ae1cbc9e` memo, `fa10f579` crate, `fad797e8`
+shim, CI `+` after). A 5-agent map ran first (4/5 hit the StructuredOutput schema-retry cap; the
+one that returned answered every hazard). Two slices:
+- **Slice A (the free JS win)**: `getFrontmatter` ran a FULL @mdx-js/mdx compile per page purely
+  to read YAML, and pageFrontMatters walks the whole filtered nav on each of the N per-page
+  mapSettingsToProps calls (page + layout + bun renderPage loaders) — so each file was compiled
+  ~N times. A per-filePath+mtime memo → **625-page OpenAI build 78s → 15s (5.2×)**, proven
+  output-neutral (byte-identical across all 625 pages after normalizing the two build-dir cwd
+  roots embedded in openapi: pointers + vite hashes).
+- **Slice B (crates/xyd_frontmatter)**: `frontmatter_batch(paths[])` parses the `---` YAML block
+  directly. Fidelity target is the JS path's eemeli `yaml` (YAML **1.2 core**, NOT js-yaml/1.1) —
+  pinned empirically: no/empty frontmatter → throw, `1.10`→1.1, quoted `"007"` stays string,
+  `yes`→STRING (1.2). serde_yaml is 1.1-ish; the ONE divergence that bites docs frontmatter
+  (bare `yes|no|on|off|y|n`) is DETECTED and deferred to the JS MDX path, so the fast path is
+  byte-exact for everything it accepts. pageFrontMatters now collects all jobs → ONE batch call,
+  memo-aware, fallback-to-MDX for deferred/unclassifiable files.
+- **Validation** — a committed dual-run gate (packages/xyd-content/scripts/
+  frontmatter-dual-run-gate.mjs) diffs Rust batch vs JS MDX getFrontmatter per file: **0
+  mismatches across apps/docs (84), e2e nav/writing (19), and 625 OpenAPI virtual pages** (the
+  matterStringify-generated frontmatter). Engine build BYTE-IDENTICAL native-batch vs JS-MDX on
+  the OpenAPI site; content 56/56, plugin-docs 36/36 both modes; apps/docs 89/89; node-free
+  binary (core.node 2.06MB) builds with frontmatter titles correct. tests-native.yml tier-2 was
+  brought current (was gql-only) — now loops all 7 migrated packages both modes.
+
+**HAZARD AUDIT (from the map, all resolved)**: (1) llms.txt independently re-reads every file
+with gray-matter (js-yaml/1.1) — a SEPARATE parser from getFrontmatter's eemeli/1.2, so it CANNOT
+share the same batch; left JS (already MDX-free/cheap). (2) sitemap/SEO read ZERO frontmatter from
+disk — they ride precomputed globals / already-loaded loaderData. (3) access-control reads
+public/accessGroups but every live call site passes {} → frontmatter protection is a pre-existing
+no-op (unchanged). (4) mdMeta's `component` mutation happens at page-COMPILE, a different pipeline
+from the frontmatter MAP — invisible to and irrelevant for the fast path. (5) env-var substitution
+runs at the settings layer, NOT on page frontmatter — so disk YAML is exactly what getFrontmatter
+sees (no env hazard). (6) virtual pages ARE on disk (matterStringify) before pageFrontMatters runs
+→ the batch sees identical bytes (proven by the 625-page gate).
+
+**NEXT: W5** content mdast core (extra-diagram probe FIRST — cheapest proof markdown-rs mdast +
+position fidelity survive codehike), then W6 settings, W7 codegen track. Deferred W4 follow-ups:
+consolidate the llms.txt gray-matter pass (needs a js-yaml/1.1 parser, separate from the eemeli
+batch) and feed batch metadata into buildAccessMap to un-break frontmatter access rules.
