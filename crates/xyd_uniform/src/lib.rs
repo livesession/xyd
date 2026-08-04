@@ -17,6 +17,9 @@
 //!   such bookkeeping in internal side-tables.
 
 pub mod canon;
+pub mod converters;
+pub mod jsrt;
+pub mod plugins;
 mod types;
 
 pub use types::*;
