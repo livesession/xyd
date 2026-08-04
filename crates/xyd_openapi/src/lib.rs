@@ -6,7 +6,7 @@
 //! sorting — is here. The frozen fixtures are the spec.
 
 mod components;
-mod core;
+pub mod core;
 mod doc;
 mod paths;
 mod util;
