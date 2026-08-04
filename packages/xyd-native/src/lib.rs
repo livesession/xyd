@@ -4,6 +4,7 @@
 
 mod gql;
 mod openapi;
+mod openapi2opensdk;
 
 use std::path::Path;
 

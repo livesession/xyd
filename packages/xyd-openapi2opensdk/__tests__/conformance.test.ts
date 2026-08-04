@@ -4,7 +4,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { openapi2opensdkFromSource } from '../index';
-import { type SdkAllowlist, diffSurfaces, opensdkToSurface } from '../src/surface';
+import { type SdkAllowlist, diffSurfaces, opensdkToSurface } from '../src/impl-js/surface';
 // ../oracle/parseOpenaiGo is gitignored/encrypted - imported LAZILY in the refresh block below so this suite SKIPS (not fails to load) when the oracle plaintext is absent (CI without XYD_CONTENT_SECRET, fresh clones, fork PRs).
 
 const ORACLE_DIR = path.join(__dirname, '../oracle');

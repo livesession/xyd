@@ -43,6 +43,13 @@ export interface JsChange {
  */
 export declare function oapSchemaToReferencesFromFile(path: string, optionsJson?: string | undefined | null): string
 
+/**
+ * Parity target: `openapi2opensdk(doc, options?)` on a RAW OpenAPI 3.x doc.
+ * js_name pins the exact export name (napi would camelCase the digit
+ * boundary into `openapi2Opensdk`).
+ */
+export declare function openapi2opensdk(docJson: string, optionsJson?: string | undefined | null): string
+
 /** Options for `createWatcher`. */
 export interface WatchOpts {
   debounceMs?: number

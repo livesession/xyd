@@ -706,3 +706,4 @@ module.exports.createWatcher = nativeBinding.createWatcher
 module.exports.gqlSchemaToReferences = nativeBinding.gqlSchemaToReferences
 module.exports.hello = nativeBinding.hello
 module.exports.oapSchemaToReferencesFromFile = nativeBinding.oapSchemaToReferencesFromFile
+module.exports.openapi2opensdk = nativeBinding.openapi2opensdk
