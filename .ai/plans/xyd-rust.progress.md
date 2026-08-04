@@ -145,6 +145,19 @@ oneOf[..., Compound]) that Rust handles; Rust resolves those nodes to their fina
 shape. Rendered output is unaffected (625-page site byte-identical). The oracle is regenerated
 from Rust at the impl-js reap, removing the vitest skip.
 
-**NEXT**: W2 rider xyd-openapi2opensdk → crates/xyd_openapi2opensdk (reuses the OAS model). Then
-W3 uniform runtime + mcp-uniform + fused endpoints, W4 frontmatter fast path, W5 content mdast
-core, W6 settings, W7 codegen track.
+**W2 RIDER DONE — xyd-openapi2opensdk is Rust-backed** (commits `9efb5cb3`, `199a9e98`):
+`crates/xyd_openapi2opensdk` — 9/9 tier-1 ON THE FIRST RUN (the W2-main lessons — js_object_keys
+ordering, truthiness gates, address-based cycle guards — carried straight over). No handle
+needed: the RAW un-dereferenced doc is acyclic, so the napi transport is plain JSON both ways
+(`js_name`-pinned `openapi2opensdk` export — napi camelCases digit boundaries). Shim keeps
+IO/YAML + SymbolTable + surface utils JS; the conversion dispatches. Gates: vitest core suites
+23/23 both modes (native probed inside the vitest runtime); opensdk-cli consumer 54/55 (1
+env-skip); node-free binary rebuilt (core.node 1.83MB) still green. Pre-existing env quirk
+recorded: the conformance-vs-openai suites fail locally in both modes when this package's
+oracle is decrypted but xyd-openapi2opencli's isn't (skip gate keys on the wrong file).
+
+**NEXT (W3)**: xyd-uniform portable runtime — markdown serializer (byte-golden .md gates +
+quirks.rs), built-in pluginNavigation/pluginJsonView, JSON-schema converters; plugin EXECUTOR +
+inspection Proxy + MDX content module stay JS. Rider: xyd-mcp-uniform. Then fused endpoints
+(uniform_from_oas / uniform_from_gql → pages+sidebar in ONE napi call). Then W4 frontmatter
+fast path, W5 content mdast core, W6 settings, W7 codegen track.
