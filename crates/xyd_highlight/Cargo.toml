@@ -11,7 +11,11 @@ serde_json = { workspace = true }
 # Byte-exact TextMate regex: onig_sys bundles the same Oniguruma C source that
 # vscode-oniguruma's onig.wasm is built from. Pure-Rust regex engines diverge on
 # backrefs/lookbehind/\G/possessive/POSIX that TextMate grammars use pervasively.
-onig = "6"
+# OPTIONAL: onig_sys is a C library that cannot link on wasm32 (no C sysroot), so
+# the `js-scanner` build drops it and delegates the regex primitive to a
+# host-registered backend (the wasm crate wires it to the SAME onig.wasm). See
+# `src/onig_scanner.rs` and `.ai/client-wasm-highlighter-spike.md`.
+onig = { version = "6", optional = true }
 # Pure-Rust zstd DECODER (no C toolchain): the embedded grammar bundles are
 # vendored zstd-compressed (~4.5MB vs ~42MB raw) and lazily decompressed on first
 # use. Compression is done offline by scripts/vendor-assets.mjs (zstd CLI).
@@ -22,9 +26,22 @@ ruzstd = "0.7"
 # preserve_order feature.
 indexmap = { version = "2", features = ["serde"] }
 
+[dev-dependencies]
+# Native Oniguruma to drive the `js-scanner` seam parity test: it registers an
+# onig-backed `ScannerBackend` and proves the delegated engine reproduces the
+# codehike goldens byte-for-byte WITHOUT needing onig.wasm. Only linked into the
+# test binary (never the wasm lib).
+onig = "6"
+
 [features]
+# Exactly one scanner backend must be enabled (a `compile_error!` guards it):
+#   native-onig  → the onig_sys (C) Oniguruma backend — the server/napi path.
+#   js-scanner   → no onig; a host registers a `ScannerBackend` at runtime (the
+#                  wasm build delegates to onig.wasm via JS). Compiles to wasm32.
+default = ["native-onig"]
+native-onig = ["dep:onig"]
+js-scanner = []
 # Top-20 languages + their cross-grammar embeds (the transitive closure, 65
 # grammar ids). The long tail sits behind the default so size-sensitive
-# `bun --compile` builds can trim it; the default embeds all 254.
-default = []
+# `bun --compile` / wasm builds can trim it; the default embeds all 254.
 core-langs = []

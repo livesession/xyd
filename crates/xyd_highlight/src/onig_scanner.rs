@@ -1,5 +1,4 @@
-//! `OnigScanner` — the innermost primitive of the TextMate engine, a Rust port
-//! of `vscode-oniguruma`'s `OnigScanner.findNextMatchSync`.
+//! `OnigScanner` — the innermost primitive of the TextMate engine.
 //!
 //! Given N regex patterns and a haystack + a start byte offset, it finds the
 //! pattern whose match starts earliest at/after `start` (ties → lowest pattern
@@ -12,8 +11,26 @@
 //! the token *content* substrings — is identical for the ASCII-dominant code in
 //! the H1 corpus. (Astral-plane fidelity vs UTF-16 unit advancement is tracked
 //! for a later stage; no H1 grammar/theme fixture exercises it.)
+//!
+//! ## Two backends (one primitive)
+//!
+//! The whole engine (grammar/rule/tokenizer) consumes ONLY the
+//! [`OnigScanner::new`] and [`OnigScanner::find_next_match`] pair. This module
+//! provides that identical API over two swappable regex backends, selected by
+//! feature (exactly one):
+//!
+//! * **`native-onig`** (default) — a Rust port of `vscode-oniguruma`'s
+//!   `OnigScanner.findNextMatchSync` directly over the `onig` crate (Oniguruma
+//!   C). This is the server / napi path; unchanged.
+//! * **`js-scanner`** — no `onig` dependency (it can't link on wasm32). A host
+//!   registers a [`ScannerBackend`] once via [`register_scanner_backend`]; the
+//!   wasm crate wires it to the SAME `onig.wasm` (vscode-oniguruma) through a JS
+//!   binding, so match semantics — and therefore token output — are byte-parity
+//!   preserved by construction. See `.ai/client-wasm-highlighter-spike.md`.
 
-use onig::{Regex, RegexOptions, Region, SearchOptions, Syntax};
+// ---------------------------------------------------------------------------
+// Shared public types (both backends)
+// ---------------------------------------------------------------------------
 
 /// One capture group's byte span, or `None` when the group did not participate
 /// (Oniguruma region `beg == -1`).
@@ -34,90 +51,204 @@ impl ScanMatch {
     }
 }
 
-/// A compiled set of TextMate patterns searched together. A pattern that fails
-/// to compile is stored as `None` (never matches) — mirroring vscode-textmate,
-/// which logs the bad regex and treats its rule as inert rather than aborting.
-pub struct OnigScanner {
-    regexes: Vec<Option<Regex>>,
+// Exactly-one-backend guard. `native-onig` takes precedence when both are on
+// (so a stray `--features js-scanner` on top of the default never yields an
+// unregistered backend), which is why the delegated module is gated on
+// `not(feature = "native-onig")`.
+#[cfg(all(not(feature = "native-onig"), not(feature = "js-scanner")))]
+compile_error!(
+    "xyd_highlight: enable exactly one scanner backend feature — \
+     `native-onig` (default) or `js-scanner`"
+);
+
+// ---------------------------------------------------------------------------
+// Backend A — native Oniguruma (onig_sys / C). Server / napi path.
+// ---------------------------------------------------------------------------
+
+#[cfg(feature = "native-onig")]
+mod native {
+    use super::{CaptureSpan, ScanMatch};
+    use onig::{Regex, RegexOptions, Region, SearchOptions, Syntax};
+
+    /// A compiled set of TextMate patterns searched together. A pattern that
+    /// fails to compile is stored as `None` (never matches) — mirroring
+    /// vscode-textmate, which logs the bad regex and treats its rule as inert
+    /// rather than aborting.
+    pub struct OnigScanner {
+        regexes: Vec<Option<Regex>>,
+    }
+
+    impl OnigScanner {
+        /// Compile the patterns. Uses `CAPTURE_GROUP` (all numbered/named groups
+        /// end up in the region) + the default Oniguruma syntax, matching
+        /// vscode-oniguruma's `onig_new(..., ONIG_OPTION_CAPTURE_GROUP,
+        /// ONIG_SYNTAX_DEFAULT, ...)`.
+        pub fn new<S: AsRef<str>>(patterns: &[S]) -> Self {
+            let regexes = patterns
+                .iter()
+                .map(|p| {
+                    Regex::with_options(
+                        p.as_ref(),
+                        RegexOptions::REGEX_OPTION_CAPTURE_GROUP,
+                        Syntax::default(),
+                    )
+                    .ok()
+                })
+                .collect();
+            OnigScanner { regexes }
+        }
+
+        /// Number of patterns (including any that failed to compile).
+        pub fn len(&self) -> usize {
+            self.regexes.len()
+        }
+
+        pub fn is_empty(&self) -> bool {
+            self.regexes.is_empty()
+        }
+
+        /// Find the earliest match at/after `start` across all patterns. `start`
+        /// must be a char boundary in `text`. Returns `None` if nothing matches.
+        pub fn find_next_match(&self, text: &str, start: usize) -> Option<ScanMatch> {
+            let mut best: Option<(usize, usize, Region)> = None; // (index, match_start, region)
+
+            for (index, maybe_regex) in self.regexes.iter().enumerate() {
+                let Some(regex) = maybe_regex else { continue };
+                let mut region = Region::new();
+                let found = regex.search_with_options(
+                    text,
+                    start,
+                    text.len(),
+                    SearchOptions::SEARCH_OPTION_NONE,
+                    Some(&mut region),
+                );
+                let Some(match_start) = found else { continue };
+
+                let take = match &best {
+                    // Strictly-earlier start wins; equal start keeps the earlier
+                    // pattern (lower index), so we do NOT replace on a tie.
+                    Some((_, best_start, _)) => match_start < *best_start,
+                    None => true,
+                };
+                if take {
+                    best = Some((index, match_start, region));
+                }
+                // Can't beat a match that starts exactly at `start`; because we
+                // scan in index order, the first such pattern also wins ties.
+                // Short-circuit exactly as vscode-oniguruma's native scanner does.
+                if match_start == start {
+                    break;
+                }
+            }
+
+            best.map(|(pattern_index, _, region)| ScanMatch {
+                pattern_index,
+                captures: region_to_captures(&region),
+            })
+        }
+    }
+
+    /// Convert an Oniguruma `Region` into per-group spans. Non-participating
+    /// groups (`beg == -1`) become `None`.
+    fn region_to_captures(region: &Region) -> Vec<CaptureSpan> {
+        (0..region.len()).map(|i| region.pos(i)).collect()
+    }
 }
 
-impl OnigScanner {
-    /// Compile the patterns. Uses `CAPTURE_GROUP` (all numbered/named groups end
-    /// up in the region) + the default Oniguruma syntax, matching
-    /// vscode-oniguruma's `onig_new(..., ONIG_OPTION_CAPTURE_GROUP,
-    /// ONIG_SYNTAX_DEFAULT, ...)`.
-    pub fn new<S: AsRef<str>>(patterns: &[S]) -> Self {
-        let regexes = patterns
-            .iter()
-            .map(|p| {
-                Regex::with_options(
-                    p.as_ref(),
-                    RegexOptions::REGEX_OPTION_CAPTURE_GROUP,
-                    Syntax::default(),
-                )
-                .ok()
-            })
-            .collect();
-        OnigScanner { regexes }
+#[cfg(feature = "native-onig")]
+pub use native::OnigScanner;
+
+// ---------------------------------------------------------------------------
+// Backend B — delegated (host-registered). wasm / onig.wasm path.
+// ---------------------------------------------------------------------------
+
+#[cfg(all(feature = "js-scanner", not(feature = "native-onig")))]
+mod delegated {
+    use std::sync::OnceLock;
+
+    use super::ScanMatch;
+
+    /// The regex primitive the engine delegates to when built without native
+    /// Oniguruma. A host (the wasm crate) implements this over `onig.wasm` and
+    /// registers it once via [`register_scanner_backend`].
+    ///
+    /// Contract (must match the native backend exactly for byte-parity):
+    /// * `compile(patterns)` → an opaque scanner handle. A pattern that fails to
+    ///   compile must be treated as never-matching (inert), not an error.
+    /// * `find(handle, text, start)` → the earliest match at/after the UTF-8
+    ///   byte offset `start`, ties broken toward the lowest pattern index; `\G`
+    ///   anchored at `start`. Capture spans are UTF-8 byte offsets; a
+    ///   non-participating group is `None`. The whole-match group 0 is required.
+    /// * `free(handle)` → release the scanner (called on `Drop`).
+    pub trait ScannerBackend: Send + Sync {
+        fn compile(&self, patterns: &[&str]) -> u64;
+        fn find(&self, handle: u64, text: &str, start: usize) -> Option<ScanMatch>;
+        fn free(&self, handle: u64);
     }
 
-    /// Number of patterns (including any that failed to compile).
-    pub fn len(&self) -> usize {
-        self.regexes.len()
+    static BACKEND: OnceLock<Box<dyn ScannerBackend>> = OnceLock::new();
+
+    /// Install the regex backend. Call once before highlighting (idempotent — a
+    /// second call is ignored). Single-threaded wasm makes the `OnceLock` free.
+    pub fn register_scanner_backend(backend: Box<dyn ScannerBackend>) {
+        let _ = BACKEND.set(backend);
     }
 
-    pub fn is_empty(&self) -> bool {
-        self.regexes.is_empty()
+    fn backend() -> &'static dyn ScannerBackend {
+        BACKEND
+            .get()
+            .expect(
+                "xyd_highlight: no scanner backend registered — call \
+                 register_scanner_backend() before highlighting (js-scanner build)",
+            )
+            .as_ref()
     }
 
-    /// Find the earliest match at/after `start` across all patterns. `start`
-    /// must be a char boundary in `text`. Returns `None` if nothing matches.
-    pub fn find_next_match(&self, text: &str, start: usize) -> Option<ScanMatch> {
-        let mut best: Option<(usize, usize, Region)> = None; // (index, match_start, region)
+    /// The `js-scanner` sibling of the native `OnigScanner`: same constructor +
+    /// `find_next_match` surface, backed by the registered [`ScannerBackend`].
+    pub struct OnigScanner {
+        handle: u64,
+        count: usize,
+    }
 
-        for (index, maybe_regex) in self.regexes.iter().enumerate() {
-            let Some(regex) = maybe_regex else { continue };
-            let mut region = Region::new();
-            let found = regex.search_with_options(
-                text,
-                start,
-                text.len(),
-                SearchOptions::SEARCH_OPTION_NONE,
-                Some(&mut region),
-            );
-            let Some(match_start) = found else { continue };
-
-            let take = match &best {
-                // Strictly-earlier start wins; equal start keeps the earlier
-                // pattern (lower index), so we do NOT replace on a tie.
-                Some((_, best_start, _)) => match_start < *best_start,
-                None => true,
-            };
-            if take {
-                best = Some((index, match_start, region));
-            }
-            // Can't beat a match that starts exactly at `start`; because we scan
-            // in index order, the first such pattern also wins ties. Short-
-            // circuit exactly as vscode-oniguruma's native scanner does.
-            if match_start == start {
-                break;
+    impl OnigScanner {
+        pub fn new<S: AsRef<str>>(patterns: &[S]) -> Self {
+            let refs: Vec<&str> = patterns.iter().map(|s| s.as_ref()).collect();
+            let handle = backend().compile(&refs);
+            OnigScanner {
+                handle,
+                count: refs.len(),
             }
         }
 
-        best.map(|(pattern_index, _, region)| ScanMatch {
-            pattern_index,
-            captures: region_to_captures(&region),
-        })
+        pub fn len(&self) -> usize {
+            self.count
+        }
+
+        pub fn is_empty(&self) -> bool {
+            self.count == 0
+        }
+
+        pub fn find_next_match(&self, text: &str, start: usize) -> Option<ScanMatch> {
+            backend().find(self.handle, text, start)
+        }
+    }
+
+    impl Drop for OnigScanner {
+        fn drop(&mut self) {
+            backend().free(self.handle);
+        }
     }
 }
 
-/// Convert an Oniguruma `Region` into per-group spans. Non-participating groups
-/// (`beg == -1`) become `None`.
-fn region_to_captures(region: &Region) -> Vec<CaptureSpan> {
-    (0..region.len()).map(|i| region.pos(i)).collect()
-}
+#[cfg(all(feature = "js-scanner", not(feature = "native-onig")))]
+pub use delegated::{register_scanner_backend, OnigScanner, ScannerBackend};
 
-#[cfg(test)]
+// ---------------------------------------------------------------------------
+// Tests — only under the native backend (they assert concrete Oniguruma spans).
+// ---------------------------------------------------------------------------
+
+#[cfg(all(test, feature = "native-onig"))]
 mod tests {
     use super::*;
 
