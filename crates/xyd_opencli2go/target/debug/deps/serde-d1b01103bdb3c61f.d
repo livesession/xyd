@@ -1,0 +1,12 @@
+/Users/zdunecki/Code/livesession/xyd/.claude/worktrees/agent-ad0ee2e2a65f6b695/crates/xyd_opencli2go/target/debug/deps/serde-d1b01103bdb3c61f.d: /Users/zdunecki/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs /Users/zdunecki/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs /Users/zdunecki/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs /Users/zdunecki/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs /Users/zdunecki/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs /Users/zdunecki/Code/livesession/xyd/.claude/worktrees/agent-ad0ee2e2a65f6b695/crates/xyd_opencli2go/target/debug/build/serde-0c49556786294103/out/private.rs
+
+/Users/zdunecki/Code/livesession/xyd/.claude/worktrees/agent-ad0ee2e2a65f6b695/crates/xyd_opencli2go/target/debug/deps/libserde-d1b01103bdb3c61f.rmeta: /Users/zdunecki/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs /Users/zdunecki/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs /Users/zdunecki/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs /Users/zdunecki/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs /Users/zdunecki/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs /Users/zdunecki/Code/livesession/xyd/.claude/worktrees/agent-ad0ee2e2a65f6b695/crates/xyd_opencli2go/target/debug/build/serde-0c49556786294103/out/private.rs
+
+/Users/zdunecki/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs:
+/Users/zdunecki/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs:
+/Users/zdunecki/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs:
+/Users/zdunecki/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs:
+/Users/zdunecki/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs:
+/Users/zdunecki/Code/livesession/xyd/.claude/worktrees/agent-ad0ee2e2a65f6b695/crates/xyd_opencli2go/target/debug/build/serde-0c49556786294103/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/zdunecki/Code/livesession/xyd/.claude/worktrees/agent-ad0ee2e2a65f6b695/crates/xyd_opencli2go/target/debug/build/serde-0c49556786294103/out

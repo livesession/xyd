@@ -16,6 +16,7 @@ members = [
     "xyd_frontmatter",
     "xyd_settings",
     "xyd_openapi2opencli",
+    "xyd_opencli2go",
 ]
 # The napi adapter crate lives co-located in packages/xyd-native (idiomatic
 # napi-rs layout: crate + package.json together). It path-depends on
