@@ -124,6 +124,25 @@ impl Theme {
         self.defaults
     }
 
+    /// The block-level foreground (`FinalTheme.foreground`) — the `style.color`
+    /// that `@code-hike/lighter` returns for a highlighted block. Case-preserved
+    /// exactly as written in the theme JSON.
+    pub fn foreground(&self) -> &str {
+        &self.final_theme.foreground
+    }
+
+    /// The block-level background (`FinalTheme.background`) — the
+    /// `style.background` lighter returns for a block.
+    pub fn background(&self) -> &str {
+        &self.final_theme.background
+    }
+
+    /// The block color scheme (`getColorScheme`): `"dark"`, `"light"`, or the
+    /// `from-css` CSS variable — lighter's `style.colorScheme`.
+    pub fn color_scheme(&self) -> String {
+        get_color_scheme(&self.final_theme)
+    }
+
     /// `Theme.match` for a built scope stack. Always resolves for a non-empty
     /// stack (the root's main rule matches any scope), so this returns `None`
     /// only defensively.

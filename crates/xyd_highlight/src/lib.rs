@@ -14,6 +14,7 @@
 // Engine modules — filled in H1→H3. Declared as they land.
 mod encode;
 mod grammar;
+mod highlighted;
 mod onig_scanner;
 mod registry;
 mod reshape;
@@ -21,6 +22,9 @@ mod store;
 pub mod theme;
 
 pub use grammar::tokenizer::{highlight, Grammar};
+pub use highlighted::{
+    get_theme_colors, highlighted_code, AnyToken, BlockStyle, CssProps, HighlightedCode, Token,
+};
 pub use onig_scanner::OnigScanner;
 pub use registry::Registry;
 pub use reshape::{Style, StyledToken};
