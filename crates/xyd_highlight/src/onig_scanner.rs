@@ -136,7 +136,10 @@ mod tests {
         // tie, and an earlier-starting match beats a later one.
         let s = OnigScanner::new(&[r"foo", r"\w+"]);
         let m = s.find_next_match("foo", 0).unwrap();
-        assert_eq!(m.pattern_index, 0, "tie at same start → lowest pattern index");
+        assert_eq!(
+            m.pattern_index, 0,
+            "tie at same start → lowest pattern index"
+        );
 
         let s2 = OnigScanner::new(&[r"bar", r"foo"]);
         let m2 = s2.find_next_match("xx foo bar", 0).unwrap();
@@ -149,7 +152,10 @@ mod tests {
         // \G must anchor at the search start, not string start — the property
         // TextMate begin/while rules depend on.
         let s = OnigScanner::new(&[r"\Gfoo"]);
-        assert!(s.find_next_match("xfoo", 0).is_none(), "\\G at 0 can't skip 'x'");
+        assert!(
+            s.find_next_match("xfoo", 0).is_none(),
+            "\\G at 0 can't skip 'x'"
+        );
         let m = s.find_next_match("xfoo", 1).expect("\\G anchored at 1");
         assert_eq!(m.whole(), (1, 4));
     }

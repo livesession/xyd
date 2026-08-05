@@ -12,9 +12,15 @@
 //! github-dark snapshot parity).
 
 // Engine modules — filled in H1→H3. Declared as they land.
+mod encode;
+mod grammar;
 mod onig_scanner;
+mod reshape;
+pub mod theme;
 
+pub use grammar::tokenizer::{highlight, Grammar};
 pub use onig_scanner::OnigScanner;
+pub use reshape::{Style, StyledToken};
 
 /// H0 smoke: proves the `onig` (Oniguruma) toolchain links and that the scanner
 /// wrapper — the innermost primitive the whole engine builds on — matches with
