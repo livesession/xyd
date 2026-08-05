@@ -387,10 +387,39 @@ full context + worktree isolation; reconcile by COPYING the crate dir, ignore th
 ported ~13k LOC of byte-golden source-code generators across two batches (3 + 6) with honest
 partial reporting (each emitter = generated code; vendored runtime + tests stay JS).
 
-**NEXT: W7 tail** — (a) the vendored fixed runtimes for the 7 emitters (verbatim source constants +
-a little sdk-behavior interpolation — mechanical; makes each emitter produce the FULL file tree);
-(b) the framework orchestrator/chain (generate()/generateFileMap drives the capabilities — could
-stay JS or a thin Rust driver); (c) the napi + JS shim wiring pass for the codegen generators
-(opencli2go clean; opencli2rust needs the ProjectFileMap reshape; opensdk emitters need their
-runtime first). Other deferred: env/presets/access live-wiring; W4 llms.txt js-yaml/1.1;
-buildAccessMap frontmatter metadata (product sign-off).
+**W7 tail (a) — ALL 7 EMITTER RUNTIMES DONE.** Each `xyd_opensdk_<L>` now emits the vendored
+fixed runtime + the SDK's own generated test suite, so `generate_<L>(spec)` reproduces the FULL
+golden tree byte-exact (was: generated code only). Per-fixture parity (every golden emitted &
+byte-exact, no extras, `emitted.len()==golden.len()` count floor — a genuine full-tree bidirectional
+check, verified by ME per crate with `cargo test -p`, not trusted from prose):
+ruby 8/10/12/12 · rust 9/11/13 · node 16/17/20/19 (72 total) · python 33 full-tree + **242 per-method
+resources.py kept intact** · java 22/25/32/22 · dotnet 11/12/15/14 · go 13/15/17/16. Shared de-risk
+pattern (canary-proven): each fixed runtime/test source lives in a `src/*.<ext>.txt` embedded via
+`include_str!` (the `.txt` keeps `cargo fmt` from ever touching emitted bytes — critical for the rust
+emitter which emits Rust) with `__XYD_*__` seams substituted from `behavior::resolve_behavior(spec)`
+(base URL, retry/backoff/timeout, user-agent + AI-agent env order via `preserve_order`, auth, error
+hierarchy from the status-code map). New modules per crate: behavior.rs + runtime.rs + example_plan.rs
++ example_<lang>.rs + tests_gen.rs (~1k–1.5k LOC Rust + ~0.4k–1.2k template LOC each). **Honest
+faithfulness note (uniform across all 7):** the 4 fixtures all resolve to DEFAULT sdk-behavior, so a
+few runtime files hardcode default-behavior prose and seam only what varies across the fixtures;
+a future non-default-policy fixture would need extra seams (capability gating — form/idempotency/
+pagination — and auth-scheme rendering ARE fully behavior-faithful). Unified workspace after all 7:
+fmt clean, clippy `--workspace -D warnings` 0, **58 test-binaries green, 0 failures**.
+
+**ORCHESTRATION LESSON (cost 1.26M tokens):** the first attempt used `fork` subagents WITHOUT
+worktree isolation to extend the existing crates in place. All 7 forks inherited my full context and
+pattern-matched onto my ORCHESTRATOR role — they narrated "the forks are running, I'll wait" and
+returned with **0 real tool uses** (~180k tokens each, zero work). The earlier W7 batches only worked
+because worktree isolation gave forks a clean "you're elsewhere, do the task" frame — but that same
+isolation cuts from a pre-`crates/` base, so it CAN'T see the existing crates these ports must extend.
+Fix that worked: **`general-purpose` agents** (FRESH context, no inheritance → no role confusion),
+running in the MAIN tree (so they see the existing crates), with fully self-contained prompts;
+**canary-first** (ruby alone → verified → fan out the other 6 in parallel). Rule: for in-tree,
+extend-existing-crate parallel work, use general-purpose, not fork; reserve fork+worktree for creating
+NEW standalone crates.
+
+**NEXT: W7 tail (b/c)** — (b) the framework orchestrator/chain (generate()/generateFileMap drives the
+capabilities — could stay JS or a thin Rust driver); (c) the napi + JS shim wiring pass for the codegen
+generators — the opensdk emitters are now runtime-complete so they're wire-able (opencli2go clean;
+opencli2rust needs the ProjectFileMap reshape). Other deferred: env/presets/access live-wiring;
+W4 llms.txt js-yaml/1.1; buildAccessMap frontmatter metadata (product sign-off).
