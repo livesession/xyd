@@ -1,0 +1,59 @@
+{
+  "description": "GET with an array query parameter (default form/explode)",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "t",
+      "version": "1"
+    },
+    "paths": {
+      "/items": {
+        "get": {
+          "parameters": [
+            {
+              "name": "tags",
+              "in": "query",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "ok",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "servers": [
+      {
+        "url": "https://api.example.com"
+      }
+    ]
+  },
+  "path": "/items",
+  "method": "get",
+  "values": {
+    "query": {
+      "tags": [
+        "a",
+        "b",
+        "c"
+      ]
+    },
+    "server": {
+      "selected": 0
+    }
+  }
+}

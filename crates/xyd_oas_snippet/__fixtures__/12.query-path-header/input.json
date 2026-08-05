@@ -1,0 +1,73 @@
+{
+  "description": "Combined path + query + header parameters",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "t",
+      "version": "1"
+    },
+    "paths": {
+      "/orgs/{org}/repos": {
+        "get": {
+          "parameters": [
+            {
+              "name": "org",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "type",
+              "in": "query",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "X-Api-Version",
+              "in": "header",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "ok",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "servers": [
+      {
+        "url": "https://api.example.com"
+      }
+    ]
+  },
+  "path": "/orgs/{org}/repos",
+  "method": "get",
+  "values": {
+    "path": {
+      "org": "acme"
+    },
+    "query": {
+      "type": "public"
+    },
+    "header": {
+      "X-Api-Version": "2024-01"
+    },
+    "server": {
+      "selected": 0
+    }
+  }
+}

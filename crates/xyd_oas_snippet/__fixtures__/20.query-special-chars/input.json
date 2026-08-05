@@ -1,0 +1,52 @@
+{
+  "description": "Query value with spaces and reserved characters",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "t",
+      "version": "1"
+    },
+    "paths": {
+      "/search": {
+        "get": {
+          "parameters": [
+            {
+              "name": "q",
+              "in": "query",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "ok",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "servers": [
+      {
+        "url": "https://api.example.com"
+      }
+    ]
+  },
+  "path": "/search",
+  "method": "get",
+  "values": {
+    "query": {
+      "q": "a b&c=d/e?f"
+    },
+    "server": {
+      "selected": 0
+    }
+  }
+}

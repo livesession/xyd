@@ -7,6 +7,7 @@ mod frontmatter;
 mod gql;
 mod highlight;
 mod mcp_uniform;
+mod oas_snippet;
 mod openapi;
 mod openapi2opencli;
 mod openapi2opensdk;

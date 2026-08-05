@@ -1,0 +1,35 @@
+{
+  "description": "No servers array → default https://example.com",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "t",
+      "version": "1"
+    },
+    "paths": {
+      "/health": {
+        "get": {
+          "responses": {
+            "200": {
+              "description": "ok",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "path": "/health",
+  "method": "get",
+  "values": {
+    "server": {
+      "selected": 0
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "description": "GET with an explicit Authorization header parameter",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "t",
+      "version": "1"
+    },
+    "paths": {
+      "/me": {
+        "get": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "in": "header",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "ok",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "servers": [
+      {
+        "url": "https://api.example.com"
+      }
+    ]
+  },
+  "path": "/me",
+  "method": "get",
+  "values": {
+    "header": {
+      "Authorization": "Bearer tok_123"
+    },
+    "server": {
+      "selected": 0
+    }
+  }
+}
