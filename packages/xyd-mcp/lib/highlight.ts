@@ -17,7 +17,7 @@ export async function highlight(
         return JSON.parse(
             native.highlight(
                 codeblock.value,
-                codeblock.lang,
+                codeblock.lang || "",
                 codeblock.meta || "",
                 JSON.stringify(theme)
             )
