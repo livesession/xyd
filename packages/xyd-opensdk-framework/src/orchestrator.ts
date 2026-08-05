@@ -1,6 +1,7 @@
 import type { NamedType, OpensdkSpecJson } from '@xyd-js/opensdk-core';
 
-import type { Emitter, EmitterContext, GeneratedFile, GeneratedFileEntry } from './types';
+import { nativeOpensdkGenerate } from './native';
+import type { Emitter, EmitterContext, GeneratedFile, GeneratedFileEntry, WriteMode } from './types';
 
 /**
  * Comment syntax for the ownership header, by file extension. Extensions the
@@ -63,6 +64,41 @@ export function generateFileMap(
   for (const t of spec.types || []) types.set(t.name, t);
   const ctx: EmitterContext = { spec, types, emitterOptions };
   const header = emitter.fileHeader?.(ctx) ?? null;
+
+  // Native fast path: byte-exact file CONTENT from the Rust emitter (crates/
+  // xyd_opensdk_<lang> via @xyd-js/native), with per-file writeMode derived from
+  // the emitter's own generateProject (its authority — no hardcoded table, no
+  // drift). Native content already carries the baked ownership header (matches
+  // goldens), so withFileHeader is intentionally NOT re-applied here.
+  //
+  // The native surface takes ONLY the spec, so it can't honor emitterOptions
+  // (e.g. { tests: false }). And some emitter runtimes bake default sdk-behavior
+  // constants rather than fully interpolating them (they were golden against the
+  // all-default fixtures), so a spec carrying `sdk` behavior overrides must take
+  // the faithful JS interpolation path. Gate on both — the common default-config
+  // case, which is exactly what the crates reproduce byte-exact.
+  const behaviorOverride = (spec as { sdk?: unknown }).sdk;
+  const hasBehaviorOverride =
+    behaviorOverride != null &&
+    typeof behaviorOverride === 'object' &&
+    Object.keys(behaviorOverride).length > 0;
+  const nativeGen =
+    Object.keys(emitterOptions).length === 0 && !hasBehaviorOverride
+      ? nativeOpensdkGenerate(emitter.language)
+      : null;
+  if (nativeGen) {
+    const flat = JSON.parse(nativeGen(JSON.stringify(spec))) as Record<string, string>;
+    const modeByPath = new Map<string, WriteMode>();
+    for (const f of emitter.generateProject(spec, ctx)) {
+      if (f.writeMode) modeByPath.set(f.path, f.writeMode);
+    }
+    const nativeFiles: Record<string, GeneratedFileEntry> = {};
+    for (const [path, content] of Object.entries(flat)) {
+      const wm = modeByPath.get(path);
+      nativeFiles[path] = wm ? { content, writeMode: wm } : { content };
+    }
+    return nativeFiles;
+  }
 
   const files: Record<string, GeneratedFileEntry> = {};
   const add = (produced: GeneratedFile[], capability: string) => {
