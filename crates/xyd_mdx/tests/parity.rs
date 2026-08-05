@@ -45,12 +45,19 @@ const DIRECTIVE_FULL_FLOOR: [&str; 7] = [
 
 /// Async fixtures that MUST compile `full` + render at parity: the C-S3
 /// `@`-function ports (`async-changelog`, `async-include`) plus the C-S4b native
-/// meta-component emit (`async-component-atlas` = `component: atlas`, no source
-/// -> `<Atlas references={[]} />`). The `@uniform`/`openapi`-resolved composer
-/// fixture (`async-frontmatter-uniform`) stays `fallback` (C-S4b full-refs port
-/// deferred — see the module doc).
-const ASYNC_FULL_FLOOR: [&str; 3] =
-    ["async-changelog", "async-component-atlas", "async-include"];
+/// meta-component emits (`async-component-atlas` = `component: atlas` no source
+/// -> `<Atlas references={[]}/>`; `component-home`/`-bloghome`/`-firstslide` ->
+/// `<PageHome/>`/`<PageBlogHome/>`/`<PageFirstSlide/>`). The `@uniform`/
+/// `openapi`-resolved composer fixture (`async-frontmatter-uniform`) stays
+/// `fallback` (C-S4b full-refs port deferred — see the module doc).
+const ASYNC_FULL_FLOOR: [&str; 6] = [
+    "async-changelog",
+    "async-component-atlas",
+    "async-include",
+    "component-bloghome",
+    "component-firstslide",
+    "component-home",
+];
 
 use std::fs;
 use std::io::Write;

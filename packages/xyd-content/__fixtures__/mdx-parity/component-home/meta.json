@@ -1,0 +1,22 @@
+{
+  "name": "component-home",
+  "capability": "async",
+  "gate": "fallback",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [
+    "PageHome"
+  ],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 806,
+    "sha256": "b8296708a475c8402f308c07e5f719ef24a60f6308306b1d5dd4a7be5b725f42"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 43,
+    "sha256": "da686b2a636fcad6d4a81d4567d74bce8a0085ef8f72275bad02adf855725191"
+  },
+  "note": "Composes headlessly (new Composer() registers the meta-components). `component: home` -> the home meta-component sets layout:page and emits `<PageHome {...props}/>`, dropping body prose. No source/@uniform -> no oas-to-snippet dependency, so this is a C-S4b native target (component: home => full). parity.rs enforces rendered.html when compile_mdx returns `full`."
+}

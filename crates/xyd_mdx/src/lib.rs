@@ -159,12 +159,16 @@ mod tests {
 
     #[test]
     fn scan_fallbacks() {
-        // C-S4b: `component: atlas` with NO source is native (eligible for full);
-        // atlas WITH a source, any other component, or a bare uniform/openapi/
-        // graphql key still needs the JS composer registry -> fallback.
+        // C-S4b: native meta-components (atlas/home/bloghome/firstslide) with NO
+        // source and NO componentProps are eligible for full; a source key,
+        // componentProps, or any other/user component -> fallback.
         assert!(capability::scan("---\ncomponent: atlas\n---\n# x").is_none());
+        assert!(capability::scan("---\ncomponent: home\n---\n# x").is_none());
+        assert!(capability::scan("---\ncomponent: bloghome\n---\n# x").is_none());
+        assert!(capability::scan("---\ncomponent: firstslide\n---\n# x").is_none());
         assert!(capability::scan("---\ncomponent: atlas\nuniform: ./a.yaml\n---\n# x").is_some());
-        assert!(capability::scan("---\ncomponent: home\n---\n# x").is_some());
+        assert!(capability::scan("---\ncomponent: home\ncomponentProps:\n  a: b\n---\n# x").is_some());
+        assert!(capability::scan("---\ncomponent: custom-thing\n---\n# x").is_some());
         assert!(capability::scan("---\nopenapi: ./a.yaml\n---\n# x").is_some());
         assert!(capability::scan("---\nuniform: ./a.ts\n---\n# x").is_some());
         // `@uniform`/`@importCode` still pre-scan to fallback (need the JS

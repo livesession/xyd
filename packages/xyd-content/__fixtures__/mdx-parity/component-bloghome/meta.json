@@ -1,0 +1,22 @@
+{
+  "name": "component-bloghome",
+  "capability": "async",
+  "gate": "fallback",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [
+    "PageBlogHome"
+  ],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 830,
+    "sha256": "3a966c1f6a185f9cac108118335e52fc4f97b34e681bc9bceddeba538de5a67c"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 47,
+    "sha256": "6dd1a43fd8621bd4e8aa77cdee4b69c7ce360c8bb5069608ec2fa21d3655e118"
+  },
+  "note": "As component-home but `component: bloghome` -> `<PageBlogHome {...props}/>`. Native C-S4b target."
+}

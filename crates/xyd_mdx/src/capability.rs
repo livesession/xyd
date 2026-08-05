@@ -67,23 +67,34 @@ pub fn split_frontmatter(source: &str) -> (Option<&str>, &str) {
     (None, source)
 }
 
+/// The composer meta-components that emit a deterministic, source-free page node
+/// (`component` -> JSX component name). Ported natively by `meta_component`.
+pub const NATIVE_META_COMPONENTS: [&str; 4] = ["atlas", "home", "bloghome", "firstslide"];
+
 /// Scan the leading frontmatter block for composer/atlas keys that must fall
 /// back (they need the JS composer meta-component registry).
 ///
-/// C-S4b exception: `component: atlas` with NO `@uniform` source
-/// (`uniform`/`openapi`/`graphql`) is emitted natively as `<Atlas
-/// references={[]} />` (the composer's genuine no-source atlas behavior — body
-/// prose dropped), so it is eligible for the `full` path. Every other
-/// composer-backed page (`component: home/firstslide/…`, `atlas` WITH a source,
-/// or a bare `uniform`/`openapi`/`graphql` key) still needs the JS meta-component
-/// registry and stays `fallback`.
+/// C-S4b: a native meta-component page — `component` in
+/// [`NATIVE_META_COMPONENTS`] with NO `@uniform` source
+/// (`uniform`/`openapi`/`graphql`/`mcp`/`cli`) and NO `componentProps` — is
+/// emitted directly (`atlas` -> `<Atlas references={[]}/>`, `home` ->
+/// `<PageHome/>`, `bloghome` -> `<PageBlogHome/>`, `firstslide` ->
+/// `<PageFirstSlide/>`, body prose dropped), so it is eligible for `full`.
+/// Everything else composer-backed stays `fallback`:
+///   - a source key (needs the converters, and for atlas the JS-only
+///     `oas-to-snippet` endpoint examples);
+///   - `componentProps` (the props->JSX serializer is the deferred tail; for
+///     `firstslide` this also covers the `rightContent` nested-MDX compile);
+///   - any other/user component (needs the JS registry).
 fn frontmatter_forces_fallback(front: &str) -> bool {
     let mut component: Option<String> = None;
     let mut has_source = false;
+    let mut has_component_props = false;
     for raw in front.lines() {
         let line = raw.trim_start();
         // Only inspect top-level keys (no leading indentation collapse needed —
-        // these xyd keys are always top-level).
+        // these xyd keys are always top-level; nested `componentProps:` children
+        // are indented and skipped here).
         if raw != line {
             continue;
         }
@@ -94,16 +105,21 @@ fn frontmatter_forces_fallback(front: &str) -> bool {
                 let val = parts.next().unwrap_or("").trim();
                 component = Some(val.trim_matches(['"', '\'']).to_string());
             }
-            "uniform" | "openapi" | "graphql" => has_source = true,
+            "uniform" | "openapi" | "graphql" | "mcp" | "cli" => has_source = true,
+            "componentProps" => has_component_props = true,
             _ => {}
         }
     }
     match component.as_deref() {
-        // The one natively-emittable meta component.
-        Some("atlas") if !has_source => false,
-        // Any explicit component (other than bare atlas) is composer-backed.
+        // A native meta component with no source and no props.
+        Some(c) if NATIVE_META_COMPONENTS.contains(&c) && !has_source && !has_component_props => {
+            false
+        }
+        // Any explicit component (with source/props, or user-registered) is
+        // composer-backed.
         Some(_) => true,
-        // No component key: a lone uniform/openapi/graphql still forces fallback.
+        // No component key: a lone uniform/openapi/graphql/mcp/cli still forces
+        // fallback.
         None => has_source,
     }
 }

@@ -1,0 +1,22 @@
+{
+  "name": "component-firstslide",
+  "capability": "async",
+  "gate": "fallback",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [
+    "PageFirstSlide"
+  ],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 842,
+    "sha256": "c222c22e29f7181968f7255841acbc983fc9bb03996557232f2e5b85092ce76d"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 49,
+    "sha256": "e7c3cd55b0ed232f9396b271de55b19149128ec4d6b8b9233d44f2746a372acb"
+  },
+  "note": "`component: firstslide` (no rightContent) -> the firstslide meta-component sets layout:page and emits `<PageFirstSlide {...props}/>`. Native C-S4b target. The rightContent nested-MDX compile branch is not exercised (deferred, like the openapi-atlas full-refs tail)."
+}

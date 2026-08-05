@@ -7,15 +7,24 @@
 //! `MdxJsxFlowElement`, which the mdx codegen tail turns into
 //! `$jsx(Atlas, {references: …})`.
 //!
-//! Ported here: `component: atlas` with NO `@uniform` source. The atlas
-//! transform, given no references, drops the page's prose body and emits
-//! `<Atlas references={[]} />` (verified against the committed
-//! `async-component-atlas` oracle). We reproduce that node directly; the
-//! standard `mdast -> hast -> swc -> function-body` tail then yields the exact
-//! `$jsx(Atlas, {references: []})` output.
+//! Ported here: the source-free, prop-free meta-components, whose transforms
+//! emit a single page node and drop the body prose (verified against the
+//! committed `component-*` / `async-component-atlas` oracles):
 //!
-//! Everything else composer-backed (`home`/`firstslide`/…, `atlas` WITH a
-//! resolved source, or user-registered meta components) is routed to the JS
+//! | frontmatter `component` | emitted node                | JS transform     |
+//! |-------------------------|-----------------------------|------------------|
+//! | `atlas` (no source)     | `<Atlas references={[]} />` | atlas, empty refs|
+//! | `home`                  | `<PageHome />`              | home             |
+//! | `bloghome`              | `<PageBlogHome />`          | bloghome         |
+//! | `firstslide` (no props) | `<PageFirstSlide />`        | firstslide       |
+//!
+//! We reproduce the node directly; the standard `mdast -> hast -> swc ->
+//! function-body` tail then yields the exact `$jsx(<Comp>, {…})` output. The
+//! `component -> JSX name` map mirrors the composer's `@metaComponent(name,
+//! ComponentName)` decorators (`@xyd-js/composer`).
+//!
+//! Everything else composer-backed (a component WITH a source or
+//! `componentProps`, or a user-registered meta component) is routed to the JS
 //! fallback by `capability::scan` and never reaches here.
 //!
 //! ## Why `atlas` WITH a source stays `fallback` (the deferred C-S4b tail)
@@ -51,35 +60,52 @@ use crate::capability;
 /// Runs AFTER the raw-MDX guard (it legitimately introduces an
 /// `MdxJsxFlowElement`, exactly like `directives::process`).
 pub fn process(mdast: &mut Node, source: &str) -> bool {
-    // C-S4b scope: only `component: atlas` (no source) is native. `capability`
-    // has already filtered other components to fallback, so this is a belt-and-
-    // braces check.
-    if capability::frontmatter_component(source).as_deref() != Some("atlas") {
+    // `capability::scan` has already filtered non-native components (and any
+    // native one with a source / componentProps) to fallback, so an unmatched
+    // component here is a belt-and-braces no-op.
+    let Some(component) = capability::frontmatter_component(source) else {
         return false;
-    }
+    };
+    let Some(element) = meta_element(&component) else {
+        return false;
+    };
 
-    let atlas = Node::MdxJsxFlowElement(empty_atlas());
     if let Node::Root(root) = mdast {
-        // The no-source atlas transform drops the prose body entirely.
-        root.children = vec![atlas];
+        // These transforms drop the page's prose body entirely.
+        root.children = vec![Node::MdxJsxFlowElement(element)];
         return true;
     }
     false
 }
 
-/// `<Atlas references={[]} />` — a flow JSX element with a single expression
-/// attribute whose raw text (`[]`) is parsed by `hast_util_to_swc`.
-fn empty_atlas() -> MdxJsxFlowElement {
-    MdxJsxFlowElement {
-        name: Some("Atlas".to_string()),
-        attributes: vec![AttributeContent::Property(MdxJsxAttribute {
-            name: "references".to_string(),
-            value: Some(AttributeValue::Expression(AttributeValueExpression {
-                value: "[]".to_string(),
-                stops: vec![],
-            })),
-        })],
+/// The `<Comp … />` node for a native meta component, or `None` if the name is
+/// not one we emit. The `component -> JSX name` map mirrors the composer's
+/// `@metaComponent` decorators.
+fn meta_element(component: &str) -> Option<MdxJsxFlowElement> {
+    let (name, attributes) = match component {
+        // atlas with no source composes to empty references.
+        "atlas" => ("Atlas", vec![attr_expr("references", "[]")]),
+        "home" => ("PageHome", vec![]),
+        "bloghome" => ("PageBlogHome", vec![]),
+        "firstslide" => ("PageFirstSlide", vec![]),
+        _ => return None,
+    };
+    Some(MdxJsxFlowElement {
+        name: Some(name.to_string()),
+        attributes,
         children: vec![],
         position: None,
-    }
+    })
+}
+
+/// An expression attribute `name={<raw>}` whose raw JS text is parsed later by
+/// `hast_util_to_swc` (e.g. `references={[]}`).
+fn attr_expr(name: &str, raw: &str) -> AttributeContent {
+    AttributeContent::Property(MdxJsxAttribute {
+        name: name.to_string(),
+        value: Some(AttributeValue::Expression(AttributeValueExpression {
+            value: raw.to_string(),
+            stops: vec![],
+        })),
+    })
 }
