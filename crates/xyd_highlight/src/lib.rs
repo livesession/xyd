@@ -23,13 +23,19 @@ pub mod theme;
 
 pub use grammar::tokenizer::{highlight, Grammar};
 pub use highlighted::{
-    get_theme_colors, highlighted_code, highlighted_code_with_theme, AnyToken, BlockStyle, CssProps,
-    HighlightedCode, Token,
+    get_theme_colors, highlighted_code, highlighted_code_with_theme, AnyToken, BlockStyle,
+    CssProps, HighlightedCode, Token,
 };
-pub use theme::Theme;
-pub use onig_scanner::OnigScanner;
+pub use onig_scanner::{CaptureSpan, OnigScanner, ScanMatch};
 pub use registry::Registry;
 pub use reshape::{Style, StyledToken};
+pub use theme::Theme;
+
+// Delegated-scanner seam (js-scanner build only): a host — the `xyd_highlight_wasm`
+// crate — installs a `ScannerBackend` (wired to onig.wasm) before highlighting.
+// Absent under the default `native-onig` build, which links Oniguruma directly.
+#[cfg(all(feature = "js-scanner", not(feature = "native-onig")))]
+pub use onig_scanner::{register_scanner_backend, ScannerBackend};
 
 /// The compressed on-disk size of the embedded grammar store, in bytes (the
 /// zstd-compressed bundle set baked in at build time — trimmed by `core-langs`).
