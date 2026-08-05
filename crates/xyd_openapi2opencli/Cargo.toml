@@ -1,0 +1,16 @@
+[package]
+name = "xyd_openapi2opencli"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "OpenAPI 3.x -> OpenCLI doc converter (Rust port of @xyd-js/openapi2opencli, Stage A of the CLI pipeline)"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+xyd_openapi = { path = "../xyd_openapi" }
+
+[dev-dependencies]
+xyd_parity = { path = "../xyd_parity" }
+xyd_uniform = { path = "../xyd_uniform" }
