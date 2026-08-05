@@ -19,6 +19,7 @@ members = [
     "xyd_opencli2go",
     "xyd_opencli2rust",
     "xyd_opensdk_go",
+    "xyd_opensdk_rust",
     "xyd_opensdk_ruby",
 ]
 # The napi adapter crate lives co-located in packages/xyd-native (idiomatic

@@ -1,0 +1,10 @@
+[package]
+name = "xyd_opensdk_rust"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "rust SDK emitter — OpenSDK IR -> generated rust SDK code (Rust port of @xyd-js/opensdk-rust; generated-code emitter, vendored runtime + tests deferred)"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
