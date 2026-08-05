@@ -55,10 +55,12 @@ pub fn compile_full(source: &str, highlight_theme: &str) -> Result<String, Strin
         return Err("mdx jsx/expression/esm node present".to_string());
     }
 
-    // C-S2 stage-1: rewrite GENERIC `:::`/`::` directives to `MdxJsxFlowElement`.
-    // `Err` => a construct outside the generic scope (special handler / nesting /
-    // expression attribute / unsupported) — defer to JS.
-    directives::process(&mut mdast, &opts, source)?;
+    // C-S2 stage-1 + 1b: rewrite `:::`/`::` directives to `MdxJsxFlowElement`
+    // (generic port + the `steps`/`tabs`/`code-group` special handlers). `Err`
+    // => a construct still outside the port (deferred `table`, step parameters,
+    // expression attribute, unsupported name) — defer to JS. `code-group` needs
+    // the highlight theme to build its `codeblocks` blob.
+    directives::process(&mut mdast, &opts, source, highlight_theme)?;
 
     let mut hast = mdast_util_to_hast(&mdast);
 

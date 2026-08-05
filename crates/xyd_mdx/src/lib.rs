@@ -128,13 +128,22 @@ mod tests {
     }
 
     #[test]
-    fn directive_steps_falls_back() {
-        // Special handler → deferred to JS.
+    fn directive_steps_compiles_full() {
+        // Special handler now ported (C-S2 stage-1b): `:::steps` → `Steps` with
+        // `Steps.Item` wrappers.
         let out = compile_mdx(":::steps\n1. one\n:::\n", "{}");
+        assert_eq!(out.capability, CAP_FULL, "reason={:?}", out.reason);
+        assert!(out.compiled.contains("Steps.Item"));
+    }
+
+    #[test]
+    fn directive_table_falls_back() {
+        // `table` remains deferred (no fixture pins its parity).
+        let out = compile_mdx(":::table\n[[\"a\"]]\n:::\n", "{}");
         assert_eq!(out.capability, CAP_FALLBACK);
         assert_eq!(
             out.reason.as_deref(),
-            Some("directive special-handler `steps`")
+            Some("directive special-handler `table`")
         );
     }
 

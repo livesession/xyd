@@ -9,23 +9,30 @@
 //!   `rendered.html`. The ONE documented exception is a page that needs KaTeX (a
 //!   JS rehype step): it returns `fallback` with reason `math` and is tracked as
 //!   a gap, not a failure.
-//! - `directive` (C-S2 stage-1): whatever Rust returns `full` MUST render
+//! - `directive` (C-S2 stage-1 + 1b): whatever Rust returns `full` MUST render
 //!   byte-equal to `rendered.html` (a `full` that renders wrong is a FAILURE —
-//!   this is what keeps the coverage honest / un-riggable). Directives outside
-//!   the generic port (special handlers `tabs`/`steps`/`code-group`, `:::`-in-
-//!   `:::` nesting) return `fallback` and are tracked as deferred, not failures.
-//!   A floor assertion pins the generic directives that MUST stay `full`.
+//!   this is what keeps the coverage honest / un-riggable). Stage-1b ports the
+//!   `steps`/`tabs`/`code-group` special handlers and recursive `:::`-in-`:::`
+//!   nesting, so all 7 directive fixtures now compile `full`. Any directive
+//!   still outside the port (e.g. `table`, step `[…]`/`{…}` parameters) returns
+//!   `fallback` and is tracked as deferred, not a failure. A floor assertion
+//!   pins the directives that MUST stay `full`.
 //! - `async`: Rust must return `fallback` (C-S3/S4 not built).
 //!
 //! Oracle A (compiled JS) is intentionally NOT gated: swc codegen differs
 //! cosmetically from astring, but the rendered DOM is identical.
 
-/// Directive fixtures the GENERIC stage-1 port MUST compile `full` + render at
-/// parity. A regression to `fallback` here fails the gate.
-const DIRECTIVE_FULL_FLOOR: [&str; 3] = [
+/// Directive fixtures the C-S2 port (stage-1 generic + stage-1b special handlers
+/// & nesting) MUST compile `full` + render at parity. A regression to `fallback`
+/// here fails the gate.
+const DIRECTIVE_FULL_FLOOR: [&str; 7] = [
     "directive-callout",
+    "directive-code-group",
     "directive-details",
+    "directive-nested",
+    "directive-steps",
     "directive-subtitle-badge",
+    "directive-tabs",
 ];
 
 use std::fs;

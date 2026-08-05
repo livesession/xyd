@@ -1,42 +1,56 @@
-//! `mdComponentDirective` port — the GENERIC directive→component path (C-S2
-//! stage-1).
+//! `mdComponentDirective` port — the directive→component path (C-S2 stage-1 +
+//! stage-1b).
 //!
 //! Runs as an mdast transform BETWEEN `mdast_util_from_mdx` and
 //! `mdast_util_to_hast`. The vendored forked markdown-rs parses `:::name{attrs}`
 //! …`:::` container and `::name{attrs}` leaf directives into
 //! `ContainerDirective` / `LeafDirective` mdast nodes (content captured as a
-//! single raw `Text` child); this module rewrites the GENERIC ones into
-//! `MdxJsxFlowElement` nodes — exactly what xyd's JS
+//! single raw `Text` child); this module rewrites them into `MdxJsxFlowElement`
+//! nodes — exactly what xyd's JS
 //! `packages/xyd-content/.../mdComponentDirective.ts` does with
-//! `getComponentName` + `componentProps`, minus the special handlers.
+//! `getComponentName` + `componentProps` and the special handlers.
 //!
 //! Ported GENERIC directives (attributes → JSX attributes, content re-parsed as
-//! nested flow and passed through as children):
+//! nested flow and passed through as children — stage-1):
 //!   * containers: `callout`, `details`, `subtitle`, `guide-card`, `badge`,
 //!     `grid`, `button`, `update`, `card`, `feature`, `atlas`
 //!   * leaves: `atlas`, `card`, `color-scheme-button`
 //!
-//! DEFERRED to the JS pipeline (return `Err` → the page falls back), matching
-//! the C-S2 remainder:
-//!   * special handlers — `tabs` (mdNav), `steps` (mdSteps), `code-group`
-//!     (mdCode), `table` (mdTable)
-//!   * true `:::`-in-`:::` nesting (a converted directive whose re-parsed
-//!     content contains another directive)
+//! Ported SPECIAL handlers (stage-1b — each emits the SAME `MdxJsxFlowElement`
+//! tree the JS `mdSteps`/`mdNav`/`mdCode` emit):
+//!   * `steps` (mdSteps): list items → `Steps.Item` wrappers
+//!   * `tabs` (mdNav): a link list → `Tabs` with `Tabs.Item` / `Tabs.Content`
+//!   * `code-group` (mdCode): code fences → `DirectiveCodeGroup` with a
+//!     `codeblocks` JSON attribute, each block highlighted via
+//!     `xyd_highlight::highlighted_code` (the same engine the JS pipeline uses)
+//!
+//! Recursion: a converted container's re-parsed children are themselves run
+//! through `convert_node`, so a directive nested inside another directive
+//! (`:::code-group` / `:::callout` inside `:::::steps`) is converted too — as
+//! long as the vendored fork's container captured the nested directive text and
+//! the re-parse reproduces it faithfully.
+//!
+//! DEFERRED to the JS pipeline (return `Err` → the page falls back):
+//!   * `table` (mdTable) — no `directive-table` fixture exists to pin parity,
+//!     so it stays a fallback rather than shipping unverified.
+//!   * `steps` items carrying `[…]`/`{…}` parameters (the `mdParameters` path) —
+//!     conservatively deferred; no fixture exercises it.
 //!   * expression-valued attributes (`key={expr}`) — the `complexJSXPropsPollyfill`
 //!     path; the `@uniform` attribute path is already caught earlier by the
 //!     `@`-function pre-scan.
 
-use markdown::mdast::{AttributeContent, AttributeValue, MdxJsxAttribute, MdxJsxFlowElement, Node};
+use markdown::mdast::{
+    AttributeContent, AttributeValue, Code, ListItem, MdxJsxAttribute, MdxJsxFlowElement, Node,
+    Text,
+};
 use mdxjs::{mdast_util_from_mdx, Options};
-
-/// Container directives that xyd routes through a dedicated (non-generic)
-/// handler; unsupported by the stage-1 generic port → fall back.
-const SPECIAL_CONTAINERS: [&str; 4] = ["tabs", "steps", "code-group", "table"];
+use serde::Serialize;
 
 /// Look up the component name for a container directive, mirroring
 /// `supportedDirectives` + `getComponentName` for the GENERIC subset. Returns
 /// `None` for special-handler names (`tabs`/`steps`/`code-group`/`table`) and
-/// any name outside the map — both defer to the JS pipeline.
+/// any name outside the map — special handlers are dispatched separately, and
+/// unknown names defer to the JS pipeline.
 fn container_component(name: &str) -> Option<String> {
     match name {
         // `true` in the JS map → PascalCase of the directive name.
@@ -185,23 +199,16 @@ fn parse_attributes(raw: &str) -> Result<Vec<(String, String)>, String> {
 fn build_attributes(pairs: Vec<(String, String)>) -> Vec<AttributeContent> {
     pairs
         .into_iter()
-        .map(|(name, value)| {
-            AttributeContent::Property(MdxJsxAttribute {
-                name,
-                value: Some(AttributeValue::Literal(value)),
-            })
-        })
+        .map(|(name, value)| attr(&name, &value))
         .collect()
 }
 
-/// True if `node` (or any descendant) is a directive node — used to detect
-/// nesting inside a re-parsed container body (deferred to JS).
-fn contains_directive(node: &Node) -> bool {
-    if matches!(node, Node::ContainerDirective(_) | Node::LeafDirective(_)) {
-        return true;
-    }
-    node.children()
-        .is_some_and(|c| c.iter().any(contains_directive))
+/// A single literal JSX attribute (`name="value"`).
+fn attr(name: &str, value: &str) -> AttributeContent {
+    AttributeContent::Property(MdxJsxAttribute {
+        name: name.to_string(),
+        value: Some(AttributeValue::Literal(value.to_string())),
+    })
 }
 
 /// True if `node` (or any descendant) is a RAW author MDX node (JSX / expression
@@ -275,41 +282,53 @@ fn container_inner_source(
     Some(inner.to_string())
 }
 
-/// Convert every GENERIC directive in the tree to an `MdxJsxFlowElement`,
-/// in-place. `Err(reason)` means the page uses a directive construct outside the
-/// stage-1 generic scope (special handler / nesting / expression attribute /
-/// unsupported name) and must fall back to the JS pipeline.
-pub fn process(root: &mut Node, opts: &Options, source: &str) -> Result<(), String> {
-    convert_node(root, opts, source)
+/// Convert every directive in the tree to an `MdxJsxFlowElement`, in-place.
+/// `Err(reason)` means the page uses a directive construct still outside the
+/// port (deferred special handler / step parameters / expression attribute /
+/// unsupported name) and must fall back to the JS pipeline. `source` is the
+/// source string that `root`'s node positions index into (the original page for
+/// the top-level call, or a re-parsed container body for nested calls).
+pub fn process(root: &mut Node, opts: &Options, source: &str, theme: &str) -> Result<(), String> {
+    convert_node(root, opts, source, theme)
 }
 
-fn convert_node(node: &mut Node, opts: &Options, source: &str) -> Result<(), String> {
+fn convert_node(node: &mut Node, opts: &Options, source: &str, theme: &str) -> Result<(), String> {
     match node {
         Node::ContainerDirective(cd) => {
             let name = cd.name.clone();
-            if SPECIAL_CONTAINERS.contains(&name.as_str()) {
-                return Err(format!("directive special-handler `{name}`"));
-            }
-            let component = container_component(&name)
-                .ok_or_else(|| format!("directive unsupported `{name}`"))?;
+            let attrs_raw = cd.attributes.clone();
             // Prefer the position-sliced body (blank lines preserved); fall back
             // to the fork's collapsed raw `Text` child if the span is missing.
             let raw = container_inner_source(source, cd)
                 .unwrap_or_else(|| container_raw_content(&cd.children));
-            let children = reparse_content(&raw, opts)?;
-            if children.iter().any(contains_directive) {
-                return Err(format!("directive nesting inside `{name}`"));
-            }
-            let pairs = match &cd.attributes {
-                Some(a) => parse_attributes(a)?,
-                None => Vec::new(),
+            // `cd` borrow ends here — name / attrs_raw / raw are owned.
+            let replacement = match name.as_str() {
+                "steps" => build_steps(attrs_raw.as_deref(), &raw, opts, theme)?,
+                "tabs" => build_nav(attrs_raw.as_deref(), &raw, opts, theme)?,
+                "code-group" => build_code(attrs_raw.as_deref(), &raw, opts, theme)?,
+                "table" => return Err("directive special-handler `table`".to_string()),
+                _ => {
+                    let component = container_component(&name)
+                        .ok_or_else(|| format!("directive unsupported `{name}`"))?;
+                    let mut children = reparse_content(&raw, opts)?;
+                    // Recurse so a directive nested in this container's body is
+                    // converted too (positions index into `raw`).
+                    for child in children.iter_mut() {
+                        convert_node(child, opts, &raw, theme)?;
+                    }
+                    let pairs = match &attrs_raw {
+                        Some(a) => parse_attributes(a)?,
+                        None => Vec::new(),
+                    };
+                    MdxJsxFlowElement {
+                        name: Some(component),
+                        attributes: build_attributes(pairs),
+                        children,
+                        position: None,
+                    }
+                }
             };
-            *node = Node::MdxJsxFlowElement(MdxJsxFlowElement {
-                name: Some(component),
-                attributes: build_attributes(pairs),
-                children,
-                position: None,
-            });
+            *node = Node::MdxJsxFlowElement(replacement);
             Ok(())
         }
         Node::LeafDirective(ld) => {
@@ -331,12 +350,268 @@ fn convert_node(node: &mut Node, opts: &Options, source: &str) -> Result<(), Str
         _ => {
             if let Some(children) = node.children_mut() {
                 for child in children.iter_mut() {
-                    convert_node(child, opts, source)?;
+                    convert_node(child, opts, source, theme)?;
                 }
             }
             Ok(())
         }
     }
+}
+
+/// Port of `mdSteps` (`:::steps`). Each list item becomes a `Steps.Item` wrapping
+/// the item's own children; non-list children pass through. Component name is
+/// `getComponentName("steps", supportedDirectives)` = `"Steps"`.
+fn build_steps(
+    attrs_raw: Option<&str>,
+    raw: &str,
+    opts: &Options,
+    theme: &str,
+) -> Result<MdxJsxFlowElement, String> {
+    const COMPONENT: &str = "Steps";
+    let outer = match attrs_raw {
+        Some(a) => build_attributes(parse_attributes(a)?),
+        None => Vec::new(),
+    };
+
+    let mut steps: Vec<Node> = Vec::new();
+    for child in reparse_content(raw, opts)? {
+        if let Node::List(list) = child {
+            for item in list.children {
+                if let Node::ListItem(li) = item {
+                    // The `mdParameters` path (leading `[…]`/`{…}` on a single
+                    // text step) is not ported — defer that page honestly.
+                    if step_has_params(&li) {
+                        return Err("directive steps parameter".to_string());
+                    }
+                    let mut item_children = li.children;
+                    for c in item_children.iter_mut() {
+                        convert_node(c, opts, raw, theme)?;
+                    }
+                    steps.push(Node::MdxJsxFlowElement(MdxJsxFlowElement {
+                        name: Some(format!("{COMPONENT}.Item")),
+                        attributes: Vec::new(),
+                        children: item_children,
+                        position: None,
+                    }));
+                }
+                // A list contains only list items; anything else is dropped,
+                // matching the JS `.map(...).flat()` (non-listItem → undefined).
+            }
+        } else {
+            let mut child = child;
+            convert_node(&mut child, opts, raw, theme)?;
+            steps.push(child);
+        }
+    }
+
+    Ok(MdxJsxFlowElement {
+        name: Some(COMPONENT.to_string()),
+        attributes: outer,
+        children: steps,
+        position: None,
+    })
+}
+
+/// True when a list item's leading block is a paragraph with a single text child
+/// that carries `[…]`/`{…}` parameters — the `mdParameters` branch of `mdSteps`,
+/// which this port defers (fall back).
+fn step_has_params(li: &ListItem) -> bool {
+    if let Some(Node::Paragraph(p)) = li.children.first() {
+        if p.children.len() == 1 {
+            if let Some(Node::Text(t)) = p.children.first() {
+                return t.value.contains('[') || t.value.contains('{');
+            }
+        }
+    }
+    false
+}
+
+/// Port of `mdNav` (`:::tabs`). A list of links becomes `Tabs.Item` labels plus
+/// (initially empty) `Tabs.Content` blocks; children are `[...items, ...contents]`.
+/// Component name is `getComponentName("tabs", supportedDirectives)` = `"Tabs"`.
+fn build_nav(
+    attrs_raw: Option<&str>,
+    raw: &str,
+    opts: &Options,
+    theme: &str,
+) -> Result<MdxJsxFlowElement, String> {
+    const COMPONENT: &str = "Tabs";
+    let outer = match attrs_raw {
+        Some(a) => build_attributes(parse_attributes(a)?),
+        None => Vec::new(),
+    };
+
+    let mut items: Vec<Node> = Vec::new();
+    let mut contents: Vec<Node> = Vec::new();
+
+    for child in reparse_content(raw, opts)? {
+        let Node::List(list) = child else { continue };
+        for item in list.children {
+            let Node::ListItem(li) = item else { continue };
+            // Extract the leading link (value + label) without holding a borrow
+            // across the `li.children` move below.
+            let extracted = tab_link(&li);
+            let Some((tab_value, tab_label)) = extracted? else {
+                continue;
+            };
+
+            items.push(tabs_item(COMPONENT, &tab_value, &tab_label));
+
+            // Tab content = everything after the first (link) block.
+            let mut rest: Vec<Node> = li.children.into_iter().skip(1).collect();
+            for c in rest.iter_mut() {
+                convert_node(c, opts, raw, theme)?;
+            }
+            contents.push(tabs_content(COMPONENT, &tab_value, rest));
+        }
+    }
+
+    let mut children = items;
+    children.extend(contents);
+
+    Ok(MdxJsxFlowElement {
+        name: Some(COMPONENT.to_string()),
+        attributes: outer,
+        children,
+        position: None,
+    })
+}
+
+/// Pull `(tabValue, tabLabel)` from a tab list item's leading `[label](url)`
+/// link. `Ok(None)` = not a link list item (skip, matching the JS early return);
+/// `Err` = a link whose label is not a plain text node (unported → fall back).
+fn tab_link(li: &ListItem) -> Result<Option<(String, String)>, String> {
+    let Some(Node::Paragraph(p)) = li.children.first() else {
+        return Ok(None);
+    };
+    let Some(Node::Link(link)) = p.children.first() else {
+        return Ok(None);
+    };
+    if link.url.is_empty() {
+        return Ok(None);
+    }
+    // `link.url.startsWith('#') ? url : url.split(" ").join("&")`.
+    let tab_value = if link.url.starts_with('#') {
+        link.url.clone()
+    } else {
+        link.url.split(' ').collect::<Vec<_>>().join("&")
+    };
+    let tab_label = match link.children.first() {
+        Some(Node::Text(t)) => t.value.clone(),
+        _ => return Err("directive tabs link label not plain text".to_string()),
+    };
+    Ok(Some((tab_value, tab_label)))
+}
+
+fn tabs_item(component: &str, value: &str, label: &str) -> Node {
+    Node::MdxJsxFlowElement(MdxJsxFlowElement {
+        name: Some(format!("{component}.Item")),
+        attributes: vec![attr("value", value), attr("href", value)],
+        children: vec![Node::Text(Text {
+            value: label.to_string(),
+            position: None,
+        })],
+        position: None,
+    })
+}
+
+fn tabs_content(component: &str, value: &str, children: Vec<Node>) -> Node {
+    Node::MdxJsxFlowElement(MdxJsxFlowElement {
+        name: Some(format!("{component}.Content")),
+        attributes: vec![attr("value", value)],
+        children,
+        position: None,
+    })
+}
+
+/// One `codeblocks[]` entry, field order matching the JS
+/// `{ value, lang, meta, highlighted }`.
+#[derive(Serialize)]
+struct CodeBlockEntry {
+    value: String,
+    lang: String,
+    meta: String,
+    highlighted: serde_json::Value,
+}
+
+/// Port of `mdCode` (`:::code-group`). Each fenced code block is highlighted via
+/// the inline Rust highlighter (the same engine the JS pipeline reaches through
+/// `@xyd-js/native`) and collected into a `codeblocks` JSON attribute; children
+/// are empty. Component name is `"DirectiveCodeGroup"`.
+fn build_code(
+    attrs_raw: Option<&str>,
+    raw: &str,
+    opts: &Options,
+    theme: &str,
+) -> Result<MdxJsxFlowElement, String> {
+    const COMPONENT: &str = "DirectiveCodeGroup";
+    let pairs = match attrs_raw {
+        Some(a) => parse_attributes(a)?,
+        None => Vec::new(),
+    };
+    // `description = node.attributes?.title || ''`.
+    let description = pairs
+        .iter()
+        .find(|(k, _)| k == "title")
+        .map(|(_, v)| v.clone())
+        .unwrap_or_default();
+
+    // Content is captured raw; re-parse to reach the `code` nodes.
+    let mut codeblocks: Vec<CodeBlockEntry> = Vec::new();
+    for child in reparse_content(raw, opts)? {
+        if let Node::Code(code) = child {
+            let Code {
+                value, lang, meta, ..
+            } = code;
+            let lang = lang.unwrap_or_default();
+            let meta = meta.unwrap_or_default();
+            // `highlight({ ..., meta: meta || lang || "" })`.
+            let hl_meta = if !meta.is_empty() {
+                meta.clone()
+            } else if !lang.is_empty() {
+                lang.clone()
+            } else {
+                String::new()
+            };
+            let highlighted = highlight_block(&value, &lang, &hl_meta, theme);
+            codeblocks.push(CodeBlockEntry {
+                value,
+                lang,
+                meta,
+                highlighted,
+            });
+        }
+    }
+
+    let codeblocks_json = serde_json::to_string(&codeblocks).unwrap_or_else(|_| "[]".to_string());
+
+    let mut attributes = build_attributes(pairs);
+    attributes.push(attr("description", &description));
+    attributes.push(attr("codeblocks", &codeblocks_json));
+
+    Ok(MdxJsxFlowElement {
+        name: Some(COMPONENT.to_string()),
+        attributes,
+        children: Vec::new(),
+        position: None,
+    })
+}
+
+/// Highlight one code block via `xyd_highlight`, returning the codehike-shaped
+/// object as a JSON value. Guarded like `highlight::embed` — a failure yields
+/// `null` rather than aborting the page (Oracle B drops this blob anyway).
+fn highlight_block(value: &str, lang: &str, meta: &str, theme: &str) -> serde_json::Value {
+    let (v, l, m, t) = (
+        value.to_string(),
+        lang.to_string(),
+        meta.to_string(),
+        theme.to_string(),
+    );
+    std::panic::catch_unwind(move || {
+        let hc = xyd_highlight::highlighted_code(&v, &l, &m, &t);
+        serde_json::to_value(hc).unwrap_or(serde_json::Value::Null)
+    })
+    .unwrap_or(serde_json::Value::Null)
 }
 
 #[cfg(test)]
@@ -364,7 +639,8 @@ mod tests {
             container_component("grid").as_deref(),
             Some("GridDecorator")
         );
-        // special handlers / unknowns are not generically convertible.
+        // special handlers / unknowns are not GENERICALLY convertible (they are
+        // dispatched by name in `convert_node`).
         assert_eq!(container_component("tabs"), None);
         assert_eq!(container_component("steps"), None);
         assert_eq!(container_component("code-group"), None);
@@ -386,6 +662,10 @@ mod tests {
         assert_eq!(
             parse_attributes(r#"label="Show more""#).unwrap(),
             vec![("label".to_string(), "Show more".to_string())]
+        );
+        assert_eq!(
+            parse_attributes(r#"title="install""#).unwrap(),
+            vec![("title".to_string(), "install".to_string())]
         );
         // expression-valued attribute → defer.
         assert!(parse_attributes("references={foo}").is_err());
