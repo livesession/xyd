@@ -4,7 +4,7 @@ import remarkMdx from "remark-mdx";
 import { visit } from "unist-util-visit";
 import { VFile } from "vfile";
 import { Node as UnistNode } from "unist";
-import { highlight } from "codehike/code"
+import { highlight } from "../../../../src/highlight"
 
 import { Settings } from "@xyd-js/core";
 import { uniformToMiniUniform } from "@xyd-js/sources/ts";

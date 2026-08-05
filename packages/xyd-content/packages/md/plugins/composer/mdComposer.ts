@@ -1,7 +1,7 @@
 import { Plugin } from "unified";
 import { visit } from "unist-util-visit";
 import { Node as UnistNode } from "unist";
-import { highlight } from "codehike/code";
+import { highlight } from "../../../../src/highlight";
 import type { HighlightedCode, Token } from "codehike/code";
 
 import { Settings } from "@xyd-js/core";

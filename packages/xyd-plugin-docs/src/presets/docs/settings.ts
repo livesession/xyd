@@ -5,7 +5,7 @@ import { URL, pathToFileURL } from "node:url";
 import { config as dotenvConfig } from "dotenv";
 import yaml from "js-yaml";
 
-import { getThemeColors } from "@code-hike/lighter";
+import { getThemeColors } from "./themeColors";
 
 import { Settings } from "@xyd-js/core";
 import { replaceEnvVars } from "@xyd-js/cli-sdk";

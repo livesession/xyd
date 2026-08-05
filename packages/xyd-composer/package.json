@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@babel/parser": "^7.27.2",
+    "@xyd-js/native": "workspace:*",
     "codehike": "^1.0.7",
     "hast-util-to-html": "^9.0.5",
     "html-to-jsx-transform": "^1.2.0",

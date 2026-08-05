@@ -5,7 +5,7 @@ import { mdxToMarkdown } from "mdast-util-mdx";
 import { toHast } from 'mdast-util-to-hast'
 import { toHtml } from 'hast-util-to-html'
 import { parse } from '@babel/parser';
-import { highlight } from "codehike/code";
+import { highlight } from "./highlight";
 import { marked } from 'marked';
 import { fromMarkdown } from 'mdast-util-from-markdown';
 import { htmlToJsx } from "html-to-jsx-transform";

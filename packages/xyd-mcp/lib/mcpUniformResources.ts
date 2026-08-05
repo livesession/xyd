@@ -1,6 +1,6 @@
 import path from "node:path";
 import fs from "node:fs/promises";
-import { highlight } from "codehike/code";
+import { highlight } from "./highlight";
 
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 

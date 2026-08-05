@@ -832,6 +832,9 @@ importers:
       '@xyd-js/core':
         specifier: workspace:*
         version: link:../xyd-core
+      '@xyd-js/native':
+        specifier: workspace:*
+        version: link:../xyd-native
       '@xyd-js/uniform':
         specifier: workspace:*
         version: link:../xyd-uniform
@@ -1443,6 +1446,9 @@ importers:
       '@xyd-js/gql':
         specifier: workspace:*
         version: link:../xyd-gql
+      '@xyd-js/native':
+        specifier: workspace:*
+        version: link:../xyd-native
       '@xyd-js/openapi':
         specifier: workspace:*
         version: link:../xyd-openapi

@@ -1,5 +1,5 @@
 import { visit } from "unist-util-visit";
-import { highlight } from "codehike/code"
+import { highlight } from "../../../../src/highlight"
 
 import { Settings } from "@xyd-js/core";
 import { ContentFS } from "../../../../src";
