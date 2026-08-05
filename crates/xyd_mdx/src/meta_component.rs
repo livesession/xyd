@@ -17,6 +17,25 @@
 //! Everything else composer-backed (`home`/`firstslide`/…, `atlas` WITH a
 //! resolved source, or user-registered meta components) is routed to the JS
 //! fallback by `capability::scan` and never reaches here.
+//!
+//! ## Why `atlas` WITH a source stays `fallback` (the deferred C-S4b tail)
+//!
+//! The emit mechanism for the full case is proven — `componentLike` serializes
+//! the `AtlasProps` to a `<Atlas references={…}/>` JSX string, which the same
+//! codegen tail lowers to `$jsx(Atlas, {references: …})`. The blocker is NOT the
+//! serializer but an intentionally JS-only UPSTREAM: the resolved references
+//! carry endpoint code `examples` (multi-language curl/fetch/python/go via
+//! `@readme/oas-to-snippet`, then highlighted). The Rust openapi converter
+//! deliberately does NOT generate endpoint examples (`xyd_openapi` returns
+//! `examples: Default::default()` — "endpoint examples are a JS post-pass the
+//! page flow never needs", see `crates/xyd_openapi/src/{fused,paths,xdocs}.rs`).
+//! So a page whose atlas composition needs those examples cannot be reproduced
+//! in Rust until `oas-to-snippet` is itself ported — a separate track. This is
+//! the capability gate working as designed (fall back wholesale on a JS-only
+//! upstream). Note the current Oracle B stub DROPS the references blob, so a
+//! wrong-but-stub-matching `full` would pass — emitting incomplete references
+//! here would be exactly the dishonest coverage the gate forbids, hence
+//! `fallback`, not a rigged `full`.
 
 use markdown::mdast::{
     AttributeContent, AttributeValue, AttributeValueExpression, MdxJsxAttribute, MdxJsxFlowElement,
