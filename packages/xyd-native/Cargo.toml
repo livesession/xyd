@@ -24,6 +24,7 @@ xyd_mcp_uniform = { path = "../../crates/xyd_mcp_uniform" }
 xyd_frontmatter = { path = "../../crates/xyd_frontmatter" }
 xyd_settings = { path = "../../crates/xyd_settings" }
 xyd_highlight = { path = "../../crates/xyd_highlight" }
+xyd_mdx = { path = "../../crates/xyd_mdx" }
 # S6+ W7 codegen generators (opencli + opensdk emitters)
 xyd_opencli2go = { path = "../../crates/xyd_opencli2go" }
 xyd_opencli2rust = { path = "../../crates/xyd_opencli2rust" }

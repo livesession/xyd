@@ -704,6 +704,7 @@ module.exports.Watcher = nativeBinding.Watcher
 module.exports.accessControlToPlugins = nativeBinding.accessControlToPlugins
 module.exports.buildAccessMap = nativeBinding.buildAccessMap
 module.exports.classify = nativeBinding.classify
+module.exports.compileMdx = nativeBinding.compileMdx
 module.exports.createWatcher = nativeBinding.createWatcher
 module.exports.findIndexPage = nativeBinding.findIndexPage
 module.exports.frontmatterBatch = nativeBinding.frontmatterBatch

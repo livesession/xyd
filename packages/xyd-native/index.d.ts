@@ -24,6 +24,18 @@ export declare function buildAccessMap(mappingJson: string, metadataJson: string
 export declare function classify(path: string): string
 
 /**
+ * Compile an MDX source to xyd's `outputFormat:'function-body'` string
+ * (Track C, C-S1 — PROSE pages only).
+ *
+ * `settings_json` is xyd's settings object as JSON (only
+ * `theme.coder.syntaxHighlight` is read today). Returns JSON:
+ * `{ "compiled": string, "capability": "full" | "fallback", "reason"?: string }`.
+ * `capability: "fallback"` (empty `compiled`) tells the JS caller to run the
+ * `ContentFS.compileContent` pipeline unchanged.
+ */
+export declare function compileMdx(source: string, settingsJson: string): string
+
+/**
  * Start watching `root` recursively. `on_change` is called with each
  * classified, de-duplicated batch of changes (plan S5 dev-watch). The JS
  * orchestrator (`dev.ts`) consumes this and never learns it is Rust.

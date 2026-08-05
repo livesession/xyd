@@ -9,6 +9,8 @@ import { compile as mdxCompile } from "@mdx-js/mdx";
 
 import { Settings } from "@xyd-js/core"
 
+import { native } from "./native"
+
 export type { VarCode } from "./types"
 
 export class ContentFS {
@@ -29,6 +31,25 @@ export class ContentFS {
     }
 
     public async compileContent(content: string, filePath?: string): Promise<string> {
+        // Rust-first fast path (Track C, C-S1): PROSE pages compile in Rust
+        // (crates/xyd_mdx) to the same function-body string this method returns.
+        // Non-prose pages (`:::` directives, `@`-functions, math, mermaid/graphviz,
+        // `component:`/`uniform:` frontmatter, or any MDX JSX/expression) come back
+        // as `capability: "fallback"` and drop through to the unchanged JS pipeline
+        // below. `XYD_NATIVE=0` (handled in ./native) disables the fast path.
+        if (native?.compileMdx) {
+            try {
+                const res = JSON.parse(
+                    native.compileMdx(content, JSON.stringify(this.settings ?? {}))
+                );
+                if (res?.capability === "full" && typeof res.compiled === "string") {
+                    return res.compiled;
+                }
+            } catch {
+                // Any native error: fall through to the JS pipeline (safe default).
+            }
+        }
+
         const vfile = new VFile({
             path: filePath,
             value: content,

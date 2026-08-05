@@ -1,0 +1,25 @@
+[package]
+name = "xyd_mdx"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "Rust-first whole-page MDX compiler for PROSE pages (Track C, C-S1). Drives mdxjs-rs's public decomposed pipeline (mdast -> hast -> swc program), applies xyd's portable transforms (heading ids, table/hast normalization, inline syntax highlight via xyd_highlight, frontmatter + toc), emits xyd's function-body output, and gates non-prose pages to a JS fallback sentinel."
+
+[dependencies]
+# swc_common 12.x (pulled transitively by mdxjs -> swc_core 27) reads
+# `serde::__private`, which serde reorganized in 1.0.221. Pin the whole
+# workspace to the last compatible serde via this member's constraint (`=1.0.219`
+# satisfies every other crate's `^1`; serde 1.0.x is API-stable, so this only
+# unblocks the swc build and changes no crate's behavior).
+serde = { version = "=1.0.219", features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+serde_yaml = "0.9"
+mdxjs = "=1.0.4"
+markdown = "=1.0.0"
+rustc-hash = "2"
+swc_core = { version = "=27.0.6", features = ["common", "ecma_ast", "ecma_codegen", "ecma_parser", "ecma_visit"] }
+xyd_highlight = { path = "../xyd_highlight" }
+
+[dev-dependencies]
+xyd_parity = { path = "../xyd_parity" }
