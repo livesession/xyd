@@ -487,9 +487,31 @@ tm-grammars):
   agent (fresh context, bounded scope, `.snap` as the hard gate) — the pattern that worked for the W7
   emitters. I independently verified parity against the real engine rather than trusting the report.
 
-**NEXT (M1 tail):** **H2** vendor the 254 tm-grammars (zstd store) + 27 themes + a lazy Registry with
-injection resolution + `core-langs`; convert the inline oracle into a **JS-owned golden** (a
-`gen-highlight-goldens` script — the oracle must be JS-authored per the harness rule; today's inline
-oracle is verified-genuine but should be regenerable). **H3** reshape → codehike `HighlightedCode` +
-`get_theme_colors`. **H4** napi `highlight.rs` + `coder/Code/native.ts` shim. **H5** wire the 5 build call
-sites + 2 getThemeColors sites (client stays codehike). **H6** CI both-mode gate. Then Track C.
+**MILESTONE 1 COMPLETE — the Rust highlighter replaces codehike at every build-time call site,
+byte-exact.** H2→H6 all landed + independently verified (I regenerated each oracle from the real
+JS engine and diffed, never trusting the agent reports):
+- **H2** (`a665651d`): 254 tm-grammars zstd-embedded (~4.9 MB / core-langs ~1.5 MB) + 27 themes +
+  lazy Registry (cross-grammar include BFS + injection matcher) + top-20 langs byte-exact vs syntax0;
+  JS-owned golden (`gen-goldens.mjs`, verified idempotent); assets self-contained (passes with the
+  code9 tree removed).
+- **H3** (`0a3012e0`): `highlighted_code()` → codehike's `HighlightedCode` shape (flat tokens +
+  whitespace + style) byte-exact vs `codehike/code` (27 langs × 2 themes, JS-owned golden). Honest
+  finding: `@code-hike/lighter`'s `.lines` are ALREADY whitespace-joined (== the engine's
+  `styled_lines`, proven 46/46) — no raw accessor, engine output untouched.
+- **H4** (`651e6388`): napi `highlight`/`getThemeColors` in `packages/xyd-native/src/highlight.rs`
+  (theme = bundled NAME or resolved VS Code OBJECT — both paths); FFI-verified == codehike, 54 cells.
+- **H5** (`37acf7e1`): per-package native shims repoint the 5 highlight sites (xyd-content ×3,
+  composer, mcp) + 2 `getThemeColors` sites (documan, plugin-docs) → dispatch native, codehike
+  fallback (`XYD_NATIVE=0`); same signatures (only imports change); `@xyd-js/native` added to
+  composer+mcp (resolves from all 5 — guarded the silent-fallback trap); both-mode byte-identical.
+  Client `CodeTheme.tsx` stays codehike (WASM later). (documan DTS failure is a PRE-EXISTING
+  `@xyd-js/plugins` dist issue, 0 H5-file references — not a regression.)
+- **H6** (`e96422d2`): `xyd-content/__tests__/highlight-native.test.ts` runs in the `tests-native.yml`
+  both-mode loop (native ⇄ codehike); crate's 54-cell byte-parity runs in the cargo job; CI paths
+  extended to the wired packages.
+
+**Milestone 1 retired the entire plan's pivotal risk** (a byte-exact Oniguruma/vscode-textmate engine
+in Rust) — proven, embedded, and LIVE in xyd. codehike is now dependency-for-the-renderer-only on the
+server path. **NEXT: Track C** (the content engine) — C-S1 prose whole-page compile → C-S2 directive/
+outputVars constructs → C-S3 async cohort (now unblocked by the Rust highlighter — `mdComposer`/
+`mdCodeRehype`/`mdComponentDirective` lose their only `await`) → C-S4 composer→codegen → C-S5 appInit.
