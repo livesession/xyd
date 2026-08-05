@@ -455,3 +455,41 @@ to widen native opensdk coverage: teach the emitter runtimes to fully interpolat
 sdk-behavior (remove the behavior-override gate) and accept emitterOptions (remove the empty-options
 gate) — both currently route to JS. Other deferred: env/presets/access live-wiring; W4 llms.txt
 js-yaml/1.1; buildAccessMap frontmatter metadata (product sign-off).
+
+---
+
+## Rust-first content engine + syntax highlighting (NEW approved program — supersedes future.md §1 NO-GO)
+
+The mission escalated from "everything portable is Rust" to "**xyd is a Rust-first framework that renders
+React UIs**" (rspress model): parse/compile/transform/highlight/orchestrate in Rust, React as the UI
+runtime. Plan file: `~/.claude/plans/i-would-like-to-happy-moonbeam.md`. **The W5 NO-GO is flipped** — the
+marshal tax only hits a MID-pipeline boundary; a *contiguous source→artifact Rust span* with a per-page
+**capability gate + wholesale JS fallback** (generalizing the frontmatter fast-path) avoids it. One
+committed program, auto-mode through the gates: **M1 (harness + Rust highlighter) → Track C (content
+engine C-S1..C-S5)**. Decisions: server-side highlighter first (client keeps codehike, WASM later); keep
+codehike's `<Pre>` renderer, replace only the engine (emit `HighlightedCode`).
+
+**M1 H0 + H1 DONE — the make-or-break gate is GENUINELY PASSED.** `crates/xyd_highlight` is a from-scratch
+Rust port of the vscode-textmate engine (= `@code-hike/lighter` = `@syntax0/highlight`, the exact engine
+xyd runs today) over the **`onig` crate** (Oniguruma C, cached offline; syntect/tree-sitter can't ingest
+tm-grammars):
+- **H0:** `OnigScanner` primitive (the `\G`-anchored earliest-match/capture scanner) — 4 tests.
+- **H1:** the full engine — `encode` (packed-metadata bit layout), `theme` (VS Code JSON → ColorMap + trie
+  + scope→style resolver; **exact `ColorMap` id-ordering** reproduced), `grammar::raw` (serde model),
+  `grammar::rule` (RegExpSource `\G`/`\A`/back-ref rewrite + RuleFactory, 864 LOC), `grammar::tokenizer`
+  (`tokenizeLine2` state machine + StateStack + `AttributedScopeStack` mergeAttributes + LineTokens, 980
+  LOC), `reshape` (verbatim `tokenizer.ts` output shape). **`highlight(code,lang,theme).lines` is
+  BYTE-IDENTICAL to the real syntax0 engine** across js/ts/json/bash × github-dark/dark-plus — **verified
+  by regenerating the oracle from `@syntax0/highlight` itself (bun, offline) and diffing all 8 cells** (NOT
+  self-referential; the js×github-dark cell also equals the committed `tokens.test.ts.snap`). 30 tests,
+  clippy clean. Commits: H0 `d2d3b6ed`, H1 `2486e353`.
+- **Orchestration:** theme subsystem + the rule/tokenizer core each delegated to a `general-purpose`
+  agent (fresh context, bounded scope, `.snap` as the hard gate) — the pattern that worked for the W7
+  emitters. I independently verified parity against the real engine rather than trusting the report.
+
+**NEXT (M1 tail):** **H2** vendor the 254 tm-grammars (zstd store) + 27 themes + a lazy Registry with
+injection resolution + `core-langs`; convert the inline oracle into a **JS-owned golden** (a
+`gen-highlight-goldens` script — the oracle must be JS-authored per the harness rule; today's inline
+oracle is verified-genuine but should be regenerable). **H3** reshape → codehike `HighlightedCode` +
+`get_theme_colors`. **H4** napi `highlight.rs` + `coder/Code/native.ts` shim. **H5** wire the 5 build call
+sites + 2 getThemeColors sites (client stays codehike). **H6** CI both-mode gate. Then Track C.
