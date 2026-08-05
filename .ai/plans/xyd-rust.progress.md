@@ -587,23 +587,39 @@ through `compile_mdx(source,settings,base_dir)` → napi (Option) → `fs.ts` sh
 verified. Total coverage: **prose 10/11 + directive 7/7 + async 2/4 = 19/22**, the 3 fallbacks legitimate
 (prose-math=KaTeX; the 2 below).
 
-**C-S4 hits a genuine WALL — the composer is app-coupled with NO headless oracle.** The 2 remaining
-fixtures (`async-frontmatter-uniform` = `uniform:`, `async-component-atlas` = `component: atlas`) run the
-COMPOSER (the `atlas` meta-component → build-time React trees). The harness fixture note is explicit:
-"DEGRADED headless: the `atlas` meta component is not registered outside plugin-docs. Captured for
-coverage; exempt from the gate" — the composer's `@metaComponent` registry (`globalThis.__xydCtxMetaRegistry`,
-populated by `new Composer()` in the plugin-docs layout loader) isn't active outside the app, so the
-committed `rendered.html` is just the raw prose, NOT real composed output. So **C-S4 has no valid oracle**
-without first making the composer run headlessly, AND the composer's `jsxStringToReactTree`/`buildElement`
-is the deepest React-coupling (the plan's "server React trees" — convertible to codegen but a
-rearchitecture). The `@uniform` DATA side is ALREADY Rust (the converters); what remains is the
-atlas/home/firstslide meta-component transforms + the markdown-desc→JSX codegen + mdMeta.
+**C-S4 DONE (user chose "attempt the composer codegen") — 20/22 in Rust; the 2 tail fallbacks are
+irreducible-JS by design.**
 
-**Capability gate = xyd is ALREADY fully compatible:** every unported case (prose-math, uniform:/atlas)
-runs the untouched JS pipeline. "A Rust port compatible with xyd" is achieved — 19/22 in Rust, the rest
-byte-identical via fallback. **C-S4 (composer codegen) is the last coverage bit but the hardest +
-oracle-blocked — a user decision (attempt the composer codegen + headless-oracle setup, vs accept the
-structural-core-in-Rust coverage with the composer staying JS).**
+**C-S4a — headless composer oracle (`cbd97e18`).** The 2 composer fixtures were captured DEGRADED (raw
+prose) because the gen harness never ran `new Composer()`, so `globalThis.__xydCtxMetaRegistry` was empty
+and both pages fell through. Fixed: `gen-mdx-goldens.mjs` now instantiates the composer once (mirroring the
+plugin-docs layout loader) → both compose to real `<Atlas>` output. Real finding: `uniform: ./api.yaml`
+never resolves — the uniform processor only infers a converter from `.ts/.tsx/.graphql`; OpenAPI needs the
+typed `openapi:` key, so the original fixture was itself degenerate → switched to `openapi:`. Idempotent
+(0 drift), other 20 untouched.
+
+**C-S4b — native atlas emit + the proven-but-deferred full-refs tail (`e5c7d0ed`, `66827541`).** Proved the
+JS emit mechanism end-to-end: `mdMeta` → a `@metaComponent` transform → `componentLike` does
+`React.createElement(name, props)` → `reactElementToJSXString` → `fromMarkdown(mdxJsx)`, and the mdx codegen
+tail lowers `<Atlas references={…}/>` to `$jsx(Atlas, {references: …})`. Ported the byte-exactly-verifiable
+case: **`component: atlas` with NO source** → the composer drops body prose and emits
+`<Atlas references={[]} />`; the new `meta_component` module reproduces that mdast node → exact
+`$jsx(Atlas, {references: []})` (verified vs Oracle A structurally + Oracle B byte-exact). `async-component-atlas`
+flips to `full`; pinned in `ASYNC_FULL_FLOOR`.
+
+The **openapi-resolved case** (`async-frontmatter-uniform`) correctly stays `fallback` — and the blocker is
+NOT the serializer (proven) but an intentionally JS-only UPSTREAM: the resolved references carry endpoint
+code `examples` (multi-language curl/fetch/python/go via `@readme/oas-to-snippet`, then highlighted), and
+`xyd_openapi` deliberately does not generate endpoint examples (`examples: Default::default()` —
+"a JS post-pass the page flow never needs", `crates/xyd_openapi/src/{fused,paths,xdocs}.rs`). Reproducing it
+needs `oas-to-snippet` ported = a separate track. NB: Oracle B drops the references blob, so a
+wrong-but-stub-matching `full` would pass — emitting incomplete references to force `full` would be dishonest
+coverage the gate forbids, hence honest `fallback`.
+
+**Track C final: prose 10/11 + directive 7/7 + async 3/4 = 20/22 in Rust.** The 2 fallbacks are the
+irreducible-JS core by design: `prose-math` (KaTeX rehype) and `async-frontmatter-uniform` (JS-only endpoint
+example generation). "A Rust port compatible with xyd" is achieved — 20/22 native, the rest byte-identical
+via the untouched JS fallback.
 
 <!-- superseded C-S3 planning line -->
 **(old plan) C-S3** — port the `@`-functions: `@include`/`@changelog` (fs/fetch I/O +
