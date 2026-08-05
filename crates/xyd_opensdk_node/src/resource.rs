@@ -406,7 +406,12 @@ fn params_arg_name(has_body: bool, query_count: usize, header_count: usize) -> &
     }
 }
 
-fn params_required(has_body: bool, body_required: bool, query: &[Param], header: &[Param]) -> bool {
+pub(crate) fn params_required(
+    has_body: bool,
+    body_required: bool,
+    query: &[Param],
+    header: &[Param],
+) -> bool {
     if has_body {
         body_required
     } else {

@@ -1,6 +1,7 @@
-//! Tier-1 byte-golden parity: `generate_node(input.json)` must reproduce every
-//! in-scope generated file under each fixture's `output/` tree, byte-for-byte.
-//! Self-contained (no shared parity crate) — walks the fixtures package directly.
+//! Full-tree byte-golden parity: `generate_node(input.json)` must reproduce
+//! EVERY file under each fixture's `output/` tree — byte-for-byte — with no
+//! missing and no extra files. Self-contained (no shared parity crate): walks
+//! the fixtures package directly. Diffs report the path + first differing line.
 
 use std::collections::BTreeMap;
 use std::fs;
@@ -8,25 +9,17 @@ use std::path::{Path, PathBuf};
 
 use xyd_opensdk_node::generate_node;
 
+/// Fixtures with a complete `output/` tree (the full runtime + tests set).
 const FIXTURES: &[&str] = &["1.basic", "2.wire", "3.unions", "9.x-open-sdk"];
 
 fn fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packages/xyd-opensdk-node/__fixtures__")
 }
 
-/// In-scope for this fork: project scaffold + client/types/resources. The
-/// deferred runtime (`src/core/**`) and generated tests (`tests/**`,
-/// `tsconfig.test.json`) are intentionally NOT produced.
-fn is_in_scope(rel: &str) -> bool {
-    matches!(rel, "package.json" | "tsconfig.json" | "README.md")
-        || (rel.starts_with("src/") && !rel.starts_with("src/core/"))
-}
-
-/// Collect the expected in-scope golden files as `{ relPath: contents }`.
-fn golden_in_scope(output_dir: &Path) -> BTreeMap<String, String> {
+/// Collect every golden file under `output/` as `{ relPath: contents }`.
+fn golden_tree(output_dir: &Path) -> BTreeMap<String, String> {
     let mut out = BTreeMap::new();
     walk(output_dir, output_dir, &mut out);
-    out.retain(|rel, _| is_in_scope(rel));
     out
 }
 
@@ -42,14 +35,33 @@ fn walk(root: &Path, dir: &Path, out: &mut BTreeMap<String, String>) {
                 .unwrap()
                 .to_string_lossy()
                 .replace('\\', "/");
-            let content = fs::read_to_string(&path).expect("read golden file");
-            out.insert(rel, content);
+            out.insert(rel, fs::read_to_string(&path).expect("read golden file"));
         }
     }
 }
 
+/// The first differing line (1-based) between two strings, or a length note.
+fn first_divergence(got: &str, want: &str) -> String {
+    match got
+        .lines()
+        .zip(want.lines())
+        .enumerate()
+        .find(|(_, (a, b))| a != b)
+    {
+        Some((i, (a, b))) => format!(
+            "first diff at line {}:\n  got:  {a:?}\n  want: {b:?}",
+            i + 1
+        ),
+        None => format!(
+            "length differs: got {} bytes, want {} bytes",
+            got.len(),
+            want.len()
+        ),
+    }
+}
+
 #[test]
-fn node_emitter_byte_golden_parity() {
+fn node_emitter_full_tree_byte_golden_parity() {
     let mut total_files = 0usize;
     let mut total_match = 0usize;
 
@@ -61,55 +73,46 @@ fn node_emitter_byte_golden_parity() {
             serde_json::from_str(&input).expect("input.json is not valid JSON");
 
         let emitted = generate_node(&spec);
-        let golden = golden_in_scope(&dir.join("output"));
+        let golden = golden_tree(&dir.join("output"));
 
-        // Every in-scope golden must be emitted, and vice versa (no drift).
+        // (a)+(b) bidirectional set equality — every golden emitted, no extras.
         let emitted_keys: Vec<&String> = emitted.keys().collect();
         let golden_keys: Vec<&String> = golden.keys().collect();
         assert_eq!(
             emitted_keys, golden_keys,
-            "[{name}] emitted file set differs from in-scope golden set\n  emitted: {emitted_keys:?}\n  golden:  {golden_keys:?}"
+            "[{name}] emitted file set differs from golden set\n  emitted: {emitted_keys:?}\n  golden:  {golden_keys:?}"
         );
 
-        let mut fixture_match = 0usize;
+        // (c) len floor — the two maps must be the same size.
+        assert_eq!(
+            emitted.len(),
+            golden.len(),
+            "[{name}] emitted {} files, golden has {}",
+            emitted.len(),
+            golden.len()
+        );
+
         for (rel, want) in &golden {
             total_files += 1;
             let got = emitted
                 .get(rel)
                 .unwrap_or_else(|| panic!("[{name}] {rel} not emitted"));
             if got == want {
-                fixture_match += 1;
                 total_match += 1;
             } else {
-                // Surface the first differing line for a fast diagnosis.
-                let first_diff = got
-                    .lines()
-                    .zip(want.lines())
-                    .enumerate()
-                    .find(|(_, (a, b))| a != b);
-                let detail = match first_diff {
-                    Some((i, (a, b))) => format!(
-                        "first diff at line {}:\n  got:  {a:?}\n  want: {b:?}",
-                        i + 1
-                    ),
-                    None => format!(
-                        "length differs: got {} bytes, want {} bytes",
-                        got.len(),
-                        want.len()
-                    ),
-                };
-                panic!("[{name}] {rel} mismatch — {detail}");
+                panic!("[{name}] {rel} mismatch — {}", first_divergence(got, want));
             }
         }
         println!(
-            "[{name}] {fixture_match}/{} in-scope files byte-exact",
+            "[{name}] {}/{} files byte-exact",
+            golden.len(),
             golden.len()
         );
     }
 
     println!(
-        "TOTAL: {total_match}/{total_files} in-scope files byte-exact across {} fixtures",
+        "TOTAL: {total_match}/{total_files} files byte-exact across {} fixtures",
         FIXTURES.len()
     );
-    assert_eq!(total_match, total_files, "some in-scope files diverged");
+    assert_eq!(total_match, total_files, "some files diverged");
 }

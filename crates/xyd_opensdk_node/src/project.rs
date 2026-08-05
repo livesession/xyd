@@ -8,8 +8,7 @@ use crate::jsrt::{npm_package_name, pascal_case, screaming_snake_case};
 
 pub struct ResolvedNodeOptions {
     pub pkg: String,
-    /// Baked into the fetch runtime — consumed by the deferred `generateRuntime`.
-    #[allow(dead_code)]
+    /// Baked into the fetch runtime's `DEFAULT_BASE_URL` (consumed by `runtime`).
     pub base_url: String,
     pub env_var: String,
     pub client_name: String,
@@ -120,7 +119,7 @@ pub fn readme(pkg: &str, spec: &Spec, client_name: &str, default_export: bool) -
 
 /// 2-space pretty JSON matching JS `JSON.stringify(x, null, 2)` (empty
 /// object/array stay inline; ASCII output; forward slashes unescaped).
-fn pretty(v: &Value) -> String {
+pub(crate) fn pretty(v: &Value) -> String {
     let mut out = String::new();
     write_pretty(v, 0, &mut out);
     out
