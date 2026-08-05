@@ -23,7 +23,7 @@ use mdxjs::{
 use rustc_hash::FxHashSet;
 use swc_core::common::Span;
 
-use crate::{directives, fb, functions, highlight, meta, swc_pass, transforms};
+use crate::{directives, fb, functions, highlight, meta, meta_component, swc_pass, transforms};
 
 /// mdxjs options mirroring xyd's prose-relevant plugin set: GFM (tables,
 /// task-lists, strikethrough, autolinks, footnotes) + frontmatter. Math and the
@@ -62,6 +62,12 @@ pub fn compile_full(
     if directives::has_raw_mdx(&mdast) {
         return Err("mdx jsx/expression/esm node present".to_string());
     }
+
+    // C-S4b: native composer meta-component emit (currently `component: atlas`
+    // with no source -> `<Atlas references={[]} />`, body prose dropped). Runs
+    // AFTER the raw-MDX guard since it legitimately introduces an
+    // `MdxJsxFlowElement`. A no-op for non-meta pages.
+    meta_component::process(&mut mdast, source);
 
     // C-S2 stage-1 + 1b: rewrite `:::`/`::` directives to `MdxJsxFlowElement`
     // (generic port + the `steps`/`tabs`/`code-group` special handlers). `Err`

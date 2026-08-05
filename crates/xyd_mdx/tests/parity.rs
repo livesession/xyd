@@ -17,12 +17,15 @@
 //!   still outside the port (e.g. `table`, step `[…]`/`{…}` parameters) returns
 //!   `fallback` and is tracked as deferred, not a failure. A floor assertion
 //!   pins the directives that MUST stay `full`.
-//! - `async` (C-S3): the `@include` / `@changelog` fixtures now compile `full`
-//!   and MUST render byte-equal to `rendered.html` (a `full` that renders wrong
-//!   is a FAILURE — same honesty rule as directives). The composer-backed async
-//!   fixtures (`async-frontmatter-uniform` = `uniform:` frontmatter,
-//!   `async-component-atlas` = `component: atlas`) stay `fallback` (C-S4). A
-//!   floor assertion pins the async fixtures that MUST stay `full`.
+//! - `async` (C-S3 + C-S4b): the `@include` / `@changelog` fixtures compile
+//!   `full` and MUST render byte-equal to `rendered.html`. C-S4b adds the native
+//!   composer emit: `async-component-atlas` (`component: atlas`, no source) now
+//!   compiles `full` to `$jsx(Atlas, {references: []})`. The `@uniform`/
+//!   `openapi`-resolved composer fixture (`async-frontmatter-uniform`) stays
+//!   `fallback` — its full-refs serializer (resolved references + composed
+//!   description React trees + highlighted examples) is the deferred C-S4b tail.
+//!   Whatever comes back `full` MUST render byte-equal (a wrong `full` is a
+//!   FAILURE). A floor assertion pins the async fixtures that MUST stay `full`.
 //!
 //! Oracle A (compiled JS) is intentionally NOT gated: swc codegen differs
 //! cosmetically from astring, but the rendered DOM is identical.
@@ -40,9 +43,14 @@ const DIRECTIVE_FULL_FLOOR: [&str; 7] = [
     "directive-tabs",
 ];
 
-/// Async fixtures the C-S3 `@`-function port MUST compile `full` + render at
-/// parity. The composer-backed async fixtures stay `fallback` (C-S4).
-const ASYNC_FULL_FLOOR: [&str; 2] = ["async-changelog", "async-include"];
+/// Async fixtures that MUST compile `full` + render at parity: the C-S3
+/// `@`-function ports (`async-changelog`, `async-include`) plus the C-S4b native
+/// meta-component emit (`async-component-atlas` = `component: atlas`, no source
+/// -> `<Atlas references={[]} />`). The `@uniform`/`openapi`-resolved composer
+/// fixture (`async-frontmatter-uniform`) stays `fallback` (C-S4b full-refs port
+/// deferred — see the module doc).
+const ASYNC_FULL_FLOOR: [&str; 3] =
+    ["async-changelog", "async-component-atlas", "async-include"];
 
 use std::fs;
 use std::io::Write;

@@ -69,7 +69,17 @@ pub fn split_frontmatter(source: &str) -> (Option<&str>, &str) {
 
 /// Scan the leading frontmatter block for composer/atlas keys that must fall
 /// back (they need the JS composer meta-component registry).
+///
+/// C-S4b exception: `component: atlas` with NO `@uniform` source
+/// (`uniform`/`openapi`/`graphql`) is emitted natively as `<Atlas
+/// references={[]} />` (the composer's genuine no-source atlas behavior — body
+/// prose dropped), so it is eligible for the `full` path. Every other
+/// composer-backed page (`component: home/firstslide/…`, `atlas` WITH a source,
+/// or a bare `uniform`/`openapi`/`graphql` key) still needs the JS meta-component
+/// registry and stays `fallback`.
 fn frontmatter_forces_fallback(front: &str) -> bool {
+    let mut component: Option<String> = None;
+    let mut has_source = false;
     for raw in front.lines() {
         let line = raw.trim_start();
         // Only inspect top-level keys (no leading indentation collapse needed —
@@ -77,12 +87,46 @@ fn frontmatter_forces_fallback(front: &str) -> bool {
         if raw != line {
             continue;
         }
-        let key = line.split(':').next().unwrap_or("").trim();
-        if matches!(key, "component" | "uniform" | "openapi" | "graphql") {
-            return true;
+        let mut parts = line.splitn(2, ':');
+        let key = parts.next().unwrap_or("").trim();
+        match key {
+            "component" => {
+                let val = parts.next().unwrap_or("").trim();
+                component = Some(val.trim_matches(['"', '\'']).to_string());
+            }
+            "uniform" | "openapi" | "graphql" => has_source = true,
+            _ => {}
         }
     }
-    false
+    match component.as_deref() {
+        // The one natively-emittable meta component.
+        Some("atlas") if !has_source => false,
+        // Any explicit component (other than bare atlas) is composer-backed.
+        Some(_) => true,
+        // No component key: a lone uniform/openapi/graphql still forces fallback.
+        None => has_source,
+    }
+}
+
+/// Extract the top-level `component:` value from frontmatter (quotes stripped),
+/// if present. Drives the C-S4b native meta-component emit in the pipeline.
+pub fn frontmatter_component(source: &str) -> Option<String> {
+    let (front, _) = split_frontmatter(source);
+    let front = front?;
+    for raw in front.lines() {
+        let line = raw.trim_start();
+        if raw != line {
+            continue;
+        }
+        let mut parts = line.splitn(2, ':');
+        if parts.next().unwrap_or("").trim() == "component" {
+            let val = parts.next().unwrap_or("").trim().trim_matches(['"', '\'']);
+            if !val.is_empty() {
+                return Some(val.to_string());
+            }
+        }
+    }
+    None
 }
 
 /// True when the body contains an inline/flow math run (`$$...$$` or single-`$`

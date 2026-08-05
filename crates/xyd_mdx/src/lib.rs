@@ -19,6 +19,7 @@ mod fb;
 mod functions;
 mod highlight;
 mod meta;
+mod meta_component;
 mod pipeline;
 mod swc_pass;
 mod transforms;
@@ -158,7 +159,14 @@ mod tests {
 
     #[test]
     fn scan_fallbacks() {
-        assert!(capability::scan("---\ncomponent: atlas\n---\n# x").is_some());
+        // C-S4b: `component: atlas` with NO source is native (eligible for full);
+        // atlas WITH a source, any other component, or a bare uniform/openapi/
+        // graphql key still needs the JS composer registry -> fallback.
+        assert!(capability::scan("---\ncomponent: atlas\n---\n# x").is_none());
+        assert!(capability::scan("---\ncomponent: atlas\nuniform: ./a.yaml\n---\n# x").is_some());
+        assert!(capability::scan("---\ncomponent: home\n---\n# x").is_some());
+        assert!(capability::scan("---\nopenapi: ./a.yaml\n---\n# x").is_some());
+        assert!(capability::scan("---\nuniform: ./a.ts\n---\n# x").is_some());
         // `@uniform`/`@importCode` still pre-scan to fallback (need the JS
         // composer / code-import chains — C-S4).
         assert!(capability::scan("# x\n\n@uniform \"./x.ts\"").is_some());
