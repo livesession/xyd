@@ -322,6 +322,13 @@ pub fn params_struct_name(cls: &str, action: &str) -> String {
     format!("{cls}{}Params", pascal_case(action))
 }
 
+/// Whether a method carries any query/header/body params (so it takes a params
+/// struct) — mirrors service.ts `methodHasParams`, drives the test-suite call args.
+pub fn method_has_params(method: &Value, types: &Map<String, Value>) -> bool {
+    let op = plan_operation(method);
+    op.query_params.len() + op.header_params.len() + body_field_list(method, types).len() > 0
+}
+
 pub fn body_field_list<'a>(method: &'a Value, types: &'a Map<String, Value>) -> Vec<&'a Value> {
     let ref_ = method.get("requestBody").and_then(|b| b.get("type"));
     if let Some(r) = ref_ {

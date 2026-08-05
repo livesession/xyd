@@ -68,7 +68,7 @@ fn render_named_type(type_: &Value) -> String {
 }
 
 /// The mapped discriminator (propertyName + non-empty mapping), else None.
-fn union_mapping(type_: &Value) -> Option<(String, serde_json::Map<String, Value>)> {
+pub(crate) fn union_mapping(type_: &Value) -> Option<(String, serde_json::Map<String, Value>)> {
     if type_.get("kind").and_then(|k| k.as_str()) != Some("union") {
         return None;
     }
