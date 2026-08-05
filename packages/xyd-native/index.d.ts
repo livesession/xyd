@@ -68,6 +68,24 @@ export declare function openapi2opencliFromFile(path: string, optionsJson?: stri
  */
 export declare function openapi2opensdk(docJson: string, optionsJson?: string | undefined | null): string
 
+export declare function opencli2go(specJson: string, optionsJson?: string | undefined | null): string
+
+export declare function opencli2rust(specJson: string, optionsJson?: string | undefined | null): string
+
+export declare function opensdkGenerateDotnet(specJson: string): string
+
+export declare function opensdkGenerateGo(specJson: string): string
+
+export declare function opensdkGenerateJava(specJson: string): string
+
+export declare function opensdkGenerateNode(specJson: string): string
+
+export declare function opensdkGeneratePython(specJson: string): string
+
+export declare function opensdkGenerateRuby(specJson: string): string
+
+export declare function opensdkGenerateRust(specJson: string): string
+
 /** pluginJsonView core: Reference[] JSON → string[] JSON. */
 export declare function pluginJsonView(referencesJson: string): string
 

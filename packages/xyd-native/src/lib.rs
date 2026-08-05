@@ -8,6 +8,9 @@ mod mcp_uniform;
 mod openapi;
 mod openapi2opencli;
 mod openapi2opensdk;
+mod opencli2go;
+mod opencli2rust;
+mod opensdk;
 mod settings;
 mod uniform;
 
