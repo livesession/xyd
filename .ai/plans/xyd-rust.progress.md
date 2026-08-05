@@ -564,9 +564,22 @@ Oracle B (rendered HTML); Oracle A won't byte-match (swc vs astring codegen), pe
   handlers (tabs/steps/code-group/table), `:::`-nesting, `@uniform`-attrs, expr-attrs → `fallback` (JS
   unchanged). clippy(-D)/fmt/`cargo check --workspace` green; napi builds the forks.
 
-**NEXT: C-S2 tail** — stage-1b special handlers (`tabs`→Tabs.Item/`mdNav`, `steps`→Steps.Item/`mdSteps`,
-`code-group`→DirectiveCodeGroup/`mdCode`+inline Rust highlight, `table`→Table-JSON/`mdTable` → the other
-3 directive fixtures); stage-1c `:::`-in-`:::` nesting (the hardest — `document.rs` container machine) +
-the `<<<` outputVars fence + the `@uniform` data-side (→ already-Rust converters). Then **C-S3** async
-cohort (mdComposer/mdCodeRehype/mdComponentDirective now sync since highlight is Rust) → **C-S4**
-composer→codegen. Every not-yet-ported case falls back to JS → xyd stays render-compatible throughout.
+- **STAGE-1b (`9ee2ed84`): ALL 7 directive fixtures now compile in Rust — 7/7 byte-parity (was 3/7).**
+  Ported the special handlers into `directives.rs`: `mdSteps` (`:::steps`→Steps.Item), `mdNav`
+  (`:::tabs`→Tabs.Item/Content), `mdCode` (`:::code-group`→DirectiveCodeGroup + inline `xyd_highlight`;
+  codeblocks JSON byte-equal to the JS codehike oracle). `mdTable` deferred (no fixture). **`:::`-in-`:::`
+  NESTING WORKS** — the flagged hardest sub-problem: directive handlers recurse into re-parsed container
+  children, and the fork faithfully captures nested fences (5/4/3-colon), so `directive-nested`
+  (`:::::steps` › `:::code-group`+`::::callout`) renders byte-equal. `DIRECTIVE_FULL_FLOOR` raised 3→7.
+  Independently re-rendered+diffed. clippy(-D)/fmt/check green; napi smoke all-full.
+
+**The Rust MDX compiler now covers the structural core of xyd content: prose 10/11 + ALL directives 7/7,
+byte-exact.** Remaining Track C = the ASYNC category (4 fixtures: `@include`, `@changelog`, `uniform:`
+OpenAPI, `component: atlas`), all currently `fallback`.
+
+**NEXT: C-S3 (async cohort)** — port the `@`-functions: `@include`/`@changelog` (fs/fetch I/O +
+recursive compile — portable) → the `async-include`/`async-changelog` fixtures; the `@uniform` DATA side
+routes to the already-Rust converters (gql/openapi/opencli/mcp/uniform; TypeDoc `sources` on `.ts/.tsx`
+stays JS). `mdComposer`/`mdCodeRehype`/`mdComponentDirective` are already sync (highlight is Rust). The
+`uniform:`/`component: atlas` pages need **C-S4** (composer meta-components → codegen, emit the compiled
+module instead of build-time React). Every unported case falls back to JS → xyd stays render-compatible.
