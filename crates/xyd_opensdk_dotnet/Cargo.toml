@@ -1,0 +1,10 @@
+[package]
+name = "xyd_opensdk_dotnet"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "dotnet SDK emitter — OpenSDK IR -> generated dotnet SDK code (Rust port of @xyd-js/opensdk-dotnet; generated-code emitter, vendored runtime + tests deferred)"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
