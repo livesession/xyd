@@ -1,5 +1,5 @@
 import { tmpdir } from "os";
-import { join } from "path";
+import { dirname, join } from "path";
 import { pathToFileURL } from "url";
 import fs, { rm, writeFile } from "fs/promises"
 
@@ -31,16 +31,20 @@ export class ContentFS {
     }
 
     public async compileContent(content: string, filePath?: string): Promise<string> {
-        // Rust-first fast path (Track C, C-S1): PROSE pages compile in Rust
-        // (crates/xyd_mdx) to the same function-body string this method returns.
-        // Non-prose pages (`:::` directives, `@`-functions, math, mermaid/graphviz,
-        // `component:`/`uniform:` frontmatter, or any MDX JSX/expression) come back
-        // as `capability: "fallback"` and drop through to the unchanged JS pipeline
-        // below. `XYD_NATIVE=0` (handled in ./native) disables the fast path.
+        // Rust-first fast path (Track C): prose, `:::` directives, and the
+        // `@include`/`@changelog` `@`-functions compile in Rust (crates/xyd_mdx)
+        // to the same function-body string this method returns. Pages still owned
+        // by the JS chain (`@uniform`/`@importCode`, math, mermaid/graphviz,
+        // `component:`/`uniform:` frontmatter, or any raw MDX JSX/expression) come
+        // back as `capability: "fallback"` and drop through to the unchanged JS
+        // pipeline below. `base_dir` (the page file's directory) lets the Rust
+        // `@include`/`@changelog` port resolve relative paths. `XYD_NATIVE=0`
+        // (handled in ./native) disables the fast path.
         if (native?.compileMdx) {
             try {
+                const baseDir = filePath ? dirname(filePath) : "";
                 const res = JSON.parse(
-                    native.compileMdx(content, JSON.stringify(this.settings ?? {}))
+                    native.compileMdx(content, JSON.stringify(this.settings ?? {}), baseDir)
                 );
                 if (res?.capability === "full" && typeof res.compiled === "string") {
                     return res.compiled;

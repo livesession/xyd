@@ -1,12 +1,18 @@
 //! Per-page capability gate (cheap source pre-scan).
 //!
 //! A page qualifies for the Rust fast path (`full`) only when it uses none of
-//! the constructs that need xyd's JS plugin chain: `@`-functions
-//! (`@uniform`/`@include`/`@changelog`/`@importCode`),
+//! the constructs still owned by xyd's JS plugin chain: the JS-only
+//! `@`-functions (`@uniform`/`@importCode`),
 //! `component:`/`uniform:`/`openapi:`/`graphql:` frontmatter, math (needs
 //! rehype-katex), or mermaid/graphviz fences (need the JS rehype). Anything
 //! matched here returns `fallback` — a sentinel telling the JS caller to run
 //! `ContentFS.compileContent` unchanged.
+//!
+//! C-S3 note: `@include`/`@changelog` are NO LONGER pre-scanned here — they are
+//! ported by `functions::process` (run inside `pipeline::compile_full`), which
+//! reads + splices / builds `Update` nodes and returns `Err` → `fallback` only
+//! when a target itself is unsupported (external URL, missing file, raw MDX,
+//! nested unported directive/`@uniform`, …).
 //!
 //! C-S2 note: `:::`/`::` directives are NO LONGER decided here. The generic
 //! directive port needs the parsed mdast to tell a convertible directive
@@ -125,9 +131,14 @@ fn has_diagram_fence(body: &str) -> bool {
     false
 }
 
-/// True when the body calls an xyd `@`-function.
+/// True when the body calls an xyd `@`-function that still needs the JS chain.
+///
+/// C-S3: `@include`/`@changelog` are NO LONGER pre-scanned — the pipeline's
+/// `functions::process` ports them (reading + splicing / building `Update`
+/// nodes) and falls back honestly only when a target itself is unsupported.
+/// `@uniform` (composer) and `@importCode` (code-import) remain JS-only (C-S4).
 fn has_function(body: &str) -> bool {
-    for name in ["@uniform", "@include", "@changelog", "@importCode"] {
+    for name in ["@uniform", "@importCode"] {
         if body.contains(name) {
             return true;
         }

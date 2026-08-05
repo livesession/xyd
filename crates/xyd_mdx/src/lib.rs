@@ -16,6 +16,7 @@
 mod capability;
 mod directives;
 mod fb;
+mod functions;
 mod highlight;
 mod meta;
 mod pipeline;
@@ -76,16 +77,24 @@ fn highlight_theme(settings_json: &str) -> String {
 /// Compile an MDX source to xyd's function-body form, gated by capability.
 ///
 /// `settings_json` is xyd's settings object as JSON (only
-/// `theme.coder.syntaxHighlight` is read today). Returns `full` with the
-/// compiled string for prose pages, or `fallback` (empty `compiled`) otherwise.
-pub fn compile_mdx(source: &str, settings_json: &str) -> CompileOutput {
-    // 1. Cheap source pre-scan for non-prose constructs.
+/// `theme.coder.syntaxHighlight` is read today). `base_dir` is the directory the
+/// page's relative `@include` / `@changelog` paths resolve against (the page
+/// file's directory); pass `""` when there is none. Returns `full` with the
+/// compiled string for prose / directive / `@include` / `@changelog` pages, or
+/// `fallback` (empty `compiled`) otherwise.
+pub fn compile_mdx(source: &str, settings_json: &str, base_dir: &str) -> CompileOutput {
+    // 1. Cheap source pre-scan for the constructs still owned by the JS chain
+    //    (`@uniform`/`@importCode`, `component:`/`uniform:` frontmatter, math,
+    //    mermaid/graphviz). `@include`/`@changelog` are NO LONGER pre-scanned —
+    //    they are handled post-parse by `functions::process` (C-S3).
     if let Some(reason) = capability::scan(source) {
         return CompileOutput::fallback(reason.as_str());
     }
-    // 2. Full Rust path. Any parse error / surviving MDX node => fallback.
+    // 2. Full Rust path. Any parse error / surviving MDX node / unported
+    //    `@include`/`@changelog` target => fallback.
     let theme = highlight_theme(settings_json);
-    match pipeline::compile_full(source, &theme) {
+    let base = std::path::Path::new(base_dir);
+    match pipeline::compile_full(source, &theme, base) {
         Ok(js) => CompileOutput::full(js),
         Err(reason) => CompileOutput::fallback(reason),
     }
@@ -110,7 +119,7 @@ mod tests {
         // would merge into one); the position-sliced body preserves it, so the
         // callout body compiles as TWO paragraphs.
         let src = ":::callout\nPara one.\n\nPara two.\n:::\n";
-        let out = compile_mdx(src, "{}");
+        let out = compile_mdx(src, "{}", "");
         assert_eq!(out.capability, CAP_FULL, "reason={:?}", out.reason);
         let paras = out.compiled.matches("_components.p").count();
         assert!(
@@ -122,7 +131,7 @@ mod tests {
 
     #[test]
     fn directive_callout_compiles_full() {
-        let out = compile_mdx(":::callout\nHi **there**.\n:::\n", "{}");
+        let out = compile_mdx(":::callout\nHi **there**.\n:::\n", "{}", "");
         assert_eq!(out.capability, CAP_FULL, "reason={:?}", out.reason);
         assert!(out.compiled.contains("Callout"));
     }
@@ -131,7 +140,7 @@ mod tests {
     fn directive_steps_compiles_full() {
         // Special handler now ported (C-S2 stage-1b): `:::steps` → `Steps` with
         // `Steps.Item` wrappers.
-        let out = compile_mdx(":::steps\n1. one\n:::\n", "{}");
+        let out = compile_mdx(":::steps\n1. one\n:::\n", "{}", "");
         assert_eq!(out.capability, CAP_FULL, "reason={:?}", out.reason);
         assert!(out.compiled.contains("Steps.Item"));
     }
@@ -139,7 +148,7 @@ mod tests {
     #[test]
     fn directive_table_falls_back() {
         // `table` remains deferred (no fixture pins its parity).
-        let out = compile_mdx(":::table\n[[\"a\"]]\n:::\n", "{}");
+        let out = compile_mdx(":::table\n[[\"a\"]]\n:::\n", "{}", "");
         assert_eq!(out.capability, CAP_FALLBACK);
         assert_eq!(
             out.reason.as_deref(),
@@ -150,11 +159,18 @@ mod tests {
     #[test]
     fn scan_fallbacks() {
         assert!(capability::scan("---\ncomponent: atlas\n---\n# x").is_some());
-        assert!(capability::scan("# x\n\n@include \"./p.md\"").is_some());
+        // `@uniform`/`@importCode` still pre-scan to fallback (need the JS
+        // composer / code-import chains — C-S4).
+        assert!(capability::scan("# x\n\n@uniform \"./x.ts\"").is_some());
+        assert!(capability::scan("# x\n\n@importCode \"./x.ts\"").is_some());
         // `@uniform` inside a directive attribute is still caught pre-parse.
         assert!(capability::scan("::atlas{references=\"@uniform('./x.ts')\"}").is_some());
         assert!(capability::scan("inline $a^2$ math").is_some());
         assert!(capability::scan("```mermaid\ngraph\n```").is_some());
+        // C-S3: `@include`/`@changelog` are NO LONGER pre-scanned — they are
+        // handled post-parse by `functions::process`.
+        assert!(capability::scan("# x\n\n@include \"./p.md\"").is_none());
+        assert!(capability::scan("# x\n\n@changelog(\"./c.md\")").is_none());
         // C-S2: plain `:::` directives are NOT decided here — the pipeline's
         // `directives::process` classifies them post-parse.
         assert!(capability::scan(":::callout\nhi\n:::").is_none());

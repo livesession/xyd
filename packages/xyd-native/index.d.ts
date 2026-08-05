@@ -25,15 +25,17 @@ export declare function classify(path: string): string
 
 /**
  * Compile an MDX source to xyd's `outputFormat:'function-body'` string
- * (Track C, C-S1 — PROSE pages only).
+ * (Track C: prose + directives + `@include`/`@changelog`).
  *
  * `settings_json` is xyd's settings object as JSON (only
- * `theme.coder.syntaxHighlight` is read today). Returns JSON:
+ * `theme.coder.syntaxHighlight` is read today). `base_dir` is the page file's
+ * directory — it resolves relative `@include` / `@changelog` paths; pass
+ * `undefined`/omit when there is none (those pages then fall back). Returns JSON:
  * `{ "compiled": string, "capability": "full" | "fallback", "reason"?: string }`.
  * `capability: "fallback"` (empty `compiled`) tells the JS caller to run the
  * `ContentFS.compileContent` pipeline unchanged.
  */
-export declare function compileMdx(source: string, settingsJson: string): string
+export declare function compileMdx(source: string, settingsJson: string, baseDir?: string | undefined | null): string
 
 /**
  * Start watching `root` recursively. `on_change` is called with each

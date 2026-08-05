@@ -17,7 +17,12 @@
 //!   still outside the port (e.g. `table`, step `[…]`/`{…}` parameters) returns
 //!   `fallback` and is tracked as deferred, not a failure. A floor assertion
 //!   pins the directives that MUST stay `full`.
-//! - `async`: Rust must return `fallback` (C-S3/S4 not built).
+//! - `async` (C-S3): the `@include` / `@changelog` fixtures now compile `full`
+//!   and MUST render byte-equal to `rendered.html` (a `full` that renders wrong
+//!   is a FAILURE — same honesty rule as directives). The composer-backed async
+//!   fixtures (`async-frontmatter-uniform` = `uniform:` frontmatter,
+//!   `async-component-atlas` = `component: atlas`) stay `fallback` (C-S4). A
+//!   floor assertion pins the async fixtures that MUST stay `full`.
 //!
 //! Oracle A (compiled JS) is intentionally NOT gated: swc codegen differs
 //! cosmetically from astring, but the rendered DOM is identical.
@@ -34,6 +39,10 @@ const DIRECTIVE_FULL_FLOOR: [&str; 7] = [
     "directive-subtitle-badge",
     "directive-tabs",
 ];
+
+/// Async fixtures the C-S3 `@`-function port MUST compile `full` + render at
+/// parity. The composer-backed async fixtures stay `fallback` (C-S4).
+const ASYNC_FULL_FLOOR: [&str; 2] = ["async-changelog", "async-include"];
 
 use std::fs;
 use std::io::Write;
@@ -127,10 +136,12 @@ fn mdx_parity_gate() {
     let mut prose_full_match = 0usize;
     let mut prose_gap: Vec<String> = Vec::new(); // documented (math) fallbacks
     let mut failures: Vec<String> = Vec::new();
-    let mut nonprose_ok = 0usize;
     let mut directive_total = 0usize;
     let mut directive_full: Vec<String> = Vec::new(); // rendered at parity
     let mut directive_deferred: Vec<String> = Vec::new(); // returned fallback
+    let mut async_total = 0usize;
+    let mut async_full: Vec<String> = Vec::new(); // `@`-function pages at parity
+    let mut async_deferred: Vec<String> = Vec::new(); // composer-backed → fallback
 
     for dir in &dirs {
         let name = dir.file_name().unwrap().to_string_lossy().to_string();
@@ -146,7 +157,10 @@ fn mdx_parity_gate() {
             }
         };
 
-        let out = xyd_mdx::compile_mdx(&source, &settings);
+        // C-S3: `@include` / `@changelog` resolve relative to the page dir — for
+        // these fixtures that is the fixture directory itself.
+        let base_dir = dir.to_string_lossy().to_string();
+        let out = xyd_mdx::compile_mdx(&source, &settings, &base_dir);
 
         match capability.as_str() {
             "prose" => {
@@ -209,14 +223,32 @@ fn mdx_parity_gate() {
                 }
             }
             "async" => {
-                if out.capability == xyd_mdx::CAP_FALLBACK {
-                    nonprose_ok += 1;
-                    println!("PASS  {name}  (async -> fallback, reason={:?})", out.reason);
+                async_total += 1;
+                // C-S3: `@include` / `@changelog` fixtures must be `full` at
+                // rendered-HTML parity; composer-backed async fixtures stay
+                // `fallback`. Whatever comes back `full` MUST render byte-equal
+                // (a wrong `full` is a FAILURE — keeps coverage honest).
+                if out.capability == xyd_mdx::CAP_FULL {
+                    let golden = read(&dir.join("rendered.html"));
+                    match node_render(&name, &out.compiled) {
+                        Ok(rendered) => {
+                            let g = trim_trailing_newlines(&golden);
+                            let r = trim_trailing_newlines(&rendered);
+                            if g == r {
+                                async_full.push(name.clone());
+                                println!("PASS  {name}  (async full, rendered-HTML parity)");
+                            } else {
+                                failures.push(format!(
+                                    "MISS  {name}  (async full but rendered HTML differs)\n{}",
+                                    first_diff(g, r)
+                                ));
+                            }
+                        }
+                        Err(e) => failures.push(format!("ERROR {name}  render failed: {e}")),
+                    }
                 } else {
-                    failures.push(format!(
-                        "MISS  {name}  (async must be fallback, got {})",
-                        out.capability
-                    ));
+                    async_deferred.push(format!("{name} (reason={:?})", out.reason));
+                    println!("DEFER {name}  (async -> fallback, reason={:?})", out.reason);
                 }
             }
             other => failures.push(format!("MISS  {name}  unknown capability tag {other:?}")),
@@ -240,7 +272,15 @@ fn mdx_parity_gate() {
             directive_deferred.join(", ")
         );
     }
-    println!("async -> fallback: {nonprose_ok} ok");
+    println!(
+        "async: {}/{} at rendered-HTML parity (full: [{}])",
+        async_full.len(),
+        async_total,
+        async_full.join(", ")
+    );
+    if !async_deferred.is_empty() {
+        println!("async deferred -> fallback: {}", async_deferred.join(", "));
+    }
 
     // Floor: the generic directives MUST stay `full` + at parity (no silent
     // regression to fallback).
@@ -248,6 +288,15 @@ fn mdx_parity_gate() {
         if !directive_full.iter().any(|n| n == name) {
             failures.push(format!(
                 "MISS  {name}  (expected generic directive at `full` parity, but it was not)"
+            ));
+        }
+    }
+
+    // Floor: the C-S3 `@`-function fixtures MUST stay `full` + at parity.
+    for name in ASYNC_FULL_FLOOR {
+        if !async_full.iter().any(|n| n == name) {
+            failures.push(format!(
+                "MISS  {name}  (expected async `@`-function fixture at `full` parity, but it was not)"
             ));
         }
     }

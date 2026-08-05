@@ -13,6 +13,8 @@
 //!   5. Program::serialize() -> ESM program string
 //!   6. program -> function-body (fb post-pass) + toc/frontmatter const splice
 
+use std::path::Path;
+
 use markdown::Location;
 use mdxjs::{
     hast_util_to_swc, mdast_util_from_mdx, mdast_util_to_hast, mdx_plugin_recma_document,
@@ -21,7 +23,7 @@ use mdxjs::{
 use rustc_hash::FxHashSet;
 use swc_core::common::Span;
 
-use crate::{directives, fb, highlight, meta, swc_pass, transforms};
+use crate::{directives, fb, functions, highlight, meta, swc_pass, transforms};
 
 /// mdxjs options mirroring xyd's prose-relevant plugin set: GFM (tables,
 /// task-lists, strikethrough, autolinks, footnotes) + frontmatter. Math and the
@@ -41,9 +43,15 @@ fn options() -> Options {
     }
 }
 
-/// Compile a prose page to xyd's function-body string. `Err` (parse error or a
-/// surviving MDX node) means "defer to the JS pipeline".
-pub fn compile_full(source: &str, highlight_theme: &str) -> Result<String, String> {
+/// Compile a prose page to xyd's function-body string. `Err` (parse error, a
+/// surviving MDX node, or an unported directive / `@`-function target) means
+/// "defer to the JS pipeline". `base_dir` is the page file's directory, used to
+/// resolve relative `@include` / `@changelog` paths.
+pub fn compile_full(
+    source: &str,
+    highlight_theme: &str,
+    base_dir: &Path,
+) -> Result<String, String> {
     let opts = options();
 
     let mut mdast = mdast_util_from_mdx(source, &opts).map_err(|e| format!("mdast: {e}"))?;
@@ -61,6 +69,12 @@ pub fn compile_full(source: &str, highlight_theme: &str) -> Result<String, Strin
     // expression attribute, unsupported name) — defer to JS. `code-group` needs
     // the highlight theme to build its `codeblocks` blob.
     directives::process(&mut mdast, &opts, source, highlight_theme)?;
+
+    // C-S3: rewrite `@include` / `@changelog` calls (after directives, mirroring
+    // the JS remark order). `Err` => an unported / unreadable target — defer to
+    // JS. Runs AFTER the raw-MDX guard so the `Update`/spliced nodes it adds are
+    // not mistaken for author MDX.
+    functions::process(&mut mdast, base_dir, highlight_theme)?;
 
     let mut hast = mdast_util_to_hast(&mdast);
 
