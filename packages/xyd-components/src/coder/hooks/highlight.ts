@@ -15,6 +15,11 @@ import {
     type Theme
 } from '@code-hike/lighter';
 
+// Rust (WASM) fast-path — active only when the `engine.highlighter: "rust"`
+// toggle is on and a highlighter is registered; otherwise `null` and the
+// codehike/lighter path below runs unchanged.
+import { highlightRustSyncOrNull } from '../highlightDispatch';
+
 type Whitespace = string
 
 type AnyToken = Token | Whitespace
@@ -34,6 +39,9 @@ export function highlight(
         console.warn(`Unknown language "${lang}"`);
         lang = 'txt';
     }
+
+    const rust = highlightRustSyncOrNull({ ...data, lang }, theme as any);
+    if (rust) return rust;
 
     // const { code, annotations } = await splitAnnotationsAndCode(
     //   value,

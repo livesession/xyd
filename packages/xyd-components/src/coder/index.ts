@@ -35,4 +35,21 @@ export {
 
 export {
     CoderProvider
-} from "./CoderProvider";
+} from "./CoderProvider"
+
+// Client highlighter toggle (codehike | rust). The docs-engine calls
+// configureCoder({ highlighter }) from settings.engine.highlighter and
+// setRustHighlighter(fn) once the Rust WASM highlighter is loaded. Default is
+// codehike, so existing sites are unchanged. See
+// .ai/client-wasm-highlighter-spike.md.
+export {
+    configureCoder,
+    setRustHighlighter,
+    getHighlighterName,
+    getRustHighlighter,
+    isRustHighlighterActive,
+} from "./highlightEngine";
+export type {
+    HighlighterName,
+    RustHighlightFn,
+} from "./highlightEngine";;
