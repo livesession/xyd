@@ -1,100 +1,100 @@
-//! H1 snapshot-parity gate: reproduce the `syntax0-highlight` test inputs and
-//! assert `highlight(code, lang, theme).lines` is byte-identical to the
-//! reference engine's output for **js/ts/json/bash × github-dark/dark-plus**.
+//! Snapshot-parity gate — asserts the embedded [`Registry`] reproduces the REAL
+//! `@syntax0/highlight` engine byte-for-byte across the top-20 docs languages +
+//! two cross-grammar embed cases, in github-dark + dark-plus.
 //!
-//! The committed oracle (`js × github-dark`) equals
-//! `test/__snapshots__/tokens.test.ts.snap` verbatim (see [`committed_tokens_snapshot`]).
-//! The remaining seven cells are pinned to the output of the real
-//! `@syntax0/highlight` engine run over the identical `tokens.test.ts` input —
-//! i.e. the reference the Rust port must match.
+//! The oracle is JS-OWNED: `scripts/gen-goldens.mjs` runs the reference engine
+//! over the corpus and commits `tests/goldens/*.json` (each = `{lang, code,
+//! themes:{<theme>: lines}}`). This test loads those goldens and compares them to
+//! `Registry::highlight_lang(...)`. Rust NEVER writes goldens.
 //!
-//! Grammars + themes load from the code9 CDN tree (`syntax0-cdn/dist-static`).
-//! Override the base dir with `XYD_HIGHLIGHT_FIXTURES` when the checkout lives
-//! elsewhere.
+//! Everything here runs off the crate's OWN embedded assets (grammars + themes +
+//! language-data baked in by `build.rs`) — no code9 path, no network. That is
+//! the proof the corpus is embedded.
 
 use std::path::PathBuf;
 
 use serde_json::Value;
-use xyd_highlight::theme::Theme;
-use xyd_highlight::{highlight, Grammar};
+use xyd_highlight::Registry;
 
-/// The exact code from `tokens.test.ts` / `scopes.test.ts`.
-const CODE: &str = "export default   function Gallery() {\n\n  }";
-
-/// Reference output for the H1 matrix, keyed `"<lang>__<theme>"`. `js__github-dark`
-/// is byte-identical to the committed `tokens.test.ts.snap`; the rest come from
-/// running `@syntax0/highlight` on `CODE`.
-const ORACLE: &str = r##"{"js__github-dark":[[{"content":"export default   function ","style":{"color":"#FF7B72"}},{"content":"Gallery","style":{"color":"#D2A8FF"}},{"content":"() ","style":{"color":"#FFA657"}},{"content":"{","style":{"color":"#C9D1D9"}}],[{"content":"","style":{"color":"#C9D1D9"}}],[{"content":"  }","style":{"color":"#C9D1D9"}}]],"js__dark-plus":[[{"content":"export default   ","style":{"color":"#C586C0"}},{"content":"function ","style":{"color":"#569CD6"}},{"content":"Gallery","style":{"color":"#DCDCAA"}},{"content":"() {","style":{"color":"#D4D4D4"}}],[{"content":"","style":{"color":"#D4D4D4"}}],[{"content":"  }","style":{"color":"#D4D4D4"}}]],"ts__github-dark":[[{"content":"export default   function ","style":{"color":"#FF7B72"}},{"content":"Gallery","style":{"color":"#D2A8FF"}},{"content":"() ","style":{"color":"#FFA657"}},{"content":"{","style":{"color":"#C9D1D9"}}],[{"content":"","style":{"color":"#C9D1D9"}}],[{"content":"  }","style":{"color":"#C9D1D9"}}]],"ts__dark-plus":[[{"content":"export default   ","style":{"color":"#C586C0"}},{"content":"function ","style":{"color":"#569CD6"}},{"content":"Gallery","style":{"color":"#DCDCAA"}},{"content":"() {","style":{"color":"#D4D4D4"}}],[{"content":"","style":{"color":"#D4D4D4"}}],[{"content":"  }","style":{"color":"#D4D4D4"}}]],"json__github-dark":[[{"content":"export default   function Gallery() {","style":{"color":"#C9D1D9"}}],[{"content":"","style":{"color":"#C9D1D9"}}],[{"content":"  }","style":{"color":"#C9D1D9"}}]],"json__dark-plus":[[{"content":"export default   function Gallery() {","style":{"color":"#D4D4D4"}}],[{"content":"","style":{"color":"#D4D4D4"}}],[{"content":"  }","style":{"color":"#D4D4D4"}}]],"bash__github-dark":[[{"content":"export","style":{"color":"#FF7B72"}},{"content":" default   function Gallery() {","style":{"color":"#C9D1D9"}}],[{"content":"","style":{"color":"#C9D1D9"}}],[{"content":"  }","style":{"color":"#C9D1D9"}}]],"bash__dark-plus":[[{"content":"export ","style":{"color":"#569CD6"}},{"content":"default   function Gallery","style":{"color":"#9CDCFE"}},{"content":"() {","style":{"color":"#D4D4D4"}}],[{"content":"","style":{"color":"#D4D4D4"}}],[{"content":"  }","style":{"color":"#D4D4D4"}}]]}"##;
-
-const DEFAULT_FIXTURES: &str =
-    "/Users/zdunecki/Code/livesession/codable/third-party/code9/packages/syntax0-cdn/dist-static";
-
-fn fixtures_base() -> PathBuf {
-    std::env::var("XYD_HIGHLIGHT_FIXTURES")
-        .unwrap_or_else(|_| DEFAULT_FIXTURES.to_string())
-        .into()
+fn goldens_dir() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/goldens")
 }
 
-/// `lang alias → (grammar file id, scopeName)` — the subset of
-/// `language-data.ts` needed for H1.
-fn lang_data(lang: &str) -> (&'static str, &'static str) {
-    match lang {
-        "js" => ("javascript", "source.js"),
-        "ts" => ("typescript", "source.ts"),
-        "json" => ("json", "source.json"),
-        "bash" => ("shellscript", "source.shell"),
-        other => panic!("unsupported H1 lang: {other}"),
-    }
-}
-
-fn load_grammar(lang: &str) -> Grammar {
-    let (id, scope) = lang_data(lang);
-    let path = fixtures_base().join("grammars").join(format!("{id}.json"));
-    let json = std::fs::read_to_string(&path)
-        .unwrap_or_else(|e| panic!("read grammar {}: {e}", path.display()));
-    Grammar::load(&json, scope)
-}
-
-fn load_theme(name: &str) -> Theme {
-    let path = fixtures_base().join("themes").join(format!("{name}.json"));
-    let json = std::fs::read_to_string(&path)
-        .unwrap_or_else(|e| panic!("read theme {}: {e}", path.display()));
-    let value: Value = serde_json::from_str(&json).expect("valid theme JSON");
-    Theme::from_vscode_json(&value)
-}
-
-/// Run the Rust engine and return the `.lines` as a `serde_json::Value` in the
-/// same shape as `syntax0`'s snapshot (array of arrays of `{content, style}`).
-fn run(lang: &str, theme: &str) -> Value {
-    let grammar = load_grammar(lang);
-    let theme = load_theme(theme);
-    let lines = highlight(CODE, &grammar, &theme);
+/// Run the embedded engine and return the styled `.lines` as JSON, in the same
+/// shape as a golden's per-theme entry.
+fn run(reg: &Registry, lang: &str, theme: &str, code: &str) -> Value {
+    let lines = reg
+        .highlight_lang(code, lang, theme)
+        .unwrap_or_else(|| panic!("highlight_lang failed for lang={lang} theme={theme}"));
     serde_json::to_value(lines).expect("serialize styled lines")
 }
 
-fn oracle() -> Value {
-    serde_json::from_str(ORACLE).expect("valid oracle JSON")
+/// The first `[line, token]` index where two token-line arrays diverge, with the
+/// offending values — for honest failure reporting (which token, not just which
+/// case).
+fn first_divergence(expected: &Value, got: &Value) -> String {
+    let (e, g) = match (expected.as_array(), got.as_array()) {
+        (Some(e), Some(g)) => (e, g),
+        _ => return format!("shape mismatch\n  expected: {expected}\n  got:      {got}"),
+    };
+    for (li, (el, gl)) in e.iter().zip(g.iter()).enumerate() {
+        let (ea, ga) = (el.as_array(), gl.as_array());
+        if let (Some(ea), Some(ga)) = (ea, ga) {
+            for (ti, (et, gt)) in ea.iter().zip(ga.iter()).enumerate() {
+                if et != gt {
+                    return format!(
+                        "line {li} token {ti}:\n    expected: {et}\n    got:      {gt}"
+                    );
+                }
+            }
+            if ea.len() != ga.len() {
+                return format!(
+                    "line {li}: token count {} != {}\n    expected: {el}\n    got:      {gl}",
+                    ea.len(),
+                    ga.len()
+                );
+            }
+        } else if el != gl {
+            return format!("line {li}:\n    expected: {el}\n    got:      {gl}");
+        }
+    }
+    if e.len() != g.len() {
+        return format!("line count {} != {}", e.len(), g.len());
+    }
+    "no divergence found (values equal?)".to_string()
 }
 
+/// Byte-parity across every committed golden × every theme it records — the
+/// top-20 languages + the cross-grammar embed cases.
 #[test]
-fn tokens_parity_full_matrix() {
-    let oracle = oracle();
-    let langs = ["js", "ts", "json", "bash"];
-    let themes = ["github-dark", "dark-plus"];
+fn goldens_parity() {
+    let reg = Registry::new();
+    let dir = goldens_dir();
+    let mut cases: Vec<_> = std::fs::read_dir(&dir)
+        .unwrap_or_else(|e| panic!("read goldens {}: {e}", dir.display()))
+        .flatten()
+        .map(|e| e.path())
+        .filter(|p| p.extension().is_some_and(|x| x == "json"))
+        .collect();
+    cases.sort();
+    assert!(!cases.is_empty(), "no goldens in {}", dir.display());
 
     let mut failures = Vec::new();
-    for lang in langs {
-        for theme in themes {
-            let key = format!("{lang}__{theme}");
-            let expected = oracle
-                .get(&key)
-                .unwrap_or_else(|| panic!("oracle missing {key}"));
-            let got = run(lang, theme);
+    let mut checked = 0usize;
+    for path in &cases {
+        let name = path.file_stem().unwrap().to_string_lossy().into_owned();
+        let json = std::fs::read_to_string(path).unwrap();
+        let golden: Value = serde_json::from_str(&json).expect("valid golden JSON");
+        let lang = golden["lang"].as_str().expect("golden.lang");
+        let code = golden["code"].as_str().expect("golden.code");
+        let themes = golden["themes"].as_object().expect("golden.themes");
+        for (theme, expected) in themes {
+            checked += 1;
+            let got = run(&reg, lang, theme, code);
             if &got != expected {
                 failures.push(format!(
-                    "\n[{key}] MISMATCH\n  expected: {}\n  got:      {}",
-                    serde_json::to_string(expected).unwrap(),
-                    serde_json::to_string(&got).unwrap(),
+                    "\n[{name} x {theme}] (lang={lang}) MISMATCH\n  {}",
+                    first_divergence(expected, &got)
                 ));
             }
         }
@@ -102,17 +102,18 @@ fn tokens_parity_full_matrix() {
 
     assert!(
         failures.is_empty(),
-        "byte-parity failures:{}",
+        "byte-parity failures ({} of {checked} cells):{}",
+        failures.len(),
         failures.join("")
     );
 }
 
-/// Explicit, oracle-independent check against the values committed in
-/// `tokens.test.ts.snap` (`remove empty space tokens 1`).
+/// Oracle-independent check against the values committed in the reference
+/// engine's `tokens.test.ts.snap` (`remove empty space tokens 1`), driven
+/// through the EMBEDDED registry — proves the H1 js × github-dark output is
+/// still byte-exact and served from baked-in assets.
 #[test]
 fn committed_tokens_snapshot() {
-    // Transcribed verbatim from
-    // test/__snapshots__/tokens.test.ts.snap.
     let expected: Value = serde_json::json!([
         [
             { "content": "export default   function ", "style": { "color": "#FF7B72" } },
@@ -120,17 +121,19 @@ fn committed_tokens_snapshot() {
             { "content": "() ", "style": { "color": "#FFA657" } },
             { "content": "{", "style": { "color": "#C9D1D9" } }
         ],
-        [
-            { "content": "", "style": { "color": "#C9D1D9" } }
-        ],
-        [
-            { "content": "  }", "style": { "color": "#C9D1D9" } }
-        ]
+        [ { "content": "", "style": { "color": "#C9D1D9" } } ],
+        [ { "content": "  }", "style": { "color": "#C9D1D9" } } ]
     ]);
 
-    let got = run("js", "github-dark");
+    let reg = Registry::new();
+    let got = run(
+        &reg,
+        "js",
+        "github-dark",
+        "export default   function Gallery() {\n\n  }",
+    );
     assert_eq!(
         got, expected,
-        "js × github-dark must match the committed snapshot"
+        "js x github-dark must match the committed snapshot (from embedded assets)"
     );
 }

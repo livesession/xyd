@@ -5,6 +5,7 @@
 //! land next, integrated with `crate::theme` for the packed metadata. Wired into
 //! `lib.rs` once the whole core compiles + hits the H1 `.snap` parity gate.
 
+pub mod matcher;
 pub mod raw;
 pub mod rule;
 pub mod tokenizer;

@@ -15,12 +15,19 @@
 mod encode;
 mod grammar;
 mod onig_scanner;
+mod registry;
 mod reshape;
+mod store;
 pub mod theme;
 
 pub use grammar::tokenizer::{highlight, Grammar};
 pub use onig_scanner::OnigScanner;
+pub use registry::Registry;
 pub use reshape::{Style, StyledToken};
+
+/// The compressed on-disk size of the embedded grammar store, in bytes (the
+/// zstd-compressed bundle set baked in at build time — trimmed by `core-langs`).
+pub const GRAMMAR_STORE_BYTES: usize = store::GRAMMAR_STORE_BYTES;
 
 /// H0 smoke: proves the `onig` (Oniguruma) toolchain links and that the scanner
 /// wrapper — the innermost primitive the whole engine builds on — matches with

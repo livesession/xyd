@@ -19,37 +19,57 @@ use crate::OnigScanner;
 
 use super::raw::RawGrammar;
 use super::rule::{
-    compile_grammar, BeginEndRule, BeginWhileRule, CaptureRule, RegExpSource, Rule, RuleId,
-    END_RULE, NEVER_MATCH,
+    compile_grammar, compile_grammar_set, BeginEndRule, BeginWhileRule, CaptureRule, GrammarSet,
+    Injection, RegExpSource, Rule, RuleId, END_RULE, NEVER_MATCH,
 };
 
 // ---------------------------------------------------------------------------
 // Grammar — the compiled rule registry + scanner assembly.
 // ---------------------------------------------------------------------------
 
-/// A compiled grammar: the flat rule registry, the root rule id, and the root
-/// scope name (seeded into the scope stack). Cross-grammar includes/injections
-/// are H2 work; the H1 corpus (js/ts/json/bash) is fully self-contained.
+/// A compiled grammar: the flat rule registry, the root rule id, the root scope
+/// name (seeded into the scope stack), and the root grammar's compiled
+/// injections. Cross-grammar includes are resolved at compile time into the same
+/// flat registry (via [`compile_grammar_set`]), so tokenization is registry-
+/// unaware. The H1 corpus (js/ts/json/bash) is self-contained → empty
+/// injections → byte-identical to the H1 engine.
 pub struct Grammar {
     rules: Vec<Rule>,
     root_id: RuleId,
     root_scope_name: String,
+    injections: Vec<Injection>,
 }
 
 impl Grammar {
-    /// Compile a parsed raw grammar into a runnable [`Grammar`].
+    /// Compile a single self-contained parsed raw grammar into a runnable
+    /// [`Grammar`] (cross-grammar `source.*` includes resolve to inert).
     pub fn from_raw(raw: &RawGrammar) -> Grammar {
-        let (rules, root_id) = compile_grammar(raw);
+        let (rules, root_id, injections) = compile_grammar(raw);
         Grammar {
             rules,
             root_id,
             root_scope_name: raw.scope_name.clone(),
+            injections,
+        }
+    }
+
+    /// Compile a grammar set (the pre-loaded include closure) rooted at
+    /// `top_scope`, resolving cross-grammar includes + injections. This is the
+    /// registry path used by [`crate::Registry`].
+    pub fn from_set(top_scope: &str, store: &GrammarSet) -> Grammar {
+        let (rules, root_id, injections) = compile_grammar_set(top_scope, store);
+        Grammar {
+            rules,
+            root_id,
+            root_scope_name: top_scope.to_string(),
+            injections,
         }
     }
 
     /// Load a grammar from a `tm-grammars`-style JSON. The CDN bundles are JSON
     /// arrays of grammar objects; a bare object is also accepted. `scope_name`
-    /// selects the entry from a bundle.
+    /// selects the entry from a bundle. Self-contained compile only (no cross-
+    /// grammar include resolution) — use [`crate::Registry`] for embeds.
     pub fn load(bundle_json: &str, scope_name: &str) -> Grammar {
         let mut value: serde_json::Value =
             serde_json::from_str(bundle_json).expect("valid grammar JSON");
@@ -384,6 +404,13 @@ struct MatchResult {
     captures: Vec<Option<(usize, usize)>>,
 }
 
+/// An injection's scan result + whether it is an `L:` (priority < 0) injection,
+/// which wins ties at the same position against the base rule match.
+struct InjectionMatch {
+    result: MatchResult,
+    priority_match: bool,
+}
+
 struct Tokenizer<'a> {
     grammar: &'a Grammar,
     theme: &'a Theme,
@@ -488,7 +515,13 @@ impl<'a> Tokenizer<'a> {
         }
 
         'scan: loop {
-            let matched = self.match_rule(text, is_first_line, line_pos, &stack, anchor_position);
+            let matched = self.match_rule_or_injections(
+                text,
+                is_first_line,
+                line_pos,
+                &stack,
+                anchor_position,
+            );
             let Some(m) = matched else {
                 self.produce(tokens, &stack, line_length);
                 break 'scan;
@@ -705,8 +738,8 @@ impl<'a> Tokenizer<'a> {
         false
     }
 
-    /// `matchRule` (injections omitted — none in the H1 grammars): scan the
-    /// current rule's assembled patterns and return the matched rule id + spans.
+    /// `matchRule`: scan the current rule's assembled patterns and return the
+    /// matched rule id + spans.
     fn match_rule(
         &self,
         text: &str,
@@ -729,6 +762,94 @@ impl<'a> Tokenizer<'a> {
             rule_id: ids[m.pattern_index],
             captures: m.captures,
         })
+    }
+
+    /// `matchRuleOrInjections` — combine the current rule's match with the
+    /// grammar's injections (those whose selector matches the current scope
+    /// stack). An injection wins if it matches strictly earlier, or at the same
+    /// position when it is an `L:` (priority < 0) injection. With no injections
+    /// this is exactly [`Self::match_rule`] (so the H1 corpus is unchanged).
+    fn match_rule_or_injections(
+        &self,
+        text: &str,
+        is_first_line: bool,
+        line_pos: usize,
+        stack: &StateStack,
+        anchor_pos: i32,
+    ) -> Option<MatchResult> {
+        let rule_match = self.match_rule(text, is_first_line, line_pos, stack, anchor_pos);
+        if self.grammar.injections.is_empty() {
+            return rule_match;
+        }
+        let inj = self.match_injections(text, is_first_line, line_pos, stack, anchor_pos);
+        match (rule_match, inj) {
+            (a, None) => a,
+            (None, Some(i)) => Some(i.result),
+            (Some(a), Some(i)) => {
+                let a_start = a.captures[0].expect("whole match present").0;
+                let i_start = i.result.captures[0].expect("whole match present").0;
+                if i_start < a_start || (i.priority_match && i_start == a_start) {
+                    Some(i.result)
+                } else {
+                    Some(a)
+                }
+            }
+        }
+    }
+
+    /// `matchInjections` — the earliest injection match whose selector matches
+    /// the current content scope stack (ties at `line_pos` short-circuit, like
+    /// vscode-oniguruma's scanner). `priority_match` marks an `L:` injection.
+    fn match_injections(
+        &self,
+        text: &str,
+        is_first_line: bool,
+        line_pos: usize,
+        stack: &StateStack,
+        anchor_pos: i32,
+    ) -> Option<InjectionMatch> {
+        let scope_names: Vec<&str> = stack
+            .content_name_scopes_list
+            .scope_names
+            .iter()
+            .map(String::as_str)
+            .collect();
+        let allow_a = is_first_line;
+        let allow_g = line_pos as i32 == anchor_pos;
+
+        let mut best_start = usize::MAX;
+        let mut best: Option<InjectionMatch> = None;
+        for inj in &self.grammar.injections {
+            if !inj.matcher.matches(&scope_names) {
+                continue;
+            }
+            let (sources, ids) = self
+                .grammar
+                .build_scanner(inj.rule_id, None, allow_a, allow_g);
+            if sources.is_empty() {
+                continue;
+            }
+            let scanner = OnigScanner::new(&sources);
+            let Some(m) = scanner.find_next_match(text, line_pos) else {
+                continue;
+            };
+            let start = m.captures[0].expect("whole match present").0;
+            if start >= best_start {
+                continue;
+            }
+            best_start = start;
+            best = Some(InjectionMatch {
+                result: MatchResult {
+                    rule_id: ids[m.pattern_index],
+                    captures: m.captures,
+                },
+                priority_match: inj.priority < 0,
+            });
+            if start == line_pos {
+                break;
+            }
+        }
+        best
     }
 
     /// `_checkWhileConditions` — before scanning a line, verify each active
@@ -930,7 +1051,7 @@ pub fn highlight(code: &str, grammar: &Grammar, theme: &Theme) -> Vec<Vec<Styled
 /// Coerce JS-truthy grammar fields that some `tm-grammars` JSONs encode as
 /// numbers (e.g. shellscript's `"applyEndPatternLast": 1`) into the booleans the
 /// raw model expects. Recurses through objects and arrays.
-fn normalize_grammar_json(value: &mut serde_json::Value) {
+pub(crate) fn normalize_grammar_json(value: &mut serde_json::Value) {
     match value {
         serde_json::Value::Object(map) => {
             if let Some(v @ serde_json::Value::Number(_)) = map.get_mut("applyEndPatternLast") {

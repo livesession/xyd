@@ -5,6 +5,7 @@
 
 use std::collections::HashMap;
 
+use indexmap::IndexMap;
 use serde::Deserialize;
 
 /// A grammar document (one `<lang>.json`).
@@ -20,9 +21,11 @@ pub struct RawGrammar {
     #[serde(default)]
     pub repository: HashMap<String, RawRule>,
 
-    /// Injections: selector expression → rule. Applied into other grammars.
+    /// Injections: selector expression → rule. Applied into matching scope
+    /// stacks by priority. `IndexMap` preserves the JSON key order, which is
+    /// load-bearing for same-priority injection tie-breaking.
     #[serde(default)]
-    pub injections: HashMap<String, RawRule>,
+    pub injections: IndexMap<String, RawRule>,
 
     #[serde(default, rename = "injectionSelector")]
     pub injection_selector: Option<String>,
@@ -85,9 +88,35 @@ pub struct RawRule {
 /// string key) to the rule applied to that group (usually just `{ name }`).
 /// vscode indexes these by number, with gaps allowed; `rule.rs` flattens this
 /// into a `Vec<Option<CaptureRule>>` indexed by group number.
-#[derive(Debug, Clone, Default, Deserialize)]
-#[serde(transparent)]
+///
+/// The deserializer is LENIENT (matching vscode-textmate's untyped JS access):
+/// some `tm-grammars` JSONs have authoring bugs where non-rule keys leak into a
+/// captures object (e.g. `text.xml`'s comment rule nests `end`/`name` strings
+/// inside `captures`). JS silently ignores non-object / non-numeric entries; so
+/// do we — only object-valued entries are kept, so a stray string can't abort
+/// the whole bundle parse.
+#[derive(Debug, Clone, Default)]
 pub struct RawCaptures(pub HashMap<String, RawRule>);
+
+impl<'de> Deserialize<'de> for RawCaptures {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let raw: HashMap<String, serde_json::Value> = HashMap::deserialize(deserializer)?;
+        let mut out = HashMap::new();
+        for (k, v) in raw {
+            // Only object-valued entries are capture rules; strings/numbers that
+            // slipped in (authoring bugs) are ignored, exactly like the JS engine.
+            if v.is_object() {
+                if let Ok(rule) = serde_json::from_value::<RawRule>(v) {
+                    out.insert(k, rule);
+                }
+            }
+        }
+        Ok(RawCaptures(out))
+    }
+}
 
 impl RawGrammar {
     /// Parse a grammar JSON string.

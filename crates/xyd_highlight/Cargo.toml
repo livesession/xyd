@@ -12,10 +12,19 @@ serde_json = { workspace = true }
 # vscode-oniguruma's onig.wasm is built from. Pure-Rust regex engines diverge on
 # backrefs/lookbehind/\G/possessive/POSIX that TextMate grammars use pervasively.
 onig = "6"
+# Pure-Rust zstd DECODER (no C toolchain): the embedded grammar bundles are
+# vendored zstd-compressed (~4.5MB vs ~42MB raw) and lazily decompressed on first
+# use. Compression is done offline by scripts/vendor-assets.mjs (zstd CLI).
+ruzstd = "0.7"
+# Insertion-order-preserving map for grammar `injections`: injection match order
+# is load-bearing for same-priority ties, so it must mirror the JSON key order
+# (a std HashMap would randomize it). Already a transitive dep via serde_json's
+# preserve_order feature.
+indexmap = { version = "2", features = ["serde"] }
 
 [features]
-# Top-20 languages (>99% of the real corpus). The long tail sits behind the
-# default so size-sensitive `bun --compile` builds can trim it. (H2 wires the
-# grammar store; for H0/H1 grammars are loaded from disk/vendored fixtures.)
+# Top-20 languages + their cross-grammar embeds (the transitive closure, 65
+# grammar ids). The long tail sits behind the default so size-sensitive
+# `bun --compile` builds can trim it; the default embeds all 254.
 default = []
 core-langs = []

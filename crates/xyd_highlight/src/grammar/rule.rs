@@ -16,6 +16,7 @@
 
 use std::collections::HashMap;
 
+use super::matcher::{create_matchers, ScopeMatcher};
 use super::raw::{RawCaptures, RawGrammar, RawRule};
 
 /// A compiled rule's numeric id. Positive ids index the registry; the two
@@ -500,8 +501,9 @@ enum IncludeRef<'a> {
     Base,
     Self_,
     LocalName(&'a str),
-    /// `source.x` or `source.x#name` — cross-grammar. Not resolved for H1.
-    External,
+    /// `source.x` or `source.x#name` — cross-grammar, resolved via the
+    /// [`GrammarSet`] (the pre-loaded include closure).
+    External(&'a str),
 }
 
 fn parse_include(include: &str) -> IncludeRef<'_> {
@@ -512,9 +514,9 @@ fn parse_include(include: &str) -> IncludeRef<'_> {
         return IncludeRef::Self_;
     }
     match include.find('#') {
-        None => IncludeRef::External,                    // "source.x"
+        None => IncludeRef::External(include),           // "source.x"
         Some(0) => IncludeRef::LocalName(&include[1..]), // "#name"
-        Some(_) => IncludeRef::External,                 // "source.x#name"
+        Some(_) => IncludeRef::External(include),        // "source.x#name"
     }
 }
 
@@ -531,14 +533,41 @@ fn repo_lookup<'a>(repo: &Repo<'a>, name: &str) -> Option<&'a RawRule> {
     None
 }
 
+/// A grammar lookup keyed by scope name — the pre-loaded include closure the
+/// registry-aware compiler resolves cross-grammar `source.x` includes against.
+/// Each value is the MAIN raw grammar registered for that scope (mirroring
+/// vscode's `getExternalGrammar`/`SyncRegistry.lookup`).
+pub type GrammarSet = HashMap<String, RawGrammar>;
+
+/// A compiled injection: the scope-selector matcher, the rule to scan when it
+/// matches, and its priority (`L:` = -1, `R:` = 1, default 0). Ported from
+/// vscode-textmate's injection tuples (`_collectInjections`).
+pub struct Injection {
+    pub matcher: ScopeMatcher,
+    pub rule_id: RuleId,
+    pub priority: i8,
+}
+
+/// Per-rule compilation context: the repository lookup stack, the current
+/// grammar's `$self` rule id, and its scope. `$base` always resolves to the root
+/// grammar's `$self` (`Compiler::root_id`), matching vscode's `initGrammar`,
+/// where every included grammar's `$base` threads back to the root's self.
+struct Ctx<'a> {
+    repo: Repo<'a>,
+    self_id: RuleId,
+    scope: &'a str,
+}
+
 struct Compiler<'a> {
+    /// The include closure (scope → main raw grammar) borrowed for the compile.
+    store: &'a GrammarSet,
     rules: Vec<Rule>,
     id_by_ptr: HashMap<usize, RuleId>,
+    /// Per-grammar `$self` rule id cache (mirrors `_includedGrammars`), so a
+    /// scope's synthetic self rule is compiled once.
+    self_id_by_scope: HashMap<String, RuleId>,
     next_id: RuleId,
     root_id: RuleId,
-    /// Ties the compiler to the borrowed raw grammar the `&'a RawRule` pointers
-    /// come from (raw rules are never stored, only memoized by address).
-    _marker: std::marker::PhantomData<&'a RawGrammar>,
 }
 
 impl<'a> Compiler<'a> {
@@ -551,23 +580,61 @@ impl<'a> Compiler<'a> {
         id
     }
 
+    /// Compile a grammar's synthetic `$self` rule (an include-only rule over its
+    /// top-level `patterns`, named with its scope) and cache the id. Returns `-1`
+    /// when the scope is not in the include closure (unresolvable → inert).
+    fn compile_grammar_self(&mut self, scope: &str) -> RuleId {
+        if let Some(&id) = self.self_id_by_scope.get(scope) {
+            return id;
+        }
+        if self.store.get(scope).is_none() {
+            return -1;
+        }
+        let id = self.reserve_id();
+        self.self_id_by_scope.insert(scope.to_string(), id);
+        self.compile_self_body(scope, id);
+        id
+    }
+
+    /// Fill `rules[id]` with the include-only `$self` rule for `scope`. The id
+    /// must already be reserved + registered (so `$self`/`$base` recursion
+    /// terminates).
+    fn compile_self_body(&mut self, scope: &str, id: RuleId) {
+        let store = self.store;
+        let raw = store.get(scope).expect("grammar present in closure");
+        let ctx = Ctx {
+            repo: vec![&raw.repository],
+            self_id: id,
+            scope: &raw.scope_name,
+        };
+        let (patterns, has_missing) = self.compile_patterns(Some(&raw.patterns), &ctx);
+        self.rules[id as usize] = Rule::Include(IncludeOnlyRule {
+            name: Some(raw.scope_name.clone()),
+            name_is_capturing: false,
+            content_name: None,
+            content_name_is_capturing: false,
+            patterns,
+            has_missing_patterns: has_missing,
+        });
+    }
+
     /// `getCompiledRuleId` — memoize a raw rule by pointer identity, assigning
     /// its id before compiling so recursion terminates.
-    fn get_compiled_rule_id(&mut self, rule: &'a RawRule, repo: &Repo<'a>) -> RuleId {
+    fn get_compiled_rule_id(&mut self, rule: &'a RawRule, ctx: &Ctx<'a>) -> RuleId {
         let key = rule as *const RawRule as usize;
         if let Some(&id) = self.id_by_ptr.get(&key) {
             return id;
         }
         let id = self.reserve_id();
         self.id_by_ptr.insert(key, id);
-        let compiled = self.build_rule(rule, id, repo);
+        let compiled = self.build_rule(rule, id, ctx);
         self.rules[id as usize] = compiled;
         id
     }
 
-    fn build_rule(&mut self, e: &'a RawRule, id: RuleId, repo: &Repo<'a>) -> Rule {
+    fn build_rule(&mut self, e: &'a RawRule, id: RuleId, ctx: &Ctx<'a>) -> Rule {
         if let Some(m) = &e.match_ {
-            let captures = self.compile_captures(e.captures.as_ref(), repo);
+            let captures = self.compile_captures(e.captures.as_ref(), ctx);
             return Rule::Match(MatchRule {
                 name: e.name.clone(),
                 name_is_capturing: has_name_captures(&e.name),
@@ -578,19 +645,26 @@ impl<'a> Compiler<'a> {
 
         if e.begin.is_none() {
             // Include-only. Merge the rule's own repository (local overrides).
-            let mut child_repo = repo.clone();
-            if let Some(local) = &e.repository {
-                child_repo.push(local);
-            }
+            let child = Ctx {
+                repo: {
+                    let mut r = ctx.repo.clone();
+                    if let Some(local) = &e.repository {
+                        r.push(local);
+                    }
+                    r
+                },
+                self_id: ctx.self_id,
+                scope: ctx.scope,
+            };
             // patterns ?? (include ? [{include}] : [])
             let (patterns, has_missing) = match &e.patterns {
-                Some(ps) => self.compile_patterns(Some(ps), &child_repo),
+                Some(ps) => self.compile_patterns(Some(ps), &child),
                 None => match &e.include {
                     // A lone `include` compiles as a single synthetic
                     // `[{include}]` pattern — resolve it directly (the synthetic
                     // wrapper is never memoized).
                     Some(inc) => {
-                        let rid = self.resolve_include_ref(inc, &child_repo);
+                        let rid = self.resolve_include_ref(inc, &child);
                         let mut patterns = Vec::new();
                         if rid != -1 && !self.is_empty_missing(rid) {
                             patterns.push(rid);
@@ -613,10 +687,10 @@ impl<'a> Compiler<'a> {
 
         if let Some(w) = &e.while_ {
             let begin_captures =
-                self.compile_captures(e.begin_captures.as_ref().or(e.captures.as_ref()), repo);
+                self.compile_captures(e.begin_captures.as_ref().or(e.captures.as_ref()), ctx);
             let while_captures =
-                self.compile_captures(e.while_captures.as_ref().or(e.captures.as_ref()), repo);
-            let (patterns, has_missing) = self.compile_patterns(e.patterns.as_deref(), repo);
+                self.compile_captures(e.while_captures.as_ref().or(e.captures.as_ref()), ctx);
+            let (patterns, has_missing) = self.compile_patterns(e.patterns.as_deref(), ctx);
             let while_src = RegExpSource::new(w, WHILE_RULE);
             let while_has_back_references = while_src.has_back_references;
             return Rule::BeginWhile(BeginWhileRule {
@@ -636,10 +710,10 @@ impl<'a> Compiler<'a> {
 
         // Begin/end.
         let begin_captures =
-            self.compile_captures(e.begin_captures.as_ref().or(e.captures.as_ref()), repo);
+            self.compile_captures(e.begin_captures.as_ref().or(e.captures.as_ref()), ctx);
         let end_captures =
-            self.compile_captures(e.end_captures.as_ref().or(e.captures.as_ref()), repo);
-        let (patterns, has_missing) = self.compile_patterns(e.patterns.as_deref(), repo);
+            self.compile_captures(e.end_captures.as_ref().or(e.captures.as_ref()), ctx);
+        let (patterns, has_missing) = self.compile_patterns(e.patterns.as_deref(), ctx);
         let end_str = match &e.end {
             Some(s) if !s.is_empty() => s.as_str(),
             _ => NEVER,
@@ -663,16 +737,50 @@ impl<'a> Compiler<'a> {
     }
 
     /// Resolve an `include` string to a compiled rule id (`-1` when unresolved).
-    fn resolve_include_ref(&mut self, include: &str, repo: &Repo<'a>) -> RuleId {
+    fn resolve_include_ref(&mut self, include: &str, ctx: &Ctx<'a>) -> RuleId {
         match parse_include(include) {
-            IncludeRef::Base | IncludeRef::Self_ => self.root_id,
-            IncludeRef::LocalName(name) => match repo_lookup(repo, name) {
-                Some(r) => self.get_compiled_rule_id(r, repo),
+            IncludeRef::Base => self.root_id,
+            IncludeRef::Self_ => ctx.self_id,
+            IncludeRef::LocalName(name) => match repo_lookup(&ctx.repo, name) {
+                Some(r) => self.get_compiled_rule_id(r, ctx),
                 None => -1,
             },
-            // Cross-grammar includes are out of scope for the H1 set (none of
-            // js/ts/json/bash reference an external `source.*`).
-            IncludeRef::External => -1,
+            IncludeRef::External(inc) => self.resolve_external(inc),
+        }
+    }
+
+    /// Resolve a cross-grammar include (`source.x` or `source.x#name`) against
+    /// the include closure, compiling the external grammar's `$self` (or the
+    /// named repository rule) into this shared registry.
+    fn resolve_external(&mut self, include: &str) -> RuleId {
+        let (scope, sub) = match include.split_once('#') {
+            Some((s, n)) => (s, Some(n)),
+            None => (include, None),
+        };
+        match sub {
+            None => self.compile_grammar_self(scope),
+            Some(name) => {
+                let store = self.store;
+                let Some(ext) = store.get(scope) else {
+                    return -1;
+                };
+                let Some(rule) = ext.repository.get(name) else {
+                    return -1;
+                };
+                let ext_self = self.compile_grammar_self(scope);
+                if ext_self < 0 {
+                    return -1;
+                }
+                // Compile the named external rule under the external grammar's
+                // own repository + `$self` (vscode passes `externalGrammar.
+                // repository` as the repository).
+                let ctx = Ctx {
+                    repo: vec![&ext.repository],
+                    self_id: ext_self,
+                    scope: &ext.scope_name,
+                };
+                self.get_compiled_rule_id(rule, &ctx)
+            }
         }
     }
 
@@ -681,15 +789,15 @@ impl<'a> Compiler<'a> {
     fn compile_patterns(
         &mut self,
         patterns: Option<&'a [RawRule]>,
-        repo: &Repo<'a>,
+        ctx: &Ctx<'a>,
     ) -> (Vec<RuleId>, bool) {
         let mut out: Vec<RuleId> = Vec::new();
         let input = patterns.unwrap_or(&[]);
         for item in input {
             let rid: RuleId = if let Some(inc) = &item.include {
-                self.resolve_include_ref(inc, repo)
+                self.resolve_include_ref(inc, ctx)
             } else {
-                self.get_compiled_rule_id(item, repo)
+                self.get_compiled_rule_id(item, ctx)
             };
 
             if rid == -1 {
@@ -719,7 +827,7 @@ impl<'a> Compiler<'a> {
     fn compile_captures(
         &mut self,
         captures: Option<&'a RawCaptures>,
-        repo: &Repo<'a>,
+        ctx: &Ctx<'a>,
     ) -> Vec<Option<CaptureRule>> {
         let Some(caps) = captures else {
             return Vec::new();
@@ -751,7 +859,7 @@ impl<'a> Compiler<'a> {
             };
             // A capture rule with its own patterns re-tokenizes the capture.
             let retokenize = if rule.patterns.is_some() {
-                self.get_compiled_rule_id(rule, repo)
+                self.get_compiled_rule_id(rule, ctx)
             } else {
                 0
             };
@@ -765,49 +873,75 @@ impl<'a> Compiler<'a> {
         }
         result
     }
+
+    /// `_collectInjections` — collect the ROOT grammar's own `injections` (the
+    /// only injection source in the file-system loader; no separate injection
+    /// grammars are registered). Each selector yields one entry per top-level
+    /// comma-separated alternative; the list is stably sorted by priority.
+    fn collect_injections(&mut self, root_scope: &str) -> Vec<Injection> {
+        let store = self.store;
+        let Some(root) = store.get(root_scope) else {
+            return Vec::new();
+        };
+        let mut out = Vec::new();
+        for (selector, rule) in &root.injections {
+            let ctx = Ctx {
+                repo: vec![&root.repository],
+                self_id: self.root_id,
+                scope: &root.scope_name,
+            };
+            let rule_id = self.get_compiled_rule_id(rule, &ctx);
+            for (matcher, priority) in create_matchers(selector) {
+                out.push(Injection {
+                    matcher,
+                    rule_id,
+                    priority,
+                });
+            }
+        }
+        // Stable sort by priority ascending (matches Array.prototype.sort).
+        out.sort_by_key(|i| i.priority);
+        out
+    }
 }
 
-/// Compile a raw grammar into a flat rule registry + the root rule id. The root
-/// rule is the grammar's `$self` (an include-only rule over the top-level
-/// `patterns`, named with the grammar's scope). `$self`/`$base` includes resolve
-/// to it directly (they coincide for a root grammar).
-///
-/// Every field of the raw model is consumed here (name/contentName, match,
-/// begin/end/while + their captures, patterns, repository, applyEndPatternLast),
-/// plus the grammar-level `injections`/`injection_selector`/`name` which are
-/// surfaced for H2's cross-grammar injections and otherwise inert for H1.
-pub fn compile_grammar(raw: &RawGrammar) -> (Vec<Rule>, RuleId) {
+/// Compile a grammar set into a shared flat rule registry + the root rule id +
+/// the root grammar's compiled injections. Cross-grammar `source.x` includes
+/// resolve against `store` (the pre-loaded include closure). `top_scope` selects
+/// the root grammar; its `$self`/`$base` both resolve to the root rule.
+pub fn compile_grammar_set(
+    top_scope: &str,
+    store: &GrammarSet,
+) -> (Vec<Rule>, RuleId, Vec<Injection>) {
     let mut c = Compiler {
+        store,
         rules: vec![Rule::Placeholder], // id 0 unused
         id_by_ptr: HashMap::new(),
+        self_id_by_scope: HashMap::new(),
         next_id: 1,
         root_id: 0,
-        _marker: std::marker::PhantomData,
     };
 
-    // Reserve the root ($self) id first so recursive `$self`/`$base` includes
-    // resolve without recompiling.
+    // Reserve + register the root ($self) id FIRST so recursive `$self`/`$base`
+    // includes resolve during body compilation.
     let root_id = c.reserve_id();
     c.root_id = root_id;
+    c.self_id_by_scope.insert(top_scope.to_string(), root_id);
+    c.compile_self_body(top_scope, root_id);
 
-    let root_repo: Repo = vec![&raw.repository];
-    let (patterns, has_missing) = c.compile_patterns(Some(&raw.patterns), &root_repo);
-    c.rules[root_id as usize] = Rule::Include(IncludeOnlyRule {
-        name: Some(raw.scope_name.clone()),
-        name_is_capturing: false,
-        content_name: None,
-        content_name_is_capturing: false,
-        patterns,
-        has_missing_patterns: has_missing,
-    });
+    let injections = c.collect_injections(top_scope);
+    (c.rules, root_id, injections)
+}
 
-    // Touch the H2-facing grammar fields so they participate in the build (they
-    // are inert for the H1 corpus, which has no injections).
-    let _injection_count = raw.injections.len();
-    let _injection_selector = raw.injection_selector.as_deref();
-    let _display_name = raw.name.as_deref();
-
-    (c.rules, root_id)
+/// Compile a single self-contained raw grammar (no external includes resolvable)
+/// into a rule registry + root id + injections. Wraps [`compile_grammar_set`]
+/// with a one-entry closure; cross-grammar `source.*` includes resolve to `-1`
+/// (inert), exactly as before — the H1 corpus (js/ts/json/bash) is self-
+/// contained, so this stays byte-for-byte identical to the H1 engine.
+pub fn compile_grammar(raw: &RawGrammar) -> (Vec<Rule>, RuleId, Vec<Injection>) {
+    let mut store = GrammarSet::new();
+    store.insert(raw.scope_name.clone(), raw.clone());
+    compile_grammar_set(&raw.scope_name, &store)
 }
 
 #[cfg(test)]
@@ -854,7 +988,7 @@ mod tests {
             }"##,
         )
         .unwrap();
-        let (rules, root) = compile_grammar(&raw);
+        let (rules, root, _injections) = compile_grammar(&raw);
         assert_eq!(root, 1);
         match &rules[root as usize] {
             Rule::Include(inc) => assert_eq!(inc.patterns.len(), 2),
