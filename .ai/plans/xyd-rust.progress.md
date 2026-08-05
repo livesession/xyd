@@ -418,8 +418,40 @@ running in the MAIN tree (so they see the existing crates), with fully self-cont
 extend-existing-crate parallel work, use general-purpose, not fork; reserve fork+worktree for creating
 NEW standalone crates.
 
-**NEXT: W7 tail (b/c)** — (b) the framework orchestrator/chain (generate()/generateFileMap drives the
-capabilities — could stay JS or a thin Rust driver); (c) the napi + JS shim wiring pass for the codegen
-generators — the opensdk emitters are now runtime-complete so they're wire-able (opencli2go clean;
-opencli2rust needs the ProjectFileMap reshape). Other deferred: env/presets/access live-wiring;
-W4 llms.txt js-yaml/1.1; buildAccessMap frontmatter metadata (product sign-off).
+**W7 tail (c) — CODEGEN GENERATORS ARE NOW LIVE behind @xyd-js/native.** 10 napi surfaces in
+`packages/xyd-native/src/{opencli2go,opencli2rust,opensdk}.rs` (JSON-string transport; opencli2rust
+returns an ordered `{path,content,writeMode}` array to preserve the framework ProjectFileMap; the
+7 opensdk surfaces are one macro-generated wrapper each, `opensdkGenerate<Lang>(specJson) → path→content
+JSON`). FFI proven byte-exact through the boundary (native opensdkGenerateGo 13/13, Python 10/10 vs
+goldens). JS shims + dispatch:
+- **opencli2go / opencli2rust** — FULLY native (native accepts options; opencli2rust reconstructs the
+  ProjectFileMap with per-file writeMode). `src/native.ts` loader + dispatch at the top of each
+  `src/project.ts`.
+- **opensdk emitters** — dispatch in the framework choke point `orchestrator.ts:generateFileMap`
+  (covers CLI, emitter wrappers, direct callers uniformly): byte-exact CONTENT from native, per-file
+  `writeMode` DERIVED from the emitter's own `generateProject` (writeMode is set ONLY there —
+  node/python/ruby/java/rust mark their manifest skipIfExists/mergeJson; go/dotnet all-overwrite), no
+  hardcoded table. Native content already carries the baked ownership header (matches goldens), so
+  withFileHeader is NOT re-applied.
+- **CORRECTNESS GATE (learned from a real failure):** native opensdk dispatch fires ONLY when
+  `emitterOptions` is empty AND the spec carries no `sdk` behavior overrides. The native surface takes
+  only the spec (can't honor `{tests:false}`/config), and — the caught bug — opensdk-go's runtime bakes
+  DEFAULT sdk-behavior constants, so a spec with non-default `spec.sdk` diverges (opensdk-go's 2
+  `sdk-behavior interpolation` tests FAILED in native mode before the gate — which also PROVED native
+  was actually dispatching, not silently falling back). Behavior-override specs take the faithful JS
+  interpolation path.
+- **Dep wiring:** added `@xyd-js/native: workspace:*` to opencli2go/2rust/opensdk-framework (was
+  missing → require would have silently returned null); relinked.
+- **GATE GREEN:** both-mode vitest (XYD_NATIVE=1 native / =0 frozen JS) byte-identical across all 10
+  packages (opensdk-go 494 · node 505 · python 495 · ruby 494 · java 498 · dotnet 499 · rust 249 ·
+  opencli2go 406 · opencli2rust 408 · opensdk-cli 54) + framework consumers (chain/uniform/core/
+  opencli/opencli-remark) unaffected. `tests-native.yml` extended: codegen path globs + a
+  SHIM/TRANSITIVE both-mode loop (emitters listed explicitly — native lives in their framework dep,
+  not their own src) + a `pnpm build` step (dist is gitignored; emitters consume framework's dist).
+
+**NEXT: W7 tail (b) + hardening** — (b) the framework orchestrator/chain could move to a thin Rust
+driver (low value; the JS orchestrator is now a thin capability-driver + native fast path). Follow-ups
+to widen native opensdk coverage: teach the emitter runtimes to fully interpolate non-default
+sdk-behavior (remove the behavior-override gate) and accept emitterOptions (remove the empty-options
+gate) — both currently route to JS. Other deferred: env/presets/access live-wiring; W4 llms.txt
+js-yaml/1.1; buildAccessMap frontmatter metadata (product sign-off).
