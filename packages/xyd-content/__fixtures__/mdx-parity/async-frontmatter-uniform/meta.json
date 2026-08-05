@@ -1,0 +1,20 @@
+{
+  "name": "async-frontmatter-uniform",
+  "capability": "async",
+  "gate": "fallback",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 673,
+    "sha256": "cd79958955bbbe5c33d1f8b6de305192a5d1811b7bb48a29ae54c37e9a6f2699"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 80,
+    "sha256": "1d15ad327bbf2a1f5514e02e4643776ef03fdc31fb130e0a5e4dd7e21a50a454"
+  },
+  "note": "DEGRADED headless: the composer meta-component registry is not active outside plugin-docs, so the OpenAPI reference is not composed. Captures current headless behavior; exempt from the gate."
+}

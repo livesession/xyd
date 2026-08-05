@@ -1,0 +1,20 @@
+{
+  "name": "async-component-atlas",
+  "capability": "async",
+  "gate": "fallback",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 902,
+    "sha256": "1413d05ef2eef8c2a6cac4e9bf7e2921349537c6902adbca0221f921cfe553e9"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 95,
+    "sha256": "7f08f0dc081e0012f8fb9b49494d80a5ba77780ebc4fd836926eb66bb461ecdd"
+  },
+  "note": "DEGRADED headless: 'component: atlas' meta component is not registered outside plugin-docs. Captured for coverage; exempt from the gate."
+}

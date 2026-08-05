@@ -1,0 +1,21 @@
+{
+  "name": "directive-subtitle-badge",
+  "capability": "directive",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [
+    "Subtitle"
+  ],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 1291,
+    "sha256": "97b1ccffd77eff50b3c1c770ecc743a3388ae7b5ac9c713940561983c9684715"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 196,
+    "sha256": "5852f4158349d7b5bd6a486214a032bd885cf92f6a670d2430feb2989b9893e4"
+  }
+}

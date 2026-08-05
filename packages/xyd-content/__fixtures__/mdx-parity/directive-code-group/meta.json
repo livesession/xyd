@@ -1,0 +1,21 @@
+{
+  "name": "directive-code-group",
+  "capability": "directive",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [
+    "DirectiveCodeGroup"
+  ],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 2249,
+    "sha256": "45fefde28650cf2eab459e028bc466e4722e40f29928fc4ef99cdcce3c667b59"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 111,
+    "sha256": "43586a3b136462ac57ea4e61edf2fbaca00b3f46ffd0ae0d6078666954467750"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "prose-headings",
+  "capability": "prose",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 1709,
+    "sha256": "f9383697f7edb06577147c66a862517ae1b787c047fda535bc0648be145090ee"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 337,
+    "sha256": "1f0772daf34b223161ec93c1abd105b67c540f6cb1f999b3e2798d1520e036d8"
+  }
+}

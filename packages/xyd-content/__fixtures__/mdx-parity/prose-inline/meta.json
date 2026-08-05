@@ -1,0 +1,19 @@
+{
+  "name": "prose-inline",
+  "capability": "prose",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 1498,
+    "sha256": "88d78b74c61fa60575d9f32a15243ef19e6b4b9a766509d71731f91473ca5e07"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 309,
+    "sha256": "bb587df798d41240ca70f58121093751f25d474cbeae2752037ec8f756de6ff1"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "prose-real-introduction",
+  "capability": "prose",
+  "gate": "full",
+  "source": "apps/docs/guides/introduction.md",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 7948,
+    "sha256": "77492ccd4fe278ed03b61dd4353702eb00c55e4f2103b4e2759b10fffc39789f"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 3115,
+    "sha256": "a10db31e2583f1b8e02eaf5830f455a9c20857411f4ba0faace745e6baaf5dd2"
+  }
+}

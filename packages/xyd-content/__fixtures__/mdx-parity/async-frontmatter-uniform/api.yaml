@@ -1,0 +1,18 @@
+openapi: 3.0.0
+info:
+  title: Tiny API
+  version: "1.0.0"
+paths:
+  /ping:
+    get:
+      summary: Ping the server
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  pong:
+                    type: boolean

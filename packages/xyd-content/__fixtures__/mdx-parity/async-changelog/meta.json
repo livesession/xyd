@@ -1,0 +1,22 @@
+{
+  "name": "async-changelog",
+  "capability": "async",
+  "gate": "fallback",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [
+    "Update"
+  ],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 1521,
+    "sha256": "c54c29467c23a76e2270b43ead27a8a5125a7978e44b64479cfbb87ec6938d0c"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 248,
+    "sha256": "13c41959603918abd0c382a10e7aa0ce788fa1c41bbd993088df04d3c53627c4"
+  },
+  "note": "reads the local ./changelog.md"
+}

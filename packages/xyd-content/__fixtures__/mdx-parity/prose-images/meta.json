@@ -1,0 +1,19 @@
+{
+  "name": "prose-images",
+  "capability": "prose",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 1040,
+    "sha256": "ab8d6838df41d1dc2ab9028827942b5e6260b0a2bc91fb7eb645240ffb79d3e0"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 306,
+    "sha256": "8c46035b4cc67ab44a10a207840c9ab3334140f89b07c8b6721754ae9f79f0fc"
+  }
+}

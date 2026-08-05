@@ -1,0 +1,19 @@
+{
+  "name": "prose-code-fences",
+  "capability": "prose",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 2542,
+    "sha256": "1e3ae9f750e1d94715535566816bb7560f6211723323197d97c96964d7177b9b"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 285,
+    "sha256": "360e2ece3cf14fa8412353627bcf21c33bc301fcbddbcfcd105134332057182b"
+  }
+}

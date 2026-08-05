@@ -1,0 +1,19 @@
+{
+  "name": "prose-entities-escapes",
+  "capability": "prose",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 900,
+    "sha256": "9cfd1b02bf809c6370e642537f454db384231f6b6e268c43b70a820f67331350"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 169,
+    "sha256": "0e4417b27f9a9e1a182b7da176188c9539a585977518b53093a79e1b9b34c7b2"
+  }
+}

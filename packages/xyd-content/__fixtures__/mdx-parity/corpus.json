@@ -1,0 +1,34 @@
+{
+  "$comment": "Source of truth for the MDX-parity corpus. Each entry declares a fixture directory, its capability tag (the Track-C staging gate), and provenance. The gen script (packages/xyd-content/scripts/gen-mdx-goldens.mjs) reads this to (re)generate compiled.normalized.js + rendered.html + meta.json for every case. capability -> gate: prose/directive => 'full' (Rust output MUST match Oracle A + Oracle B); async => 'fallback' (exempt, tracked as coverage until the corresponding Track-C stage lands).",
+  "gate": {
+    "prose": "full",
+    "directive": "full",
+    "async": "fallback"
+  },
+  "cases": [
+    { "name": "prose-headings",          "capability": "prose",     "source": "synthetic", "features": ["headings", "paragraphs"] },
+    { "name": "prose-inline",            "capability": "prose",     "source": "synthetic", "features": ["bold", "italic", "strike", "inline-code", "link", "autolink"] },
+    { "name": "prose-lists",             "capability": "prose",     "source": "synthetic", "features": ["ul", "ol", "nested-list", "task-list-gfm"] },
+    { "name": "prose-gfm-table",         "capability": "prose",     "source": "synthetic", "features": ["gfm-table", "alignment"] },
+    { "name": "prose-code-fences",       "capability": "prose",     "source": "synthetic", "features": ["code-fence", "line-highlight-meta", "server-highlight"] },
+    { "name": "prose-blockquote-hr",     "capability": "prose",     "source": "synthetic", "features": ["blockquote", "nested-blockquote", "thematic-break"] },
+    { "name": "prose-images",            "capability": "prose",     "source": "synthetic", "features": ["image", "image-title", "inline-image"] },
+    { "name": "prose-math",              "capability": "prose",     "source": "synthetic", "features": ["inline-math", "block-math", "katex"] },
+    { "name": "prose-frontmatter-seo",   "capability": "prose",     "source": "synthetic", "features": ["frontmatter", "seoTitle", "seoDescription", "og"] },
+    { "name": "prose-entities-escapes",  "capability": "prose",     "source": "synthetic", "features": ["html-entities", "backslash-escape", "unicode"] },
+    { "name": "prose-real-introduction", "capability": "prose",     "source": "apps/docs/guides/introduction.md", "features": ["headings", "lists", "links", "inline-code"] },
+
+    { "name": "directive-callout",         "capability": "directive", "source": "synthetic", "features": ["callout", "callout-kind"] },
+    { "name": "directive-steps",           "capability": "directive", "source": "synthetic", "features": ["steps", "steps-item", "code-in-step"] },
+    { "name": "directive-tabs",            "capability": "directive", "source": "synthetic", "features": ["tabs", "tab-content"] },
+    { "name": "directive-code-group",      "capability": "directive", "source": "synthetic", "features": ["code-group", "multi-lang"] },
+    { "name": "directive-details",         "capability": "directive", "source": "synthetic", "features": ["details"] },
+    { "name": "directive-subtitle-badge",  "capability": "directive", "source": "synthetic", "features": ["subtitle", "badge", "text-directive"] },
+    { "name": "directive-nested",          "capability": "directive", "source": "synthetic", "features": ["nested-directives", "steps", "code-group", "callout"] },
+
+    { "name": "async-include",             "capability": "async", "source": "synthetic", "features": ["@include"], "note": "resolves the local ./partial.md relative to input.mdx" },
+    { "name": "async-changelog",           "capability": "async", "source": "synthetic", "features": ["@changelog"], "note": "reads the local ./changelog.md" },
+    { "name": "async-frontmatter-uniform", "capability": "async", "source": "synthetic", "features": ["uniform-frontmatter", "openapi"], "note": "DEGRADED headless: the composer meta-component registry is not active outside plugin-docs, so the OpenAPI reference is not composed. Captures current headless behavior; exempt from the gate." },
+    { "name": "async-component-atlas",     "capability": "async", "source": "synthetic", "features": ["component-atlas"], "note": "DEGRADED headless: 'component: atlas' meta component is not registered outside plugin-docs. Captured for coverage; exempt from the gate." }
+  ]
+}

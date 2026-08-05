@@ -1,0 +1,19 @@
+{
+  "name": "prose-lists",
+  "capability": "prose",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 2328,
+    "sha256": "16e33c2a75123a0e1d4175f07c6db490abe57bd47556adb42e530cdf0507af4f"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 466,
+    "sha256": "24371f6d7f0c9e5c69a829bd36420ac7c17eb817e99c3d150a9f2214ca055c2a"
+  }
+}
