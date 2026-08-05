@@ -60,7 +60,7 @@ fn request_body_fields<'a>(method: &'a Value, types: &'a Types) -> Vec<&'a Value
     Vec::new()
 }
 
-fn method_encoding(method: &Value, plan: &OperationPlan, types: &Types) -> &'static str {
+pub(crate) fn method_encoding(method: &Value, plan: &OperationPlan, types: &Types) -> &'static str {
     let mut encoding = plan.encoding.unwrap_or("json");
     if encoding == "json"
         && request_body_fields(method, types)

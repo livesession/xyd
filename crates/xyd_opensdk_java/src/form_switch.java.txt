@@ -1,0 +1,16 @@
+      switch (request.encoding) {
+        case "multipart": {
+          Multipart multipart = encodeMultipart(asMap(request.body));
+          payload = multipart.body;
+          contentType = multipart.contentType;
+          break;
+        }
+        case "form":
+          payload = encodeForm(asMap(request.body));
+          contentType = "application/x-www-form-urlencoded";
+          break;
+        default:
+          payload = Json.encode(request.body).getBytes(StandardCharsets.UTF_8);
+          contentType = "application/json";
+          break;
+      }

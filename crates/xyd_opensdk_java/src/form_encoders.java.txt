@@ -1,0 +1,82 @@
+  @SuppressWarnings("unchecked")
+  private static Map<String, Object> asMap(Object value) {
+    return (Map<String, Object>) value;
+  }
+
+  /** application/x-www-form-urlencoded: repeated keys for list values, JSON for compound values. */
+  private static byte[] encodeForm(Map<String, Object> body) {
+    StringBuilder sb = new StringBuilder();
+    for (Map.Entry<String, Object> entry : body.entrySet()) {
+      Object value = entry.getValue();
+      if (value instanceof Iterable) {
+        for (Object item : (Iterable<?>) value) {
+          appendForm(sb, entry.getKey(), item);
+        }
+      } else {
+        appendForm(sb, entry.getKey(), value);
+      }
+    }
+    return sb.toString().getBytes(StandardCharsets.UTF_8);
+  }
+
+  private static void appendForm(StringBuilder sb, String key, Object value) {
+    if (sb.length() > 0) {
+      sb.append('&');
+    }
+    sb.append(encodeQuery(key)).append('=').append(encodeQuery(formValue(value)));
+  }
+
+  private static String formValue(Object value) {
+    if (value instanceof byte[]) {
+      return new String((byte[]) value, StandardCharsets.UTF_8);
+    }
+    if (value instanceof Map || value instanceof Iterable) {
+      return Json.encode(value);
+    }
+    return String.valueOf(value);
+  }
+
+  /** A hand-built multipart/form-data body: byte[] values become file parts, everything else a field. */
+  private static Multipart encodeMultipart(Map<String, Object> body) {
+    String boundary = "----opensdk" + UUID.randomUUID().toString().replace("-", "");
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    try {
+      for (Map.Entry<String, Object> entry : body.entrySet()) {
+        Object value = entry.getValue();
+        if (value instanceof Iterable) {
+          for (Object item : (Iterable<?>) value) {
+            writePart(out, boundary, entry.getKey(), item);
+          }
+        } else {
+          writePart(out, boundary, entry.getKey(), value);
+        }
+      }
+      out.write(("--" + boundary + "--\r\n").getBytes(StandardCharsets.UTF_8));
+    } catch (IOException e) {
+      throw new ApiException(0, "multipart encoding failed: " + e.getMessage());
+    }
+    return new Multipart(out.toByteArray(), "multipart/form-data; boundary=" + boundary);
+  }
+
+  private static void writePart(ByteArrayOutputStream out, String boundary, String name, Object value) throws IOException {
+    out.write(("--" + boundary + "\r\n").getBytes(StandardCharsets.UTF_8));
+    if (value instanceof byte[]) {
+      out.write(("Content-Disposition: form-data; name=\"" + name + "\"; filename=\"" + name + "\"\r\n").getBytes(StandardCharsets.UTF_8));
+      out.write("Content-Type: application/octet-stream\r\n\r\n".getBytes(StandardCharsets.UTF_8));
+      out.write((byte[]) value);
+    } else {
+      out.write(("Content-Disposition: form-data; name=\"" + name + "\"\r\n\r\n").getBytes(StandardCharsets.UTF_8));
+      out.write(formValue(value).getBytes(StandardCharsets.UTF_8));
+    }
+    out.write("\r\n".getBytes(StandardCharsets.UTF_8));
+  }
+
+  private static final class Multipart {
+    final byte[] body;
+    final String contentType;
+
+    Multipart(byte[] body, String contentType) {
+      this.body = body;
+      this.contentType = contentType;
+    }
+  }

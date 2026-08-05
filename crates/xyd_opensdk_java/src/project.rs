@@ -3,6 +3,7 @@
 
 use serde_json::Value;
 
+use crate::behavior::resolve_behavior;
 use crate::ir::{str_field, Types};
 use crate::jsrt::java_package_name;
 
@@ -14,6 +15,15 @@ pub struct JavaCtx {
     pub types: Types,
     pub base_url: String,
     pub env_var: Option<String>,
+    /// The resolved `ResolvedSdkBehavior` block (defaults ⊕ `spec.sdk`); drives
+    /// the vendored runtime's retry/timeout/error/user-agent policy.
+    pub behavior: Value,
+    /// The normalized auth scheme kind (bearer | apiKey-header | ...), or None.
+    pub auth_kind: Option<String>,
+    /// The header/query name for apiKey auth, or None.
+    pub auth_name: Option<String>,
+    /// The SDK identifier baked into the User-Agent, e.g. "petstore-java/1.2.0".
+    pub user_agent: String,
 }
 
 pub fn resolve_java_options(spec: &Value, types: Types) -> JavaCtx {
@@ -40,6 +50,31 @@ pub fn resolve_java_options(spec: &Value, types: Types) -> JavaCtx {
         .and_then(|s| str_field(s, "envVar"))
         .map(|s| s.to_string());
 
+    let security = spec
+        .get("security")
+        .and_then(|s| s.as_array())
+        .and_then(|a| a.first());
+    let auth_kind = security
+        .and_then(|s| str_field(s, "kind"))
+        .map(|s| s.to_string());
+    let auth_name = security
+        .and_then(|s| str_field(s, "name"))
+        .map(|s| s.to_string());
+
+    let behavior = resolve_behavior(spec);
+    let version = str_field(spec.get("info").unwrap_or(&Value::Null), "version")
+        .filter(|v| !v.is_empty())
+        .unwrap_or("0.0.0");
+    let template = behavior
+        .get("userAgent")
+        .and_then(|u| u.get("sdkIdentifierTemplate"))
+        .and_then(|t| t.as_str())
+        .unwrap_or("{package}-{language}/{version}");
+    let user_agent = template
+        .replace("{package}", &pkg)
+        .replace("{language}", "java")
+        .replace("{version}", version);
+
     JavaCtx {
         pkg,
         base_package,
@@ -48,6 +83,10 @@ pub fn resolve_java_options(spec: &Value, types: Types) -> JavaCtx {
         types,
         base_url,
         env_var,
+        behavior,
+        auth_kind,
+        auth_name,
+        user_agent,
     }
 }
 

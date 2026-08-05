@@ -1,17 +1,21 @@
 //! Java SDK emitter — OpenSDK IR → generated Java SDK code (Rust port of
-//! `@xyd-js/opensdk-java`, S6+ W7). Ports the SUBSTANTIVE generated-code
-//! capabilities: generateProject (pom.xml), generateClient (Client.java),
-//! generateTypes (POJOs/enums/mapped-union holders) and generateResources
-//! (per-resource services + `<Qualifier><Method>Params` builders).
+//! `@xyd-js/opensdk-java`, S6+ W7). Emits the FULL generated file tree across
+//! the framework capability order: generateProject (pom.xml), generateClient
+//! (Client.java), generateTypes (POJOs/enums/mapped-union holders),
+//! generateResources (per-resource services + `<Qualifier><Method>Params`
+//! builders), generateRuntime (the vendored FIXED runtime — Json.java,
+//! Transport.java, the status-mapped exception hierarchy, the
+//! CursorPage/Page/OffsetPage containers) and generateTests (the SDK's own
+//! dependency-free assertion suite).
 //!
-//! DEFERRED to the JS impl (out of scope, unchanged): generateRuntime (the
-//! vendored FIXED runtime — Json.java, Transport.java, the exception classes,
-//! the CursorPage/Page/OffsetPage containers) and generateTests. `.java` is not
-//! in the framework orchestrator's header-comment map, so `javaFile` applies
-//! the ownership header itself — the file map assembly here matches the JS
-//! `generate()` for the four capabilities it covers.
+//! `.java` is not in the framework orchestrator's header-comment map, so
+//! `javaFile` applies the ownership header itself; `pom.xml` (unknown ext) gets
+//! none — matching the JS `generate()`.
 
+mod behavior;
 mod client;
+mod example;
+mod example_plan;
 mod ir;
 mod javatype;
 mod javawriter;
@@ -19,7 +23,9 @@ mod jsrt;
 mod model;
 mod plan;
 mod project;
+mod runtime;
 mod service;
+mod tests_gen;
 
 use serde_json::Value;
 use std::collections::BTreeMap;
@@ -28,7 +34,9 @@ use client::render_client_file;
 use ir::build_types;
 use model::render_type_files;
 use project::{pom_xml, resolve_java_options};
+use runtime::render_runtime_files;
 use service::render_resource_files;
+use tests_gen::generate_java_tests;
 
 /// Emit the generated-code file map for a Java SDK from an OpenSDK IR document.
 /// Returns `{ relativePath: contents }` for the covered capabilities only (the
@@ -68,6 +76,16 @@ pub fn generate_java(spec: &Value) -> BTreeMap<String, String> {
         .cloned()
         .unwrap_or_default();
     for f in render_resource_files(&resources, &ctx) {
+        put(f.path, f.content);
+    }
+
+    // generateRuntime → Json, exceptions, Transport, page containers
+    for f in render_runtime_files(spec, &ctx) {
+        put(f.path, f.content);
+    }
+
+    // generateTests → the SDK's own assertion suite (one per top-level resource)
+    for f in generate_java_tests(spec, &ctx) {
         put(f.path, f.content);
     }
 
