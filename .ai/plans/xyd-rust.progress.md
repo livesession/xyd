@@ -545,9 +545,28 @@ directive+async→fallback. napi `compile_mdx` + `xyd-content/fs.ts` fast path (
 JS). Serde pinned `=1.0.219` for swc_common (lock gitignored; `cargo check --workspace` clean). Gate =
 Oracle B (rendered HTML); Oracle A won't byte-match (swc vs astring codegen), per the spike.
 
-**NEXT: C-S2 — the multi-week centerpiece.** Fork markdown-rs's 376-state tokenizer to add the `:::`
-directive family + the `<<<name … <<<` outputVars fence as parse-time constructs (a post-pass can't —
-`::atlas{...@uniform()}` hard-errors swc at parse time), then port `mdComponentDirective`/`remarkOutputVars`/
-the `@`-function `@uniform` data-side (→ the already-Rust gql/openapi/opencli/mcp/uniform converters).
-Highlighter-scale + nesting-fidelity risk. Then **C-S3** async cohort (mdComposer/mdCodeRehype/
-mdComponentDirective are now sync since highlight is Rust) → **C-S4** composer→codegen.
+**C-S2 — the multi-week centerpiece. SPIKE + STAGE-1 DONE (the hardest de-risk is landed).**
+- **SPIKE (GO, PoC-proven, independently verified by me):** markdown-rs 1.0.0's 376-state tokenizer CAN
+  be forked to add `:::`/`::` directive constructs. Make-or-break PROVEN via a `mdx_expression_parse`
+  callback: bare `{…}` → 1 swc-callback invocation + hard error (today's behavior); `::atlas{…@uniform(
+  '…',{mini:'…'})}` → **0 invocations → `LeafDirective`** (the directive tokenizer claims `{attrs}`,
+  even a nested `{…}` inside a quoted value, so swc's expression parser is never reached). `[patch]`
+  needs a 2-crate patch (mdxjs also, for the `mdast::Node` exhaustive match); effort ~6–8 weeks
+  (container NESTING fidelity — markdown-rs's fixed 3-variant container machine — + the transform ports
+  dominate).
+- **STAGE-1 (`2222bc64`): the fork is LIVE in `crates/xyd_mdx`.** Vendored `markdown-fork` (~600 LOC
+  patch) + `mdxjs-fork` (2 exhaustiveness arms) into `crates/xyd_mdx/vendor/` (1.8M), wired via
+  **path-deps** (mdxjs-fork→markdown-fork; NO `[patch]` — avoids the dual-lockfile issue; napi picks it
+  up transitively, zero xyd-native manifest change). Ported the GENERIC `mdComponentDirective` path
+  (`getComponentName` + `componentProps` → `mdxJsxFlowElement`, mdast transform pre-hast) for
+  callout/details/subtitle/badge/atlas/etc. **3/7 directive fixtures byte-match `rendered.html`**
+  (callout/details/subtitle-badge; independently re-rendered+diffed); prose 10/11 preserved; the special
+  handlers (tabs/steps/code-group/table), `:::`-nesting, `@uniform`-attrs, expr-attrs → `fallback` (JS
+  unchanged). clippy(-D)/fmt/`cargo check --workspace` green; napi builds the forks.
+
+**NEXT: C-S2 tail** — stage-1b special handlers (`tabs`→Tabs.Item/`mdNav`, `steps`→Steps.Item/`mdSteps`,
+`code-group`→DirectiveCodeGroup/`mdCode`+inline Rust highlight, `table`→Table-JSON/`mdTable` → the other
+3 directive fixtures); stage-1c `:::`-in-`:::` nesting (the hardest — `document.rs` container machine) +
+the `<<<` outputVars fence + the `@uniform` data-side (→ already-Rust converters). Then **C-S3** async
+cohort (mdComposer/mdCodeRehype/mdComponentDirective now sync since highlight is Rust) → **C-S4**
+composer→codegen. Every not-yet-ported case falls back to JS → xyd stays render-compatible throughout.
