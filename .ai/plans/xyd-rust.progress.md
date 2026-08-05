@@ -362,9 +362,35 @@ opensdk-framework ProjectFileMap (path→{content,writeMode}) that JS writeProje
 opensdk-go's shim is blocked on the vendored-runtime port (partial emitter — JS orchestrator needs
 the full file set), so wire it only after the runtime is added.
 
-**NEXT: W7 remaining** — port the opensdk-go vendored runtime (finish that emitter) + the other
-opensdk language emitters (node/python/ruby/java/dotnet/rust, one per chunk) + the framework
-orchestrator/chain; then the napi+shim wiring pass for the codegen generators. Other deferred:
-env/presets/access live-wiring (crate ready, low value); the W4 llms.txt js-yaml/1.1
-consolidation; feed frontmatter batch metadata into buildAccessMap (behavior change — product
-sign-off).
+**W7 — ALL 6 OTHER OPENSDK EMITTERS DONE via a 2nd PARALLEL fork batch** (6 concurrent
+fork+worktree agents, reconciled by copy-in). Same scope as opensdk-go: port the SUBSTANTIVE
+IR→language GENERATED-code emission byte-golden; DEFER the vendored fixed runtime + generated
+tests + napi/shim (JS authoritative). Every fork reported honest per-file counts; all reconciled
+to the workspace (copy dir → workspace deps → member → re-verify) and committed:
+- **xyd_opensdk_node** (2071 LOC): 37/37 files byte-exact across 4 fixtures (query wireName remap,
+  joinCsv, multipart upgrade, union decode, const-literal body, cursor/offset pagination, nested
+  sub-resources, sdk-behavior error names; hand-rolled JSON.stringify pretty-printer for parity).
+- **xyd_opensdk_python** (1337 LOC): 257/257 byte-exact — 15 full-tree + **242 per-method
+  resources.py from the OpenAI complex corpus** (the most thorough; deliberately skipped the
+  -2.complex.openai.full tree since its input is harness-derived, not a committed input.json).
+- **xyd_opensdk_ruby** (880 src LOC): 25 files byte-exact / 4 fixtures.
+- **xyd_opensdk_java** (1994 LOC): 45 files byte-exact / 4 fixtures (the largest —
+  <Qualifier><Method>Params builders, POJOs, mapped-union holders).
+- **xyd_opensdk_dotnet** (1854 LOC): 21 files byte-exact / 4 fixtures (JsonConverter enums,
+  query csv/json/deepObject, .csproj).
+- **xyd_opensdk_rust** (1388 LOC): 18 files byte-exact / 3 fixtures (serde tagged/untagged unions
+  + Other catch-all, null_vec deserializer; emitted-Rust string constants kept verbatim through fmt).
+Unified full workspace after all 6: cargo fmt clean, clippy 0, 58 test-binaries green, 0 failures.
+**10 codegen crates now in the workspace**: openapi2opencli (wired), opencli2go, opencli2rust,
+opensdk_{go,node,python,ruby,java,dotnet,rust}. Together the parallel-fork pattern (fork carries
+full context + worktree isolation; reconcile by COPYING the crate dir, ignore the divergent branch)
+ported ~13k LOC of byte-golden source-code generators across two batches (3 + 6) with honest
+partial reporting (each emitter = generated code; vendored runtime + tests stay JS).
+
+**NEXT: W7 tail** — (a) the vendored fixed runtimes for the 7 emitters (verbatim source constants +
+a little sdk-behavior interpolation — mechanical; makes each emitter produce the FULL file tree);
+(b) the framework orchestrator/chain (generate()/generateFileMap drives the capabilities — could
+stay JS or a thin Rust driver); (c) the napi + JS shim wiring pass for the codegen generators
+(opencli2go clean; opencli2rust needs the ProjectFileMap reshape; opensdk emitters need their
+runtime first). Other deferred: env/presets/access live-wiring; W4 llms.txt js-yaml/1.1;
+buildAccessMap frontmatter metadata (product sign-off).
