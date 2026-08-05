@@ -330,12 +330,41 @@ the encrypted oracle); consumers green in native mode — opensdk-cli 54/55 (dri
 generation through openapi2opencliFromSource) + opencli-remark 22/22; node-free binary (core.node
 2.29MB) + docs regression clean.
 
-**NEXT: W7 remaining chunks** (each its own PR + conformance gate): opencli2go / opencli2rust
-(the Go/Rust CLI GENERATORS — emit source strings via templates; goldens are output.go/output.rs;
-bigger + string-templating not JSON-transform), then the opensdk family (openapi2opensdk IR is
-DONE from W2 rider; remaining = the 7 language emitters + framework orchestrator + chain, ~22.5k
-LOC, one chunk per backend). Note: these GENERATORS run in the opt-in `opensdk`/`opencli` toolchain
-(not the docs product), so no docs-engine byte-diff applies — their conformance suites ARE the gate.
-Deferred: env/presets/access live-wiring (crate ready, low value); the W4 llms.txt js-yaml/1.1
+**W7 chunks 2–4 DONE — three GENERATOR crates landed via PARALLEL worktree forks** (commits
+after openapi2opencli). Spawned 3 worktree-isolated forks (each with my full context) that ran
+concurrently and reported HONESTLY; I reconciled each (copy crate dir → align Cargo.toml to
+workspace deps → add to members → re-verify in the full workspace). All byte-golden (source-code
+parity, not JSON — the hardest target yet):
+- **`crates/xyd_opencli2go`** (commit `after 493d98a5`): OpenCLI → Go CLI file map (urfave/cli v3
+  command tree + functional handlers + the vendored Go runtime as a fixed source asset). 4/4
+  fixtures byte-exact, clippy 0, 1123 LOC. COMPLETE (full file map).
+- **`crates/xyd_opencli2rust`**: OpenCLI → Rust CLI `src/gen/**` file map (clap v4 + reqwest +
+  vendored runtime as byte-exact blob constants); returns per-file WriteMode. 4/4 byte-exact,
+  clippy 0, 1585 LOC + 368-line blobs.rs. COMPLETE (full gen file map).
+- **`crates/xyd_opensdk_go`**: OpenSDK IR → Go SDK GENERATED code (generateProject/Client/Types/
+  Resources + planOperation; the hard parts byte-exact — union discriminator dispatch + Unmarshal
+  helpers, param-struct query/header serialization by type-shape, pagination, idempotency,
+  const-field auto-fill). 21/21 EMITTED files byte-exact across 4 fixtures, clippy 0, 1850 LOC.
+  **PARTIAL BY DESIGN**: the vendored FIXED runtime (option/, internal/requestconfig/,
+  packages/{apijson,pagination,param,apiform}/) and generated *_test.go are NOT emitted (verbatim
+  constants + example scaffolding — mechanical follow-up); tier-1 byte-compares per-file, no faked
+  full-tree match.
+Full workspace after reconcile: cargo fmt clean, clippy 0, 40 test-binaries green, 0 failures.
+Worktree caveat handled: the isolation worktrees were cut from an OLD master ancestor (8d956816,
+pre-crates) so each crate was built STANDALONE (own [workspace] table + inline deps + self-
+contained tier-1) and I copy-reconciled rather than git-merging the divergent branches.
+
+**DEFERRED — napi + JS shims for the three generators** (crates landed + CI-covered via crates/**,
+but NOT yet wired active in the JS toolchain). Notes for the wiring pass: opencli2go is the clean
+one (full file-map JSON out; input is an acyclic OpenCLI doc → shim JSON-stringifies + dispatches;
+gate via opensdk-cli consumer in native mode). opencli2rust needs the returned map reshaped to the
+opensdk-framework ProjectFileMap (path→{content,writeMode}) that JS writeProject consumes.
+opensdk-go's shim is blocked on the vendored-runtime port (partial emitter — JS orchestrator needs
+the full file set), so wire it only after the runtime is added.
+
+**NEXT: W7 remaining** — port the opensdk-go vendored runtime (finish that emitter) + the other
+opensdk language emitters (node/python/ruby/java/dotnet/rust, one per chunk) + the framework
+orchestrator/chain; then the napi+shim wiring pass for the codegen generators. Other deferred:
+env/presets/access live-wiring (crate ready, low value); the W4 llms.txt js-yaml/1.1
 consolidation; feed frontmatter batch metadata into buildAccessMap (behavior change — product
 sign-off).
