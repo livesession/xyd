@@ -313,8 +313,29 @@ pieces are either infeasible (W5 content) or one-shot cheap glue (W6 settings) w
 justify a port. W6 shipped anyway as an explicit user choice for crate completeness. The honest
 signal: the substantial remaining Rust value is **W7 (codegen)**, not more engine-glue waves.
 
-**NEXT: W7 codegen track** (opencli*/opensdk* — large but MECHANICAL LOC, REAL domain logic,
-existing conformance suites as gates; the genuinely-portable remaining value). Deferred: env/
-presets/access live-wiring (crate ready, low value); the W4 llms.txt js-yaml/1.1 consolidation;
-feed frontmatter batch metadata into buildAccessMap to un-break frontmatter access rules (behavior
-change — needs product sign-off).
+**W7 STARTED — codegen track, chunk 1 of N: openapi2opencli is Rust-backed** (commits `493d98a5`
+crate, `02f8ecde` shim, CI `+`). Stage A of the CLI pipeline (OpenAPI → OpenCLI doc), the cleanest
+self-contained entry and the sibling of the W2-rider openapi2opensdk (shared jsrt/naming/schema/
+tree idioms → fast port). `crates/xyd_openapi2opencli` (1210 LOC TS → Rust): command tree
+(nested resources + `-N` leaf dedup + action-rank/localeCompare emit), deriveTarget, parameters
+(path→positional args, query/header/cookie→options + x-openapi param bindings), body (hybrid
+flatten-vs-json + x-openapi.body), response (depth-8 schema sampler → x-openapi.responses example),
+security, x-openapi root. Reuses xyd_openapi's DocCtx for lazy $ref resolution (identity on the
+pre-flattened 5 fixtures; real deref on live specs). Shim like the openapi one: the JS input is the
+CYCLIC deref'd doc, so the native path re-reads from the SOURCE FILE stashed under
+Symbol.for("xyd.openapi.nativeSource") (set by the openapi shim's deferencedOpenAPI); js_name-pinned
+export (napi camelCases digit boundaries); pinned typescript ^5.8.3 (the TS-6.0.3 DTS trap).
+Gates: cargo 5/5 FIRST RUN; vitest 5/5 both modes (native probed; conformance/docs-oracle skip on
+the encrypted oracle); consumers green in native mode — opensdk-cli 54/55 (drives real cli-target
+generation through openapi2opencliFromSource) + opencli-remark 22/22; node-free binary (core.node
+2.29MB) + docs regression clean.
+
+**NEXT: W7 remaining chunks** (each its own PR + conformance gate): opencli2go / opencli2rust
+(the Go/Rust CLI GENERATORS — emit source strings via templates; goldens are output.go/output.rs;
+bigger + string-templating not JSON-transform), then the opensdk family (openapi2opensdk IR is
+DONE from W2 rider; remaining = the 7 language emitters + framework orchestrator + chain, ~22.5k
+LOC, one chunk per backend). Note: these GENERATORS run in the opt-in `opensdk`/`opencli` toolchain
+(not the docs product), so no docs-engine byte-diff applies — their conformance suites ARE the gate.
+Deferred: env/presets/access live-wiring (crate ready, low value); the W4 llms.txt js-yaml/1.1
+consolidation; feed frontmatter batch metadata into buildAccessMap (behavior change — product
+sign-off).
