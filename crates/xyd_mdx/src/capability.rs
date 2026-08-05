@@ -1,17 +1,24 @@
 //! Per-page capability gate (cheap source pre-scan).
 //!
-//! C-S1 supports PROSE only. A page qualifies for the Rust fast path (`full`)
-//! only when it uses none of the constructs that need xyd's JS plugin chain:
-//! `:::` directives, `@`-functions (`@uniform`/`@include`/`@changelog`/
-//! `@importCode`), `component:`/`uniform:`/`openapi:`/`graphql:` frontmatter,
-//! math (needs rehype-katex), or mermaid/graphviz fences (need the JS rehype).
-//! Anything else returns `fallback`, a sentinel telling the JS caller to run
+//! A page qualifies for the Rust fast path (`full`) only when it uses none of
+//! the constructs that need xyd's JS plugin chain: `@`-functions
+//! (`@uniform`/`@include`/`@changelog`/`@importCode`),
+//! `component:`/`uniform:`/`openapi:`/`graphql:` frontmatter, math (needs
+//! rehype-katex), or mermaid/graphviz fences (need the JS rehype). Anything
+//! matched here returns `fallback` — a sentinel telling the JS caller to run
 //! `ContentFS.compileContent` unchanged.
+//!
+//! C-S2 note: `:::`/`::` directives are NO LONGER decided here. The generic
+//! directive port needs the parsed mdast to tell a convertible directive
+//! (`callout`, `details`, …) from a deferred one (special handler, nesting,
+//! expression attribute), so that decision moved into `directives::process`
+//! (run inside `pipeline::compile_full`), which returns `Err` → `fallback` for
+//! the deferred cases. The `@`-function pre-scan still catches the `@uniform`
+//! attribute path (e.g. `::atlas{references="@uniform(…)"}`) before parsing.
 
 /// Reason a page fell back (for diagnostics / honest coverage reporting).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Fallback {
-    Directive,
     Function,
     FrontmatterComponent,
     Math,
@@ -21,7 +28,6 @@ pub enum Fallback {
 impl Fallback {
     pub fn as_str(&self) -> &'static str {
         match self {
-            Fallback::Directive => "directive",
             Fallback::Function => "function",
             Fallback::FrontmatterComponent => "frontmatter-component",
             Fallback::Math => "math",
@@ -119,18 +125,6 @@ fn has_diagram_fence(body: &str) -> bool {
     false
 }
 
-/// True when the body uses a `:::`-style directive (container/leaf/text).
-fn has_directive(body: &str) -> bool {
-    // Block/leaf directive: a line whose first non-space content is `:::`.
-    for raw in body.lines() {
-        if raw.trim_start().starts_with(":::") {
-            return true;
-        }
-    }
-    // Inline text directive: `:::name[...]` anywhere (e.g. `Status: :::badge[Beta]`).
-    body.contains(":::")
-}
-
 /// True when the body calls an xyd `@`-function.
 fn has_function(body: &str) -> bool {
     for name in ["@uniform", "@include", "@changelog", "@importCode"] {
@@ -150,9 +144,6 @@ pub fn scan(source: &str) -> Option<Fallback> {
         if frontmatter_forces_fallback(front) {
             return Some(Fallback::FrontmatterComponent);
         }
-    }
-    if has_directive(body) {
-        return Some(Fallback::Directive);
     }
     if has_function(body) {
         return Some(Fallback::Function);

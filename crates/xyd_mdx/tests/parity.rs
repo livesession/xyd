@@ -2,18 +2,31 @@
 //! `packages/xyd-content/__fixtures__/mdx-parity`, run `xyd_mdx::compile_mdx`
 //! and check it against the JS-owned oracle.
 //!
-//! Gate rule (C-S1):
+//! Gate rule (C-S1 + C-S2 stage-1):
 //!
 //! - `prose`: Rust must return `full`, and its compiled function-body, rendered
 //!   through the COMMITTED JS harness (Oracle B), must byte-match
 //!   `rendered.html`. The ONE documented exception is a page that needs KaTeX (a
 //!   JS rehype step): it returns `fallback` with reason `math` and is tracked as
 //!   a gap, not a failure.
-//! - `directive`: Rust must return `fallback` (C-S2 not built).
+//! - `directive` (C-S2 stage-1): whatever Rust returns `full` MUST render
+//!   byte-equal to `rendered.html` (a `full` that renders wrong is a FAILURE —
+//!   this is what keeps the coverage honest / un-riggable). Directives outside
+//!   the generic port (special handlers `tabs`/`steps`/`code-group`, `:::`-in-
+//!   `:::` nesting) return `fallback` and are tracked as deferred, not failures.
+//!   A floor assertion pins the generic directives that MUST stay `full`.
 //! - `async`: Rust must return `fallback` (C-S3/S4 not built).
 //!
 //! Oracle A (compiled JS) is intentionally NOT gated: swc codegen differs
 //! cosmetically from astring, but the rendered DOM is identical.
+
+/// Directive fixtures the GENERIC stage-1 port MUST compile `full` + render at
+/// parity. A regression to `fallback` here fails the gate.
+const DIRECTIVE_FULL_FLOOR: [&str; 3] = [
+    "directive-callout",
+    "directive-details",
+    "directive-subtitle-badge",
+];
 
 use std::fs;
 use std::io::Write;
@@ -108,6 +121,9 @@ fn mdx_parity_gate() {
     let mut prose_gap: Vec<String> = Vec::new(); // documented (math) fallbacks
     let mut failures: Vec<String> = Vec::new();
     let mut nonprose_ok = 0usize;
+    let mut directive_total = 0usize;
+    let mut directive_full: Vec<String> = Vec::new(); // rendered at parity
+    let mut directive_deferred: Vec<String> = Vec::new(); // returned fallback
 
     for dir in &dirs {
         let name = dir.file_name().unwrap().to_string_lossy().to_string();
@@ -157,16 +173,41 @@ fn mdx_parity_gate() {
                     ));
                 }
             }
-            "directive" | "async" => {
-                if out.capability == xyd_mdx::CAP_FALLBACK {
-                    nonprose_ok += 1;
+            "directive" => {
+                directive_total += 1;
+                if out.capability == xyd_mdx::CAP_FULL {
+                    let golden = read(&dir.join("rendered.html"));
+                    match node_render(&name, &out.compiled) {
+                        Ok(rendered) => {
+                            let g = trim_trailing_newlines(&golden);
+                            let r = trim_trailing_newlines(&rendered);
+                            if g == r {
+                                directive_full.push(name.clone());
+                                println!("PASS  {name}  (directive full, rendered-HTML parity)");
+                            } else {
+                                failures.push(format!(
+                                    "MISS  {name}  (directive full but rendered HTML differs)\n{}",
+                                    first_diff(g, r)
+                                ));
+                            }
+                        }
+                        Err(e) => failures.push(format!("ERROR {name}  render failed: {e}")),
+                    }
+                } else {
+                    directive_deferred.push(format!("{name} (reason={:?})", out.reason));
                     println!(
-                        "PASS  {name}  ({capability} -> fallback, reason={:?})",
+                        "DEFER {name}  (directive -> fallback, reason={:?})",
                         out.reason
                     );
+                }
+            }
+            "async" => {
+                if out.capability == xyd_mdx::CAP_FALLBACK {
+                    nonprose_ok += 1;
+                    println!("PASS  {name}  (async -> fallback, reason={:?})", out.reason);
                 } else {
                     failures.push(format!(
-                        "MISS  {name}  ({capability} must be fallback, got {})",
+                        "MISS  {name}  (async must be fallback, got {})",
                         out.capability
                     ));
                 }
@@ -175,12 +216,34 @@ fn mdx_parity_gate() {
         }
     }
 
-    println!("\n=== C-S1 MDX parity summary ===");
+    println!("\n=== MDX parity summary (C-S1 prose + C-S2 stage-1 directive) ===");
     println!("prose: {prose_full_match}/{prose_total} at rendered-HTML parity (Oracle B)",);
     if !prose_gap.is_empty() {
         println!("prose documented gaps (fallback): {}", prose_gap.join(", "));
     }
-    println!("directive+async -> fallback: {nonprose_ok} ok");
+    println!(
+        "directive: {}/{} at rendered-HTML parity (full: [{}])",
+        directive_full.len(),
+        directive_total,
+        directive_full.join(", ")
+    );
+    if !directive_deferred.is_empty() {
+        println!(
+            "directive deferred -> fallback: {}",
+            directive_deferred.join(", ")
+        );
+    }
+    println!("async -> fallback: {nonprose_ok} ok");
+
+    // Floor: the generic directives MUST stay `full` + at parity (no silent
+    // regression to fallback).
+    for name in DIRECTIVE_FULL_FLOOR {
+        if !directive_full.iter().any(|n| n == name) {
+            failures.push(format!(
+                "MISS  {name}  (expected generic directive at `full` parity, but it was not)"
+            ));
+        }
+    }
 
     assert!(
         failures.is_empty(),

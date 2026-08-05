@@ -14,6 +14,7 @@
 //! DOM is identical.
 
 mod capability;
+mod directives;
 mod fb;
 mod highlight;
 mod meta;
@@ -104,12 +105,50 @@ mod tests {
     }
 
     #[test]
+    fn directive_callout_multi_paragraph_keeps_blank_line() {
+        // The fork's raw content child collapses the blank line (two paragraphs
+        // would merge into one); the position-sliced body preserves it, so the
+        // callout body compiles as TWO paragraphs.
+        let src = ":::callout\nPara one.\n\nPara two.\n:::\n";
+        let out = compile_mdx(src, "{}");
+        assert_eq!(out.capability, CAP_FULL, "reason={:?}", out.reason);
+        let paras = out.compiled.matches("_components.p").count();
+        assert!(
+            paras >= 2,
+            "expected 2 paragraphs in callout body, got {paras}\n{}",
+            out.compiled
+        );
+    }
+
+    #[test]
+    fn directive_callout_compiles_full() {
+        let out = compile_mdx(":::callout\nHi **there**.\n:::\n", "{}");
+        assert_eq!(out.capability, CAP_FULL, "reason={:?}", out.reason);
+        assert!(out.compiled.contains("Callout"));
+    }
+
+    #[test]
+    fn directive_steps_falls_back() {
+        // Special handler → deferred to JS.
+        let out = compile_mdx(":::steps\n1. one\n:::\n", "{}");
+        assert_eq!(out.capability, CAP_FALLBACK);
+        assert_eq!(
+            out.reason.as_deref(),
+            Some("directive special-handler `steps`")
+        );
+    }
+
+    #[test]
     fn scan_fallbacks() {
-        assert!(capability::scan(":::callout\nhi\n:::").is_some());
         assert!(capability::scan("---\ncomponent: atlas\n---\n# x").is_some());
         assert!(capability::scan("# x\n\n@include \"./p.md\"").is_some());
+        // `@uniform` inside a directive attribute is still caught pre-parse.
+        assert!(capability::scan("::atlas{references=\"@uniform('./x.ts')\"}").is_some());
         assert!(capability::scan("inline $a^2$ math").is_some());
         assert!(capability::scan("```mermaid\ngraph\n```").is_some());
+        // C-S2: plain `:::` directives are NOT decided here — the pipeline's
+        // `directives::process` classifies them post-parse.
+        assert!(capability::scan(":::callout\nhi\n:::").is_none());
         assert!(capability::scan("# Just prose\n\nHello.").is_none());
     }
 }

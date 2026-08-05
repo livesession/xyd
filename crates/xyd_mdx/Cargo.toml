@@ -15,8 +15,16 @@ serde = { version = "=1.0.219", features = ["derive"] }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
 serde_yaml = "0.9"
-mdxjs = "=1.0.4"
-markdown = "=1.0.0"
+# C-S2: vendored forks under vendor/ add parse-time `:::`/`::` directive
+# constructs to markdown-rs (markdown-fork) + the 2 exhaustiveness arms mdxjs
+# needs to compile against the extra mdast::Node variants (mdxjs-fork). mdxjs-fork
+# path-depends on markdown-fork, and this crate path-depends on the SAME
+# markdown-fork, so cargo unifies them into one `markdown` — no `[patch.crates-io]`
+# (which would have to live in the workspace root AND the separate xyd-native
+# lockfile). Public API is unchanged mdxjs 1.0.4; the decomposed pipeline calls
+# in src/pipeline.rs are identical.
+mdxjs = { path = "vendor/mdxjs-fork" }
+markdown = { path = "vendor/markdown-fork" }
 rustc-hash = "2"
 swc_core = { version = "=27.0.6", features = ["common", "ecma_ast", "ecma_codegen", "ecma_parser", "ecma_visit"] }
 xyd_highlight = { path = "../xyd_highlight" }

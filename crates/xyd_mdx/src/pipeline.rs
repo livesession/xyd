@@ -21,7 +21,7 @@ use mdxjs::{
 use rustc_hash::FxHashSet;
 use swc_core::common::Span;
 
-use crate::{fb, highlight, meta, swc_pass, transforms};
+use crate::{directives, fb, highlight, meta, swc_pass, transforms};
 
 /// mdxjs options mirroring xyd's prose-relevant plugin set: GFM (tables,
 /// task-lists, strikethrough, autolinks, footnotes) + frontmatter. Math and the
@@ -46,13 +46,21 @@ fn options() -> Options {
 pub fn compile_full(source: &str, highlight_theme: &str) -> Result<String, String> {
     let opts = options();
 
-    let mdast = mdast_util_from_mdx(source, &opts).map_err(|e| format!("mdast: {e}"))?;
-    let mut hast = mdast_util_to_hast(&mdast);
+    let mut mdast = mdast_util_from_mdx(source, &opts).map_err(|e| format!("mdast: {e}"))?;
 
-    // Post-parse guard: prose has no MDX JSX/expression/ESM nodes.
-    if transforms::has_mdx_nodes(&hast) {
+    // Pre-transform guard (mdast level): a page with RAW author MDX
+    // (JSX/expression/ESM) needs the full JS pipeline. Checked BEFORE the
+    // directive transform, which legitimately introduces `MdxJsxFlowElement`s.
+    if directives::has_raw_mdx(&mdast) {
         return Err("mdx jsx/expression/esm node present".to_string());
     }
+
+    // C-S2 stage-1: rewrite GENERIC `:::`/`::` directives to `MdxJsxFlowElement`.
+    // `Err` => a construct outside the generic scope (special handler / nesting /
+    // expression attribute / unsupported) — defer to JS.
+    directives::process(&mut mdast, &opts, source)?;
+
+    let mut hast = mdast_util_to_hast(&mdast);
 
     let headings = transforms::apply(&mut hast);
     highlight::embed(&mut hast, highlight_theme);

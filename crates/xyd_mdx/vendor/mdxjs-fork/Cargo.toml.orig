@@ -1,0 +1,31 @@
+[dependencies]
+markdown = "1"
+rustc-hash = "2"
+serde = { optional = true, version = "1" }
+swc_core = { features = [
+  "common",
+  "ecma_ast",
+  "ecma_codegen",
+  "ecma_parser",
+  "ecma_visit",
+], version = "27" }
+
+[dev-dependencies]
+pretty_assertions = "1"
+
+[features]
+serializable = ["serde"]
+
+[package]
+authors = ["Titus Wormer <tituswormer@gmail.com>"]
+categories = ["compilers", "text-processing"]
+description = "Compile MDX to JavaScript in Rust."
+edition = "2018"
+homepage = "https://github.com/wooorm/mdxjs-rs"
+include = ["license", "src/"]
+keywords = ["compile", "markdown", "mdx"]
+license = "MIT"
+name = "mdxjs"
+repository = "https://github.com/wooorm/mdxjs-rs"
+rust-version = "1.56"
+version = "1.0.4"

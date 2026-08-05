@@ -97,18 +97,6 @@ fn set_string_prop_front(el: &mut Element, key: &str, value: String) {
         .insert(0, (key.to_string(), PropertyValue::String(value)));
 }
 
-/// Detect MDX JSX / expression passthrough nodes anywhere in the tree. Prose
-/// pages have none; their presence means the page needs the full JS pipeline.
-pub fn has_mdx_nodes(node: &Node) -> bool {
-    match node {
-        Node::MdxJsxElement(_) | Node::MdxExpression(_) | Node::MdxjsEsm(_) => true,
-        _ => node
-            .children()
-            .map(|c| c.iter().any(has_mdx_nodes))
-            .unwrap_or(false),
-    }
-}
-
 /// Apply the hast transforms in-place; returns the headings (for toc).
 pub fn apply(root: &mut Node) -> Vec<Heading> {
     let mut slugger = Slugger::new();
