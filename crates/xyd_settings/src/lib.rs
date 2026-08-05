@@ -2,12 +2,19 @@
 //! logic for the **docs.json** path (docs.ts/tsx stay JS: their live modules
 //! carry non-serializable functions/React components a JSON boundary drops).
 //!
-//! Four pure transforms, each a drop-in for its JS call site:
+//! Pure transforms, each a drop-in for its JS call site:
 //! - `env` — `replaceEnvVars` (`$VAR` substitution; env passed in from JS)
-//! - `presets` — the SYNC presets (ensureNavigation/head/basename; syntax
-//!   highlight stays JS, it's async fetch/fs)
+//! - `presets` — the SYNC presets (ensureNavigation/head/basename/diagrams;
+//!   syntax highlight stays JS, it's async fetch/fs)
 //! - `pagemap` — `mapNavigationToPagePathMapping` (the batched nav→file walk)
 //! - `access` — `buildAccessMap` (glob rules)
+//! - `plugins` — `integrationsToPlugins`/`accessControlToPlugins` (the pure
+//!   config→plugin-specifier maps that seed `appInit`'s plugin list)
+//!
+//! The `appInit` contribution merge (utils.ts ~456-577) that CONSUMES those
+//! plugin specifiers is deliberately NOT here: it operates on live JS module
+//! values (React components, remark/rehype/hook functions) that a JSON boundary
+//! would drop, so it stays JS.
 //!
 //! This is architectural-completeness work: the per-invocation cost is
 //! one-shot (appInit), so the value is a publishable, complete Rust settings
@@ -17,6 +24,7 @@
 pub mod access;
 pub mod env;
 pub mod pagemap;
+pub mod plugins;
 pub mod presets;
 
 use serde_json::{Map, Value};

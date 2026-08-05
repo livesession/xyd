@@ -8,6 +8,12 @@ export declare class Watcher {
   stop(): void
 }
 
+/**
+ * `accessControlToPlugins(accessControl)` — single `[specifier, config]` when
+ * present, else `[]`.
+ */
+export declare function accessControlToPlugins(accessControlJson: string): string
+
 /** `buildAccessMap(pagePathMapping, metadataMap, config)`. */
 export declare function buildAccessMap(mappingJson: string, metadataJson: string, configJson: string): string
 
@@ -47,6 +53,13 @@ export declare function hello(name: string): string
 
 /** Highlight `value` (lang + meta) with `theme_json` → `HighlightedCode` JSON. */
 export declare function highlight(value: string, lang: string, meta: string, themeJson: string): string
+
+/**
+ * `integrationsToPlugins(integrations)` — pure config→plugin-specifier array.
+ * Throws (JS) when more than one search integration is configured, mirroring
+ * the JS `throw new Error("Only one search integration is allowed")`.
+ */
+export declare function integrationsToPlugins(integrationsJson: string): string
 
 /** A single classified change delivered to JS. */
 export interface JsChange {

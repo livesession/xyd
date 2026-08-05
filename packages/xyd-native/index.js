@@ -701,6 +701,7 @@ if (!nativeBinding) {
 
 module.exports = nativeBinding
 module.exports.Watcher = nativeBinding.Watcher
+module.exports.accessControlToPlugins = nativeBinding.accessControlToPlugins
 module.exports.buildAccessMap = nativeBinding.buildAccessMap
 module.exports.classify = nativeBinding.classify
 module.exports.createWatcher = nativeBinding.createWatcher
@@ -710,6 +711,7 @@ module.exports.getThemeColors = nativeBinding.getThemeColors
 module.exports.gqlSchemaToReferences = nativeBinding.gqlSchemaToReferences
 module.exports.hello = nativeBinding.hello
 module.exports.highlight = nativeBinding.highlight
+module.exports.integrationsToPlugins = nativeBinding.integrationsToPlugins
 module.exports.mapNavigationToPagePathMapping = nativeBinding.mapNavigationToPagePathMapping
 module.exports.mcpToReferences = nativeBinding.mcpToReferences
 module.exports.oapSchemaToReferencesFromFile = nativeBinding.oapSchemaToReferencesFromFile

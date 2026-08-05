@@ -1,0 +1,11 @@
+{
+  "theme": {
+    "name": "poetry"
+  },
+  "integrations": {
+    "diagrams": true
+  },
+  "navigation": {
+    "sidebar": ["docs/intro"]
+  }
+}

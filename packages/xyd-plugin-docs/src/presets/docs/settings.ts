@@ -10,6 +10,8 @@ import { getThemeColors } from "./themeColors";
 import { Settings } from "@xyd-js/core";
 import { replaceEnvVars } from "@xyd-js/cli-sdk";
 
+import { settingsNative } from "../../native";
+
 const extensions = ["tsx", "ts", "json"];
 
 /**
@@ -147,24 +149,59 @@ async function fastServeSetup(currentSettings: Settings | null) {
 }
 
 function postLoadSetup(settings: Settings) {
-    // Replace environment variables in the settings
-    const processedSettings = replaceEnvVars(settings);
-    presets(processedSettings);
+    // S6+ C-S5: the env substitution + sync presets data-plane runs in Rust
+    // (crates/xyd_settings::process_settings) when the native core is present;
+    // the JS branch below is the byte-identical fidelity reference + fallback.
+    // XYD_NATIVE=0 (or a missing addon) → JS path.
+    const nativeProcessed = nativeProcessSettings(settings);
+    const processedSettings: Settings = nativeProcessed ?? postLoadSetupJS(settings);
+
+    // The async syntax-highlight step (fetch/fs + @code-hike getThemeColors,
+    // with a globalThis.__xydUserPreferences side effect) STAYS JS in BOTH
+    // modes — it is not part of the serializable data plane.
+    const syntaxHighlight = processedSettings?.theme?.coder?.syntaxHighlight;
+    if (syntaxHighlight && typeof syntaxHighlight === "string") {
+        handleSyntaxHighlight(syntaxHighlight, processedSettings);
+    }
 
     return processedSettings;
 }
 
-// if (settings?.theme?.coder?.syntaxHighlight) {
-
-// }
-
-function presets(settings: Settings) {
-    if (
-        settings?.theme?.coder?.syntaxHighlight &&
-        typeof settings.theme.coder.syntaxHighlight === "string"
-    ) {
-        handleSyntaxHighlight(settings.theme.coder.syntaxHighlight, settings);
+// Native `process_settings` (replaceEnvVars + presetsSyncData) over a JSON
+// boundary. `process.env` is snapshotted so Rust reads exactly what the JS
+// `replaceEnvVars` would (it reads `process.env[VAR]` directly). Returns null
+// when the native core is unavailable / disabled, so the caller falls back.
+function nativeProcessSettings(settings: Settings): Settings | null {
+    if (!settingsNative?.processSettings) {
+        return null;
     }
+    const env: Record<string, string> = {};
+    for (const [key, value] of Object.entries(process.env)) {
+        if (typeof value === "string") {
+            env[key] = value;
+        }
+    }
+    return JSON.parse(
+        settingsNative.processSettings(JSON.stringify(settings), JSON.stringify(env))
+    ) as Settings;
+}
+
+/**
+ * The JS-owned data-plane oracle: `replaceEnvVars` + the SYNC presets, WITHOUT
+ * the async syntax-highlight side effect. This is what the Rust
+ * `process_settings` mirrors byte-for-byte; it is also the parity oracle for
+ * the cargo + both-mode tests. Deterministic given `process.env`.
+ */
+export function postLoadSetupJS(settings: Settings): Settings {
+    const processedSettings = replaceEnvVars(settings);
+    presetsSyncData(processedSettings);
+    return processedSettings;
+}
+
+/** The deterministic sync mutations of `presets()` (everything except the
+ * async syntax-highlight trigger). Kept separate so the native path and the
+ * oracle can share the exact same normalization. */
+export function presetsSyncData(settings: Settings) {
     ensureNavigation(settings);
 
     if (settings?.theme && !settings?.theme?.head?.length) {

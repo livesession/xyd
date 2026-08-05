@@ -1,10 +1,14 @@
 //! The SYNC parts of `presets()` — port of the pure normalizations in
-//! packages/xyd-documan/src/settings.ts. `handleSyntaxHighlight` (async
-//! fetch/fs + @code-hike getThemeColors) STAYS JS and runs separately in the
-//! shim; only the deterministic mutations are here:
+//! packages/xyd-plugin-docs/src/presets/docs/settings.ts (the LIVE copy used by
+//! `appInit` via `readSettings` from `@xyd-js/plugin-docs`; a stale identical
+//! copy in xyd-documan/src/settings.ts is dead code and lacks the diagrams
+//! default below). `handleSyntaxHighlight` (async fetch/fs + @code-hike
+//! getThemeColors) STAYS JS and runs separately in the shim; only the
+//! deterministic mutations are here:
 //!   - ensureNavigation: webeditor={} , navigation={sidebar:[]} , sidebar=[]
 //!   - theme.head = [] when theme exists and head is empty/absent
 //!   - ensureBasename: prefix theme.logo / theme.favicon with advanced.basename
+//!   - diagrams default: `integrations.diagrams === true` → `["mermaid"]`
 
 use serde_json::{Map, Value};
 
@@ -56,6 +60,27 @@ pub fn presets(settings: &mut Value) {
     }
 
     ensure_basename(settings);
+
+    ensure_diagrams_default(settings);
+}
+
+/// `if (typeof integrations.diagrams === "boolean" && integrations.diagrams)
+/// integrations.diagrams = ["mermaid"]` — enable mermaid only by default. Only
+/// the boolean-`true` case is normalized; `false`, arrays, and objects (e.g.
+/// `{ ".config": … }`) pass through untouched, matching the JS `typeof` guard.
+fn ensure_diagrams_default(settings: &mut Value) {
+    let Some(integrations) = settings
+        .get_mut("integrations")
+        .and_then(|i| i.as_object_mut())
+    else {
+        return;
+    };
+    if integrations.get("diagrams") == Some(&Value::Bool(true)) {
+        integrations.insert(
+            "diagrams".into(),
+            Value::Array(vec![Value::String("mermaid".into())]),
+        );
+    }
 }
 
 /// `ensureNavigation`: webeditor default {}, navigation default {sidebar:[]},
@@ -176,6 +201,36 @@ mod tests {
         presets(&mut s);
         assert_eq!(s["theme"]["logo"], json!("/docs/logo.svg"));
         assert_eq!(s["theme"]["favicon"], json!("/docs/fav.ico"));
+    }
+
+    #[test]
+    fn diagrams_true_becomes_mermaid_array() {
+        let mut s = json!({ "integrations": { "diagrams": true } });
+        presets(&mut s);
+        assert_eq!(s["integrations"]["diagrams"], json!(["mermaid"]));
+    }
+
+    #[test]
+    fn diagrams_non_boolean_untouched() {
+        // false, arrays, and objects pass through (matches the `typeof` guard).
+        let mut s = json!({ "integrations": { "diagrams": false } });
+        presets(&mut s);
+        assert_eq!(s["integrations"]["diagrams"], json!(false));
+
+        let mut s2 = json!({ "integrations": { "diagrams": ["mermaid", "graphviz"] } });
+        presets(&mut s2);
+        assert_eq!(
+            s2["integrations"]["diagrams"],
+            json!(["mermaid", "graphviz"])
+        );
+
+        let mut s3 =
+            json!({ "integrations": { "diagrams": { ".config": { "interactive": true } } } });
+        presets(&mut s3);
+        assert_eq!(
+            s3["integrations"]["diagrams"],
+            json!({ ".config": { "interactive": true } })
+        );
     }
 
     #[test]
