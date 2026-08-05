@@ -642,3 +642,42 @@ routes to the already-Rust converters (gql/openapi/opencli/mcp/uniform; TypeDoc 
 stays JS). `mdComposer`/`mdCodeRehype`/`mdComponentDirective` are already sync (highlight is Rust). The
 `uniform:`/`component: atlas` pages need **C-S4** (composer meta-components → codegen, emit the compiled
 module instead of build-time React). Every unported case falls back to JS → xyd stays render-compatible.
+
+## Three parallel "missing pieces" tracks (2026-08-06) — all landed + merged
+
+Ran 3 independent tracks concurrently (2 worktree-isolated code, 1 read-only research), each
+verified independently before merge.
+
+**Track 1 — `oas-to-snippet` → Rust (`a77d497d`).** New crate `crates/xyd_oas_snippet`: a faithful
+port of `@readme/oas-to-snippet@28.0.4` + the 4 `@readme/httpsnippet@11.1.0` clients xyd uses
+(shell/curl, javascript/fetch, python/requests, go/native) — HAR builder (`har.rs`), param-style
+serializer (`style.rs`), httpsnippet `prepare()` (`prepare.rs`), `stringify-object` port, the curl
+5-space-indent quirk. Byte-parity gate: `oracle/gen.mjs` freezes goldens from the REAL `oasToSnippet`
+over a 20-case corpus; `tests/parity.rs` = **160/160 snippets byte-identical** (80 full-spec + 80
+sliced), 0 divergences. Wired napi `oasToSnippet` + `oas-examples.ts` dispatches native-first, JS
+fallback for circular specs / missing addon. Key finding: xyd always passes `auth=null` (security is a
+no-op) and `escapeBrackets` is dead in httpsnippet@11. This unblocks the openapi-atlas composer tail
+(the last Track-C `fallback`) AND makes endpoint examples native. Out of scope: multipart/file uploads.
+
+**Track 2 — client-side Rust highlighter, configurable (`5e9c1d21`, `fd094b00`, `236bcf4a`).**
+Naive `onig_sys`→wasm32 is a proven hard blocker (no libc: `stdlib.h` not found). Solution: a swappable
+scanner backend in `xyd_highlight` — `native-onig` (default) keeps the server/napi path BYTE-IDENTICAL;
+`js-scanner` delegates the TextMate regex to onig.wasm (the same Oniguruma codehike ships) ⇒ same tokens.
+New `crates/xyd_highlight_wasm` (workspace-excluded) reuses the js-scanner engine, exposes the exact napi
+surface, compiles to wasm32 (~2.7MB). Client config toggle `settings.engine.highlighter: "codehike" |
+"rust"` (default codehike — old + new both supported) wired into the browser re-highlight choke points
+(`CodeTheme.tsx`, `Code/highlight.ts`, `hooks/highlight.ts`) via `highlightEngine.ts`/`highlightDispatch.ts`,
+mirroring the server shim. Verified: server path unchanged (42 tests); `js_scanner_seam.rs` reproduces the
+codehike goldens BYTE-FOR-BYTE; wasm-pack build clean (wasm-opt disabled — bundled binaryen too old for
+LLVM bulk-memory); client TS typechecks clean. **Remaining (activation follow-up):** run `verify-parity.mjs`
+(needs `vscode-oniguruma` installed — also the client runtime dep), the one `engine→configureCoder(setRustHighlighter)`
+wiring line in xyd-documan, wasm bundling + prod size-opt. The engine (what could regress) is proven; only
+the JS↔onig.wasm UTF-8↔UTF-16 marshaling is unrun (harness ready).
+
+**Track 3 — content-engine tails research (`2ad15324`, `.ai/content-engine-tails-research.md`).**
+Grounded audit: props→JSX serializer + KaTeX are irreducible-JS (keep); `mdTable` is a small portable win
+(needs a fixture); the `<<<` outputVars "gate hole" was EMPIRICALLY DISPROVEN (mdxjs fails `<<<` closed to
+`fallback` — verified by running compile_mdx; the report's claim was corrected, no defensive scan needed).
+
+Integration: both branches merged clean (0 conflicts); `cargo check --workspace` + napi build green;
+`xyd_oas_snippet`/`xyd_highlight`/`xyd_mdx` gates all green (the mdx 23/25 gate unaffected).
