@@ -18,6 +18,7 @@ on:
       - 'packages/xyd-gql/**'
       - 'packages/xyd-openapi/**'
       - 'packages/xyd-openapi2opensdk/**'
+      - 'packages/xyd-openapi2opencli/**'
       - 'packages/xyd-uniform/**'
       - 'packages/xyd-mcp-uniform/**'
       - 'packages/xyd-content/**'
@@ -31,6 +32,7 @@ on:
       - 'packages/xyd-gql/**'
       - 'packages/xyd-openapi/**'
       - 'packages/xyd-openapi2opensdk/**'
+      - 'packages/xyd-openapi2opencli/**'
       - 'packages/xyd-uniform/**'
       - 'packages/xyd-mcp-uniform/**'
       - 'packages/xyd-content/**'
@@ -132,7 +134,7 @@ jobs:
         run: |
           # W1 gql · W2 openapi (+ opensdk rider) · W3 uniform (+ mcp rider,
           # fused endpoint via plugin-docs) · W4 content frontmatter batch.
-          for pkg in xyd-gql xyd-openapi xyd-openapi2opensdk xyd-uniform xyd-mcp-uniform xyd-content xyd-plugin-docs; do
+          for pkg in xyd-gql xyd-openapi xyd-openapi2opensdk xyd-openapi2opencli xyd-uniform xyd-mcp-uniform xyd-content xyd-plugin-docs; do
             if [ -d "packages/$pkg/__tests__" ] && grep -rlq "@xyd-js/native" "packages/$pkg/src" 2>/dev/null; then
               echo "=== $pkg (native=1) ==="; (cd "packages/$pkg" && XYD_NATIVE=1 npx vitest run)
               echo "=== $pkg (native=0) ==="; (cd "packages/$pkg" && XYD_NATIVE=0 npx vitest run)
