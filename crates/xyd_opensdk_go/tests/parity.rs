@@ -1,73 +1,115 @@
-//! Tier-1 byte-golden parity: generate_go(input.json) vs the committed
-//! output/ tree, per file. Self-contained (no shared harness — worktree base
-//! predates crates/). Reports per-file match; the emitted subset must be
-//! byte-exact, and the un-emitted runtime files are listed as gaps.
+//! Tier-1 full-tree golden parity: generate_go(input.json) === the committed
+//! output/ tree, byte-exact. Now that the emitter produces the FULL tree (adds
+//! the vendored runtime + the SDK's own test suite), each fixture is checked
+//! three ways: (a) every golden file under output/ is emitted and byte-exact,
+//! (b) every emitted file has a matching golden (no extras), and (c) a per
+//! -fixture floor equal to the golden file count so a silent drop can't pass.
+//! Diffs report the path + first differing line. (Self-contained; no xyd_parity.)
 
-use std::path::Path;
+use std::collections::BTreeMap;
+use std::path::{Path, PathBuf};
 
-fn fixtures_dir() -> std::path::PathBuf {
-    // worktree/crates/xyd_opensdk_go/tests -> worktree root
+use serde_json::Value;
+use xyd_opensdk_go::generate_go;
+
+fn fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packages/xyd-opensdk-go/__fixtures__")
 }
 
-fn run(name: &str) -> (usize, usize, Vec<String>) {
-    let case = fixtures_dir().join(name);
-    let ir: serde_json::Value =
-        serde_json::from_str(&std::fs::read_to_string(case.join("input.json")).unwrap()).unwrap();
-    let emitted = xyd_opensdk_go::generate_go(&ir);
-
-    let mut matched = 0usize;
-    let mut diffs: Vec<String> = Vec::new();
-    for (rel, content) in &emitted {
-        let golden_path = case.join("output").join(rel);
-        match std::fs::read_to_string(&golden_path) {
-            Ok(golden) if &golden == content => matched += 1,
-            Ok(golden) => {
-                let at = first_diff(content, &golden);
-                diffs.push(format!("{name}/{rel}: DIFFERS {at}"));
+/// Every file under `root`, keyed by its path relative to `root` (posix slashes).
+fn read_golden_tree(root: &Path) -> BTreeMap<String, String> {
+    let mut out = BTreeMap::new();
+    let mut stack = vec![root.to_path_buf()];
+    while let Some(dir) = stack.pop() {
+        for entry in std::fs::read_dir(&dir).unwrap() {
+            let path = entry.unwrap().path();
+            if path.is_dir() {
+                stack.push(path);
+            } else {
+                let rel = path
+                    .strip_prefix(root)
+                    .unwrap()
+                    .to_string_lossy()
+                    .replace('\\', "/");
+                out.insert(rel, std::fs::read_to_string(&path).unwrap());
             }
-            Err(_) => diffs.push(format!("{name}/{rel}: not in golden tree")),
         }
     }
-    (matched, emitted.len(), diffs)
+    out
 }
 
-fn first_diff(a: &str, b: &str) -> String {
-    for (i, (ca, cb)) in a.chars().zip(b.chars()).enumerate() {
-        if ca != cb {
-            let ctx_a: String = a.chars().skip(i.saturating_sub(20)).take(50).collect();
-            let ctx_b: String = b.chars().skip(i.saturating_sub(20)).take(50).collect();
-            return format!("@char {i}\n    rust:   {ctx_a:?}\n    golden: {ctx_b:?}");
+/// The 1-based first differing line, with both sides, for a precise report.
+fn first_diff(golden: &str, got: &str) -> String {
+    let g: Vec<&str> = golden.split('\n').collect();
+    let r: Vec<&str> = got.split('\n').collect();
+    for i in 0..g.len().max(r.len()) {
+        let a = g.get(i).copied().unwrap_or("<EOF>");
+        let b = r.get(i).copied().unwrap_or("<EOF>");
+        if a != b {
+            return format!("first diff line {}: golden={a:?} rust={b:?}", i + 1);
         }
     }
-    format!("(prefix matches; len rust={} golden={})", a.len(), b.len())
+    "(identical by line; length/tail differs)".to_string()
+}
+
+fn run_case(name: &str) {
+    let case = fixtures_dir().join(name);
+    let input: Value =
+        serde_json::from_str(&std::fs::read_to_string(case.join("input.json")).unwrap()).unwrap();
+    let emitted = generate_go(&input);
+    let golden = read_golden_tree(&case.join("output"));
+
+    let mut problems: Vec<String> = Vec::new();
+
+    // (a) every golden is emitted and byte-exact.
+    for (rel, want) in &golden {
+        match emitted.get(rel) {
+            None => problems.push(format!("  MISSING {rel} (golden not emitted)")),
+            Some(got) if got != want => {
+                problems.push(format!("  DIFF {rel}: {}", first_diff(want, got)))
+            }
+            Some(_) => {}
+        }
+    }
+    // (b) every emitted file has a golden (no extras).
+    for rel in emitted.keys() {
+        if !golden.contains_key(rel) {
+            problems.push(format!("  EXTRA {rel} (emitted with no golden)"));
+        }
+    }
+
+    assert!(
+        problems.is_empty(),
+        "{name}: {} problem(s) vs golden tree ({} golden / {} emitted):\n{}",
+        problems.len(),
+        golden.len(),
+        emitted.len(),
+        problems.join("\n")
+    );
+    // (c) floor: the full golden tree must be emitted, nothing silently dropped.
+    assert_eq!(
+        emitted.len(),
+        golden.len(),
+        "{name}: emitted {} files but golden tree has {} — count drift",
+        emitted.len(),
+        golden.len()
+    );
+    eprintln!("{name}: {}/{} files byte-exact", golden.len(), golden.len());
 }
 
 #[test]
-fn emitted_files_match_golden() {
-    let mut total_matched = 0;
-    let mut total_emitted = 0;
-    let mut all_diffs: Vec<String> = Vec::new();
-    for name in ["1.basic", "2.wire", "3.unions", "9.x-open-sdk"] {
-        if !fixtures_dir().join(name).join("input.json").exists() {
-            continue;
-        }
-        let (m, t, d) = run(name);
-        eprintln!("{name}: {m}/{t} emitted files byte-exact");
-        total_matched += m;
-        total_emitted += t;
-        all_diffs.extend(d);
-    }
-    eprintln!("\nTOTAL: {total_matched}/{total_emitted} emitted files byte-exact");
-    if !all_diffs.is_empty() {
-        eprintln!("DIVERGENCES:");
-        for d in &all_diffs {
-            eprintln!("  {d}");
-        }
-    }
-    assert!(
-        all_diffs.is_empty(),
-        "{} emitted file(s) diverge from golden",
-        all_diffs.len()
-    );
+fn basic() {
+    run_case("1.basic");
+}
+#[test]
+fn wire() {
+    run_case("2.wire");
+}
+#[test]
+fn unions() {
+    run_case("3.unions");
+}
+#[test]
+fn x_open_sdk() {
+    run_case("9.x-open-sdk");
 }

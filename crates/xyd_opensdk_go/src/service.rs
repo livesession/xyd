@@ -190,7 +190,7 @@ fn behavior_str<'a>(b: &'a Value, path: &[&str]) -> &'a str {
     cur.as_str().unwrap_or("")
 }
 
-fn method_injects_idempotency(method: &Value, behavior: &Value) -> bool {
+pub(crate) fn method_injects_idempotency(method: &Value, behavior: &Value) -> bool {
     if !method
         .get("injectIdempotencyKey")
         .and_then(|v| v.as_bool())
@@ -380,14 +380,17 @@ fn pagination_page_type(
 }
 
 #[derive(PartialEq)]
-enum QueryKind {
+pub(crate) enum QueryKind {
     Scalar,
     Array,
     Map,
     Object,
 }
 
-fn query_kind(ref_: Option<&Value>, types: &serde_json::Map<String, Value>) -> QueryKind {
+pub(crate) fn query_kind(
+    ref_: Option<&Value>,
+    types: &serde_json::Map<String, Value>,
+) -> QueryKind {
     let Some(r) = ref_ else {
         return QueryKind::Scalar;
     };
