@@ -587,8 +587,8 @@ through `compile_mdx(source,settings,base_dir)` → napi (Option) → `fs.ts` sh
 verified. Total coverage: **prose 10/11 + directive 7/7 + async 2/4 = 19/22**, the 3 fallbacks legitimate
 (prose-math=KaTeX; the 2 below).
 
-**C-S4 DONE (user chose "attempt the composer codegen") — 20/22 in Rust; the 2 tail fallbacks are
-irreducible-JS by design.**
+**C-S4 DONE (user chose "attempt the composer codegen") — all 4 structural meta-components (atlas/home/
+bloghome/firstslide) native; 23/25 in Rust; the 2 tail fallbacks are irreducible-JS by design.**
 
 **C-S4a — headless composer oracle (`cbd97e18`).** The 2 composer fixtures were captured DEGRADED (raw
 prose) because the gen harness never ran `new Composer()`, so `globalThis.__xydCtxMetaRegistry` was empty
@@ -607,6 +607,17 @@ case: **`component: atlas` with NO source** → the composer drops body prose an
 `$jsx(Atlas, {references: []})` (verified vs Oracle A structurally + Oracle B byte-exact). `async-component-atlas`
 flips to `full`; pinned in `ASYNC_FULL_FLOOR`.
 
+**C-S4b extended — home/bloghome/firstslide (`9c08e5cd`).** The other 3 source-free meta-components port the
+same way: their transforms set `layout:page`, drop body prose, and emit one page node → `<PageHome/>` /
+`<PageBlogHome/>` / `<PageFirstSlide/>` (component→JSX-name map mirrors the `@metaComponent` decorators). 3 new
+oracle-first fixtures (`component-home/-bloghome/-firstslide`), composed headlessly, verified byte-structural
+vs Oracle A + byte-exact vs Oracle B. Gate rule: native iff `component ∈ {atlas,home,bloghome,firstslide}` AND
+no source AND no `componentProps` (which also covers `firstslide` `rightContent`, a componentProps child).
+**Adversarial wrong-`full` fuzz (12 edge cases): 0 leaks** — 8 native emits byte-match the REAL JS composer
+(incl. body-drop, top-level `rightContent` correctly ignored, quoted values, trailing whitespace); 4 correctly
+fall back (componentProps, source, user component). The gate emits `full` only when its output provably equals
+the composer's — un-riggable.
+
 The **openapi-resolved case** (`async-frontmatter-uniform`) correctly stays `fallback` — and the blocker is
 NOT the serializer (proven) but an intentionally JS-only UPSTREAM: the resolved references carry endpoint
 code `examples` (multi-language curl/fetch/python/go via `@readme/oas-to-snippet`, then highlighted), and
@@ -616,10 +627,13 @@ needs `oas-to-snippet` ported = a separate track. NB: Oracle B drops the referen
 wrong-but-stub-matching `full` would pass — emitting incomplete references to force `full` would be dishonest
 coverage the gate forbids, hence honest `fallback`.
 
-**Track C final: prose 10/11 + directive 7/7 + async 3/4 = 20/22 in Rust.** The 2 fallbacks are the
-irreducible-JS core by design: `prose-math` (KaTeX rehype) and `async-frontmatter-uniform` (JS-only endpoint
-example generation). "A Rust port compatible with xyd" is achieved — 20/22 native, the rest byte-identical
-via the untouched JS fallback.
+**Track C final: prose 10/11 + directive 7/7 + async 6/7 = 23/25 in Rust.** All 4 structural composer
+meta-components (atlas/home/bloghome/firstslide) emit natively. The 2 fallbacks are the irreducible-JS core by
+design: `prose-math` (KaTeX rehype) and `async-frontmatter-uniform` (openapi-atlas with JS-only endpoint
+example generation — needs `oas-to-snippet` ported). Also deferred within C-S4b (all conservative-fallback,
+never wrong-`full`): any meta-component WITH `componentProps` (the props→JSX serializer), `firstslide`
+`rightContent` (nested-MDX prop), and user-registered meta components. "A Rust port compatible with xyd" is
+achieved — 23/25 native, the rest byte-identical via the untouched JS fallback.
 
 <!-- superseded C-S3 planning line -->
 **(old plan) C-S3** — port the `@`-functions: `@include`/`@changelog` (fs/fetch I/O +
