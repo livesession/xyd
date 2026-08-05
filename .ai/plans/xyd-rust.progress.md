@@ -512,6 +512,42 @@ JS engine and diffed, never trusting the agent reports):
 
 **Milestone 1 retired the entire plan's pivotal risk** (a byte-exact Oniguruma/vscode-textmate engine
 in Rust) — proven, embedded, and LIVE in xyd. codehike is now dependency-for-the-renderer-only on the
-server path. **NEXT: Track C** (the content engine) — C-S1 prose whole-page compile → C-S2 directive/
-outputVars constructs → C-S3 async cohort (now unblocked by the Rust highlighter — `mdComposer`/
-`mdCodeRehype`/`mdComponentDirective` lose their only `await`) → C-S4 composer→codegen → C-S5 appInit.
+server path. Follow-up fix (`8476fe72`): the highlight shims pass `lang||""` so a no-language code fence
+maps to `txt` instead of crashing the napi String param (caught by the Track C harness).
+
+---
+
+## TRACK C — Rust-first content engine (user chose the FULL engine: C-S1→C-S2 fork→C-S3→C-S4)
+
+Foundation ran as **3 disjoint parallel lanes** (scratch spike / xyd-content fixtures / xyd_settings — zero
+file conflict), each verified independently (I regenerated every oracle from the real JS engine):
+- **Lane A — mdxjs-rs spike** (verdict): prose compile = LARGE-EFFORT-feasible (core semantically
+  identical, 14/14 diffs codegen-style); C-S2 constructs = multi-week markdown-rs tokenizer fork
+  (xyd's `::atlas{...@uniform()}` hard-errors mdxjs's swc parser → needs a tokenizer-level construct).
+  Honest caveat surfaced: **perf is already won by M1; C-S1 value is the architecture, coverage small
+  (prose-only pages rare)**. User chose the full engine anyway (Rust-first is the goal).
+- **Lane B — compliance harness** (`a4a35f01`): `packages/xyd-content/__fixtures__/mdx-parity/` — 22
+  two-oracle fixtures (11 prose/full, 7 directive, 4 async/fallback): normalized compiled-JS (Oracle A)
+  + rendered-HTML (Oracle B, frozen stubs). `gen-mdx-goldens.mjs` idempotent (0 drift, node+bun).
+- **Lane C — C-S5 appInit → Rust** (`f0a49ca8`): audited W6 (most already Rust); ported env-substitution
+  + presets wiring (`process_settings`, wired into plugin-docs behind fallback) + integrations/
+  accessControl→plugin maps (napi-ready, dormant); **caught+fixed a latent W6 presets bug** (missing
+  diagrams-default). contribution-merge + docs.ts eval + loadPlugins stay JS. Both-mode byte-identical.
+
+**C-S1 DONE — a real Rust MDX compiler is LIVE for prose** (`36748399`). `crates/xyd_mdx` drives
+**mdxjs-rs 1.0.4's public decomposed pipeline** (mdast→hast→swc→program — NO vendored fork needed,
+correcting the spike) + a program→function-body post-pass + hast table/math normalization + ported
+transforms (heading ids, toc, table-align→style, mdImage, frontmatter) + **inline `xyd_highlight`**
+(no napi hop). Per-page capability gate: prose→`full` (Rust fast path); `:::`/`@`-fn/`component:`/math/
+mermaid→`fallback` sentinel → JS `ContentFS` unchanged. **10/11 prose byte-match the committed
+rendered-HTML oracle** (independently re-rendered + diffed; prose-math→fallback = KaTeX is JS-only); all
+directive+async→fallback. napi `compile_mdx` + `xyd-content/fs.ts` fast path (`XYD_NATIVE=0`/fallback →
+JS). Serde pinned `=1.0.219` for swc_common (lock gitignored; `cargo check --workspace` clean). Gate =
+Oracle B (rendered HTML); Oracle A won't byte-match (swc vs astring codegen), per the spike.
+
+**NEXT: C-S2 — the multi-week centerpiece.** Fork markdown-rs's 376-state tokenizer to add the `:::`
+directive family + the `<<<name … <<<` outputVars fence as parse-time constructs (a post-pass can't —
+`::atlas{...@uniform()}` hard-errors swc at parse time), then port `mdComponentDirective`/`remarkOutputVars`/
+the `@`-function `@uniform` data-side (→ the already-Rust gql/openapi/opencli/mcp/uniform converters).
+Highlighter-scale + nesting-fidelity risk. Then **C-S3** async cohort (mdComposer/mdCodeRehype/
+mdComponentDirective are now sync since highlight is Rust) → **C-S4** composer→codegen.
