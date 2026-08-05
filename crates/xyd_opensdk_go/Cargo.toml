@@ -1,0 +1,10 @@
+[package]
+name = "xyd_opensdk_go"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "Go SDK emitter — OpenSDK IR -> generated Go SDK code (Rust port of @xyd-js/opensdk-go; generated-code emitter, vendored runtime + tests deferred)"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
