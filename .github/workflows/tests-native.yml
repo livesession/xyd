@@ -25,6 +25,9 @@ on:
       - 'packages/xyd-plugin-docs/**'
       - 'packages/xyd-opencli2*/**'
       - 'packages/xyd-opensdk-*/**'
+      - 'packages/xyd-composer/**'
+      - 'packages/xyd-mcp/**'
+      - 'packages/xyd-documan/**'
       - '.github/workflows/tests-native.yml'
   pull_request:
     branches: [ master, canary ]
@@ -41,6 +44,9 @@ on:
       - 'packages/xyd-plugin-docs/**'
       - 'packages/xyd-opencli2*/**'
       - 'packages/xyd-opensdk-*/**'
+      - 'packages/xyd-composer/**'
+      - 'packages/xyd-mcp/**'
+      - 'packages/xyd-documan/**'
       - '.github/workflows/tests-native.yml'
   workflow_dispatch:
 
@@ -148,6 +154,9 @@ jobs:
           # which drive the framework's native generateFileMap branch (native
           # lives in their DEPENDENCY @xyd-js/opensdk-framework, not their own src,
           # so they are listed explicitly rather than grep-gated).
+          # M1 highlighter: xyd-content carries the both-mode highlight shim test
+          # (__tests__/highlight-native.test.ts) — native xyd_highlight ⇄ codehike
+          # fallback; the crate's own cargo tests (cargo job) gate byte-parity.
           SHIM_PKGS="xyd-gql xyd-openapi xyd-openapi2opensdk xyd-openapi2opencli xyd-uniform xyd-mcp-uniform xyd-content xyd-plugin-docs xyd-opencli2go xyd-opencli2rust xyd-opensdk-framework"
           TRANSITIVE_PKGS="xyd-opensdk-go xyd-opensdk-node xyd-opensdk-python xyd-opensdk-ruby xyd-opensdk-java xyd-opensdk-dotnet xyd-opensdk-rust xyd-opensdk-cli"
           for pkg in $SHIM_PKGS $TRANSITIVE_PKGS; do
