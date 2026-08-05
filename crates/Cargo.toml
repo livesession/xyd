@@ -25,6 +25,7 @@ members = [
     "xyd_opensdk_dotnet",
     "xyd_opensdk_rust",
     "xyd_opensdk_ruby",
+    "xyd_highlight",
 ]
 # The napi adapter crate lives co-located in packages/xyd-native (idiomatic
 # napi-rs layout: crate + package.json together). It path-depends on

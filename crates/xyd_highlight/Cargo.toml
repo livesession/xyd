@@ -1,0 +1,21 @@
+[package]
+name = "xyd_highlight"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "Rust syntax highlighter — a vscode-textmate engine over Oniguruma that reproduces @code-hike/lighter / syntax0 output byte-for-byte (S6+ Rust-first, Milestone 1)"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+# Byte-exact TextMate regex: onig_sys bundles the same Oniguruma C source that
+# vscode-oniguruma's onig.wasm is built from. Pure-Rust regex engines diverge on
+# backrefs/lookbehind/\G/possessive/POSIX that TextMate grammars use pervasively.
+onig = "6"
+
+[features]
+# Top-20 languages (>99% of the real corpus). The long tail sits behind the
+# default so size-sensitive `bun --compile` builds can trim it. (H2 wires the
+# grammar store; for H0/H1 grammars are loaded from disk/vendored fixtures.)
+default = []
+core-langs = []
