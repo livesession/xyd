@@ -40,8 +40,24 @@ for (const k of ["time", "timeEnd", "timeLog"]) console[k] = () => {};
 
 import { markdownPlugins } from "@xyd-js/content/md";
 import { ContentFS } from "@xyd-js/content";
+import { Composer } from "@xyd-js/composer";
 import { normalize } from "../__fixtures__/mdx-parity/_harness/normalize.mjs";
 import { renderOracle, requiredComponents } from "../__fixtures__/mdx-parity/_harness/render.mjs";
+
+// --- register the composer meta-components (atlas/home/bloghome/firstslide) ---
+// The `mdMeta` terminal remark transform (packages/.../plugins/meta/mdMeta.ts)
+// reads `uniform:`/`openapi:`/`component:` frontmatter and calls
+// `getMetaComponent(meta.component).transform(...)` to REPLACE the page tree
+// with the composed node. Those transforms are registered by @xyd-js/composer's
+// `@metaComponent` decorators, which only fire once `new Composer()` runs — the
+// real app does this in the plugin-docs layout loader
+// (packages/xyd-plugin-docs/src/pages/layout.tsx). Instantiating it here makes
+// the harness compose IDENTICALLY to the app (headlessly), so the composer-
+// backed fixtures (async-frontmatter-uniform, async-component-atlas) get a REAL
+// `<Atlas references={…} … />` oracle instead of falling through to raw prose.
+// Registration is idempotent (a global Map keyed by name), so re-running the
+// gen script re-produces byte-identical goldens.
+new Composer();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..", "__fixtures__", "mdx-parity");

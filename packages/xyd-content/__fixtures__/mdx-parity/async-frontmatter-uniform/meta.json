@@ -5,16 +5,18 @@
   "source": "synthetic",
   "compileStatus": "ok",
   "renderStatus": "ok",
-  "requiredComponents": [],
+  "requiredComponents": [
+    "Atlas"
+  ],
   "oracleA": {
     "file": "compiled.normalized.js",
-    "bytes": 673,
-    "sha256": "cd79958955bbbe5c33d1f8b6de305192a5d1811b7bb48a29ae54c37e9a6f2699"
+    "bytes": 11195,
+    "sha256": "59bef901ca8b357fafe73e1966358fbca623a5c154356e24d5153e8aebdbb2d4"
   },
   "oracleB": {
     "file": "rendered.html",
-    "bytes": 80,
-    "sha256": "1d15ad327bbf2a1f5514e02e4643776ef03fdc31fb130e0a5e4dd7e21a50a454"
+    "bytes": 40,
+    "sha256": "8f6554dac418f723a9773562d7db8ad136b0ea1687349d59ea1e0cebae6f331e"
   },
-  "note": "DEGRADED headless: the composer meta-component registry is not active outside plugin-docs, so the OpenAPI reference is not composed. Captures current headless behavior; exempt from the gate."
+  "note": "Composes headlessly: the gen script runs `new Composer()` so the `atlas` meta-component is registered (same as the plugin-docs layout loader). Uses `openapi: ./api.yaml` — the typed key that makes `processUniformFile` pick the OpenAPI converter; `uniform: ./api.yaml` does NOT resolve (the `uniform:` alias only infers a converter from `.ts/.tsx/.graphql` extensions, not `.yaml/.yml/.json`). Both keys funnel through the same `@uniform()` + `component: atlas` machinery. Real composed `<Atlas references={[…resolved OpenAPI…]}>` oracle — a C-S4b (Rust composer port) target: parity.rs enforces rendered.html the moment compile_mdx returns `full` for this frontmatter (it returns `fallback` today, so the fixture stays capability:async / DEFER and does not fail the gate pre-C-S4b)."
 }
