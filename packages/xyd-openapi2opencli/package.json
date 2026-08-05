@@ -15,7 +15,8 @@
   "dependencies": {
     "@xyd-js/opencli": "workspace:*",
     "@xyd-js/openapi": "workspace:*",
-    "openapi-types": "^12.1.3"
+    "openapi-types": "^12.1.3",
+    "@xyd-js/native": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20.9.0",

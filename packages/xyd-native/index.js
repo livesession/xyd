@@ -711,6 +711,7 @@ module.exports.hello = nativeBinding.hello
 module.exports.mapNavigationToPagePathMapping = nativeBinding.mapNavigationToPagePathMapping
 module.exports.mcpToReferences = nativeBinding.mcpToReferences
 module.exports.oapSchemaToReferencesFromFile = nativeBinding.oapSchemaToReferencesFromFile
+module.exports.openapi2opencliFromFile = nativeBinding.openapi2opencliFromFile
 module.exports.openapi2opensdk = nativeBinding.openapi2opensdk
 module.exports.pluginJsonView = nativeBinding.pluginJsonView
 module.exports.pluginNavigation = nativeBinding.pluginNavigation

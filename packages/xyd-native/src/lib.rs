@@ -6,6 +6,7 @@ mod frontmatter;
 mod gql;
 mod mcp_uniform;
 mod openapi;
+mod openapi2opencli;
 mod openapi2opensdk;
 mod settings;
 mod uniform;

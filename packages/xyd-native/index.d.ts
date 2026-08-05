@@ -59,6 +59,8 @@ export declare function mcpToReferences(surfaceJson: string): string
  */
 export declare function oapSchemaToReferencesFromFile(path: string, optionsJson?: string | undefined | null): string
 
+export declare function openapi2opencliFromFile(path: string, optionsJson?: string | undefined | null): string
+
 /**
  * Parity target: `openapi2opensdk(doc, options?)` on a RAW OpenAPI 3.x doc.
  * js_name pins the exact export name (napi would camelCase the digit
