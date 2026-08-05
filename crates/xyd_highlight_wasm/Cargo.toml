@@ -35,3 +35,13 @@ debug-panic = ["dep:console_error_panic_hook"]
 lto = true
 opt-level = "s"
 strip = true
+
+# wasm-opt is disabled: the (old) binaryen bundled by wasm-pack aborts on the
+# bulk-memory ops LLVM's wasm target now emits by default, even with
+# `--enable-bulk-memory`. The unoptimized cdylib (~2.7 MB) is correct and
+# functional; production size-optimization should run a CURRENT `wasm-opt`
+# (standalone binaryen) or lazy-load grammar assets — tracked in
+# .ai/client-wasm-highlighter-spike.md. `cargo build --target wasm32-unknown-unknown`
+# and `wasm-pack build` both succeed with this off.
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
