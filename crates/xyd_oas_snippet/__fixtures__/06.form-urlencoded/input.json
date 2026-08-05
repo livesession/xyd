@@ -1,0 +1,61 @@
+{
+  "description": "POST with application/x-www-form-urlencoded body",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "t",
+      "version": "1"
+    },
+    "paths": {
+      "/login": {
+        "post": {
+          "requestBody": {
+            "content": {
+              "application/x-www-form-urlencoded": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "ok",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "servers": [
+      {
+        "url": "https://api.example.com"
+      }
+    ]
+  },
+  "path": "/login",
+  "method": "post",
+  "values": {
+    "formData": {
+      "username": "ada",
+      "password": "s3cr3t!"
+    },
+    "server": {
+      "selected": 0
+    }
+  }
+}

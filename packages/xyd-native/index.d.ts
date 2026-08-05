@@ -95,6 +95,14 @@ export declare function mcpToReferences(surfaceJson: string): string
  */
 export declare function oapSchemaToReferencesFromFile(path: string, optionsJson?: string | undefined | null): string
 
+/**
+ * Parity target: `oasToSnippet(oas, operation, values, null, lang).code` for
+ * the four xyd languages (shell / javascript / python / go). `input_json`:
+ * `{ spec, path, method, values, lang }` where `spec` is the (dereferenced)
+ * OpenAPI slice for the operation.
+ */
+export declare function oasToSnippet(inputJson: string): string
+
 export declare function openapi2opencliFromFile(path: string, optionsJson?: string | undefined | null): string
 
 /**

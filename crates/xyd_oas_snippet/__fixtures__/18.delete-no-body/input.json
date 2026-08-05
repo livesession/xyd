@@ -1,0 +1,46 @@
+{
+  "description": "DELETE with a path param, no body",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "t",
+      "version": "1"
+    },
+    "paths": {
+      "/users/{id}": {
+        "delete": {
+          "parameters": [
+            {
+              "name": "id",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "204": {
+              "description": "deleted"
+            }
+          }
+        }
+      }
+    },
+    "servers": [
+      {
+        "url": "https://api.example.com"
+      }
+    ]
+  },
+  "path": "/users/{id}",
+  "method": "delete",
+  "values": {
+    "path": {
+      "id": "u1"
+    },
+    "server": {
+      "selected": 0
+    }
+  }
+}

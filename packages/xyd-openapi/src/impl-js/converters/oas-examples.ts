@@ -10,9 +10,50 @@ import {ExampleGroup, Example, CodeBlockTab} from "@xyd-js/uniform";
 
 import {BUILT_IN_PROPERTIES} from "../const";
 import {xDocsLanguages} from "../xdocs";
+import {native} from "../../native";
 
 // TODO: custom snippet languages options
 const DEFAULT_CODE_LANGUAGES = ["shell", "javascript", "python", "go"]
+
+// Native (Rust) request-snippet generation — the byte-for-byte port of
+// @readme/oas-to-snippet + the httpsnippet clients in crates/xyd_oas_snippet,
+// reached through @xyd-js/native. Returns null when the native core is absent
+// (the symbol is missing on older cores) OR the operation slice contains a true
+// circular schema (JSON.stringify throws) — in both cases the caller runs the
+// JS oasToSnippet below, so output is unchanged. Shared (non-circular) $refs
+// serialize fine and take the native path.
+function nativeSnippetCode(oas: Oas, operation: Operation, values: any, lang: string): string | null {
+    if (!native?.oasToSnippet) {
+        return null;
+    }
+    try {
+        const doc: any = (oas as any).api;
+        const path = operation.path;
+        const method = operation.method;
+        const pathItem = doc?.paths?.[path] || {};
+        // A minimal, self-contained slice for this one operation: servers +
+        // path-level params + the operation object (all already dereferenced).
+        const spec = {
+            servers: doc?.servers,
+            paths: {
+                [path]: {
+                    ...(pathItem.parameters ? {parameters: pathItem.parameters} : {}),
+                    [method]: operation.schema,
+                },
+            },
+        };
+        let input: string;
+        try {
+            input = JSON.stringify({spec, path, method, values, lang});
+        } catch {
+            return null; // true cycle → let the JS impl (which breaks cycles) handle it
+        }
+        const code = native.oasToSnippet(input);
+        return typeof code === "string" ? code : null;
+    } catch {
+        return null;
+    }
+}
 
 // TODO: option with another languages
 export function oapExamples(
@@ -204,27 +245,38 @@ function reqExamples(operation: Operation, oas: Oas, vistedExamples?: Map<JSONSc
     if (hasParameters || hasRequestBody || (!hasRequestBody && !hasParameters)) {
         const langs = xDocsLanguages(operation.api) || DEFAULT_CODE_LANGUAGES
         langs.forEach(lang => {
+            let code = "";
+
+            let selectedServer = 0;
+            const operationServerUrl = operation.schema.servers?.[0]?.url
+            if (operationServerUrl) {
+                const servers = operation.api.servers
+                // TODO: fix any
+                const operationServerIndex = servers?.findIndex((s: any) => s.url === operationServerUrl)
+                if (operationServerIndex) {
+                    selectedServer = operationServerIndex;
+                }
+            }
+            const values = {
+                ...paramData,
+                ...bodyData,
+                server: {
+                    selected: selectedServer,
+                }
+            }
+
+            // Native-first: the Rust port (crates/xyd_oas_snippet). Byte-for-byte
+            // identical to the JS oasToSnippet below, which stays the fallback.
+            const nativeCode = nativeSnippetCode(oas, operation, values, lang);
+            if (nativeCode !== null) {
+                tabs.push({title: lang, language: lang, code: nativeCode})
+                return
+            }
+
             // Sanitize operation to remove circular references before passing to oasToSnippet
             // Use the original operation but handle the circular reference error at the JSON.stringify level
-            let code = "";
             try {
-                let selectedServer = 0;
-                const operationServerUrl = operation.schema.servers?.[0]?.url
-                if (operationServerUrl) {
-                    const servers = operation.api.servers
-                    // TODO: fix any
-                    const operationServerIndex = servers?.findIndex((s: any) => s.url === operationServerUrl)
-                    if (operationServerIndex) {
-                        selectedServer = operationServerIndex;
-                    }
-                }
-                const result = oasToSnippet(oas, operation, {
-                    ...paramData,
-                    ...bodyData,
-                    server: {
-                        selected: selectedServer,
-                    }
-                }, null, lang);
+                const result = oasToSnippet(oas, operation, values, null, lang);
                 code = result.code || "";
             } catch (error) {
                 // TODO: in the future better solution

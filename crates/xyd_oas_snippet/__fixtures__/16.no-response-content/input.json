@@ -1,0 +1,33 @@
+{
+  "description": "GET whose response has no content → no accept header",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "t",
+      "version": "1"
+    },
+    "paths": {
+      "/heartbeat": {
+        "get": {
+          "responses": {
+            "204": {
+              "description": "no content"
+            }
+          }
+        }
+      }
+    },
+    "servers": [
+      {
+        "url": "https://api.example.com"
+      }
+    ]
+  },
+  "path": "/heartbeat",
+  "method": "get",
+  "values": {
+    "server": {
+      "selected": 0
+    }
+  }
+}

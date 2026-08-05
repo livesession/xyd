@@ -17,6 +17,7 @@ xyd_core_rs = { path = "../../crates/xyd_core_rs" }
 xyd_watch = { path = "../../crates/xyd_watch" }
 xyd_gql = { path = "../../crates/xyd_gql" }
 xyd_openapi = { path = "../../crates/xyd_openapi" }
+xyd_oas_snippet = { path = "../../crates/xyd_oas_snippet" }
 xyd_openapi2opensdk = { path = "../../crates/xyd_openapi2opensdk" }
 xyd_openapi2opencli = { path = "../../crates/xyd_openapi2opencli" }
 xyd_uniform = { path = "../../crates/xyd_uniform" }
