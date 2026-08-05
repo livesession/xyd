@@ -30,6 +30,12 @@ export declare function findIndexPage(cwd: string): string
 export declare function frontmatterBatch(pathsJson: string): string
 
 /**
+ * The editor/UI color palette for `theme_json` (the `getThemeColors` bridge for
+ * the two build/config sites). Unknown → JSON `null`.
+ */
+export declare function getThemeColors(themeJson: string): string
+
+/**
  * Parity target: `gqlSchemaToReferences(schemaLocation, options?)`.
  * `sources` are file paths or raw SDL (the shim pre-fetches http(s) URLs —
  * no network in the native layer).
@@ -38,6 +44,9 @@ export declare function gqlSchemaToReferences(sources: Array<string>, optionsJso
 
 /** FFI smoke: proves the embedded Rust core is reachable from the Bun binary. */
 export declare function hello(name: string): string
+
+/** Highlight `value` (lang + meta) with `theme_json` → `HighlightedCode` JSON. */
+export declare function highlight(value: string, lang: string, meta: string, themeJson: string): string
 
 /** A single classified change delivered to JS. */
 export interface JsChange {

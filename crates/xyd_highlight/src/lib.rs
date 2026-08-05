@@ -23,8 +23,10 @@ pub mod theme;
 
 pub use grammar::tokenizer::{highlight, Grammar};
 pub use highlighted::{
-    get_theme_colors, highlighted_code, AnyToken, BlockStyle, CssProps, HighlightedCode, Token,
+    get_theme_colors, highlighted_code, highlighted_code_with_theme, AnyToken, BlockStyle, CssProps,
+    HighlightedCode, Token,
 };
+pub use theme::Theme;
 pub use onig_scanner::OnigScanner;
 pub use registry::Registry;
 pub use reshape::{Style, StyledToken};

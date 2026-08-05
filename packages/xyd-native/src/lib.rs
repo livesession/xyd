@@ -4,6 +4,7 @@
 
 mod frontmatter;
 mod gql;
+mod highlight;
 mod mcp_uniform;
 mod openapi;
 mod openapi2opencli;

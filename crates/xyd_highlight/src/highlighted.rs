@@ -148,6 +148,24 @@ pub struct HighlightedCode {
 /// back to `"txt"` (codehike's `LANG_NAMES` guard). `theme_name` must be an
 /// embedded theme (lighter throws on an unknown theme — we mirror that).
 pub fn highlighted_code(value: &str, lang: &str, meta: &str, theme_name: &str) -> HighlightedCode {
+    let theme = Registry::new()
+        .theme(theme_name)
+        .expect("embedded theme name (lighter throws on an unknown theme)");
+    highlighted_code_with_theme(value, lang, meta, &theme, theme_name)
+}
+
+/// Like [`highlighted_code`] but with a caller-supplied [`Theme`] (e.g. one built
+/// from a user's custom VS Code theme JSON via [`Theme::from_vscode_json`]) — the
+/// call sites pass `settings.theme.coder.syntaxHighlight` which is EITHER an
+/// embedded theme name OR a resolved theme object. `theme_name` is the value
+/// echoed into `HighlightedCode.themeName`.
+pub fn highlighted_code_with_theme(
+    value: &str,
+    lang: &str,
+    meta: &str,
+    theme: &Theme,
+    theme_name: &str,
+) -> HighlightedCode {
     let reg = Registry::new();
 
     // codehike: `if (!LANG_NAMES.includes(lang)) lang = "txt"`. Our alias table
@@ -167,14 +185,10 @@ pub fn highlighted_code(value: &str, lang: &str, meta: &str, theme_name: &str) -
         .map(|e| e.id.clone())
         .unwrap_or_else(|| effective_lang.to_string());
 
-    let theme = reg
-        .theme(theme_name)
-        .expect("embedded theme name (lighter throws on an unknown theme)");
-
     // The engine's styled lines == `@code-hike/lighter`'s `.lines` (proven
     // byte-identical across the H1/H2 corpus). Feed them straight into the
     // codehike reshape.
-    let styled_lines = highlight(value, &grammar, &theme);
+    let styled_lines = highlight(value, &grammar, theme);
     let tokens = reshape_tokens(&styled_lines);
 
     HighlightedCode {
@@ -185,7 +199,7 @@ pub fn highlighted_code(value: &str, lang: &str, meta: &str, theme_name: &str) -
         tokens,
         annotations: Vec::new(),
         theme_name: theme_name.to_string(),
-        style: block_style(&theme),
+        style: block_style(theme),
     }
 }
 
