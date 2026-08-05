@@ -24,6 +24,7 @@
     { "name": "directive-code-group",      "capability": "directive", "source": "synthetic", "features": ["code-group", "multi-lang"] },
     { "name": "directive-details",         "capability": "directive", "source": "synthetic", "features": ["details"] },
     { "name": "directive-subtitle-badge",  "capability": "directive", "source": "synthetic", "features": ["subtitle", "badge", "text-directive"] },
+    { "name": "directive-table",           "capability": "directive", "source": "synthetic", "features": ["table", "json-cells", "cell-markdown"] },
     { "name": "directive-nested",          "capability": "directive", "source": "synthetic", "features": ["nested-directives", "steps", "code-group", "callout"] },
 
     { "name": "async-include",             "capability": "async", "source": "synthetic", "features": ["@include"], "note": "resolves the local ./partial.md relative to input.mdx" },

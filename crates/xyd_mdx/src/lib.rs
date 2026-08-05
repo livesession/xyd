@@ -147,13 +147,24 @@ mod tests {
     }
 
     #[test]
-    fn directive_table_falls_back() {
-        // `table` remains deferred (no fixture pins its parity).
+    fn directive_table_compiles_full() {
+        // Special handler ported (C-S2 stage-1b): `:::table` with a fenced JSON
+        // 2-D array body → `Table` with `Table.Head`/`.Tr`/`.Th`/`.Td` wrappers.
+        let out = compile_mdx(":::table\n```\n[[\"a\"]]\n```\n:::\n", "{}", "");
+        assert_eq!(out.capability, CAP_FULL, "reason={:?}", out.reason);
+        assert!(out.compiled.contains("Table.Th"));
+    }
+
+    #[test]
+    fn directive_table_bare_json_falls_back() {
+        // Without a code fence the body parses to a paragraph, not a `code`
+        // node — the JS `JSON.parse(node.children[0].value)` throws there, so we
+        // fall back rather than ship a wrong `full`.
         let out = compile_mdx(":::table\n[[\"a\"]]\n:::\n", "{}", "");
         assert_eq!(out.capability, CAP_FALLBACK);
         assert_eq!(
             out.reason.as_deref(),
-            Some("directive special-handler `table`")
+            Some("directive table: body is not a JSON code block")
         );
     }
 
@@ -167,7 +178,9 @@ mod tests {
         assert!(capability::scan("---\ncomponent: bloghome\n---\n# x").is_none());
         assert!(capability::scan("---\ncomponent: firstslide\n---\n# x").is_none());
         assert!(capability::scan("---\ncomponent: atlas\nuniform: ./a.yaml\n---\n# x").is_some());
-        assert!(capability::scan("---\ncomponent: home\ncomponentProps:\n  a: b\n---\n# x").is_some());
+        assert!(
+            capability::scan("---\ncomponent: home\ncomponentProps:\n  a: b\n---\n# x").is_some()
+        );
         assert!(capability::scan("---\ncomponent: custom-thing\n---\n# x").is_some());
         assert!(capability::scan("---\nopenapi: ./a.yaml\n---\n# x").is_some());
         assert!(capability::scan("---\nuniform: ./a.ts\n---\n# x").is_some());

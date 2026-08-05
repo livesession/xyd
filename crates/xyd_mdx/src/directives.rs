@@ -23,6 +23,9 @@
 //!   * `code-group` (mdCode): code fences → `DirectiveCodeGroup` with a
 //!     `codeblocks` JSON attribute, each block highlighted via
 //!     `xyd_highlight::highlighted_code` (the same engine the JS pipeline uses)
+//!   * `table` (mdTable): a fenced JSON 2-D array → `Table` with
+//!     `Table.Head`/`.Tr`/`.Th`/`.Td` wrappers, each cell string re-parsed as
+//!     markdown (the JS `parseMarkdown` = remark-parse + remark-mdx)
 //!
 //! Recursion: a converted container's re-parsed children are themselves run
 //! through `convert_node`, so a directive nested inside another directive
@@ -31,8 +34,6 @@
 //! the re-parse reproduces it faithfully.
 //!
 //! DEFERRED to the JS pipeline (return `Err` → the page falls back):
-//!   * `table` (mdTable) — no `directive-table` fixture exists to pin parity,
-//!     so it stays a fallback rather than shipping unverified.
 //!   * `steps` items carrying `[…]`/`{…}` parameters (the `mdParameters` path) —
 //!     conservatively deferred; no fixture exercises it.
 //!   * expression-valued attributes (`key={expr}`) — the `complexJSXPropsPollyfill`
@@ -306,7 +307,7 @@ fn convert_node(node: &mut Node, opts: &Options, source: &str, theme: &str) -> R
                 "steps" => build_steps(attrs_raw.as_deref(), &raw, opts, theme)?,
                 "tabs" => build_nav(attrs_raw.as_deref(), &raw, opts, theme)?,
                 "code-group" => build_code(attrs_raw.as_deref(), &raw, opts, theme)?,
-                "table" => return Err("directive special-handler `table`".to_string()),
+                "table" => build_table(&raw, opts)?,
                 _ => {
                     let component = container_component(&name)
                         .ok_or_else(|| format!("directive unsupported `{name}`"))?;
@@ -522,6 +523,87 @@ fn tabs_content(component: &str, value: &str, children: Vec<Node>) -> Node {
         children,
         position: None,
     })
+}
+
+/// Port of `mdTable` (`:::table`). The container body is a fenced code block
+/// whose text is a JSON 2-D array (`[[header…], [row…], …]`); row 0 is the
+/// header. Emits `getComponentName("table", supportedDirectives)` = `"Table"`
+/// with `Table.Head`/`.Tr`/`.Th`/`.Td` wrappers, each cell string re-parsed as
+/// markdown via the JS `parseMarkdown` (= remark-parse + remark-mdx →
+/// `reparse_content` here). Rows are appended directly to `Table` (no
+/// `Table.Body`), matching the JS. `Err` → the page falls back: malformed JSON,
+/// a non-string cell, or a body that is not a fenced code block — the last case
+/// mirrors the JS `JSON.parse(node.children[0].value)` throwing when the body is
+/// plain-text prose (a paragraph has no `.value`) rather than a `code` node.
+fn build_table(raw: &str, opts: &Options) -> Result<MdxJsxFlowElement, String> {
+    const COMPONENT: &str = "Table";
+
+    // The JS reads `node.children[0].value`: the container body parses to a
+    // single fenced-code node whose `value` is the JSON payload.
+    let json = match reparse_content(raw, opts)?.into_iter().next() {
+        Some(Node::Code(c)) => c.value,
+        Some(Node::Text(t)) => t.value,
+        _ => return Err("directive table: body is not a JSON code block".to_string()),
+    };
+
+    let table_data: Vec<Vec<String>> =
+        serde_json::from_str(&json).map_err(|e| format!("directive table JSON: {e}"))?;
+
+    let mut rows = table_data.into_iter();
+    let header = rows
+        .next()
+        .ok_or_else(|| "directive table: empty table data".to_string())?;
+
+    // Head: a single `Table.Tr` of `Table.Th` cells.
+    let mut head_cells = Vec::with_capacity(header.len());
+    for c in &header {
+        head_cells.push(table_cell(COMPONENT, "Th", c, opts)?);
+    }
+    let head_row = Node::MdxJsxFlowElement(MdxJsxFlowElement {
+        name: Some(format!("{COMPONENT}.Tr")),
+        attributes: Vec::new(),
+        children: head_cells,
+        position: None,
+    });
+    let head = Node::MdxJsxFlowElement(MdxJsxFlowElement {
+        name: Some(format!("{COMPONENT}.Head")),
+        attributes: Vec::new(),
+        children: vec![head_row],
+        position: None,
+    });
+
+    // Body: each remaining row → a `Table.Tr` of `Table.Td` cells.
+    let mut children: Vec<Node> = vec![head];
+    for row in rows {
+        let mut cells = Vec::with_capacity(row.len());
+        for c in &row {
+            cells.push(table_cell(COMPONENT, "Td", c, opts)?);
+        }
+        children.push(Node::MdxJsxFlowElement(MdxJsxFlowElement {
+            name: Some(format!("{COMPONENT}.Tr")),
+            attributes: Vec::new(),
+            children: cells,
+            position: None,
+        }));
+    }
+
+    Ok(MdxJsxFlowElement {
+        name: Some(COMPONENT.to_string()),
+        attributes: Vec::new(),
+        children,
+        position: None,
+    })
+}
+
+/// One table cell (`Table.Th`/`Table.Td`) whose children are the cell string
+/// parsed as markdown — the JS `parseMarkdown(cell)`.
+fn table_cell(component: &str, tag: &str, value: &str, opts: &Options) -> Result<Node, String> {
+    Ok(Node::MdxJsxFlowElement(MdxJsxFlowElement {
+        name: Some(format!("{component}.{tag}")),
+        attributes: Vec::new(),
+        children: reparse_content(value, opts)?,
+        position: None,
+    }))
 }
 
 /// One `codeblocks[]` entry, field order matching the JS

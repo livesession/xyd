@@ -12,9 +12,9 @@
 //! - `directive` (C-S2 stage-1 + 1b): whatever Rust returns `full` MUST render
 //!   byte-equal to `rendered.html` (a `full` that renders wrong is a FAILURE —
 //!   this is what keeps the coverage honest / un-riggable). Stage-1b ports the
-//!   `steps`/`tabs`/`code-group` special handlers and recursive `:::`-in-`:::`
-//!   nesting, so all 7 directive fixtures now compile `full`. Any directive
-//!   still outside the port (e.g. `table`, step `[…]`/`{…}` parameters) returns
+//!   `steps`/`tabs`/`code-group`/`table` special handlers and recursive
+//!   `:::`-in-`:::` nesting, so all 8 directive fixtures now compile `full`. Any
+//!   directive still outside the port (e.g. step `[…]`/`{…}` parameters) returns
 //!   `fallback` and is tracked as deferred, not a failure. A floor assertion
 //!   pins the directives that MUST stay `full`.
 //! - `async` (C-S3 + C-S4b): the `@include` / `@changelog` fixtures compile
@@ -33,13 +33,14 @@
 /// Directive fixtures the C-S2 port (stage-1 generic + stage-1b special handlers
 /// & nesting) MUST compile `full` + render at parity. A regression to `fallback`
 /// here fails the gate.
-const DIRECTIVE_FULL_FLOOR: [&str; 7] = [
+const DIRECTIVE_FULL_FLOOR: [&str; 8] = [
     "directive-callout",
     "directive-code-group",
     "directive-details",
     "directive-nested",
     "directive-steps",
     "directive-subtitle-badge",
+    "directive-table",
     "directive-tabs",
 ];
 
