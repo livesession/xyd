@@ -12,13 +12,15 @@ use crate::val::{arr, bool_field, pystr, str_field};
 
 type TypeMap<'a> = HashMap<&'a str, &'a Value>;
 
-/// The subset of `planOperation()` the Python resources renderer consumes.
-struct Plan<'a> {
+/// The subset of `planOperation()` the Python resources renderer consumes. Also
+/// reused by the runtime pagination gate and the test suite's response-type
+/// derivation, so its plan fields are crate-visible.
+pub(crate) struct Plan<'a> {
     method: &'a Value,
     /// "CursorPage" | "Page" | "OffsetPage" | absent.
-    page_name: Option<&'static str>,
+    pub(crate) page_name: Option<&'static str>,
     /// The primary 2xx content type when it is not json (binary download).
-    binary_content_type: Option<String>,
+    pub(crate) binary_content_type: Option<String>,
     /// Body wire encoding: "json" | "multipart" | "form" | absent (no body).
     encoding: Option<&'static str>,
     inject_idempotency_key: bool,
@@ -64,7 +66,7 @@ fn body_encoding(method: &Value) -> Option<&'static str> {
     })
 }
 
-fn plan_operation(method: &Value) -> Plan<'_> {
+pub(crate) fn plan_operation(method: &Value) -> Plan<'_> {
     let binary = binary_content_type(method);
     let page = page_name(method, &binary);
     Plan {
@@ -77,7 +79,7 @@ fn plan_operation(method: &Value) -> Plan<'_> {
 }
 
 /// The Python page container: OffsetPage has no vendored container yet.
-fn py_page_name(plan: &Plan) -> Option<&'static str> {
+pub(crate) fn py_page_name(plan: &Plan) -> Option<&'static str> {
     match plan.page_name {
         Some("CursorPage") => Some("CursorPage"),
         Some("Page") => Some("Page"),

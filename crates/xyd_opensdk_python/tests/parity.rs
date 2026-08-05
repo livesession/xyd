@@ -1,9 +1,17 @@
-//! Byte-golden parity: for every full-tree Python fixture, generate the
-//! in-scope files and byte-compare each against the JS emitter's committed
-//! `output/` golden. Only the files this port actually emits are compared —
-//! the vendored runtime (`_transport.py`, `_pagination.py`) and `tests/*` stay
-//! JS-owned and are deliberately NOT asserted here (no faked full-tree match).
+//! Byte-golden parity for the Python emitter.
+//!
+//! Test 1 (full-tree): now that `generate_python` emits the WHOLE file map
+//! (generated code + vendored runtime + pytest suite), every full-tree fixture
+//! is checked three ways against its committed `output/` golden — (a) every
+//! golden file is emitted and byte-exact, (b) every emitted file has a matching
+//! golden (no extras), and (c) a per-fixture floor equal to the golden file
+//! count so a silent drop can't pass.
+//!
+//! Test 2 (per-method): the `-2.complex.<name>/<op>/{input.json,output.py}`
+//! corpora, where `output.py` is exactly the `resources.py` for a one-method IR
+//! slice — kept intact to exercise the resources emitter over the hard forms.
 
+use std::collections::BTreeMap;
 use std::fs;
 use std::path::{Path, PathBuf};
 
@@ -15,7 +23,8 @@ fn fixtures_root() -> PathBuf {
 }
 
 /// Full-tree fixtures: a dir with both `input.json` and `output/pyproject.toml`
-/// (excludes the per-method `-2.complex.openai/<op>/` single-file dirs).
+/// (excludes the per-method `-2.complex.openai/<op>/` single-file dirs and the
+/// harness-derived `-2.complex.openai.full`, which has no committed input.json).
 fn discover_fixtures() -> Vec<PathBuf> {
     let mut out = Vec::new();
     let root = fixtures_root();
@@ -27,6 +36,28 @@ fn discover_fixtures() -> Vec<PathBuf> {
         }
     }
     out.sort();
+    out
+}
+
+/// Every file under `root`, keyed by its path relative to `root` (posix slashes).
+fn read_golden_tree(root: &Path) -> BTreeMap<String, String> {
+    let mut out = BTreeMap::new();
+    let mut stack = vec![root.to_path_buf()];
+    while let Some(dir) = stack.pop() {
+        for entry in fs::read_dir(&dir).unwrap_or_else(|e| panic!("read {dir:?}: {e}")) {
+            let path = entry.unwrap().path();
+            if path.is_dir() {
+                stack.push(path);
+            } else {
+                let rel = path
+                    .strip_prefix(root)
+                    .unwrap()
+                    .to_string_lossy()
+                    .replace('\\', "/");
+                out.insert(rel, fs::read_to_string(&path).unwrap());
+            }
+        }
+    }
     out
 }
 
@@ -46,7 +77,7 @@ fn first_divergence(a: &str, b: &str) -> Option<(usize, String, String)> {
 }
 
 #[test]
-fn python_emit_scope_is_byte_exact_vs_goldens() {
+fn python_full_tree_is_byte_exact_vs_goldens() {
     let fixtures = discover_fixtures();
     assert!(
         !fixtures.is_empty(),
@@ -54,8 +85,8 @@ fn python_emit_scope_is_byte_exact_vs_goldens() {
         fixtures_root()
     );
 
-    let mut total_files = 0usize;
-    let mut matched = 0usize;
+    let mut total_golden = 0usize;
+    let mut total_matched = 0usize;
     let mut failures: Vec<String> = Vec::new();
 
     for fixture in &fixtures {
@@ -65,56 +96,58 @@ fn python_emit_scope_is_byte_exact_vs_goldens() {
         let spec: serde_json::Value = serde_json::from_str(&input)
             .unwrap_or_else(|e| panic!("[{name}] parse input.json: {e}"));
 
-        let files = generate_python(&spec);
-        assert!(
-            !files.is_empty(),
-            "[{name}] generate_python produced no files"
-        );
+        let emitted = generate_python(&spec);
+        let golden = read_golden_tree(&fixture.join("output"));
+        total_golden += golden.len();
 
-        let mut fixture_matched = 0usize;
-        for (rel, got) in &files {
-            total_files += 1;
-            let golden_path = fixture.join("output").join(rel);
-            let golden = match fs::read_to_string(&golden_path) {
-                Ok(g) => g,
-                Err(e) => {
+        // (a) every golden file is emitted and byte-exact.
+        for (rel, want) in &golden {
+            match emitted.get(rel) {
+                None => failures.push(format!("[{name}] {rel}: MISSING (golden not emitted)")),
+                Some(got) if got == want => total_matched += 1,
+                Some(got) => {
+                    let detail = match first_divergence(got, want) {
+                        Some((line, g, w)) => format!(
+                            "first diff at line {line}:\n      got : {g:?}\n      want: {w:?}"
+                        ),
+                        None => "differ only in length/trailing bytes".to_string(),
+                    };
                     failures.push(format!(
-                        "[{name}] {rel}: emitted a file with no golden ({e})"
+                        "[{name}] {rel}: MISMATCH (got {} bytes, want {} bytes)\n      {detail}",
+                        got.len(),
+                        want.len()
                     ));
-                    continue;
                 }
-            };
-            if *got == golden {
-                matched += 1;
-                fixture_matched += 1;
-            } else {
-                let detail = match first_divergence(got, &golden) {
-                    Some((line, g, want)) => format!(
-                        "first diff at line {line}:\n      got : {g:?}\n      want: {want:?}"
-                    ),
-                    None => "differ only in length/trailing bytes".to_string(),
-                };
-                failures.push(format!(
-                    "[{name}] {rel}: MISMATCH (got {} bytes, want {} bytes)\n      {detail}",
-                    got.len(),
-                    golden.len()
-                ));
             }
         }
+        // (b) every emitted file has a matching golden (no extras).
+        for rel in emitted.keys() {
+            if !golden.contains_key(rel) {
+                failures.push(format!("[{name}] {rel}: EXTRA (emitted with no golden)"));
+            }
+        }
+        // (c) floor: the emitted count must equal the golden tree count.
+        if emitted.len() != golden.len() {
+            failures.push(format!(
+                "[{name}] COUNT DRIFT: emitted {} files but golden tree has {}",
+                emitted.len(),
+                golden.len()
+            ));
+        }
         println!(
-            "  {name}: {fixture_matched}/{} emit-scope files byte-exact",
-            files.len()
+            "  {name}: emitted {} / golden {} files",
+            emitted.len(),
+            golden.len()
         );
     }
 
     println!(
-        "\nPARITY: {matched}/{total_files} emit-scope files byte-exact across {} fixtures",
+        "\nPARITY: {total_matched}/{total_golden} golden files byte-exact across {} fixtures",
         fixtures.len()
     );
-
     assert!(
         failures.is_empty(),
-        "{} file(s) diverged from golden:\n{}",
+        "{} problem(s) vs golden trees:\n{}",
         failures.len(),
         failures.join("\n")
     );

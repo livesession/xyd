@@ -8,11 +8,12 @@ use crate::naming::{pascal_case, py_module_name, screaming_snake_case, snake_cas
 use crate::pytype::{optionalize, py_type, PyUses};
 use crate::val::{arr, bool_field, pystr, str_field};
 
-/// The resolved package name + credential env var (the base URL lives only in
-/// the deferred transport, so it is not resolved here).
+/// The resolved package name, credential env var, and base URL (mirrors
+/// `resolvePythonOptions`: `baseURL ?? servers[0] ?? ''`).
 pub struct ResolvedOptions {
     pub pkg: String,
     pub env_var: String,
+    pub base_url: String,
 }
 
 pub fn resolve_options(spec: &Value) -> ResolvedOptions {
@@ -27,7 +28,18 @@ pub fn resolve_options(spec: &Value) -> ResolvedOptions {
         .and_then(|secs| secs.iter().find_map(|s| str_field(s, "envVar")))
         .map(str::to_string)
         .unwrap_or_else(|| format!("{}_API_KEY", screaming_snake_case(&pkg)));
-    ResolvedOptions { pkg, env_var }
+    let base_url = spec
+        .get("servers")
+        .and_then(Value::as_array)
+        .and_then(|s| s.first())
+        .and_then(Value::as_str)
+        .unwrap_or("")
+        .to_string();
+    ResolvedOptions {
+        pkg,
+        env_var,
+        base_url,
+    }
 }
 
 // ---- pyproject.toml ------------------------------------------------------
