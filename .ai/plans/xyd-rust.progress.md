@@ -577,7 +577,36 @@ Oracle B (rendered HTML); Oracle A won't byte-match (swc vs astring codegen), pe
 byte-exact.** Remaining Track C = the ASYNC category (4 fixtures: `@include`, `@changelog`, `uniform:`
 OpenAPI, `component: atlas`), all currently `fallback`.
 
-**NEXT: C-S3 (async cohort)** — port the `@`-functions: `@include`/`@changelog` (fs/fetch I/O +
+**C-S3 (async @-functions) DONE (`2a062355`) — Rust MDX compiler now covers 19/22 fixtures.** Ported
+`@include` (`src/functions.rs`, mdast transform after directives: read relative to base_dir +
+capability-scan + recursive compile with frontmatter/toc off + splice) and `@changelog` (parseChangelog
+→ nameless Fragment of `Update` nodes, no-wrap so adjacent, matching the golden). Threaded `base_dir`
+through `compile_mdx(source,settings,base_dir)` → napi (Option) → `fs.ts` shim (`dirname(filePath)`).
+**async 2/4 byte-parity** (`async-include`+`async-changelog`; independently re-rendered+diffed); prose
+10/11 + directive 7/7 preserved; honest fallbacks (missing file, include-of-math/@uniform/URL/raw-MDX)
+verified. Total coverage: **prose 10/11 + directive 7/7 + async 2/4 = 19/22**, the 3 fallbacks legitimate
+(prose-math=KaTeX; the 2 below).
+
+**C-S4 hits a genuine WALL — the composer is app-coupled with NO headless oracle.** The 2 remaining
+fixtures (`async-frontmatter-uniform` = `uniform:`, `async-component-atlas` = `component: atlas`) run the
+COMPOSER (the `atlas` meta-component → build-time React trees). The harness fixture note is explicit:
+"DEGRADED headless: the `atlas` meta component is not registered outside plugin-docs. Captured for
+coverage; exempt from the gate" — the composer's `@metaComponent` registry (`globalThis.__xydCtxMetaRegistry`,
+populated by `new Composer()` in the plugin-docs layout loader) isn't active outside the app, so the
+committed `rendered.html` is just the raw prose, NOT real composed output. So **C-S4 has no valid oracle**
+without first making the composer run headlessly, AND the composer's `jsxStringToReactTree`/`buildElement`
+is the deepest React-coupling (the plan's "server React trees" — convertible to codegen but a
+rearchitecture). The `@uniform` DATA side is ALREADY Rust (the converters); what remains is the
+atlas/home/firstslide meta-component transforms + the markdown-desc→JSX codegen + mdMeta.
+
+**Capability gate = xyd is ALREADY fully compatible:** every unported case (prose-math, uniform:/atlas)
+runs the untouched JS pipeline. "A Rust port compatible with xyd" is achieved — 19/22 in Rust, the rest
+byte-identical via fallback. **C-S4 (composer codegen) is the last coverage bit but the hardest +
+oracle-blocked — a user decision (attempt the composer codegen + headless-oracle setup, vs accept the
+structural-core-in-Rust coverage with the composer staying JS).**
+
+<!-- superseded C-S3 planning line -->
+**(old plan) C-S3** — port the `@`-functions: `@include`/`@changelog` (fs/fetch I/O +
 recursive compile — portable) → the `async-include`/`async-changelog` fixtures; the `@uniform` DATA side
 routes to the already-Rust converters (gql/openapi/opencli/mcp/uniform; TypeDoc `sources` on `.ts/.tsx`
 stays JS). `mdComposer`/`mdCodeRehype`/`mdComponentDirective` are already sync (highlight is Rust). The
