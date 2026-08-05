@@ -1,12 +1,13 @@
-//! Tier-1 byte-golden parity: for each fixture, generate_dotnet() must produce
-//! the substantive IR→C# files (`.csproj`, `Client.cs`, `Models.cs`,
-//! `<Resource>Service.cs`) BYTE-IDENTICAL to the committed golden `output/` tree
-//! from `@xyd-js/opensdk-dotnet`. The vendored runtime (`Transport.cs`,
-//! `Pagination.cs`) and generated tests (`<Sdk>.Tests/**`) are DEFERRED and not
-//! compared. No faked full-tree match — every file this crate emits is checked
-//! against the golden, and the count reported is only the files we own.
+//! Tier-1 full-tree golden parity: `generate_dotnet(input.json)` === the committed
+//! `output/` tree from `@xyd-js/opensdk-dotnet`, byte-exact. Now that the emitter
+//! produces the FULL tree (adds the vendored runtime `Transport.cs`/`Pagination.cs`
+//! plus the `<Sdk>.Tests/**` project), each fixture is checked three ways — every
+//! golden file is emitted and byte-exact; every emitted file has a matching golden
+//! (no extras); and a per-fixture floor equal to the golden file count so a silent
+//! drop can't pass. Diffs report the path plus the first differing line.
 
-use std::path::PathBuf;
+use std::collections::BTreeMap;
+use std::path::{Path, PathBuf};
 
 use serde_json::Value;
 use xyd_opensdk_dotnet::generate_dotnet;
@@ -15,54 +16,104 @@ fn fixtures_root() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../packages/xyd-opensdk-dotnet/__fixtures__")
 }
 
-/// Compare every file `generate_dotnet` emits against the golden, byte-for-byte.
-/// Returns the number of files verified. Panics on any mismatch/missing golden.
-fn check_fixture(name: &str) -> usize {
+/// Every file under `root`, keyed by its path relative to `root` (posix slashes).
+fn read_golden_tree(root: &Path) -> BTreeMap<String, String> {
+    let mut out = BTreeMap::new();
+    let mut stack = vec![root.to_path_buf()];
+    while let Some(dir) = stack.pop() {
+        for entry in std::fs::read_dir(&dir).unwrap() {
+            let path = entry.unwrap().path();
+            if path.is_dir() {
+                stack.push(path);
+            } else {
+                let rel = path
+                    .strip_prefix(root)
+                    .unwrap()
+                    .to_string_lossy()
+                    .replace('\\', "/");
+                out.insert(rel, std::fs::read_to_string(&path).unwrap());
+            }
+        }
+    }
+    out
+}
+
+/// The 1-based first differing line, with both sides, for a precise report.
+fn first_diff(golden: &str, got: &str) -> String {
+    let g: Vec<&str> = golden.split('\n').collect();
+    let r: Vec<&str> = got.split('\n').collect();
+    for i in 0..g.len().max(r.len()) {
+        let a = g.get(i).copied().unwrap_or("<EOF>");
+        let b = r.get(i).copied().unwrap_or("<EOF>");
+        if a != b {
+            return format!("first diff line {}: golden={a:?} rust={b:?}", i + 1);
+        }
+    }
+    "(identical by line; length/tail differs)".to_string()
+}
+
+fn run_case(name: &str) {
     let dir = fixtures_root().join(name);
     let input = std::fs::read_to_string(dir.join("input.json"))
         .unwrap_or_else(|e| panic!("read {name}/input.json: {e}"));
     let spec: Value = serde_json::from_str(&input).expect("parse input.json");
 
-    let files = generate_dotnet(&spec);
-    assert!(!files.is_empty(), "{name}: emitted no files");
+    let emitted = generate_dotnet(&spec);
+    let golden = read_golden_tree(&dir.join("output"));
 
-    let out_dir = dir.join("output");
-    let mut checked = 0usize;
-    for (rel, content) in &files {
-        let golden_path = out_dir.join(rel);
-        let golden = std::fs::read_to_string(&golden_path).unwrap_or_else(|e| {
-            panic!("{name}: golden {rel} missing/unreadable ({e}) — emitted a file the golden tree lacks")
-        });
-        assert_eq!(content, &golden, "{name}: byte mismatch in {rel}");
-        checked += 1;
+    let mut problems: Vec<String> = Vec::new();
+
+    // (a) every golden is emitted and byte-exact.
+    for (rel, want) in &golden {
+        match emitted.get(rel) {
+            None => problems.push(format!("  MISSING {rel} (golden not emitted)")),
+            Some(got) if got != want => {
+                problems.push(format!("  DIFF {rel}: {}", first_diff(want, got)))
+            }
+            Some(_) => {}
+        }
     }
-    checked
+    // (b) every emitted file has a golden (no extras).
+    for rel in emitted.keys() {
+        if !golden.contains_key(rel) {
+            problems.push(format!("  EXTRA {rel} (emitted with no golden)"));
+        }
+    }
+
+    assert!(
+        problems.is_empty(),
+        "{name}: {} problem(s) vs golden tree ({} golden / {} emitted):\n{}",
+        problems.len(),
+        golden.len(),
+        emitted.len(),
+        problems.join("\n")
+    );
+    // (c) floor: the full golden tree must be emitted, nothing silently dropped.
+    assert_eq!(
+        emitted.len(),
+        golden.len(),
+        "{name}: emitted {} files but golden tree has {} — count drift",
+        emitted.len(),
+        golden.len()
+    );
 }
 
 #[test]
 fn parity_1_basic() {
-    // Client.cs, Models.cs, PetsService.cs, Petstore.csproj
-    let n = check_fixture("1.basic");
-    assert_eq!(n, 4, "1.basic: expected 4 owned files, checked {n}");
+    run_case("1.basic");
 }
 
 #[test]
 fn parity_2_wire() {
-    // Client.cs, Models.cs, FilesService.cs, TokensService.cs, WireKitchen.csproj
-    let n = check_fixture("2.wire");
-    assert_eq!(n, 5, "2.wire: expected 5 owned files, checked {n}");
+    run_case("2.wire");
 }
 
 #[test]
 fn parity_3_unions() {
-    // Client.cs, Models.cs, Events/Logs/ShapesService.cs, UnionDepot.csproj
-    let n = check_fixture("3.unions");
-    assert_eq!(n, 6, "3.unions: expected 6 owned files, checked {n}");
+    run_case("3.unions");
 }
 
 #[test]
 fn parity_9_x_open_sdk() {
-    // Client.cs, Models.cs, Catalog/System/ThingsService.cs, ExtensionsDemo.csproj
-    let n = check_fixture("9.x-open-sdk");
-    assert_eq!(n, 6, "9.x-open-sdk: expected 6 owned files, checked {n}");
+    run_case("9.x-open-sdk");
 }
