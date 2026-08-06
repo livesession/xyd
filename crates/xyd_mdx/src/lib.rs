@@ -20,6 +20,7 @@ mod functions;
 mod highlight;
 mod meta;
 mod meta_component;
+mod output_vars;
 mod pipeline;
 mod swc_pass;
 mod transforms;
@@ -166,6 +167,28 @@ mod tests {
             out.reason.as_deref(),
             Some("directive table: body is not a JSON code block")
         );
+    }
+
+    #[test]
+    fn output_vars_compiles_full_to_div() {
+        // The `<<<name … <<<` fence becomes a `<div>` wrapping the code block —
+        // matching the JS pipeline's `mdast-util-to-hast` unknown-handler `<div>`.
+        let src = "<<<example\n```bash\nnpm i -g xyd-js\n```\n<<<\n";
+        let out = compile_mdx(src, "{}", "");
+        assert_eq!(out.capability, CAP_FULL, "reason={:?}", out.reason);
+        assert!(out.compiled.contains("\"div\""), "{}", out.compiled);
+        assert!(out.compiled.contains("_components.pre"), "{}", out.compiled);
+    }
+
+    #[test]
+    fn output_vars_with_label_falls_back() {
+        // A `[label]` after the name is not accepted by the fence construct, so
+        // `<<<` never matches → the mdxjs parser rejects the bare `<<` as a JSX
+        // tag → honest `fallback` (the JS pipeline renders the label as a `<p>`,
+        // which this port does not reproduce).
+        let src = "<<<example[My Label]\n```bash\nnpm i\n```\n<<<\n";
+        let out = compile_mdx(src, "{}", "");
+        assert_eq!(out.capability, CAP_FALLBACK, "reason={:?}", out.reason);
     }
 
     #[test]

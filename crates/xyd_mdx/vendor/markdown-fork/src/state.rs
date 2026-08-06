@@ -495,6 +495,26 @@ pub enum Name {
     DirectiveContainerContentInside,
     DirectiveContainerContentChunk,
     DirectiveContainerAfter,
+
+    // xyd: output-variables `<<<` fence.
+    FlowBeforeOutputVars,
+
+    OutputVarsContainerStart,
+    OutputVarsContainerSequenceOpen,
+    OutputVarsContainerName,
+    OutputVarsContainerNameInside,
+    OutputVarsContainerAfterName,
+    OutputVarsContainerAttributesStart,
+    OutputVarsContainerAttributesInside,
+    OutputVarsContainerAfterOpen,
+    OutputVarsContainerAtNonLazyBreak,
+    OutputVarsContainerCloseStart,
+    OutputVarsContainerCloseSequence,
+    OutputVarsContainerCloseAfter,
+    OutputVarsContainerContentBefore,
+    OutputVarsContainerContentInside,
+    OutputVarsContainerContentChunk,
+    OutputVarsContainerAfter,
 }
 
 #[allow(clippy::too_many_lines)]
@@ -1025,6 +1045,32 @@ pub fn call(tokenizer: &mut Tokenizer, name: Name) -> State {
         Name::DirectiveContainerContentInside => construct::directive_container::content_inside,
         Name::DirectiveContainerContentChunk => construct::directive_container::content_chunk,
         Name::DirectiveContainerAfter => construct::directive_container::after,
+
+        // xyd: output-variables `<<<` fence.
+        Name::FlowBeforeOutputVars => construct::flow::before_output_vars,
+
+        Name::OutputVarsContainerStart => construct::output_vars_container::start,
+        Name::OutputVarsContainerSequenceOpen => construct::output_vars_container::sequence_open,
+        Name::OutputVarsContainerName => construct::output_vars_container::name,
+        Name::OutputVarsContainerNameInside => construct::output_vars_container::name_inside,
+        Name::OutputVarsContainerAfterName => construct::output_vars_container::after_name,
+        Name::OutputVarsContainerAttributesStart => {
+            construct::output_vars_container::attributes_start
+        }
+        Name::OutputVarsContainerAttributesInside => {
+            construct::output_vars_container::attributes_inside
+        }
+        Name::OutputVarsContainerAfterOpen => construct::output_vars_container::after_open,
+        Name::OutputVarsContainerAtNonLazyBreak => {
+            construct::output_vars_container::at_non_lazy_break
+        }
+        Name::OutputVarsContainerCloseStart => construct::output_vars_container::close_start,
+        Name::OutputVarsContainerCloseSequence => construct::output_vars_container::close_sequence,
+        Name::OutputVarsContainerCloseAfter => construct::output_vars_container::close_after,
+        Name::OutputVarsContainerContentBefore => construct::output_vars_container::content_before,
+        Name::OutputVarsContainerContentInside => construct::output_vars_container::content_inside,
+        Name::OutputVarsContainerContentChunk => construct::output_vars_container::content_chunk,
+        Name::OutputVarsContainerAfter => construct::output_vars_container::after,
     };
 
     func(tokenizer)

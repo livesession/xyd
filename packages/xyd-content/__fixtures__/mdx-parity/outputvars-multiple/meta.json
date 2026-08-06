@@ -1,0 +1,20 @@
+{
+  "name": "outputvars-multiple",
+  "capability": "outputvars",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 2253,
+    "sha256": "479e0a3e84476bd12be3ef7cf7b4c1e9aadfcefdf66f3dece19c183046d0ee66"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 177,
+    "sha256": "a331cf3cafa2c7b59af4b1ba8802addcecd21b297f3feaeb585c3a957d7a1edb"
+  },
+  "note": "Two `<<<` fences → two sibling `<div>` wrappers. Confirms the construct closes each fence at its own `<<<` and re-parses each body independently."
+}

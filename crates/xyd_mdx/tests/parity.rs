@@ -60,6 +60,18 @@ const ASYNC_FULL_FLOOR: [&str; 6] = [
     "component-home",
 ];
 
+/// outputVars fixtures the `<<<` fence port MUST compile `full` + render at
+/// parity. The bespoke `<<<name … <<<` fence is parsed by a forked construct
+/// (`output_vars_container`) and rewritten to a `<div>` by the `output_vars`
+/// transform — matching the JS pipeline, where the surviving `outputVars` node
+/// renders through `mdast-util-to-hast`'s unknown handler as a `<div>`. A
+/// regression to `fallback` here fails the gate.
+const OUTPUTVARS_FULL_FLOOR: [&str; 3] = [
+    "outputvars-code-group",
+    "outputvars-multiple",
+    "outputvars-simple",
+];
+
 use std::fs;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -158,6 +170,9 @@ fn mdx_parity_gate() {
     let mut async_total = 0usize;
     let mut async_full: Vec<String> = Vec::new(); // `@`-function pages at parity
     let mut async_deferred: Vec<String> = Vec::new(); // composer-backed → fallback
+    let mut outputvars_total = 0usize;
+    let mut outputvars_full: Vec<String> = Vec::new(); // `<<<` fences at parity
+    let mut outputvars_deferred: Vec<String> = Vec::new(); // returned fallback
 
     for dir in &dirs {
         let name = dir.file_name().unwrap().to_string_lossy().to_string();
@@ -267,6 +282,39 @@ fn mdx_parity_gate() {
                     println!("DEFER {name}  (async -> fallback, reason={:?})", out.reason);
                 }
             }
+            "outputvars" => {
+                outputvars_total += 1;
+                // The `<<<` fence port: whatever comes back `full` MUST render
+                // byte-equal to `rendered.html` (a wrong `full` is a FAILURE —
+                // keeps coverage honest). A fence body still outside the port
+                // (raw MDX / un-ported directive inside) returns `fallback` and
+                // is tracked as deferred, not a failure.
+                if out.capability == xyd_mdx::CAP_FULL {
+                    let golden = read(&dir.join("rendered.html"));
+                    match node_render(&name, &out.compiled) {
+                        Ok(rendered) => {
+                            let g = trim_trailing_newlines(&golden);
+                            let r = trim_trailing_newlines(&rendered);
+                            if g == r {
+                                outputvars_full.push(name.clone());
+                                println!("PASS  {name}  (outputvars full, rendered-HTML parity)");
+                            } else {
+                                failures.push(format!(
+                                    "MISS  {name}  (outputvars full but rendered HTML differs)\n{}",
+                                    first_diff(g, r)
+                                ));
+                            }
+                        }
+                        Err(e) => failures.push(format!("ERROR {name}  render failed: {e}")),
+                    }
+                } else {
+                    outputvars_deferred.push(format!("{name} (reason={:?})", out.reason));
+                    println!(
+                        "DEFER {name}  (outputvars -> fallback, reason={:?})",
+                        out.reason
+                    );
+                }
+            }
             other => failures.push(format!("MISS  {name}  unknown capability tag {other:?}")),
         }
     }
@@ -297,6 +345,18 @@ fn mdx_parity_gate() {
     if !async_deferred.is_empty() {
         println!("async deferred -> fallback: {}", async_deferred.join(", "));
     }
+    println!(
+        "outputvars: {}/{} at rendered-HTML parity (full: [{}])",
+        outputvars_full.len(),
+        outputvars_total,
+        outputvars_full.join(", ")
+    );
+    if !outputvars_deferred.is_empty() {
+        println!(
+            "outputvars deferred -> fallback: {}",
+            outputvars_deferred.join(", ")
+        );
+    }
 
     // Floor: the generic directives MUST stay `full` + at parity (no silent
     // regression to fallback).
@@ -313,6 +373,15 @@ fn mdx_parity_gate() {
         if !async_full.iter().any(|n| n == name) {
             failures.push(format!(
                 "MISS  {name}  (expected async `@`-function fixture at `full` parity, but it was not)"
+            ));
+        }
+    }
+
+    // Floor: the `<<<` outputVars fixtures MUST stay `full` + at parity.
+    for name in OUTPUTVARS_FULL_FLOOR {
+        if !outputvars_full.iter().any(|n| n == name) {
+            failures.push(format!(
+                "MISS  {name}  (expected outputvars fixture at `full` parity, but it was not)"
             ));
         }
     }
