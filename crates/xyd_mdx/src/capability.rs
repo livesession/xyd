@@ -3,10 +3,15 @@
 //! A page qualifies for the Rust fast path (`full`) only when it uses none of
 //! the constructs still owned by xyd's JS plugin chain: the JS-only
 //! `@`-functions (`@uniform`/`@importCode`),
-//! `component:`/`uniform:`/`openapi:`/`graphql:` frontmatter, math (needs
-//! rehype-katex), or mermaid/graphviz fences (need the JS rehype). Anything
-//! matched here returns `fallback` — a sentinel telling the JS caller to run
-//! `ContentFS.compileContent` unchanged.
+//! `component:`/`uniform:`/`openapi:`/`graphql:` frontmatter, or mermaid/graphviz
+//! fences (need the JS rehype). Anything matched here returns `fallback` — a
+//! sentinel telling the JS caller to run `ContentFS.compileContent` unchanged.
+//!
+//! Math note: `$…$` / `$$…$$` are NO LONGER pre-scanned to `fallback`. They are
+//! rendered natively to MathML by `math::embed` (run inside
+//! `pipeline::compile_full` via `xyd_math`), which returns `Err` -> `fallback`
+//! only for an expression the Rust renderer genuinely can't parse (an
+//! unsupported KaTeX macro) — never a wrong / `<merror>` render.
 //!
 //! C-S3 note: `@include`/`@changelog` are NO LONGER pre-scanned here — they are
 //! ported by `functions::process` (run inside `pipeline::compile_full`), which
@@ -27,7 +32,6 @@
 pub enum Fallback {
     Function,
     FrontmatterComponent,
-    Math,
     Diagram,
 }
 
@@ -36,7 +40,6 @@ impl Fallback {
         match self {
             Fallback::Function => "function",
             Fallback::FrontmatterComponent => "frontmatter-component",
-            Fallback::Math => "math",
             Fallback::Diagram => "diagram",
         }
     }
@@ -145,38 +148,6 @@ pub fn frontmatter_component(source: &str) -> Option<String> {
     None
 }
 
-/// True when the body contains an inline/flow math run (`$$...$$` or single-`$`
-/// inline math). Conservative: single `$` runs with non-space content between
-/// dollars count as math (matches remark-math's single-dollar default). A rare
-/// prose dollar false-positive simply defers that page to the (correct) JS path.
-fn has_math(body: &str) -> bool {
-    if body.contains("$$") {
-        return true;
-    }
-    // Inline math: `$` <non-space> ... `$` on a single logical run.
-    let bytes = body.as_bytes();
-    let mut i = 0usize;
-    while i < bytes.len() {
-        if bytes[i] == b'$' {
-            // opening dollar must be followed by a non-space, non-dollar char
-            if let Some(&next) = bytes.get(i + 1) {
-                if next != b' ' && next != b'\t' && next != b'\n' && next != b'$' {
-                    // find a closing dollar before newline
-                    let mut j = i + 1;
-                    while j < bytes.len() && bytes[j] != b'\n' {
-                        if bytes[j] == b'$' {
-                            return true;
-                        }
-                        j += 1;
-                    }
-                }
-            }
-        }
-        i += 1;
-    }
-    false
-}
-
 /// True when a fenced code block declares a diagram language handled by JS rehype.
 fn has_diagram_fence(body: &str) -> bool {
     for raw in body.lines() {
@@ -219,9 +190,9 @@ pub fn scan(source: &str) -> Option<Fallback> {
     if has_function(body) {
         return Some(Fallback::Function);
     }
-    if has_math(body) {
-        return Some(Fallback::Math);
-    }
+    // Math (`$…$` / `$$…$$`) is NOT pre-scanned any more — it is rendered
+    // natively to MathML in `pipeline::compile_full` (`math::embed`), which only
+    // falls back for expressions the Rust renderer can't parse.
     if has_diagram_fence(body) {
         return Some(Fallback::Diagram);
     }

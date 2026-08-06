@@ -1,0 +1,7 @@
+{
+  "name": "math-unsupported",
+  "capability": "math",
+  "gate": "fallback",
+  "source": "synthetic",
+  "note": "Honest fallback: `\\over` is valid (deprecated) LaTeX that KaTeX renders but pulldown-latex explicitly does not support. The Rust renderer returns Err → the page defers to JS KaTeX rather than emit a wrong / <merror> render."
+}

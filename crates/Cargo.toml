@@ -27,6 +27,7 @@ members = [
     "xyd_opensdk_ruby",
     "xyd_highlight",
     "xyd_mdx",
+    "xyd_math",
     "xyd_oas_snippet",
 ]
 # Workspace-excluded (like the napi crate): a wasm-only wasm-bindgen cdylib whose

@@ -1,0 +1,7 @@
+{
+  "name": "math-inline",
+  "capability": "math",
+  "gate": "full",
+  "source": "synthetic",
+  "note": "Rust-native inline math ($…$) → MathML via xyd_math (pulldown-latex). The math branch checks full + rendered-HTML snapshot + well-formed MathML (no <merror>). KaTeX byte-parity is intentionally NOT the gate (MathML Core != KaTeX HTML); deep functional equivalence to KaTeX is proven in crates/xyd_math/tests/equivalence.rs."
+}

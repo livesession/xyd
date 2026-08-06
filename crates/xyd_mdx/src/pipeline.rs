@@ -23,15 +23,23 @@ use mdxjs::{
 use rustc_hash::FxHashSet;
 use swc_core::common::Span;
 
-use crate::{directives, fb, functions, highlight, meta, meta_component, swc_pass, transforms};
+use crate::{
+    directives, fb, functions, highlight, math, meta, meta_component, swc_pass, transforms,
+};
 
 /// mdxjs options mirroring xyd's prose-relevant plugin set: GFM (tables,
-/// task-lists, strikethrough, autolinks, footnotes) + frontmatter. Math and the
-/// diagram/katex rehype steps are JS-only, so pages needing them fall back
-/// before reaching here (see `capability::scan`).
+/// task-lists, strikethrough, autolinks, footnotes) + frontmatter + math
+/// (`$…$` / `$$…$$`). The math constructs make the fork emit the
+/// `mdast-util-math` hast shape (`<code class="language-math …">`) that
+/// `math::embed` renders to MathML via `xyd_math`; single-`$` inline math is on
+/// by default (`math_text_single_dollar`), matching remark-math. The diagram
+/// rehype steps remain JS-only, so those pages still fall back
+/// (see `capability::scan`).
 fn options() -> Options {
     let mut constructs = MdxConstructs::gfm();
     constructs.frontmatter = true;
+    constructs.math_flow = true;
+    constructs.math_text = true;
     let parse = MdxParseOptions {
         constructs,
         ..Default::default()
@@ -83,6 +91,12 @@ pub fn compile_full(
     functions::process(&mut mdast, base_dir, highlight_theme)?;
 
     let mut hast = mdast_util_to_hast(&mdast);
+
+    // Rust-native math: render `$…$` / `$$…$$` (the `language-math` hast nodes)
+    // to MathML via `xyd_math`. Runs BEFORE highlight::embed (which would
+    // otherwise try to syntax-highlight the `language-math` `<pre>`). `Err` => an
+    // expression the Rust renderer can't handle -> defer the page to JS KaTeX.
+    math::embed(&mut hast)?;
 
     let headings = transforms::apply(&mut hast);
     highlight::embed(&mut hast, highlight_theme);

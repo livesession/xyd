@@ -28,6 +28,10 @@ markdown = { path = "vendor/markdown-fork" }
 rustc-hash = "2"
 swc_core = { version = "=27.0.6", features = ["common", "ecma_ast", "ecma_codegen", "ecma_parser", "ecma_visit"] }
 xyd_highlight = { path = "../xyd_highlight" }
+# Rust-native math: LaTeX ($…$ / $$…$$) → MathML Core (pulldown-latex), the
+# Rust-first replacement for the remark-math + rehype-katex JS step. Pure (no JS
+# engine). `src/math.rs` maps its parsed MathML tree onto mdxjs hast.
+xyd_math = { path = "../xyd_math" }
 
 [dev-dependencies]
 xyd_parity = { path = "../xyd_parity" }

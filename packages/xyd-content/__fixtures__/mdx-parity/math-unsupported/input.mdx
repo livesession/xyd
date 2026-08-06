@@ -1,0 +1,13 @@
+---
+title: Unsupported Math
+---
+
+This page uses the deprecated `\over` primitive, which KaTeX renders but the
+Rust MathML renderer (pulldown-latex) deliberately does not support:
+
+$$
+a \over b
+$$
+
+so the whole page honestly falls back to the JS KaTeX pipeline — never a wrong
+render.
