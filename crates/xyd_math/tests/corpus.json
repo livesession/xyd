@@ -1,0 +1,99 @@
+{
+  "_comment": "Shared LaTeX corpus for the functional-equivalence gate. Consumed by BOTH reference/gen.mjs (→ katex-reference.json) and tests/equivalence.rs. Each entry: {id, latex, display}. Keep ids stable. Broad coverage: fractions, scripts, roots, big operators + limits, Greek, relations/operators, matrices/cases, aligned, \\left\\right, spacing, text mode, accents, macros, calculus, trig, set/logic, arrows.",
+  "expressions": [
+    { "id": "frac-simple", "latex": "\\frac{1}{2}", "display": "inline" },
+    { "id": "frac-sum-over", "latex": "\\frac{a+b}{c-d}", "display": "inline" },
+    { "id": "frac-nested", "latex": "\\frac{1}{1+\\frac{1}{x}}", "display": "block" },
+    { "id": "frac-partial", "latex": "\\frac{\\partial f}{\\partial x}", "display": "inline" },
+    { "id": "dfrac", "latex": "\\dfrac{a}{b}", "display": "inline" },
+    { "id": "tfrac", "latex": "\\tfrac{1}{2}", "display": "block" },
+
+    { "id": "sup-square", "latex": "x^2", "display": "inline" },
+    { "id": "sub-index", "latex": "x_i", "display": "inline" },
+    { "id": "subsup", "latex": "x_i^2", "display": "inline" },
+    { "id": "sup-group", "latex": "x^{2n}", "display": "inline" },
+    { "id": "sub-group", "latex": "a_{i,j}", "display": "inline" },
+    { "id": "exp-neg", "latex": "e^{-x^2}", "display": "inline" },
+    { "id": "pythagoras", "latex": "a^2 + b^2 = c^2", "display": "inline" },
+
+    { "id": "sqrt-2", "latex": "\\sqrt{2}", "display": "inline" },
+    { "id": "sqrt-sum", "latex": "\\sqrt{x^2 + y^2}", "display": "inline" },
+    { "id": "sqrt-cube", "latex": "\\sqrt[3]{x}", "display": "inline" },
+    { "id": "sqrt-n", "latex": "\\sqrt[n]{x}", "display": "block" },
+
+    { "id": "int-indef", "latex": "\\int f(x)\\,dx", "display": "inline" },
+    { "id": "int-def", "latex": "\\int_0^1 x^2 \\, dx = \\frac{1}{3}", "display": "block" },
+    { "id": "int-gaussian", "latex": "\\int_{-\\infty}^{\\infty} e^{-x^2} \\, dx = \\sqrt{\\pi}", "display": "block" },
+    { "id": "oint", "latex": "\\oint_C \\mathbf{F} \\cdot d\\mathbf{r}", "display": "block" },
+
+    { "id": "sum-simple", "latex": "\\sum_{i=1}^n i", "display": "block" },
+    { "id": "sum-gauss", "latex": "\\sum_{i=1}^n i = \\frac{n(n+1)}{2}", "display": "block" },
+    { "id": "prod", "latex": "\\prod_{i=1}^n i = n!", "display": "block" },
+    { "id": "sum-infinite", "latex": "\\sum_{n=0}^{\\infty} \\frac{x^n}{n!} = e^x", "display": "block" },
+
+    { "id": "greek-lower", "latex": "\\alpha + \\beta = \\gamma", "display": "inline" },
+    { "id": "greek-upper", "latex": "\\Gamma, \\Delta, \\Omega", "display": "inline" },
+    { "id": "greek-var", "latex": "\\varphi + \\varepsilon + \\vartheta", "display": "inline" },
+    { "id": "greek-pi-theta", "latex": "\\pi r^2, \\; \\theta", "display": "inline" },
+
+    { "id": "rel-le-ge", "latex": "a \\le b \\ge c", "display": "inline" },
+    { "id": "rel-ne-approx", "latex": "a \\ne b \\approx c", "display": "inline" },
+    { "id": "rel-equiv", "latex": "a \\equiv b \\pmod{n}", "display": "inline" },
+    { "id": "op-times-cdot", "latex": "a \\times b \\cdot c", "display": "inline" },
+    { "id": "op-pm-mp", "latex": "a \\pm b \\mp c", "display": "inline" },
+    { "id": "nabla-partial", "latex": "\\nabla \\cdot \\mathbf{F} = \\partial_x", "display": "inline" },
+
+    { "id": "matrix-plain", "latex": "\\begin{matrix} a & b \\\\ c & d \\end{matrix}", "display": "block" },
+    { "id": "matrix-paren", "latex": "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}", "display": "block" },
+    { "id": "matrix-bracket", "latex": "\\begin{bmatrix} 1 & 0 \\\\ 0 & 1 \\end{bmatrix}", "display": "block" },
+    { "id": "matrix-det", "latex": "\\begin{vmatrix} a & b \\\\ c & d \\end{vmatrix}", "display": "block" },
+    { "id": "cases", "latex": "f(x) = \\begin{cases} x & x \\ge 0 \\\\ -x & x < 0 \\end{cases}", "display": "block" },
+
+    { "id": "aligned", "latex": "\\begin{aligned} a &= b + c \\\\ d &= e \\end{aligned}", "display": "block" },
+
+    { "id": "left-right-paren", "latex": "\\left( \\frac{a}{b} \\right)", "display": "inline" },
+    { "id": "left-right-bracket", "latex": "\\left[ \\sum_{i} x_i \\right]", "display": "block" },
+    { "id": "left-right-brace", "latex": "\\left\\{ x \\mid x > 0 \\right\\}", "display": "inline" },
+    { "id": "left-right-abs", "latex": "\\left| \\frac{a}{b} \\right|", "display": "inline" },
+    { "id": "left-right-norm", "latex": "\\left\\| \\mathbf{v} \\right\\|", "display": "inline" },
+
+    { "id": "spacing-thin", "latex": "a \\, b", "display": "inline" },
+    { "id": "spacing-quad", "latex": "a \\quad b \\qquad c", "display": "inline" },
+
+    { "id": "text-mode", "latex": "x \\text{ if } x > 0", "display": "inline" },
+    { "id": "text-in-sub", "latex": "v_{\\text{max}}", "display": "inline" },
+
+    { "id": "binom", "latex": "\\binom{n}{k}", "display": "inline" },
+    { "id": "vec", "latex": "\\vec{v} = \\vec{a} + \\vec{b}", "display": "inline" },
+    { "id": "hat-bar", "latex": "\\hat{x} + \\bar{y}", "display": "inline" },
+    { "id": "dot-ddot", "latex": "\\dot{x} + \\ddot{y}", "display": "inline" },
+    { "id": "overline", "latex": "\\overline{a + b}", "display": "inline" },
+    { "id": "tilde", "latex": "\\tilde{n}", "display": "inline" },
+    { "id": "mathbb", "latex": "\\mathbb{R} \\subset \\mathbb{C}", "display": "inline" },
+    { "id": "mathcal", "latex": "\\mathcal{L}(f)", "display": "inline" },
+    { "id": "mathbf", "latex": "\\mathbf{A} \\mathbf{x} = \\mathbf{b}", "display": "inline" },
+
+    { "id": "limit-sinx", "latex": "\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1", "display": "block" },
+    { "id": "limit-infty", "latex": "\\lim_{n \\to \\infty} \\left(1 + \\frac{1}{n}\\right)^n = e", "display": "block" },
+    { "id": "derivative", "latex": "\\frac{d}{dx} x^n = n x^{n-1}", "display": "block" },
+    { "id": "second-deriv", "latex": "\\frac{\\partial^2 f}{\\partial x^2}", "display": "inline" },
+    { "id": "prime", "latex": "f'(x) + g''(x)", "display": "inline" },
+
+    { "id": "trig-sin", "latex": "\\sin^2 \\theta + \\cos^2 \\theta = 1", "display": "inline" },
+    { "id": "log", "latex": "\\log_2 n + \\ln x", "display": "inline" },
+
+    { "id": "set-union", "latex": "A \\cup B \\cap C", "display": "inline" },
+    { "id": "set-in-subset", "latex": "x \\in S \\subseteq T", "display": "inline" },
+    { "id": "quantifiers", "latex": "\\forall x \\, \\exists y", "display": "inline" },
+    { "id": "logic", "latex": "p \\land q \\lor \\neg r", "display": "inline" },
+    { "id": "implies", "latex": "p \\implies q \\iff r", "display": "inline" },
+    { "id": "empty-set", "latex": "A \\cap B = \\emptyset", "display": "inline" },
+
+    { "id": "arrow-to", "latex": "f : A \\to B", "display": "inline" },
+    { "id": "arrow-mapsto", "latex": "x \\mapsto x^2", "display": "inline" },
+    { "id": "arrow-double", "latex": "A \\Rightarrow B \\Leftrightarrow C", "display": "inline" },
+
+    { "id": "euler-identity", "latex": "e^{i\\pi} + 1 = 0", "display": "block" },
+    { "id": "quadratic", "latex": "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}", "display": "block" }
+  ]
+}

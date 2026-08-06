@@ -26,6 +26,17 @@
 //!   description React trees + highlighted examples) is the deferred C-S4b tail.
 //!   Whatever comes back `full` MUST render byte-equal (a wrong `full` is a
 //!   FAILURE). A floor assertion pins the async fixtures that MUST stay `full`.
+//! - `math` (Rust-native math): `$…$` / `$$…$$` render to **MathML** via
+//!   `xyd_math` (pulldown-latex), NOT KaTeX HTML. Byte/DOM parity with KaTeX is
+//!   unreachable by design (MathML Core is a different DOM), so this category is
+//!   gated FUNCTIONALLY, end-to-end through the harness: a `gate: full` math
+//!   fixture must compile `full` and, once rendered, contain real `<math>`
+//!   element(s) with NO `<merror>` and well-formed, non-empty MathML (parsed back
+//!   via `xyd_math`). A `gate: fallback` math fixture (an expression the Rust
+//!   renderer can't handle, e.g. `\over`) must return `fallback` with a `math:`
+//!   reason — the honest "never a wrong render" path. Deep functional
+//!   equivalence to real KaTeX (token/structure over a 77-expression corpus)
+//!   lives in `crates/xyd_math/tests/equivalence.rs`.
 //!
 //! Oracle A (compiled JS) is intentionally NOT gated: swc codegen differs
 //! cosmetically from astring, but the rendered DOM is identical.
@@ -71,6 +82,10 @@ const OUTPUTVARS_FULL_FLOOR: [&str; 3] = [
     "outputvars-multiple",
     "outputvars-simple",
 ];
+
+/// Math fixtures that MUST compile `full` + render well-formed MathML (Rust-native
+/// math via `xyd_math`). A regression to `fallback` here fails the gate.
+const MATH_FULL_FLOOR: [&str; 3] = ["prose-math", "math-inline", "math-block"];
 
 use std::fs;
 use std::io::Write;
@@ -130,6 +145,53 @@ fn capability_of(meta_json: &str) -> String {
         .unwrap_or_default()
 }
 
+fn meta_gate(meta_json: &str) -> String {
+    serde_json::from_str::<serde_json::Value>(meta_json)
+        .ok()
+        .and_then(|v| v.get("gate")?.as_str().map(str::to_string))
+        .unwrap_or_default()
+}
+
+/// Functional MathML check on the rendered HTML of a math page: there must be at
+/// least one `<math>` element, no `<merror>` (KaTeX-parity-breaking error box),
+/// and every `<math>…</math>` block must parse back (via `xyd_math`) into a
+/// well-formed tree with non-empty rendered content. Returns the `<math>` count.
+fn check_mathml(rendered: &str) -> Result<usize, String> {
+    if rendered.contains("<merror") {
+        return Err("rendered MathML contains a <merror> error node".to_string());
+    }
+    let blocks = extract_math_blocks(rendered);
+    if blocks.is_empty() {
+        return Err("no <math> element in rendered output".to_string());
+    }
+    for (i, block) in blocks.iter().enumerate() {
+        let node = xyd_math::parse_mathml(block)
+            .map_err(|e| format!("<math> #{i} did not parse back: {e}"))?;
+        let shape = xyd_math::equiv::shape(&node);
+        if shape.glyphs.trim().is_empty() {
+            return Err(format!("<math> #{i} rendered no visible tokens"));
+        }
+    }
+    Ok(blocks.len())
+}
+
+/// Extract every top-level `<math …>…</math>` substring from an HTML string.
+fn extract_math_blocks(html: &str) -> Vec<String> {
+    let mut out = Vec::new();
+    let mut rest = html;
+    while let Some(start) = rest.find("<math") {
+        let after = &rest[start..];
+        if let Some(end) = after.find("</math>") {
+            let stop = end + "</math>".len();
+            out.push(after[..stop].to_string());
+            rest = &after[stop..];
+        } else {
+            break;
+        }
+    }
+    out
+}
+
 fn trim_trailing_newlines(s: &str) -> &str {
     s.trim_end_matches(['\n', '\r'])
 }
@@ -173,6 +235,9 @@ fn mdx_parity_gate() {
     let mut outputvars_total = 0usize;
     let mut outputvars_full: Vec<String> = Vec::new(); // `<<<` fences at parity
     let mut outputvars_deferred: Vec<String> = Vec::new(); // returned fallback
+    let mut math_total = 0usize;
+    let mut math_full: Vec<String> = Vec::new(); // rendered well-formed MathML
+    let mut math_fallback: Vec<String> = Vec::new(); // honest unsupported-LaTeX fallback
 
     for dir in &dirs {
         let name = dir.file_name().unwrap().to_string_lossy().to_string();
@@ -315,6 +380,52 @@ fn mdx_parity_gate() {
                     );
                 }
             }
+            "math" => {
+                math_total += 1;
+                let gate = meta_gate(&meta);
+                if gate == "fallback" {
+                    // Honest fallback for an expression the Rust renderer can't
+                    // parse (e.g. `\over`). MUST be `fallback` with a `math:` reason.
+                    if out.capability == xyd_mdx::CAP_FALLBACK {
+                        let ok = out.reason.as_deref().unwrap_or("").starts_with("math:");
+                        if ok {
+                            math_fallback.push(name.clone());
+                            println!(
+                                "PASS  {name}  (math -> honest fallback, reason={:?})",
+                                out.reason
+                            );
+                        } else {
+                            failures.push(format!(
+                                "MISS  {name}  (math fallback but reason not `math:` — {:?})",
+                                out.reason
+                            ));
+                        }
+                    } else {
+                        failures.push(format!(
+                            "MISS  {name}  (math expected `fallback` for unsupported LaTeX, got `full`)"
+                        ));
+                    }
+                } else if out.capability == xyd_mdx::CAP_FULL {
+                    // Full: render end-to-end and check the MathML functionally.
+                    match node_render(&name, &out.compiled) {
+                        Ok(rendered) => match check_mathml(&rendered) {
+                            Ok(count) => {
+                                math_full.push(name.clone());
+                                println!(
+                                    "PASS  {name}  (math full, {count} well-formed <math> element(s), no <merror>)"
+                                );
+                            }
+                            Err(e) => failures.push(format!("MISS  {name}  (math full but {e})")),
+                        },
+                        Err(e) => failures.push(format!("ERROR {name}  render failed: {e}")),
+                    }
+                } else {
+                    failures.push(format!(
+                        "MISS  {name}  (math expected `full`, fell back: {:?})",
+                        out.reason
+                    ));
+                }
+            }
             other => failures.push(format!("MISS  {name}  unknown capability tag {other:?}")),
         }
     }
@@ -356,6 +467,27 @@ fn mdx_parity_gate() {
             "outputvars deferred -> fallback: {}",
             outputvars_deferred.join(", ")
         );
+    }
+    println!(
+        "math: {}/{} full+well-formed MathML (full: [{}])",
+        math_full.len(),
+        math_total,
+        math_full.join(", ")
+    );
+    if !math_fallback.is_empty() {
+        println!(
+            "math honest fallback (unsupported LaTeX): {}",
+            math_fallback.join(", ")
+        );
+    }
+
+    // Floor: the math fixtures MUST stay `full` + render well-formed MathML.
+    for name in MATH_FULL_FLOOR {
+        if !math_full.iter().any(|n| n == name) {
+            failures.push(format!(
+                "MISS  {name}  (expected math fixture at `full` with well-formed MathML, but it was not)"
+            ));
+        }
     }
 
     // Floor: the generic directives MUST stay `full` + at parity (no silent

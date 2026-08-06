@@ -18,6 +18,7 @@ mod directives;
 mod fb;
 mod functions;
 mod highlight;
+mod math;
 mod meta;
 mod meta_component;
 mod output_vars;
@@ -170,6 +171,32 @@ mod tests {
     }
 
     #[test]
+    fn math_inline_and_block_compile_full() {
+        // Rust-native math: inline `$…$` and block `$$…$$` now compile `full` to
+        // MathML (no more `fallback` for math).
+        let src = "Inline $a^2 + b^2 = c^2$ done.\n\n$$\n\\int_0^1 x^2 \\, dx\n$$\n";
+        let out = compile_mdx(src, "{}", "");
+        assert_eq!(out.capability, CAP_FULL, "reason={:?}", out.reason);
+        // Real MathML element + KaTeX-style annotation, no error node.
+        assert!(out.compiled.contains("\"math\""), "{}", out.compiled);
+        assert!(out.compiled.contains("msup") || out.compiled.contains("mfrac"));
+        assert!(!out.compiled.contains("merror"));
+    }
+
+    #[test]
+    fn math_unsupported_falls_back() {
+        // An expression the Rust renderer can't parse defers the page to JS
+        // (honest fallback — never a wrong render).
+        let out = compile_mdx("bad $\\notacommand{x}$ math", "{}", "");
+        assert_eq!(out.capability, CAP_FALLBACK);
+        assert!(
+            out.reason.as_deref().unwrap_or("").starts_with("math:"),
+            "reason={:?}",
+            out.reason
+        );
+    }
+
+    #[test]
     fn output_vars_compiles_full_to_div() {
         // The `<<<name … <<<` fence becomes a `<div>` wrapping the code block —
         // matching the JS pipeline's `mdast-util-to-hast` unknown-handler `<div>`.
@@ -213,7 +240,9 @@ mod tests {
         assert!(capability::scan("# x\n\n@importCode \"./x.ts\"").is_some());
         // `@uniform` inside a directive attribute is still caught pre-parse.
         assert!(capability::scan("::atlas{references=\"@uniform('./x.ts')\"}").is_some());
-        assert!(capability::scan("inline $a^2$ math").is_some());
+        // Math is NO LONGER pre-scanned to fallback — it renders natively to
+        // MathML in the pipeline (falls back only on unsupported LaTeX).
+        assert!(capability::scan("inline $a^2$ math").is_none());
         assert!(capability::scan("```mermaid\ngraph\n```").is_some());
         // C-S3: `@include`/`@changelog` are NO LONGER pre-scanned — they are
         // handled post-parse by `functions::process`.

@@ -1,0 +1,7 @@
+{
+  "name": "math-block",
+  "capability": "math",
+  "gate": "full",
+  "source": "synthetic",
+  "note": "Rust-native block math ($$…$$) → MathML via xyd_math (pulldown-latex): integral with limits, summation, matrix. The math branch checks full + rendered-HTML snapshot + well-formed MathML (no <merror>)."
+}
