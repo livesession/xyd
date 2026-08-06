@@ -681,3 +681,42 @@ Grounded audit: props→JSX serializer + KaTeX are irreducible-JS (keep); `mdTab
 
 Integration: both branches merged clean (0 conflicts); `cargo check --workspace` + napi build green;
 `xyd_oas_snippet`/`xyd_highlight`/`xyd_mdx` gates all green (the mdx 23/25 gate unaffected).
+
+## Content-engine tails → Rust (3 more parallel tracks, 2026-08-06) — all landed + merged
+
+Ran Items 2/3/4 from the tails research as 3 worktree-isolated agents; merged all three (additive
+gate-file conflicts on `parity.rs`/`lib.rs`/`pipeline.rs` resolved by union), then verified.
+
+**Item 3 — `:::table` (mdTable) → Rust (`b7b30617`).** The last un-ported directive: `build_table` +
+`table_cell` in `directives.rs` (JSON 2-D array → `Table`/`Table.Head`/`.Tr`/`.Th`/`.Td`, per-cell
+markdown sub-parse via `reparse_content`). Oracle-first `directive-table` fixture (bold + inline-code
+cells). **Directive family now 8/8 at byte-parity.** Honest fallback for bare/malformed JSON.
+
+**Item 2 — `<<<` outputVars fence → Rust (`9125a470`).** New micromark container construct
+`output_vars_container.rs` in the vendored markdown-fork (sibling of `directive_container.rs`) + an
+`OutputVars` mdast node + `src/output_vars.rs` transform rewriting the fence to a `<div>` wrapping the
+re-parsed body (matching the JS pipeline's `mdast-util-to-hast` unknown-handler `<div>` — a standalone
+`<<<` page's only rendered effect; the examples blob feeds only atlas-with-source, which falls back).
+Delegates nested `:::code-group` to `directives::process`. New `outputvars` capability arm +
+`outputvars-simple/-multiple/-code-group` fixtures, **3/3 at byte-parity.** Honest fallback for `[label]`.
+
+**Item 4 — math/KaTeX → Rust MathML (`523b60a1`).** Chose pure-Rust **`pulldown-latex` → MathML Core**
+(rejected `katex`-rs: it embeds a JS engine, defeating the migration + bloating the binary). New crate
+`crates/xyd_math` + `crates/xyd_mdx/src/math.rs` (rehype-katex equivalent: enables the fork's
+`math_flow`/`math_text`, renders `$…$`/`$$…$$` to real React `<math>` elements). `capability.rs` no
+longer forces math to fallback. **Functional-equivalence gate (NOT byte-parity, per the user's steer):**
+a 77-expression corpus rendered by both the Rust path and real KaTeX 0.16.47, compared on glyph-stream +
+layout-structure multiset (with styled-letter/operator normalization) → **74/77 (96.1%) equivalent, 0
+wrong renders, 0 unexpected fallbacks**; the 3 divergences (vec/hat-bar/prime) are documented
+representational differences. New `math` capability arm; `math-inline`/`-block` full, `math-unsupported`
+(`\over`) proves honest fallback. Deps: `pulldown-latex` + `bumpalo` (pure Rust, no JS engine).
+
+**Integration fix (`7d3ea369`).** The math fixtures were Rust-gated via on-disk meta.json but not in
+`corpus.json` (so the gen oracle didn't manage them — missing compiled/rendered goldens; prose-math's
+corpus entry still said `prose`). Added a per-case `gate` override to `gen-mdx-goldens.mjs`, registered
+all math fixtures (`gate.math`, `math-unsupported` per-case `fallback`), re-tagged prose-math, and
+regenerated goldens from the REAL JS pipeline. **gen-verify: 0 drift across all 32 fixtures.**
+
+**Final mdx gate: prose 10/10, directive 8/8, async 6/7, outputvars 3/3, math 3/4 full + 1 honest
+fallback.** Workspace + napi (shipping) build green; `xyd_math` 19 unit + the equivalence gate green.
+The remaining fallbacks are the irreducible-JS core (openapi-atlas full-refs, math-unsupported/user macros).
