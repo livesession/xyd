@@ -160,6 +160,7 @@ pub mod definition;
 pub mod directive_container;
 pub mod directive_leaf;
 pub mod document;
+pub mod output_vars_container;
 pub mod flow;
 pub mod frontmatter;
 pub mod gfm_autolink_literal;

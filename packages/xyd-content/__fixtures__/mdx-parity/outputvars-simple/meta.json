@@ -1,0 +1,20 @@
+{
+  "name": "outputvars-simple",
+  "capability": "outputvars",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 2418,
+    "sha256": "2cdfc67461d70e24bdac24d6f604ef8478c0d7c8cede88a49cefc6ab74df02ca"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 216,
+    "sha256": "feba3736f10fd6849d0a28e365dc8319cadab9500017857c9b77b690949d5e71"
+  },
+  "note": "The bespoke `<<<name … <<<` outputVars fence. In a STANDALONE page (no atlas frontmatter) the JS `outputVars` node survives every remark pass and renders through `mdast-util-to-hast`'s unknown handler as a `<div>` wrapping the captured code blocks (`mdComposer`'s `file.data.outputVars` examples blob feeds only the atlas meta-component — a source-backed page that falls back — so it has no rendered-HTML effect here). The Rust port (fork `output_vars_container` construct + `output_vars` transform) reproduces that `<div>`; parity.rs enforces rendered.html since compile_mdx returns `full`."
+}

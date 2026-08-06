@@ -362,6 +362,11 @@ fn one(state: &mut State, node: &mdast::Node, parent: Option<&mdast::Node>) -> R
         // no longer hard-errors in swc).
         | mdast::Node::LeafDirective(_)
         | mdast::Node::ContainerDirective(_)
+        // xyd: the output-variables fence node is rewritten to a `<div>`
+        // MdxJsxFlowElement by `xyd_mdx`'s `output_vars` transform BEFORE this
+        // conversion runs, so it is never reached here; the arm exists only to
+        // keep the match exhaustive against the forked mdast::Node.
+        | mdast::Node::OutputVars(_)
         | mdast::Node::Toml(_) => Result::None,
     }
 }

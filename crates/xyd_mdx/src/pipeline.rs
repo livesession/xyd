@@ -23,7 +23,9 @@ use mdxjs::{
 use rustc_hash::FxHashSet;
 use swc_core::common::Span;
 
-use crate::{directives, fb, functions, highlight, meta, meta_component, swc_pass, transforms};
+use crate::{
+    directives, fb, functions, highlight, meta, meta_component, output_vars, swc_pass, transforms,
+};
 
 /// mdxjs options mirroring xyd's prose-relevant plugin set: GFM (tables,
 /// task-lists, strikethrough, autolinks, footnotes) + frontmatter. Math and the
@@ -81,6 +83,13 @@ pub fn compile_full(
     // JS. Runs AFTER the raw-MDX guard so the `Update`/spliced nodes it adds are
     // not mistaken for author MDX.
     functions::process(&mut mdast, base_dir, highlight_theme)?;
+
+    // xyd: rewrite the `<<<name … <<<` outputVars fence to a `<div>` wrapping the
+    // re-parsed body (mirrors the JS pipeline, where the surviving `outputVars`
+    // node renders through `mdast-util-to-hast`'s unknown handler as a `<div>`).
+    // Runs LAST so its internal directive conversion + raw-MDX guard operate on
+    // the fence's own re-parsed body; `Err` => an un-ported body — defer to JS.
+    output_vars::process(&mut mdast, &opts, source, highlight_theme)?;
 
     let mut hast = mdast_util_to_hast(&mdast);
 

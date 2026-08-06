@@ -61,11 +61,13 @@ pub fn start(tokenizer: &mut Tokenizer) -> State {
             State::Retry(StateName::ThematicBreakStart)
         }
         Some(b'<') => {
+            // xyd: try the `<<<` outputVars fence first; on nok fall through to
+            // the original html (flow) → MDX JSX handling for a single `<`.
             tokenizer.attempt(
                 State::Next(StateName::FlowAfter),
-                State::Next(StateName::FlowBeforeMdxJsx),
+                State::Next(StateName::FlowBeforeOutputVars),
             );
-            State::Retry(StateName::HtmlFlowStart)
+            State::Retry(StateName::OutputVarsContainerStart)
         }
         Some(b'e' | b'i') => {
             tokenizer.attempt(
@@ -108,6 +110,21 @@ pub fn before_directive_leaf(tokenizer: &mut Tokenizer) -> State {
         State::Next(StateName::FlowBeforeContent),
     );
     State::Retry(StateName::DirectiveLeafStart)
+}
+
+/// xyd: at `<`, the `<<<` outputVars fence failed — fall back to the original
+/// html (flow) → MDX JSX handling for a single `<`.
+///
+/// ```markdown
+/// > | <a>
+///     ^
+/// ```
+pub fn before_output_vars(tokenizer: &mut Tokenizer) -> State {
+    tokenizer.attempt(
+        State::Next(StateName::FlowAfter),
+        State::Next(StateName::FlowBeforeMdxJsx),
+    );
+    State::Retry(StateName::HtmlFlowStart)
 }
 
 /// At blank line.

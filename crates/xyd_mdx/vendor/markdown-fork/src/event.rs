@@ -3394,6 +3394,15 @@ pub enum Name {
     DirectiveContainerAttributes,
     DirectiveContainerAttributesContent,
     DirectiveContainerContent,
+
+    // xyd: output-variables `<<<` fence constructs.
+    OutputVarsContainer,
+    OutputVarsContainerFence,
+    OutputVarsContainerSequence,
+    OutputVarsContainerName,
+    OutputVarsContainerAttributes,
+    OutputVarsContainerAttributesContent,
+    OutputVarsContainerContent,
 }
 
 /// List of void events, used to make sure everything is working well.

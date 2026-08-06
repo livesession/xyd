@@ -259,6 +259,11 @@ pub enum Node {
     LeafDirective(LeafDirective),
     /// Container directive (`:::name{attrs}` … `:::`).
     ContainerDirective(ContainerDirective),
+
+    // xyd: bespoke output-variables fence (`<<<name[label]{attrs}` … `<<<`).
+    /// Output-variables container. Content captured raw (single `Text` child),
+    /// like [`ContainerDirective`]; the `xyd_mdx` transform re-parses it.
+    OutputVars(OutputVars),
 }
 
 impl fmt::Debug for Node {
@@ -301,6 +306,7 @@ impl fmt::Debug for Node {
             Node::Paragraph(x) => x.fmt(f),
             Node::LeafDirective(x) => x.fmt(f),
             Node::ContainerDirective(x) => x.fmt(f),
+            Node::OutputVars(x) => x.fmt(f),
         }
     }
 }
@@ -334,6 +340,7 @@ impl ToString for Node {
             Node::Paragraph(x) => children_to_string(&x.children),
             Node::LeafDirective(x) => children_to_string(&x.children),
             Node::ContainerDirective(x) => children_to_string(&x.children),
+            Node::OutputVars(x) => children_to_string(&x.children),
 
             // Literals.
             Node::MdxjsEsm(x) => x.value.clone(),
@@ -383,6 +390,7 @@ impl Node {
             Node::MdxJsxTextElement(x) => Some(&x.children),
             Node::LeafDirective(x) => Some(&x.children),
             Node::ContainerDirective(x) => Some(&x.children),
+            Node::OutputVars(x) => Some(&x.children),
             // Non-parent.
             _ => None,
         }
@@ -410,6 +418,7 @@ impl Node {
             Node::MdxJsxTextElement(x) => Some(&mut x.children),
             Node::LeafDirective(x) => Some(&mut x.children),
             Node::ContainerDirective(x) => Some(&mut x.children),
+            Node::OutputVars(x) => Some(&mut x.children),
             // Non-parent.
             _ => None,
         }
@@ -454,6 +463,7 @@ impl Node {
             Node::Paragraph(x) => x.position.as_ref(),
             Node::LeafDirective(x) => x.position.as_ref(),
             Node::ContainerDirective(x) => x.position.as_ref(),
+            Node::OutputVars(x) => x.position.as_ref(),
         }
     }
 
@@ -495,6 +505,7 @@ impl Node {
             Node::Paragraph(x) => x.position.as_mut(),
             Node::LeafDirective(x) => x.position.as_mut(),
             Node::ContainerDirective(x) => x.position.as_mut(),
+            Node::OutputVars(x) => x.position.as_mut(),
         }
     }
 
@@ -536,6 +547,7 @@ impl Node {
             Node::Paragraph(x) => x.position = position,
             Node::LeafDirective(x) => x.position = position,
             Node::ContainerDirective(x) => x.position = position,
+            Node::OutputVars(x) => x.position = position,
         }
     }
 }
@@ -710,6 +722,28 @@ pub struct ContainerDirective {
     /// Raw attributes string as claimed at parse time (between `{` and `}`).
     pub attributes: Option<String>,
     /// Content model (raw content captured as text in the PoC).
+    pub children: Vec<Node>,
+    /// Positional info.
+    #[cfg_attr(feature = "serde", serde(skip_serializing_if = "Option::is_none"))]
+    pub position: Option<Position>,
+}
+
+/// xyd: Output-variables container (`<<<name[label]{attrs}` … `<<<`).
+///
+/// A bespoke xyd fence that captures a labelled group of code blocks. Modeled on
+/// [`ContainerDirective`]: the fence marker is `<` (min 3), the header is
+/// `name` + optional `{attributes}` (a `[label]` after the name makes the
+/// construct not match, so labelled fences fall through to the JS pipeline), and
+/// the inner content is captured RAW (single `Text` child) for the `xyd_mdx`
+/// transform to re-parse.
+#[derive(Clone, Debug, Eq, PartialEq)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct OutputVars {
+    /// Output-variable name (identifier right after the `<<<`).
+    pub name: String,
+    /// Raw attributes string as claimed at parse time (between `{` and `}`).
+    pub attributes: Option<String>,
+    /// Content model (raw content captured as text, re-parsed downstream).
     pub children: Vec<Node>,
     /// Positional info.
     #[cfg_attr(feature = "serde", serde(skip_serializing_if = "Option::is_none"))]

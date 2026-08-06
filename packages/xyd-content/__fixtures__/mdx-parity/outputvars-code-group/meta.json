@@ -1,0 +1,22 @@
+{
+  "name": "outputvars-code-group",
+  "capability": "outputvars",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [
+    "DirectiveCodeGroup"
+  ],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 1915,
+    "sha256": "0218baed92fb43dd8f06c0fd5d41987bfbfd6b564d5fbb50f84dd83dd4a150fc"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 122,
+    "sha256": "4ac3851a481aba97ee7f3f50926ad2c46b11938d3f48b4deedaaf128cceea0c7"
+  },
+  "note": "A `:::code-group` INSIDE a `<<<` fence → `<div>` wrapping a `DirectiveCodeGroup` stub. The `output_vars` transform delegates to the directive port (`directives::process`) on the re-parsed fence body, mirroring the JS plugin order (outputVars parse → mdComponentDirective)."
+}

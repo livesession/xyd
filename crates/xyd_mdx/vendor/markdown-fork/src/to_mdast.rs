@@ -2,7 +2,7 @@
 
 use crate::event::{Event, Kind, Name};
 use crate::mdast::{
-    ContainerDirective, LeafDirective,
+    ContainerDirective, LeafDirective, OutputVars,
     AttributeContent, AttributeValue, AttributeValueExpression, Blockquote, Break, Code,
     Definition, Delete, Emphasis, FootnoteDefinition, FootnoteReference, Heading, Html, Image,
     ImageReference, InlineCode, InlineMath, Link, LinkReference, List, ListItem, Math,
@@ -291,6 +291,7 @@ fn enter(context: &mut CompileContext) -> Result<(), message::Message> {
         Name::BlockQuote => on_enter_block_quote(context),
         Name::DirectiveLeaf => on_enter_leaf_directive(context),
         Name::DirectiveContainer => on_enter_container_directive(context),
+        Name::OutputVarsContainer => on_enter_output_vars(context),
         Name::CodeFenced => on_enter_code_fenced(context),
         Name::CodeIndented => on_enter_code_indented(context),
         Name::CodeText => on_enter_code_text(context),
@@ -358,6 +359,7 @@ fn exit(context: &mut CompileContext) -> Result<(), message::Message> {
         | Name::Strong
         | Name::DirectiveLeaf
         | Name::DirectiveContainer
+        | Name::OutputVarsContainer
         | Name::ThematicBreak => {
             on_exit(context)?;
         }
@@ -368,6 +370,9 @@ fn exit(context: &mut CompileContext) -> Result<(), message::Message> {
             on_exit_directive_container_attributes(context)
         }
         Name::DirectiveContainerContent => on_exit_directive_container_content(context),
+        Name::OutputVarsContainerName => on_exit_output_vars_name(context),
+        Name::OutputVarsContainerAttributesContent => on_exit_output_vars_attributes(context),
+        Name::OutputVarsContainerContent => on_exit_output_vars_content(context),
         Name::CharacterEscapeValue
         | Name::CodeFlowChunk
         | Name::CodeTextData
@@ -573,6 +578,69 @@ fn on_exit_directive_container_content(context: &mut CompileContext) {
     .serialize();
     // PoC: accumulate raw content lines into a single Text child (line endings
     // between chunks are ignored by `on_exit_line_ending` for a directive tail).
+    let node = context.tail_mut();
+    if let Some(children) = node.children_mut() {
+        if let Some(Node::Text(text)) = children.last_mut() {
+            text.value.push('\n');
+            text.value.push_str(&value);
+        } else {
+            children.push(Node::Text(Text {
+                value,
+                position: None,
+            }));
+        }
+    }
+}
+
+// xyd: output-variables `<<<` fence node builders. Mirror the directive-container
+// tail — content captured raw as a single `Text` child; `xyd_mdx`'s `output_vars`
+// transform re-slices the body from the original source via the node's byte span.
+fn on_enter_output_vars(context: &mut CompileContext) {
+    context.tail_push(Node::OutputVars(OutputVars {
+        name: String::new(),
+        attributes: None,
+        children: vec![],
+        position: None,
+    }));
+}
+
+fn on_exit_output_vars_name(context: &mut CompileContext) {
+    let value = Slice::from_position(
+        context.bytes,
+        &SlicePosition::from_exit_event(context.events, context.index),
+    )
+    .serialize();
+    if let Node::OutputVars(node) = context.tail_mut() {
+        node.name = value;
+    } else {
+        unreachable!("expected output-vars container on stack");
+    }
+}
+
+fn on_exit_output_vars_attributes(context: &mut CompileContext) {
+    let raw = Slice::from_position(
+        context.bytes,
+        &SlicePosition::from_exit_event(context.events, context.index),
+    )
+    .serialize();
+    // The header token includes the surrounding braces (`{a=1}`); strip them.
+    let mut inner = raw.as_str();
+    inner = inner.strip_prefix('{').unwrap_or(inner);
+    inner = inner.strip_suffix('}').unwrap_or(inner);
+    let inner = inner.to_string();
+    if let Node::OutputVars(node) = context.tail_mut() {
+        node.attributes = Some(inner);
+    } else {
+        unreachable!("expected output-vars container on stack");
+    }
+}
+
+fn on_exit_output_vars_content(context: &mut CompileContext) {
+    let value = Slice::from_position(
+        context.bytes,
+        &SlicePosition::from_exit_event(context.events, context.index),
+    )
+    .serialize();
     let node = context.tail_mut();
     if let Some(children) = node.children_mut() {
         if let Some(Node::Text(text)) = children.last_mut() {
