@@ -3,5 +3,18 @@
   "capability": "math",
   "gate": "full",
   "source": "synthetic",
-  "note": "Rust-native block math ($$…$$) → MathML via xyd_math (pulldown-latex): integral with limits, summation, matrix. The math branch checks full + rendered-HTML snapshot + well-formed MathML (no <merror>)."
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 37621,
+    "sha256": "27f7e5ea1880d9c5e4537e2d931a1a53b32625335ef9c6b308dea768b4df0b4f"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 9711,
+    "sha256": "394726a338201ff6a14f7df1eea8a247c88b89300329f461e3ba7961e462b970"
+  },
+  "note": "Block `$$…$$` → native MathML via xyd_math. Functional gate (see math-inline)."
 }

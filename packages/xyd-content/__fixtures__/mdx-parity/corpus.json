@@ -4,6 +4,7 @@
     "prose": "full",
     "directive": "full",
     "outputvars": "full",
+    "math": "full",
     "async": "fallback"
   },
   "cases": [
@@ -14,7 +15,7 @@
     { "name": "prose-code-fences",       "capability": "prose",     "source": "synthetic", "features": ["code-fence", "line-highlight-meta", "server-highlight"] },
     { "name": "prose-blockquote-hr",     "capability": "prose",     "source": "synthetic", "features": ["blockquote", "nested-blockquote", "thematic-break"] },
     { "name": "prose-images",            "capability": "prose",     "source": "synthetic", "features": ["image", "image-title", "inline-image"] },
-    { "name": "prose-math",              "capability": "prose",     "source": "synthetic", "features": ["inline-math", "block-math", "katex"] },
+    { "name": "prose-math",              "capability": "math",      "source": "synthetic", "features": ["inline-math", "block-math", "katex"], "note": "Re-tagged prose->math (C-S Item 4): $…$/$$…$$ now render natively to MathML via xyd_math. The math gate is FUNCTIONAL (well-formed <math>, no <merror>), not byte-parity vs KaTeX — MathML Core is a different DOM by design. The committed rendered.html is the JS rehype-katex reference (not byte-gated)." },
     { "name": "prose-frontmatter-seo",   "capability": "prose",     "source": "synthetic", "features": ["frontmatter", "seoTitle", "seoDescription", "og"] },
     { "name": "prose-entities-escapes",  "capability": "prose",     "source": "synthetic", "features": ["html-entities", "backslash-escape", "unicode"] },
     { "name": "prose-real-introduction", "capability": "prose",     "source": "apps/docs/guides/introduction.md", "features": ["headings", "lists", "links", "inline-code"] },
@@ -39,6 +40,10 @@
 
     { "name": "outputvars-simple",     "capability": "outputvars", "source": "synthetic", "features": ["outputvars", "code-fence"], "note": "The bespoke `<<<name … <<<` outputVars fence. In a STANDALONE page (no atlas frontmatter) the JS `outputVars` node survives every remark pass and renders through `mdast-util-to-hast`'s unknown handler as a `<div>` wrapping the captured code blocks (`mdComposer`'s `file.data.outputVars` examples blob feeds only the atlas meta-component — a source-backed page that falls back — so it has no rendered-HTML effect here). The Rust port (fork `output_vars_container` construct + `output_vars` transform) reproduces that `<div>`; parity.rs enforces rendered.html since compile_mdx returns `full`." },
     { "name": "outputvars-multiple",   "capability": "outputvars", "source": "synthetic", "features": ["outputvars", "multiple-vars"], "note": "Two `<<<` fences → two sibling `<div>` wrappers. Confirms the construct closes each fence at its own `<<<` and re-parses each body independently." },
-    { "name": "outputvars-code-group", "capability": "outputvars", "source": "synthetic", "features": ["outputvars", "code-group"], "note": "A `:::code-group` INSIDE a `<<<` fence → `<div>` wrapping a `DirectiveCodeGroup` stub. The `output_vars` transform delegates to the directive port (`directives::process`) on the re-parsed fence body, mirroring the JS plugin order (outputVars parse → mdComponentDirective)." }
+    { "name": "outputvars-code-group", "capability": "outputvars", "source": "synthetic", "features": ["outputvars", "code-group"], "note": "A `:::code-group` INSIDE a `<<<` fence → `<div>` wrapping a `DirectiveCodeGroup` stub. The `output_vars` transform delegates to the directive port (`directives::process`) on the re-parsed fence body, mirroring the JS plugin order (outputVars parse → mdComponentDirective)." },
+
+    { "name": "math-inline",           "capability": "math",       "source": "synthetic", "features": ["inline-math"], "note": "Inline `$…$` → native MathML via xyd_math (pulldown-latex). Functional gate: full + well-formed <math>, no <merror>. rendered.html is the JS rehype-katex reference (not byte-gated — MathML Core is a different DOM)." },
+    { "name": "math-block",            "capability": "math",       "source": "synthetic", "features": ["block-math"], "note": "Block `$$…$$` → native MathML via xyd_math. Functional gate (see math-inline)." },
+    { "name": "math-unsupported",      "capability": "math", "gate": "fallback", "source": "synthetic", "features": ["unsupported-latex"], "note": "Uses `\\over` — valid deprecated LaTeX that KaTeX renders but pulldown-latex deliberately does not. Proves the HONEST fallback: compile_mdx returns `fallback` (reason `math:`) rather than a wrong render. Per-case `gate: fallback` overrides the `math` capability default." }
   ]
 }

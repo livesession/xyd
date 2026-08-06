@@ -143,7 +143,10 @@ async function generateCase(entry, corpus) {
   const meta = {
     name: entry.name,
     capability: entry.capability,
-    gate: corpus.gate[entry.capability] || "unknown",
+    // Per-case `gate` override wins over the capability default (e.g. a single
+    // `math` fixture that must stay `fallback` — an unsupported-LaTeX case —
+    // among otherwise-`full` math fixtures).
+    gate: entry.gate || corpus.gate[entry.capability] || "unknown",
     source: entry.source,
     compileStatus,
     renderStatus,

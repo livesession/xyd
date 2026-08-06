@@ -3,5 +3,18 @@
   "capability": "math",
   "gate": "fallback",
   "source": "synthetic",
-  "note": "Honest fallback: `\\over` is valid (deprecated) LaTeX that KaTeX renders but pulldown-latex explicitly does not support. The Rust renderer returns Err → the page defers to JS KaTeX rather than emit a wrong / <merror> render."
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 5827,
+    "sha256": "dc5158541fe9a6e886e550c35f977771b251221ac7249da3dc8ff91ac99b0e9f"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 1525,
+    "sha256": "34af06ab9db67ad69555d5513e20b678eb097a432e186c977dd788f8d64581f2"
+  },
+  "note": "Uses `\\over` — valid deprecated LaTeX that KaTeX renders but pulldown-latex deliberately does not. Proves the HONEST fallback: compile_mdx returns `fallback` (reason `math:`) rather than a wrong render. Per-case `gate: fallback` overrides the `math` capability default."
 }
