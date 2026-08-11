@@ -270,11 +270,11 @@ const BUILT_IN_THEME_VERSIONS: Record<string, string> = {
 const NPM_THEME_PREFIX = "npm:";
 
 // release.js republishes every @xyd-js/* package together with the same
-// snapshot version (e.g. 0.0.0-canary-{sha}-{ts} or 0.0.0-build-{sha}-{ts}),
-// so the theme published alongside this documan is at the exact same
-// version. Reading documan's own package.json at runtime returns the
-// published snapshot — pinning to that exact version keeps builds
-// reproducible (no drift from later canary republishes) and avoids stale
+// snapshot version (e.g. 0.0.0-canary-{sha}, 0.0.0-canary2-{sha} or
+// 0.0.0-build-{sha}-{ts}), so the theme published alongside this documan is
+// at the exact same version. Reading documan's own package.json at runtime
+// returns the published snapshot — pinning to that exact version keeps builds
+// reproducible (no drift from later canary/canary2 republishes) and avoids stale
 // values inlined from workspace package.json imports at tsup build time
 // (release.js bumps versions AFTER documan is built).
 function getDocumanRuntimeVersion(): string | null {
@@ -290,7 +290,7 @@ function getDocumanRuntimeVersion(): string | null {
 function isLockstepSnapshotVersion(version: string): boolean {
     // Snapshot versions produced by `pnpm changeset version --snapshot {tag}`
     // — same value across every @xyd-js/* package on a given release.
-    return version.startsWith("0.0.0-canary-") || version.startsWith("0.0.0-build-");
+    return version.startsWith("0.0.0-canary-") || version.startsWith("0.0.0-canary2-") || version.startsWith("0.0.0-build-");
 }
 
 function getThemeDependency(settings: Settings): Record<string, string> {

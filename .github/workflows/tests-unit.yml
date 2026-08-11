@@ -2,9 +2,9 @@ name: tests:unit
 
 on:
   push:
-    branches: [ master, canary ]
+    branches: [ master, canary, canary2 ]
   pull_request:
-    branches: [ master, canary ]
+    branches: [ master, canary, canary2 ]
 
 jobs:
   test:
