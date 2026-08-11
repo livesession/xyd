@@ -23,7 +23,7 @@ name: tests:opensdk-pipeline
 
 on:
   push:
-    branches: [ master, canary ]
+    branches: [ master, canary, canary2 ]
     paths:
       - 'packages/xyd-opensdk-core/**'
       - 'packages/xyd-opensdk-framework/**'
@@ -40,7 +40,7 @@ on:
       - 'packages/xyd-opensdk-cli/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
   pull_request:
-    branches: [ master, canary ]
+    branches: [ master, canary, canary2 ]
     paths:
       - 'packages/xyd-opensdk-core/**'
       - 'packages/xyd-opensdk-framework/**'

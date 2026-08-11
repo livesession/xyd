@@ -17,7 +17,7 @@ name: tests:opencli-pipeline
 
 on:
   push:
-    branches: [ master, canary ]
+    branches: [ master, canary, canary2 ]
     paths:
       - 'packages/xyd-opencli/**'
       - 'packages/xyd-openapi2opencli/**'
@@ -25,7 +25,7 @@ on:
       - 'packages/xyd-opencli2rust/**'
       - '.github/workflows/tests-opencli-pipeline.yml'
   pull_request:
-    branches: [ master, canary ]
+    branches: [ master, canary, canary2 ]
     paths:
       - 'packages/xyd-opencli/**'
       - 'packages/xyd-openapi2opencli/**'
