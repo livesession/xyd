@@ -2,13 +2,13 @@
 
 use crate::event::{Event, Kind, Name};
 use crate::mdast::{
-    ContainerDirective, LeafDirective, OutputVars,
     AttributeContent, AttributeValue, AttributeValueExpression, Blockquote, Break, Code,
-    Definition, Delete, Emphasis, FootnoteDefinition, FootnoteReference, Heading, Html, Image,
-    ImageReference, InlineCode, InlineMath, Link, LinkReference, List, ListItem, Math,
-    MdxFlowExpression, MdxJsxAttribute, MdxJsxExpressionAttribute, MdxJsxFlowElement,
-    MdxJsxTextElement, MdxTextExpression, MdxjsEsm, Node, Paragraph, ReferenceKind, Root, Strong,
-    Table, TableCell, TableRow, Text, ThematicBreak, Toml, Yaml,
+    ContainerDirective, Definition, Delete, Emphasis, FootnoteDefinition, FootnoteReference,
+    Heading, Html, Image, ImageReference, InlineCode, InlineMath, LeafDirective, Link,
+    LinkReference, List, ListItem, Math, MdxFlowExpression, MdxJsxAttribute,
+    MdxJsxExpressionAttribute, MdxJsxFlowElement, MdxJsxTextElement, MdxTextExpression, MdxjsEsm,
+    Node, OutputVars, Paragraph, ReferenceKind, Root, Strong, Table, TableCell, TableRow, Text,
+    ThematicBreak, Toml, Yaml,
 };
 use crate::message;
 use crate::unist::{Point, Position};
