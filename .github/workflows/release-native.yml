@@ -128,11 +128,19 @@ jobs:
               fs.writeFileSync('$p', JSON.stringify(j, null, 2) + '\n');
             "
           done
-          # optionalDependencies pins → the published version
+          # optionalDependencies are NOT committed in packages/xyd-native/package.json
+          # — the per-platform packages are unpublished (0.0.0) and their specs break
+          # `pnpm i --frozen-lockfile` in dev/CI. Generate them HERE from the npm/*
+          # platform dirs (stamped just above), pinned to the release version, so the
+          # published @xyd-js/native resolves the right .node on each platform.
           node -e "
             const fs = require('fs');
             const j = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-            for (const k of Object.keys(j.optionalDependencies || {})) j.optionalDependencies[k] = '${{ inputs.version }}';
+            j.optionalDependencies = {};
+            for (const d of fs.readdirSync('npm')) {
+              const pj = JSON.parse(fs.readFileSync('npm/' + d + '/package.json', 'utf8'));
+              j.optionalDependencies[pj.name] = '${{ inputs.version }}';
+            }
             fs.writeFileSync('package.json', JSON.stringify(j, null, 2) + '\n');
           "
 
