@@ -185,8 +185,9 @@ pub fn render_handler(path_names: &[String], command: &Value) -> RenderedHandler
     // Body.
     let mut body_expr: Option<String> = None;
     if model.has_body {
-        if model.body_style.as_deref() == Some("json") && model.body_json_option.is_some() {
-            let opt = model.body_json_option.as_ref().unwrap();
+        if let (Some("json"), Some(opt)) =
+            (model.body_style.as_deref(), model.body_json_option.as_ref())
+        {
             lines.push(format!(
                 "let body_bytes = m.get_one::<String>({}).map(|v| v.clone().into_bytes());",
                 q(opt)

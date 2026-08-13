@@ -157,7 +157,7 @@ pub fn map_responses(responses: Option<&Value>) -> Vec<XOpenApiResponse> {
         .copied()
         .filter(|(s, _)| is_2xx(s))
         .collect();
-    success.sort_by(|(a, _), (b, _)| a.cmp(b));
+    success.sort_by_key(|(a, _)| *a);
     let fallback: Vec<(&String, &Value)> = with_content
         .iter()
         .copied()
