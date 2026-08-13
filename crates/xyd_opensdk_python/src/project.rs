@@ -123,7 +123,7 @@ pub fn models_py(spec: &Value) -> String {
     let aliases = order_aliases(&alias_types);
 
     let mut decls: Vec<String> = Vec::new();
-    for t in structs_enums.into_iter().chain(aliases.into_iter()) {
+    for t in structs_enums.into_iter().chain(aliases) {
         let decl = named_type(t, &mut ctx);
         if !decl.is_empty() {
             decls.push(decl);
