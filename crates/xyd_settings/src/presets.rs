@@ -128,20 +128,21 @@ fn ensure_basename(settings: &mut Value) {
         Some(Value::String(logo)) => {
             theme.insert("logo".into(), Value::String(path_join(&basename, &logo)));
         }
-        Some(Value::Object(logo)) => {
-            if logo.contains_key("light") || logo.contains_key("dark") || logo.contains_key("href")
-            {
-                let light = logo.get("light").and_then(|v| v.as_str()).unwrap_or("");
-                let dark = logo.get("dark").and_then(|v| v.as_str()).unwrap_or("");
-                let mut out = Map::new();
-                out.insert("light".into(), Value::String(path_join(&basename, light)));
-                out.insert("dark".into(), Value::String(path_join(&basename, dark)));
-                // `href: settings.theme.logo.href` — copied verbatim (undefined omits).
-                if let Some(href) = logo.get("href") {
-                    out.insert("href".into(), href.clone());
-                }
-                theme.insert("logo".into(), Value::Object(out));
+        Some(Value::Object(logo))
+            if logo.contains_key("light")
+                || logo.contains_key("dark")
+                || logo.contains_key("href") =>
+        {
+            let light = logo.get("light").and_then(|v| v.as_str()).unwrap_or("");
+            let dark = logo.get("dark").and_then(|v| v.as_str()).unwrap_or("");
+            let mut out = Map::new();
+            out.insert("light".into(), Value::String(path_join(&basename, light)));
+            out.insert("dark".into(), Value::String(path_join(&basename, dark)));
+            // `href: settings.theme.logo.href` — copied verbatim (undefined omits).
+            if let Some(href) = logo.get("href") {
+                out.insert("href".into(), href.clone());
             }
+            theme.insert("logo".into(), Value::Object(out));
         }
         _ => {}
     }
