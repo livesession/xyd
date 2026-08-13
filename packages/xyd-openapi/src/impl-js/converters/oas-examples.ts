@@ -22,8 +22,14 @@ const DEFAULT_CODE_LANGUAGES = ["shell", "javascript", "python", "go"]
 // circular schema (JSON.stringify throws) — in both cases the caller runs the
 // JS oasToSnippet below, so output is unchanged. Shared (non-circular) $refs
 // serialize fine and take the native path.
+// The Rust port (crates/xyd_oas_snippet) implements exactly the 4 default
+// httpsnippet clients (shell/curl, javascript/fetch, python/requests, go/native).
+// Custom `x-docs.codeLanguages` (e.g. java, ruby, php) are NOT ported, so they
+// fall back to the full JS oasToSnippet target set rather than a wrong native one.
+const NATIVE_SNIPPET_LANGS = new Set(["shell", "javascript", "python", "go"]);
+
 function nativeSnippetCode(oas: Oas, operation: Operation, values: any, lang: string): string | null {
-    if (!native?.oasToSnippet) {
+    if (!native?.oasToSnippet || !NATIVE_SNIPPET_LANGS.has(lang)) {
         return null;
     }
     try {
