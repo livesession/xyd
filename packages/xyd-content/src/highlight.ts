@@ -14,7 +14,7 @@ export async function highlight(
     theme: Parameters<typeof codehikeHighlight>[1]
 ): Promise<HighlightedCode> {
     if (native?.highlight) {
-        return JSON.parse(
+        const result: HighlightedCode = JSON.parse(
             native.highlight(
                 codeblock.value,
                 codeblock.lang || "",
@@ -22,6 +22,12 @@ export async function highlight(
                 JSON.stringify(theme)
             )
         );
+        // codehike echoes the input `meta` verbatim (a null/undefined meta stays
+        // null/undefined). The napi boundary needs a string, so we pass `|| ""`
+        // for the call but restore the original meta so the result is
+        // byte-identical to codehike (which the parity gate requires).
+        result.meta = codeblock.meta;
+        return result;
     }
     return codehikeHighlight(codeblock, theme);
 }
