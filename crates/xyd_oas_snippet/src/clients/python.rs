@@ -153,15 +153,13 @@ pub fn convert(req: &Prepared) -> String {
         }
     } else if header_count > 1 {
         cb.push0("headers = {");
-        let mut count = 1;
-        for (h, v) in headers {
+        for (i, (h, v)) in headers.into_iter().enumerate() {
             let esc = escape_double(&header_string(v));
-            if count != header_count {
+            if i + 1 != header_count {
                 cb.push(&format!("\"{h}\": \"{esc}\","), 1);
             } else {
                 cb.push(&format!("\"{h}\": \"{esc}\""), 1);
             }
-            count += 1;
         }
         cb.push0("}");
         cb.blank();

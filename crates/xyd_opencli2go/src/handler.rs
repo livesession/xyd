@@ -164,8 +164,9 @@ pub fn render_handler(
     // Body.
     if model.has_body {
         imports.add(&["encoding/json"]);
-        if model.body_style.as_deref() == Some("json") && model.body_json_option.is_some() {
-            let bjo = model.body_json_option.as_ref().unwrap();
+        if let (Some("json"), Some(bjo)) =
+            (model.body_style.as_deref(), model.body_json_option.as_ref())
+        {
             lines.push("var bodyBytes []byte".to_string());
             lines.push(format!("if cmd.IsSet({}) {{", q(bjo)));
             lines.push(format!("\tbodyBytes = []byte(cmd.String({}))", q(bjo)));

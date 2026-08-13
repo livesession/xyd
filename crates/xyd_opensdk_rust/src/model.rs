@@ -279,7 +279,7 @@ fn render_tagged_union(type_: &Value) -> String {
     let derives = derive_line(&["Debug", "Clone", "Serialize", "Deserialize"]);
     // Sorted for deterministic output regardless of IR key order.
     let mut entries: Vec<(&String, &Value)> = mapping.iter().collect();
-    entries.sort_by(|(a, _), (b, _)| a.cmp(b));
+    entries.sort_by_key(|(a, _)| *a);
     let mut seen = HashSet::new();
     let variants: Vec<String> = entries
         .iter()
