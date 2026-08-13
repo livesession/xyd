@@ -101,6 +101,14 @@ jobs:
         with:
           node-version: 22.12.0
 
+      # `pnpm build` fans out to every package, including the bun-built
+      # @xyd-js/ask-ai-edge (`bun build …`), so bun must be on PATH — matching
+      # every other workflow that runs the full build.
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 'latest'
+
       - name: Get pnpm store directory
         shell: bash
         run: |
