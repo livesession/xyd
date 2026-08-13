@@ -81,6 +81,33 @@ jobs:
         working-directory: crates
         run: cargo clippy --workspace --all-targets -- -D warnings
 
+      # The xyd_mdx parity test renders compiled MDX through the JS harness
+      # (__fixtures__/mdx-parity/_harness/render.mjs imports react +
+      # react-dom/server), so node_modules must exist. fmt/clippy don't need it,
+      # so install right before the test step (fail-fast on lint first).
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies (parity render harness needs react)
+        run: pnpm i
+
       - name: test (incl. fixture parity + oracle round-trip)
         working-directory: crates
         run: cargo test --workspace
