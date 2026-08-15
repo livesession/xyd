@@ -157,10 +157,11 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     const serverBundle: string = await buildBundle(
       "buildserver",
       `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}` +
-        `import { renderPageStatic, seedForBuild, buildPageData, renderPluginPageStatic } from "./renderPage";\n` +
+        `import { renderPageStatic, seedForBuild, buildPageData, renderPluginPageStatic, renderRedirectStatic } from "./renderPage";\n` +
         `globalThis.__xydSeedForBuild = () => seedForBuild(Theme);\n` +
         `globalThis.__xydRenderStatic = (slug, opts) => renderPageStatic(slug, opts);\n` +
         `globalThis.__xydRenderPluginStatic = (route) => renderPluginPageStatic(route);\n` +
+        `globalThis.__xydRenderRedirect = (slug) => renderRedirectStatic(slug);\n` +
         `globalThis.__xydCompileContent = (slug) => buildPageData(slug, { shellOnly: false }).then((d) => d.code || "");\n`,
       "bun",
       ["typedoc", "@xyd-js/sources", "shiki", "vscode-oniguruma", "vscode-textmate"]
@@ -200,6 +201,25 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     }
   }
   console.error(`[build] wrote ${ok}/${slugs.length} pages`);
+
+  // 6a') REDIRECT STUBS: nav `route`s with no content of their own (section/tab
+  // landings — e.g. /guides, /reference/core) redirect to their first child. Under
+  // Vite these are prerendered as redirect pages by React Router; the content loop
+  // above only covers __xydPagePathMapping, so emit the stubs here for parity. The
+  // pure nav-walk stays here; first-child resolution runs in the bundled server
+  // (globalThis.__xydRenderRedirect) since this module can't import mapSettingsToProps.
+  const renderRedirect = (globalThis as any).__xydRenderRedirect;
+  if (renderRedirect) {
+    let rd = 0;
+    for (const slug of collectRouteSlugs(settings?.navigation)) {
+      if (mapping[slug]) continue; // a `route` that is itself a content page → already written
+      try {
+        const html = await renderRedirect(slug);
+        if (html) { writeHtml(clientDir, slug, html); rd++; }
+      } catch { /* an unresolvable route (no first child) just gets no stub */ }
+    }
+    if (rd) console.error(`[build] redirect stubs → ${rd}`);
+  }
 
   // 6a) PROTECTED CONTENT CHUNKS: for every protected page emit the compiled MDX at
   // /__xyd_protected_content/<encodeURIComponent(slug)>.js. It was excluded from the
@@ -351,6 +371,28 @@ async function emitCss(HOST: string, themePkg: string, clientDir: string): Promi
   }
   console.error(`[build] css → ${links.length} files`);
   return links;
+}
+
+/** Collect every sidebar `route` slug (section/tab landings) — the set Vite's
+ *  docPaths pushes beyond the content pages. i18n sidebars are already locale-
+ *  pre-prefixed by pluginDocs, so their routes come out locale-correct. Nested
+ *  routes are reached via `pages`/`items`. Basename-free (Bun URL space). */
+function collectRouteSlugs(navigation: any): string[] {
+  const out = new Set<string>();
+  const walk = (nodes: any[]) => {
+    for (const node of nodes || []) {
+      if (!node || typeof node !== "object") continue;
+      if (node.route) out.add(String(node.route).replace(/^\/+/, ""));
+      if (Array.isArray(node.pages)) walk(node.pages);
+      if (Array.isArray(node.items)) walk(node.items);
+    }
+  };
+  if (navigation?.languages?.length) {
+    for (const lang of navigation.languages) walk(lang.sidebar || []);
+  } else {
+    walk(navigation?.sidebar || []);
+  }
+  return [...out];
 }
 
 /** '/' → index.html, else <slug>.html (mkdir -p parents), matching the Vite

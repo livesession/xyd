@@ -274,6 +274,14 @@ export function ShellProviders() {
   const effectiveSettings = locale ? resolveLocaleSettings(settings, locale) : settings;
   const { Layout } = state.theme;
   const variantToggles = [{ key: "symbolName", defaultValue: "" }];
+  // Site banner (components.banner.content) — compiled server-side into
+  // loaderData.bannerContentCode by buildPageData and serialized to the client, so
+  // this instantiates identically in SSR and hydration (parity with the Vite
+  // layout loader). Scoped with the theme's content components like DocsBody.
+  const bannerCode = loaderData.bannerContentCode;
+  const BannerContent = bannerCode
+    ? mdxContent(bannerCode, state.theme.reactContentComponents(), undefined, {}).component
+    : null;
   return (
     <Analytics settings={effectiveSettings} loader={loadProvider as any}>
       {/* Scroll to top on client PUSH navigation (react-router parity). */}
@@ -285,7 +293,7 @@ export function ShellProviders() {
           sidebarGroups={loaderData.sidebarGroups || []}
           metadata={loaderData.metadata || {}}
           surfaces={state.surfaces}
-          BannerContent={null}
+          BannerContent={BannerContent}
           components={{ Search: SearchButton, Logo: FwLogo }}
         >
           <AtlasContext

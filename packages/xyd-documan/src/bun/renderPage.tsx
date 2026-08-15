@@ -3,6 +3,7 @@ import React from "react";
 import * as path from "node:path";
 
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
+import { resolveLocaleSettings } from "@xyd-js/framework/hydration/locale";
 import { markdownPlugins } from "@xyd-js/content/md";
 import { ContentFS } from "@xyd-js/content";
 
@@ -102,6 +103,32 @@ function deriveLocale(slug: string): string {
   return locale;
 }
 
+// The site banner (`components.banner.content`) is GLOBAL chrome — same for every
+// page in a locale — so compile it ONCE per distinct content string and cache. The
+// key is the content itself, so a dev-mode edit auto-invalidates. Parity with the
+// Vite layout loader (plugin-docs layout.tsx), which compiles the banner MDX and
+// passes it as `BannerContent`; the Bun render shell (render-tree.tsx) instantiates
+// this code and renders the banner, closing the "Bun engine drops the banner" gap.
+const _bannerCodeCache = new Map<string, Promise<string>>();
+async function bannerContentCode(s: any, locale: string): Promise<string> {
+  const eff = locale ? resolveLocaleSettings(s, locale) : s;
+  const content = eff?.components?.banner?.content;
+  if (!content || typeof content !== "string") return "";
+  let p = _bannerCodeCache.get(content);
+  if (!p) {
+    p = (async () => {
+      const md: any = await markdownPlugins({ maxDepth: 2 } as any, s);
+      const fs = new ContentFS(
+        s, [...md.remarkPlugins], [...md.rehypePlugins], md.recmaPlugins,
+        globalThis.__xydUserMarkdownPlugins?.remarkRehypeHandlers || {},
+      );
+      return fs.compileContent(content);
+    })();
+    _bannerCodeCache.set(content, p);
+  }
+  return p;
+}
+
 export async function buildPageData(slug: string, opts: { shellOnly?: boolean } = {}) {
   slug = slug || "index";
   const s = getSettings();
@@ -110,6 +137,9 @@ export async function buildPageData(slug: string, opts: { shellOnly?: boolean } 
   const props: any = await mapSettingsToProps(s, globalThis.__xydPagePathMapping, slug, undefined as any, locale);
   const { groups: sidebarGroups, breadcrumbs, navlinks, metadata } = props;
 
+  // Banner is chrome — render it even on shell-only (protected) pages.
+  const bannerCode = await bannerContentCode(s, locale);
+
   // SECURITY (S3 SSG): a protected page with no server-side deploy adapter must
   // NEVER compile/emit its MDX into the static HTML — render an empty shell; the
   // client's ProtectedPageShell fetches the content chunk after auth.
@@ -117,6 +147,7 @@ export async function buildPageData(slug: string, opts: { shellOnly?: boolean } 
     return {
       sidebarGroups, breadcrumbs, navlinks, slug, locale, code: "", metadata,
       rawPage: "", editLink: undefined, canPassComponents: false, shellOnly: true,
+      bannerContentCode: bannerCode,
     };
   }
 
@@ -146,7 +177,51 @@ export async function buildPageData(slug: string, opts: { shellOnly?: boolean } 
 
   return {
     sidebarGroups, breadcrumbs, navlinks, slug, locale, code, metadata, rawPage, editLink, canPassComponents, shellOnly: false,
+    bannerContentCode: bannerCode,
   };
+}
+
+// --- redirect stubs for content-less nav routes (tab/segment landings) --------
+// A nav `route` with no content file of its own (a section/tab landing) redirects
+// to its first child. Under Vite, React Router's prerender emits a redirect page
+// for these; the Bun content loop only covers __xydPagePathMapping, so the SSG
+// resolves + emits the stub here. buildStatic can't import mapSettingsToProps
+// directly (react-router leaf), so it drives this through the bundled server.
+// Mirrors plugin-docs page.tsx findFallbackUrl + findFirstUrl + sanitizeUrl.
+function _findFirstUrl(items: any[]): string {
+  const queue = [...(items || [])];
+  while (queue.length) {
+    const it = queue.shift();
+    if (it?.href) return it.href;
+    if (it?.items) queue.push(...it.items);
+  }
+  return "";
+}
+function _firstChildHref(groups: any[], slug: string): string {
+  const norm = (u: string) => (u.startsWith("/") ? u : "/" + u);
+  for (const group of groups || []) {
+    if (!group?.items || group.items.length === 0) continue;
+    const first = _findFirstUrl(group.items);
+    if (!first) continue;
+    if (norm(first) === norm(slug)) continue; // avoid a self-redirect → next group
+    return first;
+  }
+  return "";
+}
+
+/** Redirect-stub HTML for a content-less nav route, or null if no child resolves. */
+export async function renderRedirectStatic(slug: string): Promise<string | null> {
+  const s = getSettings();
+  const locale = deriveLocale(slug);
+  const props: any = await mapSettingsToProps(s, globalThis.__xydPagePathMapping, slug, undefined as any, locale);
+  const target = _firstChildHref(props.groups, slug);
+  if (!target) return null;
+  const from = "/" + slug + "/";
+  return (
+    `<!doctype html>\n<head>\n<title>Redirecting to: ${target}</title>\n` +
+    `<meta http-equiv="refresh" content="2;url=${target}">\n<meta name="robots" content="noindex">\n` +
+    `</head>\n<body>\n\t<a href="${target}">\n    Redirecting from <code>${from}</code> to <code>${target}</code>\n  </a>\n</body>\n</html>\n`
+  );
 }
 
 export async function renderPage(slug: string, search: string = "", cookieHeader: string | null = null): Promise<string> {

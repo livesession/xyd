@@ -161,10 +161,11 @@ export async function prebuildThemes(host: string, themes: string[], prebuiltDir
     `${themeImports}\n` +
       `const THEMES = ${themeDict};\n` +
       `const pick = (name) => THEMES[name] || THEMES[${JSON.stringify(themes[0])}];\n` +
-      `import { renderPageStatic, seedForBuild, start, reseed } from "./renderPage";\n` +
+      `import { renderPageStatic, seedForBuild, start, reseed, renderRedirectStatic } from "./renderPage";\n` +
       // build (SSG):
       `globalThis.__xydSeedForBuild = (name) => seedForBuild(pick(name));\n` +
       `globalThis.__xydRenderStatic = (slug, opts) => renderPageStatic(slug, opts);\n` +
+      `globalThis.__xydRenderRedirect = (slug) => renderRedirectStatic(slug);\n` +
       // dev (S4.3 step 11): the SAME bundle also drives the in-binary dev server.
       `globalThis.__xydBunStart = (name) => start(pick(name));\n` +
       `globalThis.__xydBunReseed = (name) => reseed(pick(name));\n`,
