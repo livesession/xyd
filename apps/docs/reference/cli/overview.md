@@ -9,8 +9,12 @@ Reference for CLI
 
 The xyd CLI is one of the primary ways to interact with the xyd platform. You’ll use the `xyd` command to run your docs locally, build them for production, and manage your project.
 
-First, install xyd:
+First, install xyd. The recommended way is the self-contained native binary (no Node required):
 :::code-group{}
+```bash curl
+curl -fsSL https://xyd.dev/install | bash
+```
+
 ```bash bun
 bun add -g xyd-js
 ```

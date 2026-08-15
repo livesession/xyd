@@ -16,14 +16,18 @@ Start building modern documentation in record time
 Follow the instructions below to learn how to run, deploy, update and supercharge your documentation with `xyd`.
 
 :::callout
-**Prerequisite:**  Node 22.12+
+**Prerequisite:** the native install (`curl … | bash`) needs nothing — it's a self-contained binary. The package-manager installs (bun/pnpm/npm) need Node 22.12+.
 :::
 
 ## Installation
 
 :::::steps
-1. Install the <code>xyd</code> CLI:
+1. Install the <code>xyd</code> CLI. The recommended way is the self-contained native binary (no Node required):
 :::code-group{title="xyd installation"}
+```bash curl
+curl -fsSL https://xyd.dev/install | bash
+```
+
 ```bash bun
 bun add -g xyd-js
 ```
@@ -36,6 +40,10 @@ pnpm add -g xyd-js
 npm i -g xyd-js
 ```
 :::
+
+::::callout
+The installer auto-detects your platform (macOS / Linux, arm64 / x64) and installs `xyd` into `~/.xyd/bin`. Pin a version with `curl -fsSL https://xyd.dev/install@0.1.0 | bash`, or get the bleeding edge with `curl -fsSL https://canary.xyd.dev/install | bash`.
+::::
 
 ::::callout{kind="warning"}
 **Note:** There are known issues with Bun v1.2.21. If you encounter problems, consider using a different Bun version or switch to another supported package manager.
@@ -57,6 +65,10 @@ xyd
 Please note that each CLI release is associated with a specific version of <code>xyd</code>.
 If you have troubles, please update the CLI:
 :::code-group{title="xyd update"}
+```bash curl
+curl -fsSL https://xyd.dev/install | bash
+```
+
 ```bash bun
 bun add -g xyd-js
 ```

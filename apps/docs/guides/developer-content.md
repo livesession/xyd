@@ -130,6 +130,10 @@ You can use the `code-group` component to group multiple code blocks together.
 **Input:**
 ~~~
 :::code-group{title="xyd installation"}
+```bash curl
+curl -fsSL https://xyd.dev/install | bash
+```
+
 ```bash bun
 bun add -g xyd-js
 ```
@@ -142,6 +146,10 @@ npm i -g xyd-js
 
 **Output:**
 :::code-group{title="xyd installation"}
+```bash curl
+curl -fsSL https://xyd.dev/install | bash
+```
+
 ```bash bun
 bun add -g xyd-js
 ```
