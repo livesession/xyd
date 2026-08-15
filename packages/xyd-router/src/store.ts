@@ -1,4 +1,5 @@
 import type { RLoc, Snap, To, RouterStore, RouterInit } from "./types";
+import { normBase, withBase, stripBase } from "./basename";
 
 let _k = 0;
 // Monotonic key for history entries + scroll restoration. Counter only (no
@@ -21,6 +22,10 @@ function resolveTo(to: To, base: RLoc): URL {
  * re-render `useLocation` consumers, since the hooks select per-field).
  */
 export function createRouterStore(init: RouterInit): RouterStore {
+  const basename = normBase(init.basename);
+  // The href written to history for a (basename-free) resolved URL: the internal
+  // location stays basename-free, only the browser URL carries the prefix.
+  const hrefFor = (u: URL) => withBase(basename, u.pathname) + u.search + u.hash;
   let snap: Snap = Object.freeze({
     // Ensure the initial location carries a key so the FIRST navigation (which
     // gets a fresh key) is detectably different → ScrollRestoration fires.
@@ -77,7 +82,7 @@ export function createRouterStore(init: RouterInit): RouterStore {
 
     // Pure hash / same-page change → update location only; no loading, no fetch.
     if (url.pathname === snap.location.pathname && url.search === snap.location.search) {
-      pushOrReplace(opts.replace, target.key!, url.href);
+      pushOrReplace(opts.replace, target.key!, hrefFor(url));
       set({ location: target });
       return;
     }
@@ -93,7 +98,7 @@ export function createRouterStore(init: RouterInit): RouterStore {
     const seq = ++navSeq;
 
     set({ navigation: { state: "loading", location: target } }); // 1) loading, KEEP old snap.location
-    pushOrReplace(opts.replace, target.key!, url.href); // 2) URL changes now
+    pushOrReplace(opts.replace, target.key!, hrefFor(url)); // 2) URL changes now (basename-prefixed)
     try {
       const { matches } = await init.loadPageData(url, controller.signal); // 3) fetch page data
       if (seq !== navSeq) return; // 4) superseded by a newer nav → drop this stale commit
@@ -118,7 +123,7 @@ export function createRouterStore(init: RouterInit): RouterStore {
         if (!internalHistory) {
           window.dispatchEvent(new Event(t));
           const l = window.location;
-          set({ location: { pathname: l.pathname, search: l.search, hash: l.hash, key: d?.key } });
+          set({ location: { pathname: stripBase(basename, l.pathname), search: l.search, hash: l.hash, key: d?.key } });
         }
         return r;
       } as typeof history.pushState;
@@ -130,13 +135,14 @@ export function createRouterStore(init: RouterInit): RouterStore {
     const un2 = patch("replaceState");
     const onPop = () => {
       const url = new URL(window.location.href);
-      const loc: RLoc = { pathname: url.pathname, search: url.search, hash: url.hash };
+      // Internal location is basename-free; loadPageData strips it again for the slug.
+      const loc: RLoc = { pathname: stripBase(basename, url.pathname), search: url.search, hash: url.hash };
       // A Back/Forward supersedes any in-flight navigate() (and vice versa).
       inflight?.abort();
       const controller = new AbortController();
       inflight = controller;
       const seq = ++navSeq;
-      if (url.pathname === snap.location.pathname && url.search === snap.location.search) {
+      if (loc.pathname === snap.location.pathname && url.search === snap.location.search) {
         set({ location: loc, navigation: { state: "idle" } }); // also clear a stuck 'loading'
         return;
       }
@@ -164,5 +170,5 @@ export function createRouterStore(init: RouterInit): RouterStore {
     };
   }
 
-  return { subscribe, getSnapshot, getServerSnapshot, navigate, install };
+  return { subscribe, getSnapshot, getServerSnapshot, navigate, install, basename };
 }

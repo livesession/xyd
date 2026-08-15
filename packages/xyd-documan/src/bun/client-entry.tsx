@@ -60,6 +60,7 @@ export function bootClient(ThemeCtor: any) {
     location: { pathname: stripBase(w.pathname), search: w.search, hash: w.hash },
     matches: [{ id: data.routeId, pathname: slugToPathname(data.slug), params: {}, data: data.loaderData }],
     loadPageData,
+    basename,
   });
 
   hydrateRoot(

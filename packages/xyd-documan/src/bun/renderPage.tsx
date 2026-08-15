@@ -214,9 +214,14 @@ export async function renderRedirectStatic(slug: string): Promise<string | null>
   const s = getSettings();
   const locale = deriveLocale(slug);
   const props: any = await mapSettingsToProps(s, globalThis.__xydPagePathMapping, slug, undefined as any, locale);
-  const target = _firstChildHref(props.groups, slug);
-  if (!target) return null;
-  const from = "/" + slug + "/";
+  const child = _firstChildHref(props.groups, slug);
+  if (!child) return null;
+  // Prefix the basename so the redirect resolves on a host serving the site under
+  // it (e.g. /docs/components/callouts) — parity with the Vite build.
+  const base = (s?.advanced?.basename || "").replace(/\/+$/, "");
+  const withBase = (p: string) => (base && p.startsWith("/") && p !== base && !p.startsWith(base + "/") ? base + p : p);
+  const target = withBase(child);
+  const from = withBase("/" + slug) + "/";
   return (
     `<!doctype html>\n<head>\n<title>Redirecting to: ${target}</title>\n` +
     `<meta http-equiv="refresh" content="2;url=${target}">\n<meta name="robots" content="noindex">\n` +
@@ -243,6 +248,7 @@ export async function renderPage(slug: string, search: string = "", cookieHeader
   const store = createRouterStore({
     location: { pathname, search: search || "", hash: "" },
     matches: [{ id: routeId, pathname, params: {}, data: loaderData }],
+    basename: getSettings()?.advanced?.basename,
   });
   const bodyHtml = renderToString(
     <RouterProvider store={store}>
@@ -384,6 +390,7 @@ export async function renderPageStatic(slug: string, opts: { shellOnly?: boolean
   const store = createRouterStore({
     location: { pathname, search: "", hash: "" },
     matches: [{ id: routeId, pathname, params: {}, data: loaderData }],
+    basename: getSettings()?.advanced?.basename,
   });
   const bodyHtml = renderToString(
     <RouterProvider store={store}>
@@ -423,6 +430,7 @@ function renderPluginTree(route: string): { bodyHtml: string; data: any } {
   const store = createRouterStore({
     location: { pathname: route, search: "", hash: "" },
     matches: [{ id: route, pathname: route, params: {}, data: loaderData }],
+    basename: getSettings()?.advanced?.basename,
   });
   const bodyHtml = renderToString(
     <RouterProvider store={store}>

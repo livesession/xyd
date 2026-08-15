@@ -1,5 +1,6 @@
 import * as React from "react";
 import { RouterContext } from "./context";
+import { withBase } from "./basename";
 import type { To } from "./types";
 
 const use = () => {
@@ -55,9 +56,13 @@ export const useNavigate = () => {
 };
 
 export function useHref(to: To): string {
+  const s = React.useContext(RouterContext);
   const loc = useLocation();
-  if (typeof to === "string") return to;
-  return (to.pathname ?? loc.pathname) + (to.search ?? "") + (to.hash ?? "");
+  const raw = typeof to === "string" ? to : (to.pathname ?? loc.pathname) + (to.search ?? "") + (to.hash ?? "");
+  // Prefix the basename for the RENDERED href (React Router parity); Link's
+  // onClick still navigates with the basename-free `to`, so the store's internal
+  // location stays basename-free.
+  return withBase(s?.basename || "", raw);
 }
 
 export function useSearchParams() {

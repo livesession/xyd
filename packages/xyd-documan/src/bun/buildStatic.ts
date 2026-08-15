@@ -315,9 +315,13 @@ function emitRobots(clientDir: string, settings: any) {
  *  already excluded when the map was built in appInit). */
 function emitRawRouteFiles(clientDir: string) {
   const raw: Record<string, string> = (globalThis as any).__xydRawRouteFiles || {};
+  // Raw page markdown nests under the basename dir alongside the pages, so the
+  // copy-page / raw-md fetch (e.g. /docs/components/callouts.md) resolves.
+  const base = ((globalThis as any).__xydSettings?.advanced?.basename || "").replace(/^\/+|\/+$/g, "");
   let n = 0;
   for (const key of Object.keys(raw)) {
-    const abs = path.join(clientDir, key.replace(/^\/+/, ""));
+    const rel = key.replace(/^\/+/, "");
+    const abs = path.join(clientDir, base ? path.join(base, rel) : rel);
     fs.mkdirSync(path.dirname(abs), { recursive: true });
     fs.writeFileSync(abs, raw[key]);
     n++;
@@ -396,9 +400,12 @@ function collectRouteSlugs(navigation: any): string[] {
 }
 
 /** '/' → index.html, else <slug>.html (mkdir -p parents), matching the Vite
- *  build's flattened output. */
+ *  build's flattened output. Pages nest under the basename dir (docs/…) when
+ *  `advanced.basename` is set — parity with the Vite build; assets stay at root. */
 function writeHtml(clientDir: string, slug: string, html: string) {
-  const rel = slug === "index" || slug === "" ? "index.html" : `${slug}.html`;
+  const base = ((globalThis as any).__xydSettings?.advanced?.basename || "").replace(/^\/+|\/+$/g, "");
+  const rel0 = slug === "index" || slug === "" ? "index.html" : `${slug}.html`;
+  const rel = base ? path.join(base, rel0) : rel0;
   const abs = path.join(clientDir, rel);
   fs.mkdirSync(path.dirname(abs), { recursive: true });
   fs.writeFileSync(abs, html);
