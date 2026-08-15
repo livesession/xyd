@@ -134,7 +134,10 @@ function content(html) {
   const body = (html.match(/<body[^>]*>([\s\S]*)<\/body>/i) || [, html])[1];
   const noScript = body.replace(/<script[\s\S]*?<\/script>/gi, "").replace(/<style[\s\S]*?<\/style>/gi, "");
   const headings = [...noScript.matchAll(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/gi)].map(m => text(m[1])).sort();
-  const links = [...noScript.matchAll(/<a[^>]*href="([^"]*)"/gi)].map(m => m[1]).filter(h => h && !h.startsWith("http"));
+  // Internal link hrefs, basename-normalized: Vite prefixes the basename (/docs/x)
+  // and the Bun engine is basename-free (/x). Normalizing both isolates real link
+  // differences from the (separate, known) basename-URL-space item.
+  const links = [...noScript.matchAll(/<a[^>]*href="(\/[^"]*)"/gi)].map(m => m[1]).filter(h => !h.startsWith("//")).map(normTarget);
   const words = text(noScript).split(" ").filter(Boolean);
   const bag = new Map(); for (const w of words) bag.set(w, (bag.get(w) || 0) + 1);
   return { bag, headings, links: [...new Set(links)].sort() };
@@ -161,6 +164,18 @@ function firstDiff(a, b) {
   const lo = Math.max(0, i - 30);
   return { at: i, base: a.slice(lo, i + 50), cfg: b.slice(lo, i + 50) };
 }
+// Redirect stubs (nav routes → first child) are a distinct page type, not content.
+// Vite targets carry the basename (/docs/x); the Bun engine is basename-free (/x).
+// Compare them by their basename-normalized DESTINATION so an equivalent redirect
+// isn't miscounted as a content diff.
+function redirectTarget(html) {
+  const m = html.match(/http-equiv=["']?refresh["']?[^>]*content=["'][^"']*url=([^"'>]+)/i);
+  return m ? m[1] : null;
+}
+function normTarget(url) {
+  const u = url.replace(/^\/+/, "");
+  return "/" + (BASENAME && u.startsWith(BASENAME + "/") ? u.slice(BASENAME.length + 1) : u);
+}
 // Run one compat pair (cfg vs base) in the given mode.
 function compatPair(pair, byId) {
   const baseDir = byId[pair.base]?.preserved, cfgDir = byId[pair.cfg]?.preserved;
@@ -172,6 +187,13 @@ function compatPair(pair, byId) {
     const cfgPath = cfgRoutes.get(rel);
     if (!cfgPath) { missing.push(rel); continue; }
     const bh = readFileSync(basePath, "utf8"), ch = readFileSync(cfgPath, "utf8");
+    // Redirect stubs: compare destination (basename-normalized), not body text.
+    const bRedir = redirectTarget(bh), cRedir = redirectTarget(ch);
+    if (bRedir || cRedir) {
+      if (bRedir && cRedir && normTarget(bRedir) === normTarget(cRedir)) identical++;
+      else differing.push({ route: rel, removed: bRedir ? [`redirect→${bRedir}`] : [], added: cRedir ? [`redirect→${cRedir}`] : [] });
+      continue;
+    }
     if (pair.mode === "structural") {
       const b = structural(bh), c = structural(ch);
       if (b === c) identical++; else differing.push({ route: rel, ...firstDiff(b, c) });

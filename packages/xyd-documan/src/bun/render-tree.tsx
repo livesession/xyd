@@ -306,7 +306,7 @@ export function ShellProviders() {
               } as any
             }
           >
-            <CoderProvider lines scroll>
+            <CoderProvider lines={effectiveSettings?.theme?.coder?.lines} scroll={effectiveSettings?.theme?.coder?.scroll}>
               <Layout>
                 {/* Key on slug so FrameworkPage remounts per page (its setMetadata
                     runs on empty deps) → title/nav-active/TOC refresh on client nav. */}
