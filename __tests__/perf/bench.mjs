@@ -31,6 +31,20 @@ const ONLY = process.env.BENCH_ONLY ? new Set(process.env.BENCH_ONLY.split(","))
 const median = (xs) => { const s = [...xs].sort((a, b) => a - b); return s[Math.floor(s.length / 2)]; };
 const mb = (bytes) => Math.round(bytes / 1048576);
 
+// The Vite engine writes pages under the configured basename (apps/docs: /docs
+// → docs/guides/x.html); the Bun engine uses a basename-free page space
+// (guides/x.html). Strip a leading "<basename>/" so cross-engine route keys
+// align — otherwise every route reads as missing+extra and content is never
+// actually compared. Applied to BOTH sides, so same-engine pairs still align.
+const BASENAME = (() => {
+  try { return (JSON.parse(readFileSync(join(APP, "docs.json"), "utf8"))?.advanced?.basename || "").replace(/^\/+|\/+$/g, ""); }
+  catch { return ""; }
+})();
+function routeKey(rel) {
+  if (BASENAME && rel.startsWith(BASENAME + "/")) return rel.slice(BASENAME.length + 1);
+  return rel;
+}
+
 // --- output helpers ---------------------------------------------------------
 function listHtml(dir) {
   const out = [];
@@ -111,16 +125,37 @@ function stripHashes(html) {
 // shells differ by construction).
 function structural(html) { return normalizeHtml(stripHashes(html)); }
 // content: user-visible text + heading/link sets, shell-agnostic (cross-engine).
-// Strips <head>, <script>, <style>, all tags → collapsed text; plus the ordered
-// list of heading texts and internal link hrefs (the load-bearing content signal).
+// ORDER-INSENSITIVE: Vite and Bun place shared chrome (banner/nav/sidebar) in a
+// slightly different DOM order, so a positional text diff is noise. We compare a
+// word MULTISET (+ heading/link sets), which stays equal under reordering but
+// still catches genuinely added/removed/changed content — and the multiset delta
+// pinpoints exactly which words differ.
 function content(html) {
   const body = (html.match(/<body[^>]*>([\s\S]*)<\/body>/i) || [, html])[1];
   const noScript = body.replace(/<script[\s\S]*?<\/script>/gi, "").replace(/<style[\s\S]*?<\/style>/gi, "");
-  const headings = [...noScript.matchAll(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/gi)].map(m => text(m[1]));
+  const headings = [...noScript.matchAll(/<h[1-6][^>]*>([\s\S]*?)<\/h[1-6]>/gi)].map(m => text(m[1])).sort();
   const links = [...noScript.matchAll(/<a[^>]*href="([^"]*)"/gi)].map(m => m[1]).filter(h => h && !h.startsWith("http"));
-  return { text: text(noScript), headings, links: [...new Set(links)].sort() };
+  const words = text(noScript).split(" ").filter(Boolean);
+  const bag = new Map(); for (const w of words) bag.set(w, (bag.get(w) || 0) + 1);
+  return { bag, headings, links: [...new Set(links)].sort() };
 }
 function text(html) { return html.replace(/<[^>]+>/g, " ").replace(/&[a-z]+;/gi, " ").replace(/\s+/g, " ").trim(); }
+function bagEqual(a, b) {
+  if (a.size !== b.size) return false;
+  for (const [k, v] of a) if (b.get(k) !== v) return false;
+  return true;
+}
+// Multiset symmetric difference → "-word×n" removed from base, "+word×n" added.
+function bagDelta(base, cfg) {
+  const keys = new Set([...base.keys(), ...cfg.keys()]);
+  const removed = [], added = [];
+  for (const k of keys) {
+    const d = (cfg.get(k) || 0) - (base.get(k) || 0);
+    if (d < 0) removed.push(`${k}×${-d}`);
+    else if (d > 0) added.push(`${k}×${d}`);
+  }
+  return { removed, added };
+}
 function firstDiff(a, b) {
   let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++;
   const lo = Math.max(0, i - 30);
@@ -130,8 +165,8 @@ function firstDiff(a, b) {
 function compatPair(pair, byId) {
   const baseDir = byId[pair.base]?.preserved, cfgDir = byId[pair.cfg]?.preserved;
   if (!baseDir || !cfgDir || !existsSync(baseDir) || !existsSync(cfgDir)) return null;
-  const routes = new Map(); for (const p of listHtml(baseDir)) routes.set(relative(baseDir, p), p);
-  const cfgRoutes = new Map(); for (const p of listHtml(cfgDir)) cfgRoutes.set(relative(cfgDir, p), p);
+  const routes = new Map(); for (const p of listHtml(baseDir)) routes.set(routeKey(relative(baseDir, p)), p);
+  const cfgRoutes = new Map(); for (const p of listHtml(cfgDir)) cfgRoutes.set(routeKey(relative(cfgDir, p)), p);
   let identical = 0; const differing = []; const missing = []; const extra = [];
   for (const [rel, basePath] of routes) {
     const cfgPath = cfgRoutes.get(rel);
@@ -142,11 +177,15 @@ function compatPair(pair, byId) {
       if (b === c) identical++; else differing.push({ route: rel, ...firstDiff(b, c) });
     } else {
       const b = content(bh), c = content(ch);
-      const same = b.text === c.text && JSON.stringify(b.headings) === JSON.stringify(c.headings) && JSON.stringify(b.links) === JSON.stringify(c.links);
+      const same = bagEqual(b.bag, c.bag) && JSON.stringify(b.headings) === JSON.stringify(c.headings) && JSON.stringify(b.links) === JSON.stringify(c.links);
       if (same) identical++;
-      else differing.push({ route: rel, ...firstDiff(b.text, c.text),
-        headingsDelta: b.headings.length === c.headings.length ? null : `${b.headings.length}→${c.headings.length}`,
-        linksDelta: b.links.length === c.links.length ? null : `${b.links.length}→${c.links.length}` });
+      else {
+        const d = bagDelta(b.bag, c.bag);
+        differing.push({ route: rel,
+          removed: d.removed, added: d.added,
+          headingsDelta: b.headings.length === c.headings.length ? null : `${b.headings.length}→${c.headings.length}`,
+          linksDelta: b.links.length === c.links.length ? null : `${b.links.length}→${c.links.length}` });
+      }
     }
   }
   for (const rel of cfgRoutes.keys()) if (!routes.has(rel)) extra.push(rel);
@@ -154,12 +193,27 @@ function compatPair(pair, byId) {
 }
 
 // --- main -------------------------------------------------------------------
+// Rebuild a result stub from an already-preserved output dir (compat-only mode,
+// so the pairs can be re-diffed without re-running the slow builds).
+function resultFromPreserved(cfg) {
+  const preserved = join(TARGET, "out", cfg.id);
+  if (!existsSync(preserved)) return { ...cfg, skipped: "no preserved output" };
+  const size = dirSize(preserved);
+  return { id: cfg.id, role: cfg.role, engine: cfg.engine, natives: cfg.natives,
+    ok: true, exit: 0, wallSec: null, wallRuns: [], peakRssMB: null,
+    pagesHtml: listHtml(preserved).length, wrote: null,
+    sizeMB: mb(size.total), sizeBreakdown: { jsMB: mb(size.js), cssMB: mb(size.css), htmlMB: mb(size.html) },
+    preserved };
+}
+
 function main() {
   mkdirSync(TARGET, { recursive: true });
+  const compatOnly = !!process.env.BENCH_COMPAT_ONLY;
   const configs = CONFIGS.filter(c => !ONLY || ONLY.has(c.id));
-  console.log(`bench: apps/docs · N=${N} · configs=[${configs.map(c => c.id).join(", ")}]`);
+  console.log(`bench: apps/docs · N=${N} · configs=[${configs.map(c => c.id).join(", ")}]${compatOnly ? " · COMPAT-ONLY (preserved outputs)" : ""}`);
   const results = [];
   for (const cfg of configs) {
+    if (compatOnly) { results.push(resultFromPreserved(cfg)); continue; }
     process.stdout.write(`  building ${cfg.id} … `);
     const r = benchConfig(cfg);
     if (r.skipped) { console.log(`skipped (${r.skipped})`); results.push(r); continue; }
@@ -194,7 +248,10 @@ function renderMd(o) {
   for (const r of o.results) {
     if (r.skipped) { md += `| ${r.id} | ${r.role} | — | _skipped_ | — | — | — | — |\n`; continue; }
     const pg = r.wrote && r.wrote.ok < r.wrote.total ? `${r.pagesHtml} ⚠️(${r.wrote.ok}/${r.wrote.total})` : `${r.pagesHtml}`;
-    md += `| ${r.id} | ${r.role} | ${r.exit} | ${r.wallSec}s | ${r.id === o.baseline ? "—" : speedup(r)} | ${r.peakRssMB}MB | ${pg} | ${r.sizeMB}MB |\n`;
+    const wall = r.wallSec == null ? "—" : `${r.wallSec}s`;
+    const rss = r.peakRssMB == null ? "—" : `${r.peakRssMB}MB`;
+    const spd = r.wallSec == null ? "—" : (r.id === o.baseline ? "—" : speedup(r));
+    md += `| ${r.id} | ${r.role} | ${r.exit} | ${wall} | ${spd} | ${rss} | ${pg} | ${r.sizeMB}MB |\n`;
   }
   md += `\n## Backward-compat\n\nEach row isolates one question. Same-engine pairs use full DOM-normalized HTML (\`structural\`); cross-engine pairs use shell-agnostic user-visible content — text + heading/link sets (\`content\`), because Vite and Bun emit different bootstrap shells by construction.\n\n`;
   md += `| pair | mode | identical / total | differ | missing | extra | asks |\n|---|---|---|---|---|---|---|\n`;
@@ -205,8 +262,15 @@ function renderMd(o) {
     if (!c.differing.length && !c.missing.length) continue;
     md += `\n### ${c.cfg} vs ${c.base} [${c.mode}] deltas\n`;
     for (const d of c.differing.slice(0, 8)) {
-      const extra = [d.headingsDelta && `headings ${d.headingsDelta}`, d.linksDelta && `links ${d.linksDelta}`].filter(Boolean).join(", ");
-      md += `- \`${d.route}\`${extra ? ` (${extra})` : ""} @${d.at}\n  - base: \`${(d.base || "").replace(/\n/g, "⏎")}\`\n  - cfg: \`${(d.cfg || "").replace(/\n/g, "⏎")}\`\n`;
+      if (c.mode === "content") {
+        const meta = [d.headingsDelta && `headings ${d.headingsDelta}`, d.linksDelta && `links ${d.linksDelta}`].filter(Boolean).join(", ");
+        const rm = (d.removed || []).slice(0, 12).join(" "), ad = (d.added || []).slice(0, 12).join(" ");
+        md += `- \`${d.route}\`${meta ? ` (${meta})` : ""}\n`;
+        if (rm) md += `  - only in base: ${rm}${d.removed.length > 12 ? " …" : ""}\n`;
+        if (ad) md += `  - only in cfg: ${ad}${d.added.length > 12 ? " …" : ""}\n`;
+      } else {
+        md += `- \`${d.route}\` @${d.at}\n  - base: \`${(d.base || "").replace(/\n/g, "⏎")}\`\n  - cfg: \`${(d.cfg || "").replace(/\n/g, "⏎")}\`\n`;
+      }
     }
     if (c.missing.length) md += `- missing routes: ${c.missing.slice(0, 10).join(", ")}${c.missing.length > 10 ? " …" : ""}\n`;
   }
