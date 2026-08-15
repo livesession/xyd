@@ -88,7 +88,7 @@ export function createRouterStore(init: RouterInit): RouterStore {
     }
 
     if (!init.loadPageData) {
-      window.location.assign(url.href); // no client fetcher (MPA fallback) → hard nav
+      window.location.assign(hrefFor(url)); // no client fetcher (MPA fallback) → hard nav (basename-prefixed)
       return;
     }
 
@@ -106,7 +106,7 @@ export function createRouterStore(init: RouterInit): RouterStore {
     } catch {
       if (seq !== navSeq || controller.signal.aborted) return; // aborted/superseded → not a real failure
       set({ navigation: { state: "idle" } });
-      window.location.assign(url.href); // hard-nav fallback → degrades to MPA, never dead-ends
+      window.location.assign(hrefFor(url)); // hard-nav fallback → degrades to MPA, never dead-ends (basename-prefixed)
     }
   }
 

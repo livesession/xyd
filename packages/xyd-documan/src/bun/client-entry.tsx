@@ -45,9 +45,31 @@ export function bootClient(ThemeCtor: any) {
   // so its title write doesn't apply. On failure the store hard-navs (MPA).
   const loadPageData = async (url: URL, signal?: AbortSignal) => {
     const slug = pathnameToSlug(url.pathname);
-    const r = await fetch(`/_xyd/data?slug=${encodeURIComponent(slug)}`, { signal });
-    if (!r.ok) throw new Error(`data ${r.status}`);
-    const { loaderData, routeId } = await r.json();
+    let loaderData: any;
+    let routeId: string;
+    // The dev server exposes /_xyd/data; a STATIC host does not. Fall back to
+    // fetching the target page's own HTML (at the basename-prefixed URL the host
+    // serves) and reading its embedded <script id="__xyd_data"> — so client-side
+    // SPA navigation works on static deploys too (no full reload, base preserved).
+    let r: Response | null = null;
+    try {
+      r = await fetch(`/_xyd/data?slug=${encodeURIComponent(slug)}`, { signal });
+    } catch {
+      r = null;
+    }
+    if (r && r.ok) {
+      ({ loaderData, routeId } = await r.json());
+    } else {
+      const pageHref = (basename || "") + url.pathname + url.search;
+      const pr = await fetch(pageHref, { signal });
+      if (!pr.ok) throw new Error(`page ${pr.status}`);
+      const html = await pr.text();
+      const el = new DOMParser().parseFromString(html, "text/html").getElementById("__xyd_data");
+      if (!el?.textContent) throw new Error("no __xyd_data in page");
+      const pageData = JSON.parse(el.textContent);
+      loaderData = pageData.loaderData;
+      routeId = pageData.routeId;
+    }
     if (!signal?.aborted) {
       document.title =
         loaderData?.metadata?.seoTitle || loaderData?.metadata?.title || settings?.seo?.title || "xyd";
