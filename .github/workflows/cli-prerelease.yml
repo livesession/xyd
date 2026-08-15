@@ -5,14 +5,21 @@ on:
     tags:
       - 'v*.*.*-*' # pre-release e.g. v0.1.0-alpha.1
 
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
 jobs:
-  cli-prerelease:
-    name: ⏭️ CLI Pre-release
+  # 1) Publish the pre-release to npm (simplified pipeline — no full test suite).
+  publish:
+    name: ⏭️ Publish pre-release to npm
     runs-on: ubuntu-latest
     permissions:
       contents: write
-      pull-requests: write
       id-token: write
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -46,7 +53,7 @@ jobs:
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
           echo "Package version: $PACKAGE_VERSION"
           echo "Tag version: ${{ steps.version.outputs.VERSION }}"
-          
+
           if [ "$PACKAGE_VERSION" != "${{ steps.version.outputs.VERSION }}" ]; then
             echo "❌ Version mismatch! Package.json has $PACKAGE_VERSION but tag is ${{ steps.version.outputs.VERSION }}"
             exit 1
@@ -59,3 +66,46 @@ jobs:
           npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  # 2) Build the self-contained binaries for every target (from the tag).
+  binaries:
+    name: 🧱 Build binaries
+    uses: ./.github/workflows/build-binaries.yml
+    with:
+      ref: ${{ github.ref }}
+
+  # 3) Create the GitHub Pre-release and attach the compiled binaries.
+  release:
+    name: 🏷️ GitHub Pre-release
+    needs: [ publish, binaries ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: ⬇️ Download binary artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: binaries
+          pattern: xyd-*
+          merge-multiple: true
+
+      - name: 📄 List binaries
+        run: ls -la binaries
+
+      - name: 🏷️ Create GitHub Pre-release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ needs.publish.outputs.version }}
+          body: |
+            Pre-release `${{ needs.publish.outputs.version }}`.
+
+            **npm:** `npm i -g xyd-js@${{ needs.publish.outputs.version }}`
+
+            **Self-contained binaries** (node-free) are attached below — download the one for your platform, `chmod +x`, and run `xyd build` / `xyd dev`.
+          draft: false
+          prerelease: true
+          make_latest: false
+          files: binaries/xyd-*

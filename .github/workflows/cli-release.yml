@@ -5,14 +5,23 @@ on:
     tags:
       - 'v[0-9]+.[0-9]+.[0-9]+' # stable e.g. v0.1.0 (excludes pre-releases like v0.1.0-alpha.0)
 
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
 jobs:
-  cli-release:
-    name: ⏭️ CLI Release
+  # 1) Full test suite + npm publish + release notes + Node-support baseline.
+  publish:
+    name: ⏭️ Test + publish to npm
     runs-on: ubuntu-latest
     permissions:
       contents: write
       pull-requests: write
       id-token: write
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
+      notes: ${{ steps.release_notes.outputs.RELEASE_BODY }}
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -46,7 +55,7 @@ jobs:
           PACKAGE_VERSION=$(node -p "require('./package.json').version")
           echo "Package version: $PACKAGE_VERSION"
           echo "Tag version: ${{ steps.version.outputs.VERSION }}"
-          
+
           if [ "$PACKAGE_VERSION" != "${{ steps.version.outputs.VERSION }}" ]; then
             echo "❌ Version mismatch! Package.json has $PACKAGE_VERSION but tag is ${{ steps.version.outputs.VERSION }}"
             exit 1
@@ -116,20 +125,51 @@ jobs:
           echo "$RELEASE_BODY" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: 🏷️ Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ steps.version.outputs.VERSION }}
-          body: ${{ steps.release_notes.outputs.RELEASE_BODY }}
-          draft: false
-          prerelease: ${{ contains(steps.version.outputs.VERSION, '-') }}
-
       - name: 🎨 Generate Node.js Support Baseline
         run: |
           chmod +x scripts/generate-baseline.mjs
           VERSION=${{ steps.version.outputs.VERSION }} node scripts/generate-baseline.mjs test-results.json
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # 2) Build the self-contained binaries for every target (from the tag).
+  binaries:
+    name: 🧱 Build binaries
+    uses: ./.github/workflows/build-binaries.yml
+    with:
+      ref: ${{ github.ref }}
+
+  # 3) Create the GitHub Release with the release notes + the compiled binaries.
+  release:
+    name: 🏷️ GitHub Release
+    needs: [ publish, binaries ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: ⬇️ Download binary artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: binaries
+          pattern: xyd-*
+          merge-multiple: true
+
+      - name: 📄 List binaries
+        run: ls -la binaries
+
+      - name: 🏷️ Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ needs.publish.outputs.version }}
+          body: |
+            ${{ needs.publish.outputs.notes }}
+
+            ---
+
+            **Self-contained binaries** (node-free) are attached below — download the one for your platform, `chmod +x`, and run `xyd build` / `xyd dev`.
+          draft: false
+          prerelease: false
+          files: binaries/xyd-*

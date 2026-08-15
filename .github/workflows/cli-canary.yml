@@ -9,16 +9,24 @@ on:
         type: string
         default: ''
 
+# contents: write so the release job can create the GitHub Release + upload the
+# compiled binaries. id-token: write for npm provenance.
+permissions:
+  contents: write
+  id-token: write
+
 jobs:
-  canary-release:
-    name: 🐤 Canary Release
+  # 1) Publish the canary packages to npm (unchanged behavior) + expose the
+  #    canary version and the exact commit so the release job can tag it.
+  publish:
+    name: 🐤 Publish canary to npm
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [ 22.12.0 ]
-    permissions:
-      contents: read
-      id-token: write
+    outputs:
+      version: ${{ steps.version.outputs.CANARY_VERSION }}
+      sha: ${{ steps.version.outputs.SHA }}
     steps:
       - name: 📥 Checkout code
         uses: actions/checkout@v4
@@ -73,9 +81,9 @@ jobs:
           SHA=$(git rev-parse HEAD)
           SHORT_SHA=${SHA::7}
           BRANCH=$(git rev-parse --abbrev-ref HEAD)
-          TIMESTAMP=$(date +%Y%m%d%H%M%S)
           CANARY_VERSION="canary-${SHORT_SHA}"
           echo "CANARY_VERSION=${CANARY_VERSION}" >> $GITHUB_OUTPUT
+          echo "SHA=${SHA}" >> $GITHUB_OUTPUT
           echo "📦 Canary version: ${CANARY_VERSION}"
           echo "🌿 Branch: ${BRANCH}"
           echo "🔑 Commit: ${SHORT_SHA}"
@@ -108,12 +116,48 @@ jobs:
           echo "📦 Publishing xyd-js@0.0.0-${{ steps.version.outputs.CANARY_VERSION }} with canary tag"
           npm publish --tag canary
 
-      - name: ✅ Success
-        run: |
-          echo "✅ Canary release published!"
-          echo ""
-          echo "Install with:"
-          echo "  bun add -g xyd-js@canary"
-          echo "  npm i -g xyd-js@canary"
-          echo ""
-          echo "Version: 0.0.0-${{ steps.version.outputs.CANARY_VERSION }}"
+  # 2) Build the self-contained binaries for every target (reusable workflow).
+  binaries:
+    name: 🧱 Build binaries
+    uses: ./.github/workflows/build-binaries.yml
+    with:
+      ref: ${{ github.event.inputs.branch || github.ref }}
+
+  # 3) Create the GitHub Release (prerelease) and attach the compiled binaries.
+  release:
+    name: 🏷️ Canary GitHub Release
+    needs: [ publish, binaries ]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: ⬇️ Download binary artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: binaries
+          pattern: xyd-*
+          merge-multiple: true
+
+      - name: 📄 List binaries
+        run: ls -la binaries
+
+      - name: 🏷️ Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ needs.publish.outputs.version }}
+          target_commitish: ${{ needs.publish.outputs.sha }}
+          name: 🐤 Canary ${{ needs.publish.outputs.version }}
+          body: |
+            Canary build @ `${{ needs.publish.outputs.sha }}`.
+
+            **npm:** `xyd-js@0.0.0-${{ needs.publish.outputs.version }}` (dist-tag `canary`)
+            ```bash
+            bun add -g xyd-js@canary   # or: npm i -g xyd-js@canary
+            ```
+
+            **Self-contained binaries** (node-free) are attached below — download the one for your platform, `chmod +x`, and run `xyd build` / `xyd dev`.
+          prerelease: true
+          make_latest: false
+          files: binaries/xyd-*

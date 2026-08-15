@@ -1,19 +1,13 @@
 name: binary:targets
 
-# R5 — per-target self-contained binary: build the Rust napi core natively on
-# each platform, embed it into a `bun --compile` binary (packages/xyd-cli/
-# scripts/compile.ts: theme prebuild → embed manifest → compile → darwin
-# codesign), then smoke the binary NATIVELY: the embedded Rust core must answer
-# (__nativecheck) and a real `xyd build` must emit HTML with no Node and no
-# node_modules next to the binary.
+# CI: build + smoke the self-contained per-target xyd binaries on every push/PR
+# that touches the binary's inputs. The build itself lives in the reusable
+# build-binaries.yml (shared with the release workflows), so a green run here is
+# also a proof the release binaries will build.
 #
-# Cross-compiling FROM one host is also proven (documented in
-# .ai/plans/xyd-rust.progress.md: darwin host → bun-linux-{arm64,x64} binaries
-# ran in bare Debian containers), but CI builds natively per runner — simpler
-# and a strictly stronger guarantee than emulated smoke tests.
-#
-# TODO(windows): add windows-2022 → bun-windows-x64 (cargo builds the .node
-# natively there; compile.ts needs no changes — codesign is darwin-gated).
+# Cross-compiling FROM one host is proven (see .ai/plans/xyd-rust.progress.md:
+# darwin host → bun-linux-{arm64,x64} ran in bare Debian), but CI builds natively
+# per runner — simpler and a strictly stronger guarantee than emulated smoke.
 
 on:
   push:
@@ -24,6 +18,7 @@ on:
       - 'packages/xyd-cli/**'
       - 'packages/xyd-documan/**'
       - '.github/workflows/binary-targets.yml'
+      - '.github/workflows/build-binaries.yml'
   pull_request:
     branches: [ master, canary ]
     paths:
@@ -32,124 +27,9 @@ on:
       - 'packages/xyd-cli/**'
       - 'packages/xyd-documan/**'
       - '.github/workflows/binary-targets.yml'
+      - '.github/workflows/build-binaries.yml'
   workflow_dispatch:
 
 jobs:
-  binary:
-    name: ${{ matrix.bun-target }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: ubuntu-24.04
-            bun-target: bun-linux-x64
-            artifact: xyd-linux-x64
-          - os: ubuntu-24.04-arm
-            bun-target: bun-linux-arm64
-            artifact: xyd-linux-arm64
-          - os: macos-14
-            bun-target: bun-darwin-arm64
-            artifact: xyd-darwin-arm64
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9.10.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.12.0
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: 'latest'
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Setup cargo cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            packages/xyd-native/target
-          key: ${{ runner.os }}-${{ runner.arch }}-cargo-native-${{ hashFiles('crates/**/Cargo.toml', 'packages/xyd-native/Cargo.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-cargo-native-
-
-      - name: Install dependencies
-        run: pnpm i
-
-      - name: Build packages
-        run: pnpm build
-
-      - name: Build native core (napi .node)
-        run: pnpm --filter @xyd-js/native build:native
-
-      - name: Stage native core for the compile
-        shell: bash
-        run: cp packages/xyd-native/*.node packages/xyd-cli/src/core.node
-
-      - name: Compile the self-contained binary
-        working-directory: packages/xyd-cli
-        run: bun scripts/compile.ts ${{ matrix.bun-target }}
-
-      - name: 'Smoke: embedded Rust core answers (__nativecheck)'
-        shell: bash
-        run: |
-          BIN="packages/xyd-cli/dist/${{ matrix.artifact }}"
-          OUT="$($BIN __nativecheck)"
-          echo "$OUT"
-          echo "$OUT" | grep -q "hello xyd from xyd rust core"
-          echo "$OUT" | grep -q "classify(docs.json): settings"
-
-      - name: 'Smoke: node-free xyd build emits real HTML'
-        shell: bash
-        run: |
-          BIN="$PWD/packages/xyd-cli/dist/${{ matrix.artifact }}"
-          SITE="$RUNNER_TEMP/binary-smoke"
-          mkdir -p "$SITE/content"
-          printf '{ "theme": { "name": "poetry" }, "navigation": { "sidebar": ["index", "content/intro"] } }\n' > "$SITE/docs.json"
-          printf -- '---\ntitle: Home\ndescription: smoke\n---\n# Binary Smoke Marker\nBuilt by the compiled binary.\n' > "$SITE/index.md"
-          printf -- '---\ntitle: Intro\ndescription: page\n---\n# Intro\n\n```js\nconst ok = true;\n```\n' > "$SITE/content/intro.md"
-          cd "$SITE"
-          "$BIN" --version
-          "$BIN" build
-          test -f .xyd/build/client/index.html
-          test -f .xyd/build/client/content/intro.html
-          grep -q "Binary Smoke Marker" .xyd/build/client/index.html
-          # syntax highlighting came through the embedded render bundle
-          grep -q "<span style" .xyd/build/client/content/intro.html
-          echo "smoke ok: $(wc -c < .xyd/build/client/index.html) bytes index.html"
-
-      - name: 'Smoke: darwin binary is codesigned with allow-jit'
-        if: matrix.os == 'macos-14'
-        run: |
-          codesign -d --entitlements - packages/xyd-cli/dist/${{ matrix.artifact }} | grep -q "allow-jit"
-          echo "codesign entitlements ok"
-
-      - name: Upload binary artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.artifact }}
-          path: packages/xyd-cli/dist/${{ matrix.artifact }}
-          if-no-files-found: error
+  binaries:
+    uses: ./.github/workflows/build-binaries.yml
