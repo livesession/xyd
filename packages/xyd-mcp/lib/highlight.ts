@@ -7,6 +7,15 @@ import type { HighlightedCode } from "codehike/code";
 
 import { native } from "./native";
 
+let warnedNativeHighlight = false;
+function warnNativeHighlightFailed(e: unknown) {
+    if (warnedNativeHighlight) return;
+    warnedNativeHighlight = true;
+    console.warn(
+        `[highlight] native highlighter failed, falling back to codehike: ${(e as any)?.message || e}`
+    );
+}
+
 // Keep the signature identical to codehike's highlight() so call sites only
 // swap their import.
 export async function highlight(
@@ -14,19 +23,27 @@ export async function highlight(
     theme: Parameters<typeof codehikeHighlight>[1]
 ): Promise<HighlightedCode> {
     if (native?.highlight) {
-        const result: HighlightedCode = JSON.parse(
-            native.highlight(
-                codeblock.value,
-                codeblock.lang || "",
-                codeblock.meta || "",
-                JSON.stringify(theme)
-            )
-        );
-        // codehike echoes the input `meta` verbatim (null/undefined stays as-is);
-        // the napi boundary needs a string, so pass `|| ""` for the call but
-        // restore the original meta so the result is byte-identical to codehike.
-        result.meta = codeblock.meta;
-        return result;
+        try {
+            const result: HighlightedCode = JSON.parse(
+                native.highlight(
+                    codeblock.value ?? "",
+                    codeblock.lang || "",
+                    codeblock.meta || "",
+                    // Unresolved theme (undefined) must not become
+                    // `JSON.stringify(undefined) === undefined` and crash the napi call.
+                    JSON.stringify(theme ?? "github-dark")
+                )
+            );
+            // codehike echoes the input `meta` verbatim (null/undefined stays as-is);
+            // pass `|| ""` for the call but restore the original meta so the result
+            // is byte-identical to codehike.
+            result.meta = codeblock.meta;
+            return result;
+        } catch (e) {
+            // A native highlight failure must never break the build — fall back to
+            // codehike (the proven path). Warn once so the cause is visible.
+            warnNativeHighlightFailed(e);
+        }
     }
     return codehikeHighlight(codeblock, theme);
 }
