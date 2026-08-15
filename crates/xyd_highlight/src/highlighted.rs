@@ -140,6 +140,20 @@ pub struct HighlightedCode {
 // Public entry
 // ---------------------------------------------------------------------------
 
+thread_local! {
+    /// One [`Registry`] per thread, reused across every highlight/theme call.
+    ///
+    /// The `Registry` lazily decompresses + compiles a grammar (and parses a
+    /// theme) on first use and caches it. Constructing a FRESH `Registry` per
+    /// call therefore threw that cache away and re-compiled the whole grammar
+    /// (zstd-decompress + JSON-parse + rule/include/injection build) on EVERY
+    /// code block — ~1.2s per `tsx` block, the entire native-vs-JS build
+    /// regression. `Registry` holds `RefCell`/`Rc` (not `Send`/`Sync`), so the
+    /// cache is thread-local; each SSG worker warms its own on first use and
+    /// reuses it thereafter. Output is unchanged — same code, just cached.
+    static REGISTRY: Registry = Registry::new();
+}
+
 /// Produce the codehike `HighlightedCode` for `value` in `lang` under
 /// `theme_name`, byte-identical to `codehike/code`'s `highlight({value, lang,
 /// meta}, theme_name)`.
@@ -148,10 +162,12 @@ pub struct HighlightedCode {
 /// back to `"txt"` (codehike's `LANG_NAMES` guard). `theme_name` must be an
 /// embedded theme (lighter throws on an unknown theme — we mirror that).
 pub fn highlighted_code(value: &str, lang: &str, meta: &str, theme_name: &str) -> HighlightedCode {
-    let theme = Registry::new()
-        .theme(theme_name)
-        .expect("embedded theme name (lighter throws on an unknown theme)");
-    highlighted_code_with_theme(value, lang, meta, &theme, theme_name)
+    REGISTRY.with(|reg| {
+        let theme = reg
+            .theme(theme_name)
+            .expect("embedded theme name (lighter throws on an unknown theme)");
+        build_highlighted(reg, value, lang, meta, &theme, theme_name)
+    })
 }
 
 /// Like [`highlighted_code`] but with a caller-supplied [`Theme`] (e.g. one built
@@ -166,8 +182,19 @@ pub fn highlighted_code_with_theme(
     theme: &Theme,
     theme_name: &str,
 ) -> HighlightedCode {
-    let reg = Registry::new();
+    REGISTRY.with(|reg| build_highlighted(reg, value, lang, meta, theme, theme_name))
+}
 
+/// The shared body — resolves the grammar via the thread-local (cached)
+/// registry and reshapes into `HighlightedCode`.
+fn build_highlighted(
+    reg: &Registry,
+    value: &str,
+    lang: &str,
+    meta: &str,
+    theme: &Theme,
+    theme_name: &str,
+) -> HighlightedCode {
     // codehike: `if (!LANG_NAMES.includes(lang)) lang = "txt"`. Our alias table
     // (`aliasOrIdToScope`) is the ported `LANG_NAMES` source, so an unresolvable
     // alias is the "unknown language" case.
@@ -206,10 +233,11 @@ pub fn highlighted_code_with_theme(
 /// Expose [`Theme::get_all_theme_colors`] for the build/config call sites (the
 /// `getThemeColors` bridge). Unknown theme name → JSON `null`.
 pub fn get_theme_colors(theme_name: &str) -> serde_json::Value {
-    let reg = Registry::new();
-    reg.theme(theme_name)
-        .map(|t| t.get_all_theme_colors())
-        .unwrap_or(serde_json::Value::Null)
+    REGISTRY.with(|reg| {
+        reg.theme(theme_name)
+            .map(|t| t.get_all_theme_colors())
+            .unwrap_or(serde_json::Value::Null)
+    })
 }
 
 fn block_style(theme: &Theme) -> BlockStyle {

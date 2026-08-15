@@ -9,7 +9,8 @@
 //! [`crate::reshape::styled_lines`] — the same pipeline as
 //! `syntax0-highlight/src/tokenizer.ts::tokenize`.
 
-use std::cell::Cell;
+use std::cell::{Cell, RefCell};
+use std::collections::HashMap;
 use std::rc::Rc;
 
 use crate::encode::{pack_metadata, FontStyle, StyleAttributes};
@@ -22,6 +23,50 @@ use super::rule::{
     compile_grammar, compile_grammar_set, BeginEndRule, BeginWhileRule, CaptureRule, GrammarSet,
     Injection, RegExpSource, Rule, RuleId, END_RULE, NEVER_MATCH,
 };
+
+// ---------------------------------------------------------------------------
+// Compiled-scanner cache.
+// ---------------------------------------------------------------------------
+
+thread_local! {
+    /// Content-addressed cache of compiled `OnigScanner`s, keyed by the resolved
+    /// regex sources. vscode-textmate caches each rule's compiled scanner; the
+    /// naive port instead assembled AND COMPILED the Oniguruma patterns at every
+    /// match position — O(positions × grammar-size), which dominated build time
+    /// (~0.6s per `tsx` code block even with the grammar structure cached).
+    /// Static rules now reuse their scanner across every call; only
+    /// backref-`end`/`while` rules (whose sources are substituted per match) miss.
+    /// Thread-local because `OnigScanner`/`Rc` are not `Send` — each SSG worker
+    /// warms its own. Output is unchanged (same scanner, just compiled once).
+    static SCANNER_CACHE: RefCell<HashMap<String, Rc<OnigScanner>>> = RefCell::new(HashMap::new());
+}
+
+/// Length-prefixed join of the sources → an injective key (no source content can
+/// forge a different list's key), so a cache hit is ALWAYS the exact same scanner
+/// — the byte-parity guarantee is preserved.
+fn scanner_key(sources: &[String]) -> String {
+    let mut key = String::with_capacity(sources.iter().map(|s| s.len() + 8).sum());
+    for s in sources {
+        key.push_str(&s.len().to_string());
+        key.push('\u{1}');
+        key.push_str(s);
+        key.push('\u{1}');
+    }
+    key
+}
+
+/// The compiled `OnigScanner` for `sources`, compiling + caching on first use.
+fn cached_scanner(sources: &[String]) -> Rc<OnigScanner> {
+    let key = scanner_key(sources);
+    SCANNER_CACHE.with(|c| {
+        if let Some(sc) = c.borrow().get(&key) {
+            return sc.clone();
+        }
+        let sc = Rc::new(OnigScanner::new(sources));
+        c.borrow_mut().insert(key, sc.clone());
+        sc
+    })
+}
 
 // ---------------------------------------------------------------------------
 // Grammar — the compiled rule registry + scanner assembly.
@@ -756,7 +801,7 @@ impl<'a> Tokenizer<'a> {
         if sources.is_empty() {
             return None;
         }
-        let scanner = OnigScanner::new(&sources);
+        let scanner = cached_scanner(&sources);
         let m = scanner.find_next_match(text, line_pos)?;
         Some(MatchResult {
             rule_id: ids[m.pattern_index],
@@ -829,7 +874,7 @@ impl<'a> Tokenizer<'a> {
             if sources.is_empty() {
                 continue;
             }
-            let scanner = OnigScanner::new(&sources);
+            let scanner = cached_scanner(&sources);
             let Some(m) = scanner.find_next_match(text, line_pos) else {
                 continue;
             };
@@ -892,7 +937,7 @@ impl<'a> Tokenizer<'a> {
             let allow_a = is_first_line;
             let allow_g = line_pos as i32 == anchor_position;
             let source = while_src.resolve_anchors(allow_a, allow_g);
-            let scanner = OnigScanner::new(&[source]);
+            let scanner = cached_scanner(&[source]);
             match scanner.find_next_match(text, line_pos) {
                 None => {
                     stack = elt.pop();
