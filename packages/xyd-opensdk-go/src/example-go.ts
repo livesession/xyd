@@ -342,6 +342,21 @@ function paramsStructExpr(
   return { text: `${typeQ}{\n${body}\n}`, multiline: true };
 }
 
+/**
+ * The required-only, POPULATED params-struct literal for the e2e driver — reuses
+ * the exact test/usage param assembly so a multipart FILE field is set to a
+ * non-nil io.Reader. An empty `Params{}` drops the nil-reader file part (the
+ * apiform encoder skips a nil io.Reader field), so the real request would be
+ * missing its required upload field and diverge from the recorded binding.
+ * Imports are tracked on `ctx.imports`; returns the struct-literal text, or null
+ * when the method takes no params struct.
+ */
+export function renderDriverParams(segments: string[], method: Method, ctx: GoExampleCtx): string | null {
+  const op = planOperation(method, ctx.types);
+  const expr = paramsStructExpr(segments, method, op, false, goMethodName(method.action), ctx, false);
+  return expr ? expr.text : null;
+}
+
 // ---- test-function assembly ----------------------------------------------
 
 /** Prefix every line of a (possibly multi-line) block with `tabs` tab stops. */
