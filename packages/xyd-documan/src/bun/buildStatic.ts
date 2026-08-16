@@ -144,6 +144,8 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   (globalThis as any).__xydBuildAssets = { clientJs, cssLinks, iconSetJs, settingsJs };
 
   // 4) SERVER render bundle → registers globalThis.__xydRenderStatic/__xydSeedForBuild.
+  // Capture its path so prerender workers import the SAME bundle instead of rebuilding it.
+  let serverBundlePath = "";
   if (isBin) {
     // Extract the embedded (read-only bunfs) bundle to a writable tmp path, then
     // import it — a real module URL, in-process, sharing globalThis with appInit's
@@ -153,6 +155,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     const tmp = path.join(os.tmpdir(), `xyd-srv-${Bun.hash(embRoot.server).toString(16)}.js`);
     await Bun.write(tmp, Bun.file(embRoot.server));
     console.error("[build] server render (embedded, multi-theme) →", path.basename(embRoot.server));
+    serverBundlePath = tmp;
     await import(pathToFileURL(tmp).href);
   } else {
     console.error("[build] bundling server render…");
@@ -168,11 +171,27 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
       "bun",
       ["typedoc", "@xyd-js/sources", "shiki", "vscode-oniguruma", "vscode-textmate"]
     );
+    serverBundlePath = serverBundle;
     await import(pathToFileURL(serverBundle).href);
   }
   // The multi-theme server bundle selects the theme by name; the non-binary
   // single-theme entry ignores the arg — so passing themeName is safe for both.
   (globalThis as any).__xydSeedForBuild(themeName);
+
+  // Serializable data plane for prerender workers: main's already-computed state.
+  // Each worker rebuilds render FUNCTIONS via loadPlugins but adopts THIS verbatim
+  // (see appInit injectDataPlane) instead of re-running the FS-racy generation.
+  // Settings are the post-seed (React-stripped) form the SSR renders from.
+  const dataPlane = JSON.stringify({
+    settings: (globalThis as any).__xydSettings,
+    settingsClone: (globalThis as any).__xydSettingsClone,
+    pagePathMapping: (globalThis as any).__xydPagePathMapping,
+    basePath: (globalThis as any).__xydBasePath,
+    hasIndexPage: (globalThis as any).__xydHasIndexPage,
+    accessMap: (globalThis as any).__xydAccessMap || {},
+    i18n: (globalThis as any).__xydI18n,
+    i18nTranslations: (globalThis as any).__xydI18nTranslations,
+  });
 
   // 5) PUBLIC assets. Content references public files WITH the `public/` segment
   // (e.g. /public/assets/logo.svg) and — because presets prefix logo/favicon and
@@ -190,8 +209,13 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   const slugs = Object.keys(mapping);
   console.error(`[build] prerendering ${slugs.length} pages…`);
   // The content-page loop lives in prerenderPool so it can run serially (default)
-  // or across a worker pool (Stage 3) behind one {ok, missing} contract.
-  const { ok, missing } = await prerenderPages({ clientDir, slugs, accessMap });
+  // or across a worker pool behind one {ok, missing} contract. Workers rebuild
+  // their own heap from cwd/argv + reuse main's server bundle & hashed assets.
+  const { ok, missing } = await prerenderPages({
+    clientDir, slugs, accessMap, dataPlane,
+    cwd, host: HOST, isBin, argv2: process.argv.slice(2),
+    buildAssets: (globalThis as any).__xydBuildAssets, serverBundlePath,
+  });
   console.error(`[build] wrote ${ok}/${slugs.length} pages`);
 
   // 6a') REDIRECT STUBS: nav `route`s with no content of their own (section/tab

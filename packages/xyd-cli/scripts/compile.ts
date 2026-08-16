@@ -11,7 +11,7 @@ import * as path from "node:path";
  *   cd packages/xyd-cli && bun scripts/compile.ts [bun-darwin-arm64]
  */
 
-import { readFileSync, writeFileSync, existsSync, copyFileSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, copyFileSync, rmSync } from "node:fs";
 
 const DIR = import.meta.dir;
 const target = process.argv[2] || `bun-${process.platform === "darwin" ? "darwin" : process.platform}-${process.arch}`;
@@ -100,9 +100,17 @@ const stubOptionals: BunPlugin = {
   },
 };
 
+// Prerender worker (Track 2): a SECOND compile entrypoint so bun --compile embeds
+// it (as prerenderWorker.js). Its literal require("./core.node") is the edge that
+// embeds the napi addon for the worker thread — mirror native-boot by staging the
+// matching core.node next to the worker source. Removed again after the compile.
+const workerEntry = path.resolve(DIR, "..", "..", "xyd-documan", "src", "bun", "prerenderWorker.ts");
+const workerCore = path.resolve(DIR, "..", "..", "xyd-documan", "src", "bun", "core.node");
+copyFileSync(coreNode, workerCore);
+
 console.error(`[compile] target=${target} → ${outfile}`);
 const res = await Bun.build({
-  entrypoints: [path.resolve(DIR, "..", "src", "binary.ts")],
+  entrypoints: [path.resolve(DIR, "..", "src", "binary.ts"), workerEntry],
   // Bundler target MUST be "bun" — without it Bun.build defaults to "browser",
   // under which Node CJS deps (gray-matter → js-yaml, …) are externalized and
   // then fail to resolve at runtime inside the bunfs. `compile.target` is the
@@ -123,6 +131,7 @@ const res = await Bun.build({
 // cross-target core.node: put the host-native one back.
 writeFileSync(embedTs, EMBED_STUB);
 if (CORE_ORIG) writeFileSync(coreNode, CORE_ORIG);
+try { rmSync(workerCore); } catch {}
 
 if (!res.success) {
   console.error("[compile] FAILED:");
