@@ -129,6 +129,33 @@ async function bannerContentCode(s: any, locale: string): Promise<string> {
   return p;
 }
 
+// Per-(settings, maxDepth) memo of the compiled markdown plugin chain + ContentFS.
+// buildPageData previously rebuilt markdownPlugins() (allocating the whole remark/
+// rehype/recma chain + an awaited rehype array) and a new ContentFS on EVERY page.
+// ContentFS is stateless (readonly fields, a fresh VFile per compile) and the plugin
+// instances are stateless factories over `settings`, so one instance is safely reused
+// across serial page compiles. Keyed by the settings object (a `reseed` swaps
+// __xydSettings → the WeakMap entry is dropped, so dev picks up config changes) then by
+// maxDepth (the only per-page input to the chain). Byte-identical.
+const _contentFSCache = new WeakMap<object, Map<number, Promise<ContentFS>>>();
+async function contentFSFor(s: any, maxDepth: number): Promise<ContentFS> {
+  let byDepth = _contentFSCache.get(s);
+  if (!byDepth) { byDepth = new Map(); _contentFSCache.set(s, byDepth); }
+  let p = byDepth.get(maxDepth);
+  if (!p) {
+    p = (async () => {
+      const md: any = await markdownPlugins({ maxDepth } as any, s);
+      const remark = [...md.remarkPlugins];
+      const rehype = [...md.rehypePlugins];
+      if (globalThis.__xydUserMarkdownPlugins?.remark?.length) remark.push(globalThis.__xydUserMarkdownPlugins.remark as any);
+      if (globalThis.__xydUserMarkdownPlugins?.rehype?.length) rehype.push(globalThis.__xydUserMarkdownPlugins.rehype as any);
+      return new ContentFS(s, remark, rehype, md.recmaPlugins, globalThis.__xydUserMarkdownPlugins?.remarkRehypeHandlers || {});
+    })();
+    byDepth.set(maxDepth, p);
+  }
+  return p;
+}
+
 export async function buildPageData(slug: string, opts: { shellOnly?: boolean } = {}) {
   slug = slug || "index";
   const s = getSettings();
@@ -151,20 +178,13 @@ export async function buildPageData(slug: string, opts: { shellOnly?: boolean } 
     };
   }
 
-  const md: any = await markdownPlugins(
-    { maxDepth: metadata?.maxTocDepth || s?.theme?.writer?.maxTocDepth || 2 } as any,
-    s
-  );
-  const remark = [...md.remarkPlugins];
-  const rehype = [...md.rehypePlugins];
-  if (globalThis.__xydUserMarkdownPlugins?.remark?.length) remark.push(globalThis.__xydUserMarkdownPlugins.remark as any);
-  if (globalThis.__xydUserMarkdownPlugins?.rehype?.length) rehype.push(globalThis.__xydUserMarkdownPlugins.rehype as any);
-
-  const fs = new ContentFS(s, remark, rehype, md.recmaPlugins, globalThis.__xydUserMarkdownPlugins?.remarkRehypeHandlers || {});
+  const fs = await contentFSFor(s, metadata?.maxTocDepth || s?.theme?.writer?.maxTocDepth || 2);
   const pagePath = globalThis.__xydPagePathMapping[slug];
   if (!pagePath) throw new Error(`No page mapping for slug: ${slug}`);
-  const code = await fs.compile(pagePath);
+  // Read the file once (compile() would read it again internally); compileContent
+  // is exactly what compile() runs after reading, so this is byte-identical.
   const rawPage = await fs.readRaw(pagePath);
+  const code = await fs.compileContent(rawPage, pagePath);
 
   const baseUrl = s?.integrations?.editLink?.baseUrl;
   const editLink = baseUrl ? `${baseUrl}${pagePath}` : undefined;
