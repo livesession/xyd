@@ -260,12 +260,12 @@ jobs:
     # Prove `opensdk run` + chain.json: one chain (a merge source + an overlay +
     # a target per language) generates every SDK and each COMPILES. All 6
     # toolchains are set up above; no registries needed (generate + compile only).
-    - name: Chain e2e (opensdk run: merge + overlay → all-language SDKs, each compiles)
+    - name: "Chain e2e (opensdk run: merge + overlay → all-language SDKs, each compiles)"
       run: pnpm --filter @xyd-js/opensdk-chain exec vitest run __tests__/e2e/chain.test.ts
       env:
         E2E_SDK_CHAIN: '1'
 
-    - name: Chain e2e — CLI output targets (opensdk run: go-cli + rust-cli, each compiles)
+    - name: "Chain e2e — CLI output targets (opensdk run: go-cli + rust-cli, each compiles)"
       run: pnpm --filter @xyd-js/opensdk-cli exec vitest run __tests__/e2e/cli-chain.test.ts
       env:
         E2E_SDK_CHAIN: '1'
