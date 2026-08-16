@@ -585,6 +585,26 @@ export async function appInit(options?: PluginDocsOptions) {
             cloneComponentsPreservingReferences(componentPlugins);
     }
 
+    // Worker mode (prerender pool): loadPlugins above already rebuilt the
+    // non-serializable render functions (markdown plugins, components, hooks) in
+    // this heap. SKIP pluginDocs — it re-runs the API fan-out (openapi/graphql/…),
+    // which writes/clears the content cache (FS-racy across workers) and can't
+    // cleanly reproduce main's mapping. Adopt main's already-computed, serializable
+    // data plane verbatim instead, so every worker's state matches main exactly.
+    const inject = (options as any)?.injectDataPlane;
+    if (inject) {
+        globalThis.__xydBasePath = inject.basePath;
+        globalThis.__xydSettings = inject.settings;
+        globalThis.__xydSettingsClone = inject.settingsClone;
+        globalThis.__xydPagePathMapping = inject.pagePathMapping;
+        globalThis.__xydHasIndexPage = inject.hasIndexPage;
+        globalThis.__xydRawRouteFiles = {};
+        (globalThis as any).__xydAccessMap = inject.accessMap || {};
+        if (inject.i18n) (globalThis as any).__xydI18n = inject.i18n;
+        if (inject.i18nTranslations) (globalThis as any).__xydI18nTranslations = inject.i18nTranslations;
+        return { respPluginDocs: null, resolvedPlugins };
+    }
+
     const respPluginDocs = await pluginDocs({
         ...options,
         appInit,

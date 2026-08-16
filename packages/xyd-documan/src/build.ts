@@ -30,6 +30,9 @@ export async function build() {
         return
     }
     const { respPluginDocs, resolvedPlugins } = inited
+    // respPluginDocs is null only in the appInit worker-inject path (prerender pool),
+    // which the Vite build never takes — narrow the type for the rest of this fn.
+    if (!respPluginDocs) return
 
     const commonRunVitePlugins = await commonVitePlugins(respPluginDocs, resolvedPlugins)
     const appRoot = getAppRoot();
