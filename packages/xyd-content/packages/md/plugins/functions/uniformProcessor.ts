@@ -15,6 +15,54 @@ import { tsxToReactUniform } from './tsxExtractor';
 import uniform, { Reference, ReferenceContext } from '@xyd-js/uniform';
 // TODO: rewrite to async
 
+// --- OpenAPI dereference cache -------------------------------------------------
+// A spec that fans out into N endpoint pages was previously re-read +
+// $ref-dereferenced ONCE PER PAGE (deferencedOpenAPI has no cache), making
+// `xyd build <spec>` super-linear in the number of endpoints. Memoize the
+// dereferenced document so it is produced exactly once per spec per build.
+//
+// Key: resolved path + mtime for local files (a dev-mode spec edit bumps mtime →
+// cache miss → re-deref; a one-shot build sees a constant mtime → one deref), or
+// the URL for remote specs (which were re-fetched per page before).
+//
+// Byte-identity: the cached document is SHARED and mutable. oapSchemaToReferences
+// unions path-level `servers` into the top-level `schema.servers` in place, and
+// each endpoint's ctx.servers is derived from it — so a shared schema would
+// accumulate servers across pages. We capture the pristine top-level `servers` at
+// deref time and reset it before every per-page conversion, reproducing
+// fresh-deref semantics exactly.
+const _openapiSchemaCache = new Map<string, Promise<{ schema: any; pristineServers: any }>>();
+
+function _specCacheKey(resolvedFilePath: string): string {
+    if (isRemotePath(resolvedFilePath)) return resolvedFilePath;
+    try {
+        return `${resolvedFilePath}:${fs.statSync(resolvedFilePath).mtimeMs}`;
+    } catch {
+        return resolvedFilePath;
+    }
+}
+
+function cachedDeferencedOpenAPI(
+    resolvedFilePath: string,
+): Promise<{ schema: any; pristineServers: any }> {
+    const key = _specCacheKey(resolvedFilePath);
+    let entry = _openapiSchemaCache.get(key);
+    if (!entry) {
+        entry = deferencedOpenAPI(resolvedFilePath).then((schema: any) => ({
+            schema,
+            pristineServers: Array.isArray(schema?.servers)
+                ? schema.servers.slice()
+                : schema?.servers,
+        }));
+        // Don't cache a rejected deref — let a transient failure be retried.
+        entry.catch(() => {
+            if (_openapiSchemaCache.get(key) === entry) _openapiSchemaCache.delete(key);
+        });
+        _openapiSchemaCache.set(key, entry);
+    }
+    return entry;
+}
+
 /**
  * Process a uniform function call and return the references
  * 
@@ -47,11 +95,18 @@ export async function processUniformFunctionCall(
         return null
     }
 
-    const plugins = globalThis.__xydUserUniformVitePlugins || []
+    // Build a LOCAL plugin list — never mutate the shared global array.
+    // Previously `plugins.push(...)` grew globalThis.__xydUserUniformVitePlugins by
+    // one on every OpenAPI page, so page K applied the sidebar plugin ~K times
+    // (O(N²) over the build, unbounded array growth). The sidebar plugin is
+    // idempotent and its `defer` no-ops when regions are present, so applying it
+    // once is byte-identical to applying it K times — and this keeps the global
+    // clean for parallel worker heaps.
+    const userPlugins = globalThis.__xydUserUniformVitePlugins || []
     const matter = file.data?.matter as Metadata
-    if (matter?.openapi) {
-        plugins.push(uniformPluginXDocsSidebar)
-    }
+    const plugins = matter?.openapi
+        ? [...userPlugins, uniformPluginXDocsSidebar]
+        : [...userPlugins]
 
     const uniformRefs = uniform(references, {
         plugins: [
@@ -193,7 +248,15 @@ async function processUniformFile(
             }
 
             case 'openapi': {
-                const schema = await deferencedOpenAPI(resolvedFilePath);
+                const { schema, pristineServers } = await cachedDeferencedOpenAPI(resolvedFilePath);
+                // Reset to the pristine top-level servers before each per-page
+                // conversion — oapSchemaToReferences mutates schema.servers in
+                // place, and the schema is now shared across pages (see cache note).
+                if (schema) {
+                    schema.servers = Array.isArray(pristineServers)
+                        ? pristineServers.slice()
+                        : pristineServers;
+                }
                 const references = oapSchemaToReferences(schema, {
                     regions: regions.map(region => region.name)
                 });
