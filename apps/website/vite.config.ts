@@ -5,6 +5,17 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import PluginCritical from "rollup-plugin-critical";
 
 export default defineConfig({
+  // The homepage is prerendered (ssr: true, prerender: true), so the install
+  // command's host has to be known at BUILD time — there is no request to read
+  // window.location from. Netlify sets `URL` to the site's primary domain, so
+  // the canary site (canary.xyd.dev) bakes in its own /install, prod bakes in
+  // xyd.dev, and deploy previews fall back to their prime URL. Local builds have
+  // neither → xyd.dev.
+  define: {
+    __XYD_INSTALL_ORIGIN__: JSON.stringify(
+      process.env.URL || process.env.DEPLOY_PRIME_URL || "https://xyd.dev",
+    ),
+  },
   plugins: [
     tailwindcss(), 
     reactRouter(), 
