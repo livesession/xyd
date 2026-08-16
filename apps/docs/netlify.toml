@@ -11,6 +11,9 @@
 
 [build.environment]
   BUN_VERSION = "1.1.20"
+  # The docs build is memory-heavy — raise the Node old-space limit past the
+  # default ~2GB (which OOM-killed the build at ~2GB).
+  NODE_OPTIONS = "--max-old-space-size=8192"
 
 [[redirects]]
   from = "/"

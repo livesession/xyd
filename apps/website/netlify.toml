@@ -11,6 +11,9 @@
 
 [build.environment]
   BUN_VERSION = "1.1.20"
+  # The docs build (bunx xyd-js build) is memory-heavy — it blew past the default
+  # ~2GB Node heap and OOM-killed the build. Raise the old-space limit.
+  NODE_OPTIONS = "--max-old-space-size=8192"
 
 [[redirects]]
   from = "/docs/guides"
