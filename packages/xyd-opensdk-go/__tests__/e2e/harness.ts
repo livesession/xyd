@@ -5,7 +5,7 @@ import path from 'node:path';
 
 import { describe, it } from 'vitest';
 
-import type { Method, OpensdkSpecJson, Resource } from '@xyd-js/opensdk-core';
+import type { Method, NamedType, OpensdkSpecJson, Resource } from '@xyd-js/opensdk-core';
 import {
   type ApiConfig,
   type BuiltDriver,
@@ -18,8 +18,9 @@ import {
 } from '@xyd-js/opensdk-ci';
 
 import { opensdkGo, writeProject } from '../../index';
+import { type GoExampleCtx, renderDriverParams } from '../../src/example-go';
+import { Imports, goFile } from '../../src/gowriter';
 import { goMethodName, pascalCase } from '../../src/naming';
-import { resourceQualifier } from '../../src/service';
 
 // The GO-SPECIFIC half of the e2e — a thin DriverAdapter over the shared,
 // language-agnostic harness in @xyd-js/opensdk-ci (IR merge, expected request,
@@ -38,6 +39,17 @@ const callKey = (segments: string[], method: Method): string =>
 // ---- generated driver: call each method against the recording server -----
 
 function generateDriver(spec: OpensdkSpecJson, pkg: string, modulePath: string): string {
+  const types = new Map<string, NamedType>((spec.types || []).map((t) => [t.name, t]));
+  const imports = new Imports();
+  imports.add('context');
+  imports.add('os');
+  const pkgQ = imports.add(modulePath, pkg);
+  const optionQ = imports.add(`${modulePath}/option`);
+  // Reuse the SDK's own example param assembly so REQUIRED fields — including a
+  // multipart file (io.Reader) — are populated. A bare `Params{}` drops the
+  // nil-reader file part, so the real request would be missing its upload field.
+  const ctx: GoExampleCtx = { types, modulePath, pkgQ, optionQ, imports };
+
   const cases: string[] = [];
   const walk = (resources: Resource[] | undefined, segments: string[]) => {
     for (const r of resources || []) {
@@ -46,35 +58,25 @@ function generateDriver(spec: OpensdkSpecJson, pkg: string, modulePath: string):
         const recv = seg.map(pascalCase).join('.');
         const mname = goMethodName(m.action);
         const args = ['ctx', ...(m.pathParams || []).map(() => JSON.stringify(EXAMPLE))];
-        if (m.requestBody || (m.queryParams || []).length > 0) {
-          args.push(`${pkg}.${resourceQualifier(seg)}${mname}Params{}`);
-        }
+        const params = renderDriverParams(seg, m, ctx);
+        if (params) args.push(params);
         cases.push(`\tcase ${JSON.stringify(`${recv}.${mname}`)}:\n\t\tclient.${recv}.${mname}(${args.join(', ')})`);
       }
       walk(r.resources, seg);
     }
   };
   walk(spec.resources, []);
-  return `package main
 
-import (
-	"context"
-	"os"
-
-	${pkg} ${JSON.stringify(modulePath)}
-	"${modulePath}/option"
-)
-
-func main() {
-	client := ${pkg}.NewClient(option.WithBaseURL(os.Getenv("E2E_BASE_URL")))
+  const mainFn = `func main() {
+	client := ${pkgQ}.NewClient(${optionQ}.WithBaseURL(os.Getenv("E2E_BASE_URL")))
 	ctx := context.Background()
 	_ = ctx
 	_ = client
 	switch os.Args[1] {
 ${cases.join('\n')}
 	}
-}
-`;
+}`;
+  return goFile('main', imports, [mainFn]);
 }
 
 const MODULE = (pkg: string) => `github.com/example/${pkg}`;
