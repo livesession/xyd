@@ -76,7 +76,22 @@ pub fn screaming_snake_case(input: &str) -> String {
         .chars()
         .filter(|c| c.is_ascii_uppercase() || c.is_ascii_digit() || *c == '_')
         .collect();
-    safe_ident(&filtered)
+    // A Ruby CONSTANT must start with an uppercase letter. A purely-numeric enum
+    // value ("4", "1024") would otherwise start with a digit; a bare `_` prefix
+    // (`_4`) is not a valid constant AND — for _1.._9 — is a reserved numbered
+    // parameter, a SyntaxError on Ruby >= 2.7. Prefix `NUMBER_` so the member
+    // stays a valid, referenceable constant. Mirrors the JS twin in
+    // packages/xyd-opensdk-ruby/src/naming.ts (kept in parity).
+    if filtered
+        .chars()
+        .next()
+        .map(|c| c.is_ascii_digit())
+        .unwrap_or(false)
+    {
+        format!("NUMBER_{filtered}")
+    } else {
+        filtered
+    }
 }
 
 /// rubyGemName: snake_case, alnum + underscore; "client" fallback.

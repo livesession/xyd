@@ -627,9 +627,9 @@ module Openai
     PublicUpdateOrganizationRoleBody = Struct.new(:permissions, :description, :role_name, keyword_init: true)
 
     module AdminOrganizationUsageAudioSpeechesListBucketWidth
-      _1M = "1m"
-      _1H = "1h"
-      _1D = "1d"
+      NUMBER_1M = "1m"
+      NUMBER_1H = "1h"
+      NUMBER_1D = "1d"
     end
 
     module AdminOrganizationUsageAudioSpeechesListGroupByItem
@@ -640,9 +640,9 @@ module Openai
     end
 
     module AdminOrganizationUsageAudioTranscriptionsListBucketWidth
-      _1M = "1m"
-      _1H = "1h"
-      _1D = "1d"
+      NUMBER_1M = "1m"
+      NUMBER_1H = "1h"
+      NUMBER_1D = "1d"
     end
 
     module AdminOrganizationUsageAudioTranscriptionsListGroupByItem
@@ -653,15 +653,15 @@ module Openai
     end
 
     module AdminOrganizationUsageCodeInterpreterSessionsListBucketWidth
-      _1M = "1m"
-      _1H = "1h"
-      _1D = "1d"
+      NUMBER_1M = "1m"
+      NUMBER_1H = "1h"
+      NUMBER_1D = "1d"
     end
 
     module AdminOrganizationUsageCompletionsListBucketWidth
-      _1M = "1m"
-      _1H = "1h"
-      _1D = "1d"
+      NUMBER_1M = "1m"
+      NUMBER_1H = "1h"
+      NUMBER_1D = "1d"
     end
 
     module AdminOrganizationUsageCompletionsListGroupByItem
@@ -674,9 +674,9 @@ module Openai
     end
 
     module AdminOrganizationUsageEmbeddingsListBucketWidth
-      _1M = "1m"
-      _1H = "1h"
-      _1D = "1d"
+      NUMBER_1M = "1m"
+      NUMBER_1H = "1h"
+      NUMBER_1D = "1d"
     end
 
     module AdminOrganizationUsageEmbeddingsListGroupByItem
@@ -687,9 +687,9 @@ module Openai
     end
 
     module AdminOrganizationUsageImagesListBucketWidth
-      _1M = "1m"
-      _1H = "1h"
-      _1D = "1d"
+      NUMBER_1M = "1m"
+      NUMBER_1H = "1h"
+      NUMBER_1D = "1d"
     end
 
     module AdminOrganizationUsageImagesListSourcesItem
@@ -699,11 +699,11 @@ module Openai
     end
 
     module AdminOrganizationUsageImagesListSizesItem
-      _256X256 = "256x256"
-      _512X512 = "512x512"
-      _1024X1024 = "1024x1024"
-      _1792X1792 = "1792x1792"
-      _1024X1792 = "1024x1792"
+      NUMBER_256X256 = "256x256"
+      NUMBER_512X512 = "512x512"
+      NUMBER_1024X1024 = "1024x1024"
+      NUMBER_1792X1792 = "1792x1792"
+      NUMBER_1024X1792 = "1024x1792"
     end
 
     module AdminOrganizationUsageImagesListGroupByItem
@@ -716,9 +716,9 @@ module Openai
     end
 
     module AdminOrganizationUsageModerationsListBucketWidth
-      _1M = "1m"
-      _1H = "1h"
-      _1D = "1d"
+      NUMBER_1M = "1m"
+      NUMBER_1H = "1h"
+      NUMBER_1D = "1d"
     end
 
     module AdminOrganizationUsageModerationsListGroupByItem
@@ -729,9 +729,9 @@ module Openai
     end
 
     module AdminOrganizationUsageVectorStoresListBucketWidth
-      _1M = "1m"
-      _1H = "1h"
-      _1D = "1d"
+      NUMBER_1M = "1m"
+      NUMBER_1H = "1h"
+      NUMBER_1D = "1d"
     end
 
     UserDeleteResponse = Struct.new(:object, :id, :deleted, keyword_init: true)
@@ -1851,7 +1851,7 @@ module Openai
     # The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours. [Learn more](/docs/guides/prompt-caching#prompt-cache-retention).
     module CreateChatCompletionRequestPromptCacheRetention
       IN_MEMORY = "in_memory"
-      _24H = "24h"
+      NUMBER_24H = "24h"
     end
 
     module ChatCompletionRequestMessage
@@ -2502,10 +2502,10 @@ module Openai
 
     # Optional memory limit for the container. Defaults to "1g".
     module CreateContainerBodyMemoryLimit
-      _1G = "1g"
-      _4G = "4g"
-      _16G = "16g"
-      _64G = "64g"
+      NUMBER_1G = "1g"
+      NUMBER_4G = "4g"
+      NUMBER_16G = "16g"
+      NUMBER_64G = "64g"
     end
 
     # Network access policy for the container.
@@ -2583,10 +2583,10 @@ module Openai
 
     # The memory limit configured for the container.
     module ContainerResourceMemoryLimit
-      _1G = "1g"
-      _4G = "4g"
-      _16G = "16g"
-      _64G = "64g"
+      NUMBER_1G = "1g"
+      NUMBER_4G = "4g"
+      NUMBER_16G = "16g"
+      NUMBER_64G = "64g"
     end
 
     CreateConversationBody = Struct.new(:metadata, :items, keyword_init: true)
@@ -3327,10 +3327,10 @@ module Openai
     AutoCodeInterpreterToolParam = Struct.new(:type, :file_ids, :memory_limit, :network_policy, keyword_init: true)
 
     module ContainerMemoryLimit
-      _1G = "1g"
-      _4G = "4g"
-      _16G = "16g"
-      _64G = "64g"
+      NUMBER_1G = "1g"
+      NUMBER_4G = "4g"
+      NUMBER_16G = "16g"
+      NUMBER_64G = "64g"
     end
 
     # Network access policy for the container.
@@ -3391,9 +3391,9 @@ module Openai
     # ImageGenToolSize is a union; values flow through as decoded JSON (phase-1 passthrough).
 
     module ImageGenToolSizeString
-      _1024X1024 = "1024x1024"
-      _1024X1536 = "1024x1536"
-      _1536X1024 = "1536x1024"
+      NUMBER_1024X1024 = "1024x1024"
+      NUMBER_1024X1536 = "1024x1536"
+      NUMBER_1536X1024 = "1536x1024"
       AUTO = "auto"
     end
 
@@ -4939,9 +4939,9 @@ module Openai
 
     module EditImageBodyJsonParamSize
       AUTO = "auto"
-      _1024X1024 = "1024x1024"
-      _1536X1024 = "1536x1024"
-      _1024X1536 = "1024x1536"
+      NUMBER_1024X1024 = "1024x1024"
+      NUMBER_1536X1024 = "1536x1024"
+      NUMBER_1024X1536 = "1024x1536"
     end
 
     module EditImageBodyJsonParamOutputFormat
@@ -4984,9 +4984,9 @@ module Openai
 
     # The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`.
     module ImagesResponseSize
-      _1024X1024 = "1024x1024"
-      _1024X1536 = "1024x1536"
-      _1536X1024 = "1536x1024"
+      NUMBER_1024X1024 = "1024x1024"
+      NUMBER_1024X1536 = "1024x1536"
+      NUMBER_1536X1024 = "1536x1024"
     end
 
     # The quality of the image generated. Either `low`, `medium`, or `high`.
@@ -5051,13 +5051,13 @@ module Openai
 
     module CreateImageRequestSizeString
       AUTO = "auto"
-      _1024X1024 = "1024x1024"
-      _1536X1024 = "1536x1024"
-      _1024X1536 = "1024x1536"
-      _256X256 = "256x256"
-      _512X512 = "512x512"
-      _1792X1024 = "1792x1024"
-      _1024X1792 = "1024x1792"
+      NUMBER_1024X1024 = "1024x1024"
+      NUMBER_1536X1024 = "1536x1024"
+      NUMBER_1024X1536 = "1024x1536"
+      NUMBER_256X256 = "256x256"
+      NUMBER_512X512 = "512x512"
+      NUMBER_1792X1024 = "1792x1024"
+      NUMBER_1024X1792 = "1024x1792"
     end
 
     # Control the content-moderation level for images generated by the GPT image models. Must be either `low` for less restrictive filtering or `auto` (default value).
@@ -5098,9 +5098,9 @@ module Openai
 
     # The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`.
     module CreateImageVariationRequestSize
-      _256X256 = "256x256"
-      _512X512 = "512x512"
-      _1024X1024 = "1024x1024"
+      NUMBER_256X256 = "256x256"
+      NUMBER_512X512 = "512x512"
+      NUMBER_1024X1024 = "1024x1024"
     end
 
     DeleteModelResponse = Struct.new(:id, :deleted, :object, keyword_init: true)
@@ -5643,7 +5643,7 @@ module Openai
     # The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours. [Learn more](/docs/guides/prompt-caching#prompt-cache-retention).
     module ResponsePromptCacheRetention
       IN_MEMORY = "in_memory"
-      _24H = "24h"
+      NUMBER_24H = "24h"
     end
 
     # ModelIdsResponses is a union; values flow through as decoded JSON (phase-1 passthrough).
@@ -5895,7 +5895,7 @@ module Openai
 
     module PromptCacheRetentionEnum
       IN_MEMORY = "in_memory"
-      _24H = "24h"
+      NUMBER_24H = "24h"
     end
 
     module ServiceTierEnum
@@ -5971,7 +5971,7 @@ module Openai
     # The retention policy for the prompt cache. Set to `24h` to enable extended prompt caching, which keeps cached prefixes active for longer, up to a maximum of 24 hours. [Learn more](/docs/guides/prompt-caching#prompt-cache-retention).
     module CreateResponsePromptCacheRetention
       IN_MEMORY = "in_memory"
-      _24H = "24h"
+      NUMBER_24H = "24h"
     end
 
     # The truncation strategy to use for the model response.
@@ -6356,16 +6356,16 @@ module Openai
     ImageRefParam2 = Struct.new(:image_url, :file_id, keyword_init: true)
 
     module VideoSeconds
-      _4 = "4"
-      _8 = "8"
-      _12 = "12"
+      NUMBER_4 = "4"
+      NUMBER_8 = "8"
+      NUMBER_12 = "12"
     end
 
     module VideoSize
-      _720X1280 = "720x1280"
-      _1280X720 = "1280x720"
-      _1024X1792 = "1024x1792"
-      _1792X1024 = "1792x1024"
+      NUMBER_720X1280 = "720x1280"
+      NUMBER_1280X720 = "1280x720"
+      NUMBER_1024X1792 = "1024x1792"
+      NUMBER_1792X1024 = "1792x1024"
     end
 
     # Structured information describing a generated video job.
