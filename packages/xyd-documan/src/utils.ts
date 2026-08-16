@@ -1,6 +1,7 @@
 import path, { dirname } from "node:path";
 import fs from "node:fs";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { createRequire } from "node:module";
 import { execSync, ExecSyncOptions } from "node:child_process";
 import crypto from "node:crypto";
 import { realpathSync } from "node:fs";
@@ -12,12 +13,16 @@ import { u } from "unist-builder";
 import matter from "gray-matter";
 // remark parsing no longer needed for frontmatter extraction here
 
-import {
-    createServer,
+// Vite / @react-router are LAZY: the Bun engine (startDevServer/buildStatic) and
+// appInit live in this module but never touch Vite, so keeping these type-only /
+// dynamically-imported lets the compiled `bun --compile` binary (Bun-engine-only)
+// exclude Vite entirely — Vite reads its own package.json at module eval, which
+// crashes inside the read-only bunfs. Only the node CLI's Vite dev/build path
+// loads them (via commonVitePlugins, below).
+import type {
     PluginOption as VitePluginOption,
     Plugin as VitePlugin,
 } from "vite";
-import { reactRouter } from "@react-router/dev/vite";
 import { IconSet } from "@iconify/tools";
 
 import {
@@ -26,7 +31,6 @@ import {
     type PluginDocsOptions,
     PluginOutput,
 } from "@xyd-js/plugin-docs";
-import { vitePlugins as xydContentVitePlugins } from "@xyd-js/content/vite";
 import { AccessControl, HeadConfig, Integrations, Plugins, Settings } from "@xyd-js/core";
 import type { IconLibrary, WebEditorNavigationItem } from "@xyd-js/core";
 import type { Plugin, PluginConfig } from "@xyd-js/plugins";
@@ -413,7 +417,10 @@ export async function appInit(options?: PluginDocsOptions) {
             : readPreloadSettings;
 
     {
-        if (!preloadSettings.integrations?.search) {
+        // Default search = Orama — EXCEPT in the compiled binary, where the plugin
+        // isn't bundled yet (auto-adding it just fails to load). Search degrades
+        // off there until @xyd-js/plugin-orama is embedded (S4.4).
+        if (!preloadSettings.integrations?.search && !(globalThis as any).__xydCompiledBinary) {
             preloadSettings.integrations = {
                 ...(preloadSettings.integrations || {}),
                 search: {
@@ -423,7 +430,7 @@ export async function appInit(options?: PluginDocsOptions) {
         }
 
         const plugins = [
-            ...integrationsToPlugins(preloadSettings.integrations),
+            ...integrationsToPlugins(preloadSettings.integrations || {}),
             ...accessControlToPlugins(preloadSettings.accessControl),
         ];
         if (preloadSettings.plugins) {
@@ -826,6 +833,11 @@ export async function commonVitePlugins(
 ) {
     const userVitePlugins = resolvedPlugins.map((p) => p.vite).flat() || [];
 
+    // Lazy Vite imports (see the top-of-file note) — only reached on the node
+    // CLI's Vite dev/build path, never in the compiled Bun-engine binary.
+    const { reactRouter } = await import("@react-router/dev/vite");
+    const { vitePlugins: xydContentVitePlugins } = await import("@xyd-js/content/vite");
+
     return [
         ...((await xydContentVitePlugins({
             toc: {
@@ -1222,9 +1234,15 @@ export function getXydFolderPath() {
 }
 
 export function getCLIRoot(): string {
-    const cliPath = realpathSync(process.argv[1]);
-
-    return path.dirname(path.dirname(cliPath));
+    // Inside a `bun --compile` binary process.argv[1] is a bunfs arg/path that
+    // realpathSync can't resolve; fall back to the executable's dir (the CLI
+    // components model isn't used by the compiled binary anyway).
+    try {
+        const cliPath = realpathSync(process.argv[1]);
+        return path.dirname(path.dirname(cliPath));
+    } catch {
+        return path.dirname(process.execPath);
+    }
 }
 
 export function getCLIComponentsJsonPath(): string {
@@ -1318,46 +1336,27 @@ async function loadPlugins(settings: Settings, options?: PluginDocsOptions) {
       }
   
       try {
-        // For local files, use Vite's SSR loader
-        if (local) {
-          const pluginServer = await createServer({
-            root: process.cwd(),
-            server: { middlewareMode: true },
-            appType: 'custom',
-            optimizeDeps: {
-              include: []
-            },
-            ssr: {
-              noExternal: true // Process all files through Vite
-            }
-          });
-          
-          mod = await pluginServer.ssrLoadModule(pluginName);
-          await pluginServer.close();
-        } else {
-          mod = await import(pluginName);
-        }
+        // Native ESM import — Bun evaluates TS/TSX plugins directly, so we no
+        // longer spin up Vite's SSR loader (S0). Local plugins are absolute
+        // paths (need a file URL); npm plugins are bare specifiers.
+        mod = local
+          ? await import(pathToFileURL(pluginName).href)
+          : await import(pluginName);
       } catch (e) {
-        // Fallback: try from host node_modules
+        // Compiled binary: there's no on-disk node_modules / .xyd/host to fall back
+        // to, so a plugin that isn't bundled just degrades — a clean one-line note,
+        // not a scary "Fallback also failed" stack. (Only bundled/embedded plugins
+        // work in the standalone binary for now.)
+        if ((globalThis as any).__xydCompiledBinary) {
+          console.warn(`⚠️  plugin "${pluginName}" isn't bundled in the standalone binary — skipping (its feature is disabled).`);
+          continue;
+        }
+        // Fallback: resolve the plugin from the docs project's
+        // .xyd/host/node_modules, then import the resolved entry file.
         try {
-          pluginName = path.join(
-            process.cwd(),
-            ".xyd/host/node_modules",
-            pluginName
-          );
-          
-          const pluginPreview = await createServer({
-            root: process.cwd(),
-            optimizeDeps: {
-              include: []
-            },
-            ssr: {
-              noExternal: true
-            }
-          });
-          
-          mod = await pluginPreview.ssrLoadModule(pluginName);
-          await pluginPreview.close();
+          const hostBase = path.join(process.cwd(), ".xyd/host/noop.js");
+          const resolved = createRequire(hostBase).resolve(pluginName);
+          mod = await import(pathToFileURL(resolved).href);
         } catch (fallbackError) {
           console.error("Fallback also failed:", fallbackError);
           continue;

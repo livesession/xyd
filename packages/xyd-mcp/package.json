@@ -31,6 +31,7 @@
     "@xyd-js/core": "workspace:*",
     "@xyd-js/framework": "workspace:*",
     "@xyd-js/gql": "workspace:*",
+    "@xyd-js/native": "workspace:*",
     "@xyd-js/openapi": "workspace:*",
     "@xyd-js/plugins": "workspace:*",
     "@xyd-js/uniform": "workspace:*",

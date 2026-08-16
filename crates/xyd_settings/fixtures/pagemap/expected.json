@@ -1,0 +1,6 @@
+{
+  "content/docs/intro": "content/docs/intro.md",
+  "content/docs/setup": "content/docs/setup.mdx",
+  "content/docs/api/users": "content/docs/api/users.md",
+  "content/guides/welcome": "content/guides/welcome.md"
+}

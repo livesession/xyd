@@ -1,0 +1,20 @@
+{
+  "name": "math-inline",
+  "capability": "math",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 28162,
+    "sha256": "9131f66a03f2b6e152e6224bdb2dea3c6755db7b4e90c8222185b16c8d6e520b"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 7464,
+    "sha256": "b255a793a440bbb373f8704e39a9358440c72e67ef89a7ee4760e54c7af58089"
+  },
+  "note": "Inline `$…$` → native MathML via xyd_math (pulldown-latex). Functional gate: full + well-formed <math>, no <merror>. rendered.html is the JS rehype-katex reference (not byte-gated — MathML Core is a different DOM)."
+}

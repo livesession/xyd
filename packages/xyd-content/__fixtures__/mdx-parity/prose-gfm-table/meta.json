@@ -1,0 +1,19 @@
+{
+  "name": "prose-gfm-table",
+  "capability": "prose",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 2053,
+    "sha256": "14d1674371de6654b64bba7d0b003d18a182168e255959048b84413ba935051c"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 411,
+    "sha256": "d3b3c36304965051da71b022d06db3157fcc149897ad179d4b15f5b3dfcb3b76"
+  }
+}

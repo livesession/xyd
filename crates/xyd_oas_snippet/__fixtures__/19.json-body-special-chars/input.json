@@ -1,0 +1,61 @@
+{
+  "description": "JSON body containing quotes, backslashes, newlines, unicode",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "t",
+      "version": "1"
+    },
+    "paths": {
+      "/echo": {
+        "post": {
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string"
+                    },
+                    "note": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "ok",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "servers": [
+      {
+        "url": "https://api.example.com"
+      }
+    ]
+  },
+  "path": "/echo",
+  "method": "post",
+  "values": {
+    "body": {
+      "text": "he said \"hi\"\nline2\tTAB",
+      "note": "back\\slash café"
+    },
+    "server": {
+      "selected": 0
+    }
+  }
+}

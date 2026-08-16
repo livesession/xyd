@@ -1,0 +1,21 @@
+{
+  "name": "directive-details",
+  "capability": "directive",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [
+    "Details"
+  ],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 1197,
+    "sha256": "c0290eae2f1dcf52143ffd031071029638440270f0a1ba660cbfa99dcb6dd4cd"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 165,
+    "sha256": "208eb9a29d681d4128fa9be75e63dc1eb196b7868572e8c910173bf853ad0966"
+  }
+}

@@ -1,0 +1,18 @@
+[package]
+name = "xyd_uniform"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish = false
+
+# The shared Uniform data model (S6+): serde structs mirroring
+# packages/xyd-uniform/src/types.ts — the output format every converter crate
+# (xyd_gql, xyd_openapi, …) emits — plus the JSON canonicalization helpers the
+# fixture-parity tests compare with.
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+xyd_parity = { path = "../xyd_parity" }

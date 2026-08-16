@@ -1,0 +1,10 @@
+[package]
+name = "xyd_opensdk_python"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "python SDK emitter — OpenSDK IR -> generated python SDK code (Rust port of @xyd-js/opensdk-python; generated-code emitter, vendored runtime + tests deferred)"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }

@@ -20,6 +20,7 @@
     "devDependencies": {
       "@types/update-notifier": "^6.0.8",
       "tsup": "^8.3.0",
+      "typescript": "^5.8.3",
       "vitest": "^2.1.8"
     }
   }

@@ -1,0 +1,22 @@
+{
+  "name": "async-component-atlas",
+  "capability": "async",
+  "gate": "fallback",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [
+    "Atlas"
+  ],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 828,
+    "sha256": "8051edbda8160a339fff4806c09eda41e66b9fb110f20a3b913c91dfc7c8fd3c"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 40,
+    "sha256": "8f6554dac418f723a9773562d7db8ad136b0ea1687349d59ea1e0cebae6f331e"
+  },
+  "note": "Composes headlessly: the gen script runs `new Composer()` so the `atlas` meta-component is registered (same as the plugin-docs layout loader). `component: atlas` with no spec source composes to the real `<Atlas references={[]}>` node (the atlas transform emits empty references and drops body prose when there is no reference to attach it to — this is the composer's real behavior, not a harness fallback). Real composed oracle — a C-S4b (Rust composer port) target: parity.rs enforces rendered.html the moment compile_mdx returns `full` for `component:` frontmatter (it returns `fallback` today, so the fixture stays capability:async / DEFER and does not fail the gate pre-C-S4b)."
+}

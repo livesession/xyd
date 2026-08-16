@@ -50,7 +50,13 @@ export async function testOasSchemaToReferences(
         result = uni.references;
     }
 
-    saveResultAsOutput(fixtureName, result) // TODO: comment for prod
+    // Golden regen is EXPLICIT and env-gated (mirrors the repo's O2R_BUILD_DOCS
+    // discipline). The committed output.json is the JS implementation's frozen
+    // output — the parity oracle for the Rust migration (S6+). Never rewrite it
+    // as a test side-effect.
+    if (process.env.OAS_BUILD_FIXTURES === "1") {
+        saveResultAsOutput(fixtureName, result)
+    }
 
     const expectedOutput = readFixtureOutput(`${fixtureName}/output.json`);
     try {

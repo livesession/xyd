@@ -1,0 +1,13 @@
+[package]
+name = "xyd_settings"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "Settings data plane — env substitution, presets, nav→pagepath mapping, access map (Rust port of the xyd settings pipeline, docs.json path)"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+xyd_parity = { path = "../xyd_parity" }

@@ -1,0 +1,79 @@
+{
+  "urlPrefix": "docs/api",
+  "sidebar": [
+    {
+      "group": "API & Reference",
+      "pages": [
+        {
+          "group": "Endpoints",
+          "pages": [
+            {
+              "group": "Users",
+              "pages": [
+                {
+                  "virtual": ".xyd/.cache/.content/docs/api/users/get",
+                  "page": "docs/api/users/get"
+                },
+                {
+                  "virtual": ".xyd/.cache/.content/docs/api/users/userId",
+                  "page": "docs/api/users/userId"
+                },
+                {
+                  "virtual": ".xyd/.cache/.content/docs/api/users/posts",
+                  "page": "docs/api/users/posts"
+                },
+                {
+                  "virtual": ".xyd/.cache/.content/docs/api/users/posts/create",
+                  "page": "docs/api/users/posts/create"
+                },
+                {
+                  "virtual": ".xyd/.cache/.content/docs/api/users/object",
+                  "page": "docs/api/users/object"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "pageFrontMatter": {
+    "docs/api/users/get": {
+      "title": "Returns a list of users"
+    },
+    "docs/api/users/userId": {
+      "title": "Get user by ID"
+    },
+    "docs/api/users/posts": {
+      "title": "Get user's posts"
+    },
+    "docs/api/users/posts/create": {
+      "title": "Create a new post for user"
+    },
+    "docs/api/users/object": {
+      "title": "User"
+    }
+  },
+  "pages": [
+    {
+      "pagePath": "docs/api/users/get",
+      "region": "GET /users"
+    },
+    {
+      "pagePath": "docs/api/users/userId",
+      "region": "GET /users/{userId}"
+    },
+    {
+      "pagePath": "docs/api/users/posts",
+      "region": "GET /users/{userId}/posts"
+    },
+    {
+      "pagePath": "docs/api/users/posts/create",
+      "region": "POST /users/{userId}/posts"
+    },
+    {
+      "pagePath": "docs/api/users/object",
+      "region": "/components/schemas/User"
+    }
+  ]
+}

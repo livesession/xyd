@@ -1,0 +1,6 @@
+{
+  "sidebar": [
+    { "group": "Docs", "pages": ["content/docs/intro", "content/docs/setup", { "group": "API", "pages": ["content/docs/api/users", "content/docs/api/missing"] }] },
+    { "route": "/guides", "pages": [{ "group": "G", "pages": ["content/guides/welcome"] }, "content/guides/toplevel-missing"] }
+  ]
+}

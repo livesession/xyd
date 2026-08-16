@@ -1,0 +1,48 @@
+{
+  "description": "Server URL with variables resolved to defaults",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "t",
+      "version": "1"
+    },
+    "paths": {
+      "/ping": {
+        "get": {
+          "responses": {
+            "200": {
+              "description": "ok",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "servers": [
+      {
+        "url": "https://{host}.example.com/{version}",
+        "variables": {
+          "host": {
+            "default": "api"
+          },
+          "version": {
+            "default": "v2"
+          }
+        }
+      }
+    ]
+  },
+  "path": "/ping",
+  "method": "get",
+  "values": {
+    "server": {
+      "selected": 0
+    }
+  }
+}

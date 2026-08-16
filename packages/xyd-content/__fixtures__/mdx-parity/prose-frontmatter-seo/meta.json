@@ -1,0 +1,19 @@
+{
+  "name": "prose-frontmatter-seo",
+  "capability": "prose",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 973,
+    "sha256": "8c8d4adedeba4cb6bd425c0b1a6520d281f609f6c2e7e347ef545fa573893a11"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 76,
+    "sha256": "b4a27110d99c72a24ca56825945dcf872ef74db1a36a3b1e096ff5a1cf68e269"
+  }
+}

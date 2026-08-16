@@ -1,0 +1,26 @@
+  /** The Retry-After delay in millis (delta-seconds or HTTP-date, capped at 60s), or -1 if absent. */
+  private static long retryAfterMs(HttpResponse<byte[]> response) {
+    String value = response.headers().firstValue("Retry-After").orElse(null);
+    if (value == null) {
+      return -1;
+    }
+    value = value.trim();
+    try {
+      long seconds = Long.parseLong(value);
+      if (seconds >= 0) {
+        return Math.min(seconds * 1000L, 60000L);
+      }
+    } catch (NumberFormatException ignored) {
+      // not a delta-seconds value; try the HTTP-date form
+    }
+    try {
+      java.time.ZonedDateTime when = java.time.ZonedDateTime.parse(value, java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME);
+      long wait = Duration.between(java.time.ZonedDateTime.now(), when).toMillis();
+      if (wait > 0) {
+        return Math.min(wait, 60000L);
+      }
+    } catch (java.time.format.DateTimeParseException ignored) {
+      // unparseable Retry-After; fall back to backoff
+    }
+    return -1;
+  }

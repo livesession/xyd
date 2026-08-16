@@ -1,0 +1,162 @@
+{
+  "urlPrefix": "docs/api",
+  "sidebar": [
+    {
+      "group": "",
+      "pages": [
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/returns-a-list-of-users",
+          "page": "docs/api/returns-a-list-of-users"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/creates-a-new-user",
+          "page": "docs/api/creates-a-new-user"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/get-user-by-id",
+          "page": "docs/api/get-user-by-id"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/update-user-full-update",
+          "page": "docs/api/update-user-full-update"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/update-user-partial-update",
+          "page": "docs/api/update-user-partial-update"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/delete-user",
+          "page": "docs/api/delete-user"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/get-users-posts",
+          "page": "docs/api/get-users-posts"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/create-a-new-post-for-user",
+          "page": "docs/api/create-a-new-post-for-user"
+        }
+      ]
+    },
+    {
+      "group": "Objects",
+      "pages": [
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/objects/User",
+          "page": "docs/api/objects/User"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/objects/UserInput",
+          "page": "docs/api/objects/UserInput"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/objects/UserUpdate",
+          "page": "docs/api/objects/UserUpdate"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/objects/Post",
+          "page": "docs/api/objects/Post"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/objects/PostInput",
+          "page": "docs/api/objects/PostInput"
+        }
+      ]
+    }
+  ],
+  "pageFrontMatter": {
+    "docs/api/returns-a-list-of-users": {
+      "title": "Returns a list of users"
+    },
+    "docs/api/creates-a-new-user": {
+      "title": "Creates a new user"
+    },
+    "docs/api/get-user-by-id": {
+      "title": "Get user by ID"
+    },
+    "docs/api/update-user-full-update": {
+      "title": "Update user (full update)"
+    },
+    "docs/api/update-user-partial-update": {
+      "title": "Update user (partial update)"
+    },
+    "docs/api/delete-user": {
+      "title": "Delete user"
+    },
+    "docs/api/get-users-posts": {
+      "title": "Get user's posts"
+    },
+    "docs/api/create-a-new-post-for-user": {
+      "title": "Create a new post for user"
+    },
+    "docs/api/objects/User": {
+      "title": "User"
+    },
+    "docs/api/objects/UserInput": {
+      "title": "UserInput"
+    },
+    "docs/api/objects/UserUpdate": {
+      "title": "UserUpdate"
+    },
+    "docs/api/objects/Post": {
+      "title": "Post"
+    },
+    "docs/api/objects/PostInput": {
+      "title": "PostInput"
+    }
+  },
+  "pages": [
+    {
+      "pagePath": "docs/api/returns-a-list-of-users",
+      "region": "GET /users"
+    },
+    {
+      "pagePath": "docs/api/creates-a-new-user",
+      "region": "POST /users"
+    },
+    {
+      "pagePath": "docs/api/get-user-by-id",
+      "region": "GET /users/{userId}"
+    },
+    {
+      "pagePath": "docs/api/update-user-full-update",
+      "region": "PUT /users/{userId}"
+    },
+    {
+      "pagePath": "docs/api/update-user-partial-update",
+      "region": "PATCH /users/{userId}"
+    },
+    {
+      "pagePath": "docs/api/delete-user",
+      "region": "DELETE /users/{userId}"
+    },
+    {
+      "pagePath": "docs/api/get-users-posts",
+      "region": "GET /users/{userId}/posts"
+    },
+    {
+      "pagePath": "docs/api/create-a-new-post-for-user",
+      "region": "POST /users/{userId}/posts"
+    },
+    {
+      "pagePath": "docs/api/objects/User",
+      "region": "/components/schemas/User"
+    },
+    {
+      "pagePath": "docs/api/objects/UserInput",
+      "region": "/components/schemas/UserInput"
+    },
+    {
+      "pagePath": "docs/api/objects/UserUpdate",
+      "region": "/components/schemas/UserUpdate"
+    },
+    {
+      "pagePath": "docs/api/objects/Post",
+      "region": "/components/schemas/Post"
+    },
+    {
+      "pagePath": "docs/api/objects/PostInput",
+      "region": "/components/schemas/PostInput"
+    }
+  ]
+}

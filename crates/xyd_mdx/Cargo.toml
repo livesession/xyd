@@ -1,0 +1,37 @@
+[package]
+name = "xyd_mdx"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "Rust-first whole-page MDX compiler for PROSE pages (Track C, C-S1). Drives mdxjs-rs's public decomposed pipeline (mdast -> hast -> swc program), applies xyd's portable transforms (heading ids, table/hast normalization, inline syntax highlight via xyd_highlight, frontmatter + toc), emits xyd's function-body output, and gates non-prose pages to a JS fallback sentinel."
+
+[dependencies]
+# swc_common 12.x (pulled transitively by mdxjs -> swc_core 27) reads
+# `serde::__private`, which serde reorganized in 1.0.221. Pin the whole
+# workspace to the last compatible serde via this member's constraint (`=1.0.219`
+# satisfies every other crate's `^1`; serde 1.0.x is API-stable, so this only
+# unblocks the swc build and changes no crate's behavior).
+serde = { version = "=1.0.219", features = ["derive"] }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+serde_yaml = "0.9"
+# C-S2: vendored forks under vendor/ add parse-time `:::`/`::` directive
+# constructs to markdown-rs (markdown-fork) + the 2 exhaustiveness arms mdxjs
+# needs to compile against the extra mdast::Node variants (mdxjs-fork). mdxjs-fork
+# path-depends on markdown-fork, and this crate path-depends on the SAME
+# markdown-fork, so cargo unifies them into one `markdown` — no `[patch.crates-io]`
+# (which would have to live in the workspace root AND the separate xyd-native
+# lockfile). Public API is unchanged mdxjs 1.0.4; the decomposed pipeline calls
+# in src/pipeline.rs are identical.
+mdxjs = { path = "vendor/mdxjs-fork" }
+markdown = { path = "vendor/markdown-fork" }
+rustc-hash = "2"
+swc_core = { version = "=27.0.6", features = ["common", "ecma_ast", "ecma_codegen", "ecma_parser", "ecma_visit"] }
+xyd_highlight = { path = "../xyd_highlight" }
+# Rust-native math: LaTeX ($…$ / $$…$$) → MathML Core (pulldown-latex), the
+# Rust-first replacement for the remark-math + rehype-katex JS step. Pure (no JS
+# engine). `src/math.rs` maps its parsed MathML tree onto mdxjs hast.
+xyd_math = { path = "../xyd_math" }
+
+[dev-dependencies]
+xyd_parity = { path = "../xyd_parity" }

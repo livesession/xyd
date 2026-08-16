@@ -1,0 +1,24 @@
+{
+  "name": "directive-nested",
+  "capability": "directive",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [
+    "Callout",
+    "DirectiveCodeGroup",
+    "Steps",
+    "Steps.Item"
+  ],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 2668,
+    "sha256": "c8375e58e75a753881a51a9eb840b98cc4b6d5c0b3afb1d232cbd9b75bb5f231"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 472,
+    "sha256": "f626ae661d6f197c22fb7bdaeacd904b3d6393b7493e0abbc08c41c5d9e2b138"
+  }
+}

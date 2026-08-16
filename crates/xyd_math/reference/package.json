@@ -1,0 +1,12 @@
+{
+  "name": "xyd-math-katex-reference",
+  "private": true,
+  "type": "module",
+  "description": "Env-gated KaTeX reference generator for the xyd_math functional-equivalence gate. Not part of the pnpm workspace; run standalone with npm install && node gen.mjs to regenerate tests/katex-reference.json.",
+  "scripts": {
+    "gen": "node gen.mjs"
+  },
+  "dependencies": {
+    "katex": "^0.16.11"
+  }
+}

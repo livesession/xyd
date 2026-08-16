@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import { deferencedOpenAPI } from '@xyd-js/openapi';
 
 import { openapi2opencli } from '../index';
-import { type Allowlist, diffSurfaces, opencliToSurface } from '../src/surface';
+import { type Allowlist, diffSurfaces, opencliToSurface } from '../src/impl-js/surface';
 // NOTE: ../oracle/* is gitignored/encrypted (present only after oracle/decrypt.sh
 // or locally). It's imported LAZILY inside the guarded blocks below so this suite
 // SKIPS — rather than failing to load — when the plaintext is absent (CI without

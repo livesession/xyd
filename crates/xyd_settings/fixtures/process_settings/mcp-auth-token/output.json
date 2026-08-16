@@ -1,0 +1,24 @@
+{
+  "theme": {
+    "name": "poetry",
+    "head": []
+  },
+  "navigation": {
+    "sidebar": [
+      {
+        "route": "docs/api/mcp",
+        "pages": []
+      }
+    ]
+  },
+  "api": {
+    "mcp": {
+      "source": "https://mcp.example.com/mcp",
+      "route": "docs/api/mcp",
+      "info": {
+        "token": "tok_fixture_abc"
+      }
+    }
+  },
+  "webeditor": {}
+}

@@ -1,0 +1,11 @@
+[package]
+name = "xyd_watch"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+xyd_core_rs = { path = "../xyd_core_rs" }
+notify = "6"
+notify-debouncer-full = "0.3"

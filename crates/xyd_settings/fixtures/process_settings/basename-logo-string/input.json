@@ -1,0 +1,15 @@
+{
+  "theme": {
+    "name": "gusto",
+    "logo": "assets/logo.svg",
+    "favicon": "assets/favicon.ico"
+  },
+  "advanced": {
+    "basename": "/docs"
+  },
+  "integrations": {
+    "search": {
+      "orama": true
+    }
+  }
+}

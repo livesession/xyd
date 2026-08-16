@@ -13,7 +13,7 @@
         "Endpoints",
         "Users"
       ],
-      "fullPath": "http:/api.example.com/v1/users",
+      "fullPath": "http://api.example.com/v1/users",
       "servers": [
         "http://api.example.com/v1",
         "http://staging-api.example.com"
@@ -51,7 +51,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -68,7 +69,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
@@ -102,10 +104,12 @@
               }
             ]
           }
-        ]
+        ],
+        "type": "$rest.param.query"
       },
       {
         "title": "Response",
+        "type": "return",
         "variants": [
           {
             "title": "200",
@@ -220,7 +224,7 @@
         "Endpoints",
         "Users"
       ],
-      "fullPath": "http:/api.example.com/v1/users/{userId}",
+      "fullPath": "http://api.example.com/v1/users/{userId}",
       "servers": [
         "http://api.example.com/v1",
         "http://staging-api.example.com"
@@ -258,7 +262,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -275,13 +280,15 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
     "definitions": [
       {
         "title": "Response",
+        "type": "return",
         "variants": [
           {
             "title": "200",
@@ -403,7 +410,7 @@
         "Endpoints",
         "Users"
       ],
-      "fullPath": "http:/api.example.com/v1/users/{userId}/posts",
+      "fullPath": "http://api.example.com/v1/users/{userId}/posts",
       "servers": [
         "http://api.example.com/v1",
         "http://staging-api.example.com"
@@ -441,7 +448,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -458,13 +466,15 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
     "definitions": [
       {
         "title": "Response",
+        "type": "return",
         "variants": [
           {
             "title": "200",
@@ -565,7 +575,7 @@
         "Endpoints",
         "Users"
       ],
-      "fullPath": "http:/api.example.com/v1/users/{userId}/posts",
+      "fullPath": "http://api.example.com/v1/users/{userId}/posts",
       "servers": [
         "http://api.example.com/v1",
         "http://staging-api.example.com"
@@ -603,7 +613,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -620,7 +631,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
@@ -673,10 +685,12 @@
             "name": "required",
             "value": "true"
           }
-        ]
+        ],
+        "type": "$rest.request.body"
       },
       {
         "title": "Response",
+        "type": "return",
         "variants": [
           {
             "title": "201",

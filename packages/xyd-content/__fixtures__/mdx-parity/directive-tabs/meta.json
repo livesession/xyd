@@ -1,0 +1,23 @@
+{
+  "name": "directive-tabs",
+  "capability": "directive",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [
+    "Tabs",
+    "Tabs.Content",
+    "Tabs.Item"
+  ],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 1248,
+    "sha256": "c6d63a87fbac5734d95811489f29e89b041cdc5e4bd2314dc94bc28f4f307841"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 403,
+    "sha256": "bc2ae7643bcc329cd34c36bb765962cc7208f636e8ebee9253b58f9cbba2bda7"
+  }
+}

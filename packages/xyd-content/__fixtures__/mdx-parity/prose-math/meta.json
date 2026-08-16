@@ -1,0 +1,20 @@
+{
+  "name": "prose-math",
+  "capability": "math",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 20034,
+    "sha256": "bc084e3e525c1bce3a7eb2b9f410242a74007e4dac7b2b31d430b1bc8031dcf1"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 5197,
+    "sha256": "d419f1a40f3df32787d25641b4d5eb335865ba03ea9a636a5ec84cf4051d9d60"
+  },
+  "note": "Re-tagged prose->math (C-S Item 4): $…$/$$…$$ now render natively to MathML via xyd_math. The math gate is FUNCTIONAL (well-formed <math>, no <merror>), not byte-parity vs KaTeX — MathML Core is a different DOM by design. The committed rendered.html is the JS rehype-katex reference (not byte-gated)."
+}

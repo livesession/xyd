@@ -1,0 +1,22 @@
+{
+  "name": "async-frontmatter-uniform",
+  "capability": "async",
+  "gate": "fallback",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [
+    "Atlas"
+  ],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 11195,
+    "sha256": "59bef901ca8b357fafe73e1966358fbca623a5c154356e24d5153e8aebdbb2d4"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 40,
+    "sha256": "8f6554dac418f723a9773562d7db8ad136b0ea1687349d59ea1e0cebae6f331e"
+  },
+  "note": "Composes headlessly: the gen script runs `new Composer()` so the `atlas` meta-component is registered (same as the plugin-docs layout loader). Uses `openapi: ./api.yaml` — the typed key that makes `processUniformFile` pick the OpenAPI converter; `uniform: ./api.yaml` does NOT resolve (the `uniform:` alias only infers a converter from `.ts/.tsx/.graphql` extensions, not `.yaml/.yml/.json`). Both keys funnel through the same `@uniform()` + `component: atlas` machinery. Real composed `<Atlas references={[…resolved OpenAPI…]}>` oracle — a C-S4b (Rust composer port) target: parity.rs enforces rendered.html the moment compile_mdx returns `full` for this frontmatter (it returns `fallback` today, so the fixture stays capability:async / DEFER and does not fail the gate pre-C-S4b)."
+}

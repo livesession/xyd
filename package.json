@@ -55,6 +55,11 @@
     "typescript": "^5.6.2",
     "vitest": "^2.1.8"
   },
+  "pnpm": {
+    "overrides": {
+      "typescript@^6": "5.9.3"
+    }
+  },
   "pre-commit": "lint-staged",
   "lint-staged": {
     "*.{js,ts,cjs,mjs,md,json,jsonc}": "biome ci --no-errors-on-unmatched"

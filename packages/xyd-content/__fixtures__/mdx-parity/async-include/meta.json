@@ -1,0 +1,20 @@
+{
+  "name": "async-include",
+  "capability": "async",
+  "gate": "fallback",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 1119,
+    "sha256": "b0490597fbf133d80de1d1d95aee8216a84f47a327bf2cdb4f30f98c0d1506b0"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 179,
+    "sha256": "2a96777c19669632a28607b29bb17ff844df8c7f56d338f30e44ecacaf699ceb"
+  },
+  "note": "resolves the local ./partial.md relative to input.mdx"
+}

@@ -32,6 +32,7 @@ export function FwSubNav() {
             }
 
             return <SubNav.Item
+                key={href || (typeof item.page === "string" ? item.page : "") || index}
                 value={typeof item.page !== "string" && href ? href : item.page || ""}
                 href={href || item.page || ""}
                 as={FwLink}

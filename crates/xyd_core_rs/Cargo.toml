@@ -1,0 +1,8 @@
+[package]
+name = "xyd_core_rs"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]

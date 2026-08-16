@@ -1,0 +1,52 @@
+{
+  "urlPrefix": "docs/api",
+  "sidebar": [
+    {
+      "group": "",
+      "pages": [
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/returns-a-list-of-users",
+          "page": "docs/api/returns-a-list-of-users"
+        }
+      ]
+    },
+    {
+      "group": "Objects",
+      "pages": [
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/objects/Response",
+          "page": "docs/api/objects/Response"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/objects/User",
+          "page": "docs/api/objects/User"
+        }
+      ]
+    }
+  ],
+  "pageFrontMatter": {
+    "docs/api/returns-a-list-of-users": {
+      "title": "Returns a list of users"
+    },
+    "docs/api/objects/Response": {
+      "title": "Response"
+    },
+    "docs/api/objects/User": {
+      "title": "User"
+    }
+  },
+  "pages": [
+    {
+      "pagePath": "docs/api/returns-a-list-of-users",
+      "region": "GET /users"
+    },
+    {
+      "pagePath": "docs/api/objects/Response",
+      "region": "/components/schemas/Response"
+    },
+    {
+      "pagePath": "docs/api/objects/User",
+      "region": "/components/schemas/User"
+    }
+  ]
+}

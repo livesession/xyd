@@ -53,7 +53,8 @@
     "unified": "^11.0.5",
     "unist-util-visit": "^5.0.0",
     "vfile": "^6.0.3",
-    "vfile-matter": "^5.0.1"
+    "vfile-matter": "^5.0.1",
+    "@xyd-js/native": "workspace:*"
   },
   "peerDependencies": {
     "@xyd-js/components": "workspace:*"

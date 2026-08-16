@@ -1,0 +1,16 @@
+[package]
+name = "xyd_math"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "Rust-native LaTeX math rendering — LaTeX ($…$ / $$…$$) → MathML Core via pulldown-latex, the Rust-first replacement for the remark-math + rehype-katex JS step. Pure (no JS engine, no mdxjs dep): renders a `<math>` string, exposes a generic parsed MathML tree for hast wiring, and ships a MathML token/structure equivalence metric checked against a real-KaTeX reference corpus."
+
+[dependencies]
+# Pure-Rust LaTeX → MathML pull renderer (inspired by KaTeX/Temml/MathJax; MIT).
+# Chosen over the 6-year-stale `latex2mathml` and over `katex`-rs (which embeds
+# the KaTeX JS through a JS engine — reintroduces the runtime the migration sheds
+# and bloats the `bun --compile` binary). See McpProcessing-adjacent report
+# `.ai/content-engine-tails-research.md` Item 4 + the crate rationale in lib.rs.
+pulldown-latex = "0.8"
+serde = { workspace = true }
+serde_json = { workspace = true }

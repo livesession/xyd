@@ -1,54 +1,35 @@
+// Dispatcher (S6+ W3): the view-building core runs in Rust
+// (crates/xyd_uniform::plugins::plugin_json_view) when the native core is
+// present. The UniformPlugin closure contract stays JS — the factory defers
+// one native call over the full Reference[].
 import type { UniformPluginArgs, UniformPlugin } from "../index";
-import { Reference } from "../types";
+import type { Reference } from "../types";
+import { native } from "../native";
+import { pluginJsonView as jsPluginJsonView } from "../impl-js/pluginJsonView";
 
 export interface pluginJsonViewOptions {
 }
 
 type pluginJsonViewOutput = {
     jsonViews: string;
-}
+};
 
 export function pluginJsonView(
     options?: pluginJsonViewOptions
 ): UniformPlugin<pluginJsonViewOutput> {
-
-    return function pluginJsonViewInner({
-        defer,
-    }: UniformPluginArgs) {
-        const jsonViews: string[] = [];
-
-        defer(() => ({
-            jsonViews
-        }))
-
-        return (ref: Reference) => {
-            // Build the output string manually to ensure exact format
-            const lines: string[] = [];
-            lines.push('{');
-            
-            ref.definitions.forEach(def => {
-                def.properties.forEach((prop, index) => {
-                    // Remove any quotes and trailing characters from the value
-                    const value = (prop.examples?.[0] || '').replace(/^"|"$|[^a-zA-Z0-9\s\-_.,:/@#=;+()]/g, '');
-                    const comment = prop.examples && prop.examples.length > 1 
-                        ? ` // or "${(prop.examples as string[])[1].replace(/^"|"$|[^a-zA-Z0-9\s\-_.,:/@#=;+()]/g, '')}"`
-                        : '';
-                    const isLast = index === def.properties.length - 1;
-                    // Add comma after the value but before the comment
-                    lines.push(`    "${prop.name}": "${value}"${isLast ? '' : ','}${comment}`);
-                });
-            });
-            
-            lines.push('}');
-            
-            jsonViews.push(lines.join('\n'));
-        }
+    if (!native?.pluginJsonView) {
+        return jsPluginJsonView(options);
     }
-}
 
-// example usage:
-// const response = uniform([/* references */], {
-//     plugins: [pluginJsonView({
-//         
-//     })],
-// });
+    return function pluginJsonViewInner({ references, defer }: UniformPluginArgs) {
+        defer(() => ({
+            jsonViews: JSON.parse(
+                native.pluginJsonView(
+                    JSON.stringify(Array.isArray(references) ? references : [references])
+                )
+            ),
+        }));
+
+        return (_ref: Reference) => {};
+    };
+}

@@ -1,0 +1,47 @@
+[package]
+name = "xyd_highlight_wasm"
+# Standalone (workspace-excluded) crate — see crates/Cargo.toml `exclude`. It is
+# wasm-only (a wasm-bindgen cdylib whose regex primitive is a JS import), so it
+# must never be built for the host by the workspace's `cargo build/test/clippy`.
+# Because it is excluded it does NOT inherit `[workspace.package]`; pin literals.
+edition = "2021"
+version = "0.0.0"
+license = "MIT"
+description = "Browser (WASM) build of xyd_highlight — the client re-highlight path. Reuses the pure-Rust engine and delegates the TextMate regex to vscode-oniguruma's onig.wasm via a JS binding, so client output is byte-identical to the napi server highlighter. See .ai/client-wasm-highlighter-spike.md."
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# The pure engine WITHOUT native Oniguruma: `js-scanner` swaps the regex
+# primitive for a host-registered backend (wired to onig.wasm below).
+xyd_highlight = { path = "../xyd_highlight", default-features = false, features = ["js-scanner"] }
+wasm-bindgen = "0.2"
+serde_json = { version = "1", features = ["preserve_order"] }
+console_error_panic_hook = { version = "0.1", optional = true }
+
+[features]
+# `core-langs` trims the embedded grammar set to the top-20 docs languages (+
+# their embed closure) to keep the .wasm small; ON by default for the browser.
+# Turn it off (`--no-default-features`) to embed all 254 grammars.
+default = ["core-langs", "debug-panic"]
+core-langs = ["xyd_highlight/core-langs"]
+# Route Rust panics to console.error in the browser (dev ergonomics).
+debug-panic = ["dep:console_error_panic_hook"]
+
+[profile.release]
+# Small, fast wasm: LTO + size opt + strip. `wasm-opt` (via wasm-pack) shrinks
+# further downstream.
+lto = true
+opt-level = "s"
+strip = true
+
+# wasm-opt is disabled: the (old) binaryen bundled by wasm-pack aborts on the
+# bulk-memory ops LLVM's wasm target now emits by default, even with
+# `--enable-bulk-memory`. The unoptimized cdylib (~2.7 MB) is correct and
+# functional; production size-optimization should run a CURRENT `wasm-opt`
+# (standalone binaryen) or lazy-load grammar assets — tracked in
+# .ai/client-wasm-highlighter-spike.md. `cargo build --target wasm32-unknown-unknown`
+# and `wasm-pack build` both succeed with this off.
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false

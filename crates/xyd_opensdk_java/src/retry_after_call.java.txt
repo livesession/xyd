@@ -1,0 +1,6 @@
+    if (HONOR_RETRY_AFTER_HEADER && response != null) {
+      long retryAfter = retryAfterMs(response);
+      if (retryAfter >= 0) {
+        return retryAfter;
+      }
+    }

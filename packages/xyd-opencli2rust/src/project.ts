@@ -1,10 +1,11 @@
 import type { OpencliSpecJson } from '@xyd-js/opencli';
-import type { ProjectFileMap } from '@xyd-js/opensdk-framework';
+import type { ProjectFileMap, WriteMode } from '@xyd-js/opensdk-framework';
 
 import { renderCli } from './cli';
 import { renderResourceFile, type ResourceFile } from './command';
 import { renderMain } from './main';
 import { crateName as toCrateName, slug } from './naming';
+import { native } from './native';
 import { GENERATED_HEADER } from './rslit';
 import {
   cargoToml,
@@ -25,6 +26,20 @@ import type { Opencli2RustOptions } from './types';
  * scaffolds (Cargo.toml, .gitignore, src/custom/) as 'skipIfExists' entries.
  */
 export function opencli2rust(spec: OpencliSpecJson, options: Opencli2RustOptions = {}): ProjectFileMap {
+  if (native?.opencli2rust) {
+    // Native returns an ORDERED array of { path, content, writeMode } to preserve
+    // the ProjectFileMap shape; reconstruct it, matching the JS convention of a
+    // plain string for 'overwrite' files and an entry for scaffolds.
+    const entries = JSON.parse(
+      native.opencli2rust(JSON.stringify(spec), JSON.stringify(options)),
+    ) as { path: string; content: string; writeMode: WriteMode }[];
+    const files: ProjectFileMap = {};
+    for (const e of entries) {
+      files[e.path] = e.writeMode === 'overwrite' ? e.content : { content: e.content, writeMode: e.writeMode };
+    }
+    return files;
+  }
+
   const binName = options.binName ?? (slug(spec.info?.title || 'cli') || 'cli');
   const crate = options.crateName ?? toCrateName(spec.info?.title || binName);
   const edition = options.edition ?? '2021';

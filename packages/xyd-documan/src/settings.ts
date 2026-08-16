@@ -1,12 +1,11 @@
 import fs from "fs/promises";
 import path from "node:path";
-import { URL } from "node:url";
+import { URL, pathToFileURL } from "node:url";
 
-import { createServer } from "vite";
 import { config as dotenvConfig } from "dotenv";
 import yaml from "js-yaml";
 
-import { getThemeColors } from "@code-hike/lighter";
+import { getThemeColors } from "./themeColors";
 
 import { Settings } from "@xyd-js/core";
 import { replaceEnvVars } from "@xyd-js/cli-sdk";
@@ -68,12 +67,9 @@ export async function readSettings() {
 
   if (!error) {
     if (reactSettings) {
-      const settingsPreview = await createServer({
-        optimizeDeps: {
-          include: ["react/jsx-runtime"],
-        },
-      });
-      const config = await settingsPreview.ssrLoadModule(settingsFilePath);
+      // Native ESM import — Bun transpiles TS/TSX directly, so we no longer
+      // spin up Vite's SSR module loader to evaluate the user's docs.ts/tsx (S0).
+      const config = await import(pathToFileURL(settingsFilePath).href);
       const mod = config.default as Settings;
 
       settings = postLoadSetup(mod);

@@ -1,0 +1,204 @@
+name: tests:native
+
+# S6+ per-PR native gate (cheap, single runner — the heavy 3-target embed matrix
+# lives in binary-targets.yml):
+#   tier 1 — cargo fmt/clippy/test on the crates/ workspace, including the
+#            fixture-parity + oracle round-trip tests (they read the committed
+#            packages/*/__fixtures__ oracles from the checkout).
+#   tier 2 — build the napi .node (debug — parity is value-equality, not perf)
+#            and run the through-shim vitest suites of MIGRATED packages in both
+#            modes (XYD_NATIVE=1 native / XYD_NATIVE=0 frozen JS fallback).
+
+on:
+  push:
+    branches: [ master, canary ]
+    paths:
+      - 'crates/**'
+      - 'packages/xyd-native/**'
+      - 'packages/xyd-gql/**'
+      - 'packages/xyd-openapi/**'
+      - 'packages/xyd-openapi2opensdk/**'
+      - 'packages/xyd-openapi2opencli/**'
+      - 'packages/xyd-uniform/**'
+      - 'packages/xyd-mcp-uniform/**'
+      - 'packages/xyd-content/**'
+      - 'packages/xyd-plugin-docs/**'
+      - 'packages/xyd-opencli2*/**'
+      - 'packages/xyd-opensdk-*/**'
+      - 'packages/xyd-composer/**'
+      - 'packages/xyd-mcp/**'
+      - 'packages/xyd-documan/**'
+      - '.github/workflows/tests-native.yml'
+  pull_request:
+    branches: [ master, canary ]
+    paths:
+      - 'crates/**'
+      - 'packages/xyd-native/**'
+      - 'packages/xyd-gql/**'
+      - 'packages/xyd-openapi/**'
+      - 'packages/xyd-openapi2opensdk/**'
+      - 'packages/xyd-openapi2opencli/**'
+      - 'packages/xyd-uniform/**'
+      - 'packages/xyd-mcp-uniform/**'
+      - 'packages/xyd-content/**'
+      - 'packages/xyd-plugin-docs/**'
+      - 'packages/xyd-opencli2*/**'
+      - 'packages/xyd-opensdk-*/**'
+      - 'packages/xyd-composer/**'
+      - 'packages/xyd-mcp/**'
+      - 'packages/xyd-documan/**'
+      - '.github/workflows/tests-native.yml'
+  workflow_dispatch:
+
+jobs:
+  cargo:
+    name: cargo (fmt + clippy + parity tests)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Setup cargo cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            crates/target
+          key: ${{ runner.os }}-cargo-crates-${{ hashFiles('crates/**/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-crates-
+
+      - name: fmt
+        working-directory: crates
+        run: cargo fmt --all -- --check
+
+      - name: clippy
+        working-directory: crates
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      # The xyd_mdx parity test renders compiled MDX through the JS harness
+      # (__fixtures__/mdx-parity/_harness/render.mjs imports react +
+      # react-dom/server), so node_modules must exist. fmt/clippy don't need it,
+      # so install right before the test step (fail-fast on lint first).
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies (parity render harness needs react)
+        run: pnpm i
+
+      - name: test (incl. fixture parity + oracle round-trip)
+        working-directory: crates
+        run: cargo test --workspace
+
+  ffi:
+    name: ffi (napi build + through-shim vitest, both modes)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.10.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+
+      # `pnpm build` fans out to every package, including the bun-built
+      # @xyd-js/ask-ai-edge (`bun build …`), so bun must be on PATH — matching
+      # every other workflow that runs the full build.
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 'latest'
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup cargo cache (napi crate)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/xyd-native/target
+          key: ${{ runner.os }}-cargo-native-debug-${{ hashFiles('crates/**/Cargo.toml', 'packages/xyd-native/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-native-debug-
+
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Build native core (debug)
+        run: pnpm --filter @xyd-js/native build:native:debug
+
+      - name: Native smoke (classify + hello)
+        run: node -e "const n=require('./packages/xyd-native/index.js'); if(n.classify('docs.json')!=='settings')throw new Error('classify broken'); console.log('ok:', n.hello('ci'))"
+
+      # Build the JS packages so cross-`@xyd-js/*` imports (which resolve to
+      # dist, gitignored) are fresh — the opensdk emitters consume the migrated
+      # @xyd-js/opensdk-framework's native dispatch from its dist.
+      - name: Build packages
+        run: pnpm build
+
+      # Through-shim parity of MIGRATED packages, both modes. One block per
+      # migrated package. Uses vitest directly — the shims resolve @xyd-js/native
+      # from the workspace-linked debug build above.
+      - name: through-shim vitest (XYD_NATIVE=1 then =0)
+        run: |
+          # W1 gql · W2 openapi (+ opensdk rider) · W3 uniform (+ mcp rider,
+          # fused endpoint via plugin-docs) · W4 content frontmatter batch ·
+          # W7 codegen: opencli2go/2rust (own native.ts) + the opensdk emitters,
+          # which drive the framework's native generateFileMap branch (native
+          # lives in their DEPENDENCY @xyd-js/opensdk-framework, not their own src,
+          # so they are listed explicitly rather than grep-gated).
+          # M1 highlighter: xyd-content carries the both-mode highlight shim test
+          # (__tests__/highlight-native.test.ts) — native xyd_highlight ⇄ codehike
+          # fallback; the crate's own cargo tests (cargo job) gate byte-parity.
+          SHIM_PKGS="xyd-gql xyd-openapi xyd-openapi2opensdk xyd-openapi2opencli xyd-uniform xyd-mcp-uniform xyd-content xyd-plugin-docs xyd-opencli2go xyd-opencli2rust xyd-opensdk-framework"
+          TRANSITIVE_PKGS="xyd-opensdk-go xyd-opensdk-node xyd-opensdk-python xyd-opensdk-ruby xyd-opensdk-java xyd-opensdk-dotnet xyd-opensdk-rust xyd-opensdk-cli"
+          for pkg in $SHIM_PKGS $TRANSITIVE_PKGS; do
+            if [ -d "packages/$pkg/__tests__" ]; then
+              echo "=== $pkg (native=1) ==="; (cd "packages/$pkg" && XYD_NATIVE=1 npx vitest run)
+              echo "=== $pkg (native=0) ==="; (cd "packages/$pkg" && XYD_NATIVE=0 npx vitest run)
+            else
+              echo "$pkg — no __tests__, skipping"
+            fi
+          done

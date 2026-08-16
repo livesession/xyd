@@ -130,8 +130,25 @@ import { cliPreset } from "./presets/cli";
 
 import type { PluginOutput, Plugin } from "./types";
 import { ensureAndCleanupVirtualFolder } from "./presets/uniform";
+import { settingsNative } from "./native";
 
 export { readSettings } from "./presets/docs/settings"
+
+// S6+ W6: the nav→pagepath walk (the "batched" existsSync-eliminating pass)
+// runs in Rust (crates/xyd_settings) when the native core is present. The
+// JS mapNavigationToPagePathMapping below stays as the fallback + fidelity
+// reference. cwd is process.cwd() (the JS impl probes cwd-relative paths).
+function resolvePagePathMapping(navigation: Navigation): Record<string, string> {
+    if (settingsNative?.mapNavigationToPagePathMapping) {
+        return JSON.parse(
+            settingsNative.mapNavigationToPagePathMapping(
+                JSON.stringify(navigation),
+                process.cwd()
+            )
+        );
+    }
+    return mapNavigationToPagePathMapping(navigation);
+}
 
 export interface PluginDocsOptions {
     disableAPIGeneration?: boolean
@@ -436,11 +453,11 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
                     segments: lang.segments,
                     anchors: lang.anchors
                 }
-                const subMapping = mapNavigationToPagePathMapping(localeNav)
+                const subMapping = resolvePagePathMapping(localeNav)
                 Object.assign(pagePathMapping, subMapping)
             }
         } else {
-            pagePathMapping = mapNavigationToPagePathMapping(settings?.navigation)
+            pagePathMapping = resolvePagePathMapping(settings?.navigation)
         }
     } else {
         console.warn("No navigation found in settings")

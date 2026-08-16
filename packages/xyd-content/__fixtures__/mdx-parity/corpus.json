@@ -1,0 +1,49 @@
+{
+  "$comment": "Source of truth for the MDX-parity corpus. Each entry declares a fixture directory, its capability tag (the Track-C staging gate), and provenance. The gen script (packages/xyd-content/scripts/gen-mdx-goldens.mjs) reads this to (re)generate compiled.normalized.js + rendered.html + meta.json for every case. capability -> gate: prose/directive => 'full' (Rust output MUST match Oracle A + Oracle B); async => 'fallback' (exempt, tracked as coverage until the corresponding Track-C stage lands).",
+  "gate": {
+    "prose": "full",
+    "directive": "full",
+    "outputvars": "full",
+    "math": "full",
+    "async": "fallback"
+  },
+  "cases": [
+    { "name": "prose-headings",          "capability": "prose",     "source": "synthetic", "features": ["headings", "paragraphs"] },
+    { "name": "prose-inline",            "capability": "prose",     "source": "synthetic", "features": ["bold", "italic", "strike", "inline-code", "link", "autolink"] },
+    { "name": "prose-lists",             "capability": "prose",     "source": "synthetic", "features": ["ul", "ol", "nested-list", "task-list-gfm"] },
+    { "name": "prose-gfm-table",         "capability": "prose",     "source": "synthetic", "features": ["gfm-table", "alignment"] },
+    { "name": "prose-code-fences",       "capability": "prose",     "source": "synthetic", "features": ["code-fence", "line-highlight-meta", "server-highlight"] },
+    { "name": "prose-blockquote-hr",     "capability": "prose",     "source": "synthetic", "features": ["blockquote", "nested-blockquote", "thematic-break"] },
+    { "name": "prose-images",            "capability": "prose",     "source": "synthetic", "features": ["image", "image-title", "inline-image"] },
+    { "name": "prose-math",              "capability": "math",      "source": "synthetic", "features": ["inline-math", "block-math", "katex"], "note": "Re-tagged prose->math (C-S Item 4): $…$/$$…$$ now render natively to MathML via xyd_math. The math gate is FUNCTIONAL (well-formed <math>, no <merror>), not byte-parity vs KaTeX — MathML Core is a different DOM by design. The committed rendered.html is the JS rehype-katex reference (not byte-gated)." },
+    { "name": "prose-frontmatter-seo",   "capability": "prose",     "source": "synthetic", "features": ["frontmatter", "seoTitle", "seoDescription", "og"] },
+    { "name": "prose-entities-escapes",  "capability": "prose",     "source": "synthetic", "features": ["html-entities", "backslash-escape", "unicode"] },
+    { "name": "prose-real-introduction", "capability": "prose",     "source": "apps/docs/guides/introduction.md", "features": ["headings", "lists", "links", "inline-code"] },
+
+    { "name": "directive-callout",         "capability": "directive", "source": "synthetic", "features": ["callout", "callout-kind"] },
+    { "name": "directive-steps",           "capability": "directive", "source": "synthetic", "features": ["steps", "steps-item", "code-in-step"] },
+    { "name": "directive-tabs",            "capability": "directive", "source": "synthetic", "features": ["tabs", "tab-content"] },
+    { "name": "directive-code-group",      "capability": "directive", "source": "synthetic", "features": ["code-group", "multi-lang"] },
+    { "name": "directive-details",         "capability": "directive", "source": "synthetic", "features": ["details"] },
+    { "name": "directive-subtitle-badge",  "capability": "directive", "source": "synthetic", "features": ["subtitle", "badge", "text-directive"] },
+    { "name": "directive-table",           "capability": "directive", "source": "synthetic", "features": ["table", "json-cells", "cell-markdown"] },
+    { "name": "directive-nested",          "capability": "directive", "source": "synthetic", "features": ["nested-directives", "steps", "code-group", "callout"] },
+
+    { "name": "async-include",             "capability": "async", "source": "synthetic", "features": ["@include"], "note": "resolves the local ./partial.md relative to input.mdx" },
+    { "name": "async-changelog",           "capability": "async", "source": "synthetic", "features": ["@changelog"], "note": "reads the local ./changelog.md" },
+    { "name": "async-frontmatter-uniform", "capability": "async", "source": "synthetic", "features": ["openapi-frontmatter", "atlas", "composer"], "note": "Composes headlessly: the gen script runs `new Composer()` so the `atlas` meta-component is registered (same as the plugin-docs layout loader). Uses `openapi: ./api.yaml` — the typed key that makes `processUniformFile` pick the OpenAPI converter; `uniform: ./api.yaml` does NOT resolve (the `uniform:` alias only infers a converter from `.ts/.tsx/.graphql` extensions, not `.yaml/.yml/.json`). Both keys funnel through the same `@uniform()` + `component: atlas` machinery. Real composed `<Atlas references={[…resolved OpenAPI…]}>` oracle — a C-S4b (Rust composer port) target: parity.rs enforces rendered.html the moment compile_mdx returns `full` for this frontmatter (it returns `fallback` today, so the fixture stays capability:async / DEFER and does not fail the gate pre-C-S4b)." },
+    { "name": "async-component-atlas",     "capability": "async", "source": "synthetic", "features": ["component-atlas", "composer"], "note": "Composes headlessly: the gen script runs `new Composer()` so the `atlas` meta-component is registered (same as the plugin-docs layout loader). `component: atlas` with no spec source composes to the real `<Atlas references={[]}>` node (the atlas transform emits empty references and drops body prose when there is no reference to attach it to — this is the composer's real behavior, not a harness fallback). Real composed oracle — a C-S4b (Rust composer port) target: parity.rs enforces rendered.html the moment compile_mdx returns `full` for `component:` frontmatter (it returns `fallback` today, so the fixture stays capability:async / DEFER and does not fail the gate pre-C-S4b)." },
+
+    { "name": "component-home",       "capability": "async", "source": "synthetic", "features": ["component-home", "composer"], "note": "Composes headlessly (new Composer() registers the meta-components). `component: home` -> the home meta-component sets layout:page and emits `<PageHome {...props}/>`, dropping body prose. No source/@uniform -> no oas-to-snippet dependency, so this is a C-S4b native target (component: home => full). parity.rs enforces rendered.html when compile_mdx returns `full`." },
+    { "name": "component-bloghome",   "capability": "async", "source": "synthetic", "features": ["component-bloghome", "composer"], "note": "As component-home but `component: bloghome` -> `<PageBlogHome {...props}/>`. Native C-S4b target." },
+    { "name": "component-firstslide", "capability": "async", "source": "synthetic", "features": ["component-firstslide", "composer"], "note": "`component: firstslide` (no rightContent) -> the firstslide meta-component sets layout:page and emits `<PageFirstSlide {...props}/>`. Native C-S4b target. The rightContent nested-MDX compile branch is not exercised (deferred, like the openapi-atlas full-refs tail)." },
+
+    { "name": "outputvars-simple",     "capability": "outputvars", "source": "synthetic", "features": ["outputvars", "code-fence"], "note": "The bespoke `<<<name … <<<` outputVars fence. In a STANDALONE page (no atlas frontmatter) the JS `outputVars` node survives every remark pass and renders through `mdast-util-to-hast`'s unknown handler as a `<div>` wrapping the captured code blocks (`mdComposer`'s `file.data.outputVars` examples blob feeds only the atlas meta-component — a source-backed page that falls back — so it has no rendered-HTML effect here). The Rust port (fork `output_vars_container` construct + `output_vars` transform) reproduces that `<div>`; parity.rs enforces rendered.html since compile_mdx returns `full`." },
+    { "name": "outputvars-multiple",   "capability": "outputvars", "source": "synthetic", "features": ["outputvars", "multiple-vars"], "note": "Two `<<<` fences → two sibling `<div>` wrappers. Confirms the construct closes each fence at its own `<<<` and re-parses each body independently." },
+    { "name": "outputvars-code-group", "capability": "outputvars", "source": "synthetic", "features": ["outputvars", "code-group"], "note": "A `:::code-group` INSIDE a `<<<` fence → `<div>` wrapping a `DirectiveCodeGroup` stub. The `output_vars` transform delegates to the directive port (`directives::process`) on the re-parsed fence body, mirroring the JS plugin order (outputVars parse → mdComponentDirective)." },
+
+    { "name": "math-inline",           "capability": "math",       "source": "synthetic", "features": ["inline-math"], "note": "Inline `$…$` → native MathML via xyd_math (pulldown-latex). Functional gate: full + well-formed <math>, no <merror>. rendered.html is the JS rehype-katex reference (not byte-gated — MathML Core is a different DOM)." },
+    { "name": "math-block",            "capability": "math",       "source": "synthetic", "features": ["block-math"], "note": "Block `$$…$$` → native MathML via xyd_math. Functional gate (see math-inline)." },
+    { "name": "math-unsupported",      "capability": "math", "gate": "fallback", "source": "synthetic", "features": ["unsupported-latex"], "note": "Uses `\\over` — valid deprecated LaTeX that KaTeX renders but pulldown-latex deliberately does not. Proves the HONEST fallback: compile_mdx returns `fallback` (reason `math:`) rather than a wrong render. Per-case `gate: fallback` overrides the `math` capability default." }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "theme": {
+    "name": "poetry",
+    "head": []
+  },
+  "integrations": {
+    "diagrams": [
+      "mermaid"
+    ]
+  },
+  "navigation": {
+    "sidebar": [
+      "docs/intro"
+    ]
+  },
+  "webeditor": {}
+}

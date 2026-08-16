@@ -1,0 +1,25 @@
+{
+  "pageFrontMatter": {
+    "docs/api-reference/listAssistants": {
+      "title": "List assistants"
+    },
+    "docs/api-reference/createAssistant": {
+      "title": "Create assistant"
+    }
+  },
+  "sidebar": [
+    {
+      "group": "Assistants",
+      "pages": [
+        {
+          "virtual": ".xyd/.cache/.content/docs/api-reference/listAssistants",
+          "page": "docs/api-reference/listAssistants"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/docs/api-reference/createAssistant",
+          "page": "docs/api-reference/createAssistant"
+        }
+      ]
+    }
+  ]
+}

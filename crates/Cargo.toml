@@ -1,0 +1,65 @@
+# xyd Rust workspace. Rooted at crates/ (NOT the repo root) so it never captures
+# the generated Rust projects elsewhere in the repo (packages/apitoolchain-api-cli,
+# packages/xyd-opencli2rust/__fixtures__/**, packages/xyd-opensdk-rust/__fixtures__/**),
+# which are standalone crates built by their own `cargo` smoke tests.
+[workspace]
+resolver = "2"
+members = [
+    "xyd_core_rs",
+    "xyd_watch",
+    "xyd_uniform",
+    "xyd_parity",
+    "xyd_gql",
+    "xyd_openapi",
+    "xyd_openapi2opensdk",
+    "xyd_mcp_uniform",
+    "xyd_frontmatter",
+    "xyd_settings",
+    "xyd_openapi2opencli",
+    "xyd_opencli2go",
+    "xyd_opencli2rust",
+    "xyd_opensdk_go",
+    "xyd_opensdk_python",
+    "xyd_opensdk_node",
+    "xyd_opensdk_java",
+    "xyd_opensdk_dotnet",
+    "xyd_opensdk_rust",
+    "xyd_opensdk_ruby",
+    "xyd_highlight",
+    "xyd_mdx",
+    "xyd_math",
+    "xyd_oas_snippet",
+]
+# Workspace-excluded (like the napi crate): a wasm-only wasm-bindgen cdylib whose
+# regex primitive is a JS import — it must never be built for the host by the
+# workspace's `cargo build/test/clippy`. Built explicitly for wasm32 via wasm-pack
+# (or `cargo build --target wasm32-unknown-unknown` from its own dir). It path-deps
+# on xyd_highlight (js-scanner feature). See .ai/client-wasm-highlighter-spike.md.
+exclude = [
+    "xyd_highlight_wasm",
+]
+# The napi adapter crate lives co-located in packages/xyd-native (idiomatic
+# napi-rs layout: crate + package.json together). It path-depends on
+# crates/xyd_core_rs and is built standalone by @napi-rs/cli, so it is NOT a
+# member of this workspace. RULE (S6+): the napi crate may depend only on
+# napi/napi-derive/napi-build/serde_json + path-deps on crates/* — all
+# logic/parser/IO deps live in the pure crates here, so the dual lockfile
+# (crates/Cargo.lock vs packages/xyd-native/Cargo.lock) can't skew behavior.
+
+[workspace.package]
+edition = "2021"
+version = "0.0.0"
+license = "MIT"
+
+# Shared third-party pins (S6+): every pure crate takes these via
+# `{ workspace = true }` so converter crates can't drift among themselves.
+# preserve_order: fixture-dump diffs stay minimal AND IndexMap equality is
+# order-insensitive — exactly the vitest `toEqual` oracle semantics.
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+thiserror = "2"
+
+[profile.release]
+lto = true
+strip = true

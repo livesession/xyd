@@ -11,6 +11,7 @@ import { oapSchemaToReferences, deferencedOpenAPI, uniformPluginXDocsSidebar } f
 import { loadOpencliSpec, opencliToReferences } from "@xyd-js/opencli"
 
 import { downloadContent, LineRange, parseImportPath, Region, resolvePathAlias } from './utils';
+import { tsxToReactUniform } from './tsxExtractor';
 import uniform, { Reference, ReferenceContext } from '@xyd-js/uniform';
 // TODO: rewrite to async
 
@@ -149,6 +150,15 @@ async function processUniformFile(
                             }
 
                             case 'tsx': {
+                                // In the self-contained binary, @xyd-js/sources /
+                                // TypeDoc is stubbed (TypeDoc hangs in bunfs), so use
+                                // the raw-`typescript` extractor instead — it renders
+                                // the same Atlas Props reference without TypeDoc.
+                                if ((globalThis as any).__xydCompiledBinary) {
+                                    references = await tsxToReactUniform(resolvedFilePath, { regions })
+                                    break
+                                }
+
                                 const resp = await sourcesToUniformV2(
                                     packageDir,
                                     [relativeFilePath]

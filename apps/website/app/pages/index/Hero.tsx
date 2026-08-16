@@ -4,6 +4,12 @@ import { IconMac } from "~/icons/Mac";
 import { IconWindows } from "~/icons/Windows";
 import { IconLinux } from "~/icons/Linux";
 
+// Injected by vite `define` at build time (see vite.config.ts): the current
+// site's origin. Baked into the prerendered HTML so canary.xyd.dev ships the
+// canary install command and prod ships xyd.dev's — no client-side host sniffing.
+declare const __XYD_INSTALL_ORIGIN__: string;
+const INSTALL_CMD = `curl -fsSL ${__XYD_INSTALL_ORIGIN__}/install | bash`;
+
 export function Hero() {
   const [activeTab, setActiveTab] = useState(0);
   const [os, setOs] = useState<string>("Mac");
@@ -187,7 +193,7 @@ export function Hero() {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText("bun add -g xyd-js");
+      await navigator.clipboard.writeText(INSTALL_CMD);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -246,7 +252,7 @@ export function Hero() {
               >
                 <span className="text-gray-500 flex-shrink-0">$</span>
                 <code className="text-gray-300 font-mono text-xs sm:text-sm whitespace-nowrap">
-                  bun add -g xyd-js
+                  {INSTALL_CMD}
                 </code>
                 <div
                   className={`ml-2 flex-shrink-0 p-1.5 rounded transition-all duration-200 group-hover:scale-110 ${

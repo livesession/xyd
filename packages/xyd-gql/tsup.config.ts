@@ -25,7 +25,7 @@ export default defineConfig({
     onSuccess: async () => {
         // Copy opendocs.graphql to dist
         copyFileSync(
-            join('src', 'opendocs.graphql'),
+            join('src', 'impl-js', 'opendocs.graphql'),
             join('dist', 'opendocs.graphql')
         );
         return Promise.resolve();

@@ -1,0 +1,63 @@
+{
+  "urlPrefix": "docs/api",
+  "sidebar": [
+    {
+      "group": "",
+      "pages": [
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/returns-a-response",
+          "page": "docs/api/returns-a-response"
+        }
+      ]
+    },
+    {
+      "group": "Objects",
+      "pages": [
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/objects/ErrorResponse",
+          "page": "docs/api/objects/ErrorResponse"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/objects/Response",
+          "page": "docs/api/objects/Response"
+        },
+        {
+          "virtual": ".xyd/.cache/.content/docs/api/objects/ResponseStream",
+          "page": "docs/api/objects/ResponseStream"
+        }
+      ]
+    }
+  ],
+  "pageFrontMatter": {
+    "docs/api/returns-a-response": {
+      "title": "Returns a response"
+    },
+    "docs/api/objects/ErrorResponse": {
+      "title": "ErrorResponse"
+    },
+    "docs/api/objects/Response": {
+      "title": "Response"
+    },
+    "docs/api/objects/ResponseStream": {
+      "title": "ResponseStream"
+    }
+  },
+  "pages": [
+    {
+      "pagePath": "docs/api/returns-a-response",
+      "region": "GET /response"
+    },
+    {
+      "pagePath": "docs/api/objects/ErrorResponse",
+      "region": "/components/schemas/ErrorResponse"
+    },
+    {
+      "pagePath": "docs/api/objects/Response",
+      "region": "/components/schemas/Response"
+    },
+    {
+      "pagePath": "docs/api/objects/ResponseStream",
+      "region": "/components/schemas/ResponseStream"
+    }
+  ]
+}

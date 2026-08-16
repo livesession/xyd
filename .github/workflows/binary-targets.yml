@@ -1,0 +1,35 @@
+name: binary:targets
+
+# CI: build + smoke the self-contained per-target xyd binaries on every push/PR
+# that touches the binary's inputs. The build itself lives in the reusable
+# build-binaries.yml (shared with the release workflows), so a green run here is
+# also a proof the release binaries will build.
+#
+# Cross-compiling FROM one host is proven (see .ai/plans/xyd-rust.progress.md:
+# darwin host → bun-linux-{arm64,x64} ran in bare Debian), but CI builds natively
+# per runner — simpler and a strictly stronger guarantee than emulated smoke.
+
+on:
+  push:
+    branches: [ master, canary ]
+    paths:
+      - 'crates/**'
+      - 'packages/xyd-native/**'
+      - 'packages/xyd-cli/**'
+      - 'packages/xyd-documan/**'
+      - '.github/workflows/binary-targets.yml'
+      - '.github/workflows/build-binaries.yml'
+  pull_request:
+    branches: [ master, canary ]
+    paths:
+      - 'crates/**'
+      - 'packages/xyd-native/**'
+      - 'packages/xyd-cli/**'
+      - 'packages/xyd-documan/**'
+      - '.github/workflows/binary-targets.yml'
+      - '.github/workflows/build-binaries.yml'
+  workflow_dispatch:
+
+jobs:
+  binaries:
+    uses: ./.github/workflows/build-binaries.yml

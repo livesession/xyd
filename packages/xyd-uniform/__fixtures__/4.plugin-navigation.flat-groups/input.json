@@ -1,0 +1,50 @@
+{
+  "settings": {},
+  "options": {
+    "urlPrefix": ""
+  },
+  "references": [
+    {
+      "title": "GET /users",
+      "canonical": "get-users",
+      "description": "",
+      "definitions": [],
+      "examples": {
+        "groups": []
+      },
+      "context": {
+        "group": [
+          "Users"
+        ]
+      }
+    },
+    {
+      "title": "POST /users",
+      "canonical": "post-users",
+      "description": "",
+      "definitions": [],
+      "examples": {
+        "groups": []
+      },
+      "context": {
+        "group": [
+          "Users"
+        ]
+      }
+    },
+    {
+      "title": "GET /orgs",
+      "canonical": "get-orgs",
+      "description": "",
+      "definitions": [],
+      "examples": {
+        "groups": []
+      },
+      "context": {
+        "group": [
+          "Organizations"
+        ]
+      }
+    }
+  ]
+}

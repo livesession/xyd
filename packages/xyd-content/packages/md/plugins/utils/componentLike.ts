@@ -23,10 +23,12 @@ export function componentLike(
     const reactElement = React.createElement(componentName, escapedProps, ...escapedChildren);
     console.timeEnd('componentLike:createElement');
 
-    // Convert the React element to a JSX string
+    // Convert the React element to a JSX string. The CJS module's default-import
+    // interop differs by bundler (tsup/Vite → `{default: fn}`; Bun.build → `fn`),
+    // so accept both shapes.
     console.time('componentLike:toJSXString');
-    // @ts-ignore - The default property exists at runtime
-    const mdxString = reactElementToJSXString.default(reactElement);
+    const toJsxString: any = (reactElementToJSXString as any).default || reactElementToJSXString;
+    const mdxString = toJsxString(reactElement);
     console.timeEnd('componentLike:toJSXString');
 
     // Parse the JSX string to get proper MDX attributes

@@ -14,7 +14,31 @@ The `xyd-js` package defines a single binary entry point named `xyd` via the `bi
 
 ## Installation Methods
 
-xyd-js supports installation via multiple package managers. Each method installs the CLI globally, making the `xyd` command available system-wide.
+There are two ways to install xyd: the **native binary** (recommended — a
+self-contained, node-free executable) and the **npm package** (`xyd-js`, the JS CLI).
+
+### Native binary (recommended)
+
+A one-line installer downloads the compiled `xyd` binary for your platform (macOS /
+Linux, arm64 / x64) into `~/.xyd/bin` — no Node, no package manager:
+
+```bash
+curl -fsSL https://xyd.dev/install | bash              # latest stable
+curl -fsSL https://xyd.dev/install@0.1.0 | bash        # a specific version
+curl -fsSL https://canary.xyd.dev/install | bash       # latest canary
+```
+
+The script is served by a Netlify Edge Function (`apps/website/netlify/edge-functions/install.ts`)
+that injects the channel (from a `canary.` host) and version (from the `@…` path)
+into `apps/website/public/install.sh`; the script then resolves the matching GitHub
+Release and downloads the right `xyd-<triple>` asset (see
+`2.3.development.deployment/CiCdPipeline.md` § Release Binaries). Overridable via
+`XYD_INSTALL_VERSION`, `XYD_INSTALL_CHANNEL`, `XYD_INSTALL_DIR`.
+
+### npm package (`xyd-js`)
+
+xyd-js is also published to npm and installs the CLI globally via any package manager
+(requires Node 22.12+).
 
 ### Package Manager Support Matrix
 

@@ -1,0 +1,21 @@
+{
+  "name": "directive-callout",
+  "capability": "directive",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [
+    "Callout"
+  ],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 1513,
+    "sha256": "9f599bf484a29688172d5de7b04bce8f5b480747b7934416414f610eaeb67474"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 335,
+    "sha256": "50b8087cc81d161e489ec6eb876b7cb604e1c190e1a519139d8124bdf926a907"
+  }
+}

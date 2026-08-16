@@ -18,7 +18,8 @@
     "@xyd-js/core": "workspace:*",
     "@xyd-js/uniform": "workspace:*",
     "github-slugger": "^2.0.0",
-    "graphql": "^16.8.1"
+    "graphql": "^16.8.1",
+    "@xyd-js/native": "workspace:*"
   },
   "devDependencies": {
     "rimraf": "^3.0.2",

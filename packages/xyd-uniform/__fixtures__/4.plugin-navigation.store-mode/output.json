@@ -1,0 +1,15 @@
+{
+  "pageFrontMatter": {
+    "api/ping": {
+      "title": "Ping"
+    }
+  },
+  "sidebar": [
+    {
+      "group": "Misc",
+      "pages": [
+        "api/ping"
+      ]
+    }
+  ]
+}

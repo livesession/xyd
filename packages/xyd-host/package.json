@@ -17,6 +17,7 @@
     "@xyd-js/plugin-access-control": "workspace:*",
     "@xyd-js/plugin-algolia": "workspace:*",
     "@xyd-js/plugin-orama": "workspace:*",
+    "@xyd-js/router": "workspace:*",
     "@xyd-js/themes": "workspace:*",
     "isbot": "^5",
     "katex": "^0.16.22",

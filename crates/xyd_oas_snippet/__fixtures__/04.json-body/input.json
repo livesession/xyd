@@ -1,0 +1,66 @@
+{
+  "description": "POST with application/json object body",
+  "spec": {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "t",
+      "version": "1"
+    },
+    "paths": {
+      "/users": {
+        "post": {
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "age": {
+                      "type": "integer"
+                    },
+                    "active": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "ok",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "servers": [
+      {
+        "url": "https://api.example.com/v1"
+      }
+    ]
+  },
+  "path": "/users",
+  "method": "post",
+  "values": {
+    "body": {
+      "name": "Ada",
+      "age": 36,
+      "active": true
+    },
+    "server": {
+      "selected": 0
+    }
+  }
+}

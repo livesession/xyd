@@ -1,0 +1,45 @@
+[package]
+name = "xyd_native"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+# The ONE napi crate → becomes @xyd-js/native's .node addon. Standalone (built
+# by @napi-rs/cli); path-depends on the pure crate in crates/.
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+napi = { version = "3", default-features = false, features = ["napi4"] }
+napi-derive = "3"
+serde_json = { version = "1", features = ["preserve_order"] }
+xyd_core_rs = { path = "../../crates/xyd_core_rs" }
+xyd_watch = { path = "../../crates/xyd_watch" }
+xyd_gql = { path = "../../crates/xyd_gql" }
+xyd_openapi = { path = "../../crates/xyd_openapi" }
+xyd_oas_snippet = { path = "../../crates/xyd_oas_snippet" }
+xyd_openapi2opensdk = { path = "../../crates/xyd_openapi2opensdk" }
+xyd_openapi2opencli = { path = "../../crates/xyd_openapi2opencli" }
+xyd_uniform = { path = "../../crates/xyd_uniform" }
+xyd_mcp_uniform = { path = "../../crates/xyd_mcp_uniform" }
+xyd_frontmatter = { path = "../../crates/xyd_frontmatter" }
+xyd_settings = { path = "../../crates/xyd_settings" }
+xyd_highlight = { path = "../../crates/xyd_highlight" }
+xyd_mdx = { path = "../../crates/xyd_mdx" }
+# S6+ W7 codegen generators (opencli + opensdk emitters)
+xyd_opencli2go = { path = "../../crates/xyd_opencli2go" }
+xyd_opencli2rust = { path = "../../crates/xyd_opencli2rust" }
+xyd_opensdk_go = { path = "../../crates/xyd_opensdk_go" }
+xyd_opensdk_node = { path = "../../crates/xyd_opensdk_node" }
+xyd_opensdk_python = { path = "../../crates/xyd_opensdk_python" }
+xyd_opensdk_ruby = { path = "../../crates/xyd_opensdk_ruby" }
+xyd_opensdk_java = { path = "../../crates/xyd_opensdk_java" }
+xyd_opensdk_dotnet = { path = "../../crates/xyd_opensdk_dotnet" }
+xyd_opensdk_rust = { path = "../../crates/xyd_opensdk_rust" }
+
+[build-dependencies]
+napi-build = "2"
+
+[profile.release]
+lto = true
+strip = true

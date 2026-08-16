@@ -1,0 +1,10 @@
+[package]
+name = "xyd_opensdk_ruby"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "ruby SDK emitter — OpenSDK IR -> generated ruby SDK code (Rust port of @xyd-js/opensdk-ruby; generated-code emitter, vendored runtime + tests deferred)"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }

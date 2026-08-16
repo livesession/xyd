@@ -2,7 +2,13 @@ import path from "path";
 import { promises as fs } from "fs";
 import { fileURLToPath } from "node:url";
 
-import matterStringify from "gray-matter/lib/stringify";
+// gray-matter is externalized (declared in dependencies) so tsup does NOT bundle
+// its CJS-with-dynamic-require source into this ESM dist (which throws under
+// node's ESM loader). The subpath needs an explicit `.js` — gray-matter ships no
+// `exports` map, so node ESM does file resolution and rejects the extensionless
+// specifier. Both static imports are still followed + bundled by `bun --compile`.
+import matterStringify from "gray-matter/lib/stringify.js";
+import matter from "gray-matter";
 import { Plugin as VitePlugin } from "vite"
 import { route } from "@react-router/dev/routes";
 
@@ -25,12 +31,10 @@ import { uniformPluginXDocsSidebar } from "@xyd-js/openapi";
 
 import { Preset, PresetData } from "../../types";
 
-import { createRequire } from 'module';
+import { fusedNative } from "./native";
+
 import { VIRTUAL_CONTENT_FOLDER } from "../../const";
 import { getHostPath } from "../../utils";
-
-const require = createRequire(import.meta.url);
-const matter = require('gray-matter'); // TODO: !!! BETTER SOLUTION !!!
 
 export async function ensureAndCleanupVirtualFolder() {
     try {
@@ -205,8 +209,67 @@ async function uniformResolver(
     if (apiFile.startsWith("http") || apiFile.startsWith("https")) {
         resolvedApiFile = apiFile
     }
+
+    // The FUSED path (S6+ W3 tail): for local-file OpenAPI sources with no
+    // user uniform plugins, ONE native call runs conversion + the x-docs
+    // sidebar plugin + pluginNavigation and returns per-page entries —
+    // references never materialize in JS and the endpoint code-sample
+    // post-pass (irrelevant to pages) never runs at boot. Everything the
+    // fused call can't own byte-exactly (compose merging, gray-matter
+    // frontmatter stringify, fs writes, sidebar wiring) stays below, shared
+    // with the JS pipeline.
+    const globalUniformPlugins = globalThis.__xydUserUniformVitePlugins || []
+    const useFused = uniformType === "openapi"
+        && !apiFile.startsWith("http")
+        && !!fusedNative?.uniformOasPages
+        // Prior JS-path runs push uniformPluginXDocsSidebar into the GLOBAL
+        // array; only genuinely user-supplied plugins force the JS path.
+        && globalUniformPlugins.filter((p: unknown) => p !== uniformPluginXDocsSidebar).length === 0
+
+    let uniformWithNavigation: {
+        references: Reference[] | null;
+        out: {
+            sidebar: Sidebar[];
+            pageFrontMatter: Record<string, any>;
+        };
+    };
+    let pageEntries: { byCanonical: string, region: string }[] | null = null
+
+    if (useFused) {
+        if (process.env.XYD_VERBOSE) {
+            console.log("[uniform] fused native path:", resolvedApiFile)
+        }
+        const fused = JSON.parse(fusedNative.uniformOasPages(JSON.stringify({
+            source: resolvedApiFile,
+            urlPrefix,
+            matchRoute,
+            optionsUrlPrefix: options?.urlPrefix || "",
+            store: !!settings.engine?.uniform?.store,
+        })))
+
+        if (fused.newRoutePushed) {
+            sidebar?.push({
+                route: fused.matchRoute,
+                pages: []
+            })
+        }
+        matchRoute = fused.matchRoute
+        urlPrefix = fused.urlPrefix
+
+        uniformWithNavigation = {
+            references: null,
+            out: {
+                sidebar: fused.sidebar,
+                pageFrontMatter: fused.pageFrontMatter,
+            }
+        }
+        pageEntries = fused.pages.map((p: { pagePath: string, region: string }) => ({
+            byCanonical: p.pagePath,
+            region: p.region,
+        }))
+    } else {
     const uniformRefs = await uniformApiResolver(resolvedApiFile)
-    const plugins = globalThis.__xydUserUniformVitePlugins || []
+    const plugins = globalUniformPlugins
 
     if (!urlPrefix && options?.fileRouting?.[resolvedApiFile]) {
         matchRoute = options.fileRouting[resolvedApiFile]
@@ -229,7 +292,7 @@ async function uniformResolver(
     if (uniformType === "openapi") {
         plugins.push(uniformPluginXDocsSidebar)
     }
-    const uniformWithNavigation = uniform(uniformRefs, {
+    uniformWithNavigation = uniform(uniformRefs, {
         plugins: [
             ...plugins,
             pluginNavigation(settings, {
@@ -243,6 +306,7 @@ async function uniformResolver(
             pageFrontMatter: Record<string, any>;
         };
     };
+    }
 
     let pageLevels = {}
 
@@ -338,9 +402,55 @@ async function uniformResolver(
         ? root
         : path.join(root, VIRTUAL_CONTENT_FOLDER)
 
-    await Promise.all(
-        uniformWithNavigation.references.map(async (ref) => {
+    // Page entries drive the writer loop for BOTH paths: the fused branch
+    // returned them from Rust; the JS branch derives them from references
+    // with the exact per-type region rules (moved verbatim from the loop).
+    if (!pageEntries) {
+        pageEntries = (uniformWithNavigation.references as Reference[]).map((ref) => {
             const byCanonical = path.join(urlPrefix, ref.canonical)
+            let region = ""
+            // TODO: in the future more advanced composition? - not only like `GET /users/{id}`
+            switch (uniformType) {
+                case "graphql": {
+                    const ctx = ref.context as GraphQLReferenceContext;
+                    region = `${ctx.graphqlTypeShort}.${ctx?.graphqlName}`
+                    break
+                }
+                case "openapi": {
+                    const ctx = ref.context as OpenAPIReferenceContext;
+                    const method = (ctx?.method || "").toUpperCase()
+                    if (method && ctx?.path) {
+                        region = `${method} ${ctx?.path}`
+                    } else if (ctx.componentSchema) {
+                        region = "/components/schemas/" + ctx.componentSchema
+                    }
+                    break
+                }
+                case "mcp": {
+                    const ctx = ref.context as MCPReferenceContext;
+                    if (ctx?.toolName) {
+                        region = `tool:${ctx.toolName}`
+                    } else if (ctx?.resourceUri) {
+                        region = `resource:${ctx.resourceUri}`
+                    }
+                    break
+                }
+                case "cli": {
+                    const ctx = ref.context as OpenAPIReferenceContext;
+                    if (ctx?.path) {
+                        region = ctx.path
+                    }
+                    break
+                }
+            }
+            return { byCanonical, region }
+        })
+    }
+
+    await Promise.all(
+        pageEntries.map(async (entry) => {
+            const byCanonical = entry.byCanonical
+            const region = entry.region
             const mdPath = path.join(basePath, byCanonical + '.md')
 
             const frontmatter = uniformWithNavigation.out.pageFrontMatter[byCanonical]
@@ -369,46 +479,19 @@ async function uniformResolver(
             if (apiFile.startsWith("http") || apiFile.startsWith("https")) {
                 resolvedApiFile = apiFile
             }
-            let region = ""
-            // TODO: in the future more advanced composition? - not only like `GET /users/{id}`
             switch (uniformType) {
-                case "graphql": {
-                    const ctx = ref.context as GraphQLReferenceContext;
-                    region = `${ctx.graphqlTypeShort}.${ctx?.graphqlName}`
-
+                case "graphql":
                     meta.graphql = `${resolvedApiFile}#${region}`
-
                     break
-                }
-                case "openapi": {
-                    const ctx = ref.context as OpenAPIReferenceContext;
-                    const method = (ctx?.method || "").toUpperCase()
-                    if (method && ctx?.path) {
-                        region = `${method} ${ctx?.path}`
-                    } else if (ctx.componentSchema) {
-                        region = "/components/schemas/" + ctx.componentSchema
-                    }
+                case "openapi":
                     meta.openapi = `${resolvedApiFile}#${region}`
                     break
-                }
-                case "mcp": {
-                    const ctx = ref.context as MCPReferenceContext;
-                    if (ctx?.toolName) {
-                        region = `tool:${ctx.toolName}`
-                    } else if (ctx?.resourceUri) {
-                        region = `resource:${ctx.resourceUri}`
-                    }
+                case "mcp":
                     meta.mcp = `${resolvedApiFile}#${region}`
                     break
-                }
-                case "cli": {
-                    const ctx = ref.context as OpenAPIReferenceContext;
-                    if (ctx?.path) {
-                        region = ctx.path
-                    }
+                case "cli":
                     meta.cli = `${resolvedApiFile}#${region}`
                     break
-                }
             }
 
             let composedContent = ""

@@ -86,3 +86,5 @@ test-results
 # claude
 claude.txt
 
+output.rust.json
+fused.rust.json

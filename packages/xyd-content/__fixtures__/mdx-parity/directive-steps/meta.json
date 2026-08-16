@@ -1,0 +1,22 @@
+{
+  "name": "directive-steps",
+  "capability": "directive",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [
+    "Steps",
+    "Steps.Item"
+  ],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 2207,
+    "sha256": "063ccf99b61904f55c7a3776ca9f8f918aab6415f3e10cc552781d8a62474a4e"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 370,
+    "sha256": "a5f42b8214fcaf8be503af2bf017f993abbffd40f79efd5ffcca01de30ddb92b"
+  }
+}

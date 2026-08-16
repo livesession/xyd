@@ -1,0 +1,37 @@
+{
+  "pageFrontMatter": {
+    "dev": {
+      "title": "dev"
+    },
+    "components": {
+      "title": "components"
+    },
+    "components/install": {
+      "title": "components install"
+    }
+  },
+  "sidebar": [
+    {
+      "group": "Commands",
+      "pages": [
+        {
+          "virtual": ".xyd/.cache/.content/dev",
+          "page": "dev"
+        },
+        {
+          "group": "components",
+          "pages": [
+            {
+              "virtual": ".xyd/.cache/.content/components",
+              "page": "components"
+            },
+            {
+              "virtual": ".xyd/.cache/.content/components/install",
+              "page": "components/install"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

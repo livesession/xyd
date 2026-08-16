@@ -1,0 +1,6 @@
+{
+  "shell": "curl --request GET \\\n     --url https://staging.example.com/ping \\\n     --header 'accept: application/json'",
+  "javascript": "const options = {method: 'GET', headers: {accept: 'application/json'}};\n\nfetch('https://staging.example.com/ping', options)\n  .then(res => res.json())\n  .then(res => console.log(res))\n  .catch(err => console.error(err));",
+  "python": "import requests\n\nurl = \"https://staging.example.com/ping\"\n\nheaders = {\"accept\": \"application/json\"}\n\nresponse = requests.get(url, headers=headers)\n\nprint(response.text)",
+  "go": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"io\"\n)\n\nfunc main() {\n\n\turl := \"https://staging.example.com/ping\"\n\n\treq, _ := http.NewRequest(\"GET\", url, nil)\n\n\treq.Header.Add(\"accept\", \"application/json\")\n\n\tres, _ := http.DefaultClient.Do(req)\n\n\tdefer res.Body.Close()\n\tbody, _ := io.ReadAll(res.Body)\n\n\tfmt.Println(string(body))\n\n}"
+}

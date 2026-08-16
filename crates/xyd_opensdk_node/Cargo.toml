@@ -1,0 +1,10 @@
+[package]
+name = "xyd_opensdk_node"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "node SDK emitter — OpenSDK IR -> generated node SDK code (Rust port of @xyd-js/opensdk-node; generated-code emitter, vendored runtime + tests deferred)"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }

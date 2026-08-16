@@ -1,0 +1,19 @@
+{
+  "name": "prose-blockquote-hr",
+  "capability": "prose",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 1321,
+    "sha256": "078539829784542cdf1c6f38aff94c01a124d153709e102cd66eba5996455ace"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 242,
+    "sha256": "64fcb250629b4ffe778a12a811331fff5190a1a6aff185d5f4e6acb8844fd4de"
+  }
+}

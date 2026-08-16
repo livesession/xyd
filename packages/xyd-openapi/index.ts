@@ -1,4 +1,4 @@
-export type {uniformOasOptions, SelectorMethod} from "./src/types";
+export type {uniformOasOptions, SelectorMethod} from "./src/impl-js/types";
 
 export {
     deferencedOpenAPI,

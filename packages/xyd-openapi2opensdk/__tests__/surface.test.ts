@@ -3,8 +3,8 @@ import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { diffSurfaces, opensdkToSurface } from '../src/surface';
-import type { SdkSurface } from '../src/surface';
+import { diffSurfaces, opensdkToSurface } from '../src/impl-js/surface';
+import type { SdkSurface } from '../src/impl-js/surface';
 
 const IR = JSON.parse(readFileSync(join(__dirname, '../__fixtures__/1.basic/output.json'), 'utf8'));
 

@@ -1,0 +1,16 @@
+{
+  "name": "@xyd-js/native-win32-x64-msvc",
+  "version": "0.0.0",
+  "cpu": [
+    "x64"
+  ],
+  "main": "xyd-native.win32-x64-msvc.node",
+  "files": [
+    "xyd-native.win32-x64-msvc.node"
+  ],
+  "description": "xyd Rust core (napi) — the one native module embedded into the bun-compiled binary",
+  "license": "MIT",
+  "os": [
+    "win32"
+  ]
+}

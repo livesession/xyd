@@ -50,7 +50,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -91,7 +92,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
@@ -916,7 +918,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -957,7 +960,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
@@ -1267,7 +1271,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -1308,7 +1313,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
@@ -1737,7 +1743,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -1778,7 +1785,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
@@ -2201,7 +2209,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -2242,7 +2251,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
@@ -2484,7 +2494,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -2525,7 +2536,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
@@ -2790,7 +2802,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -2831,7 +2844,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
@@ -3154,7 +3168,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -3195,7 +3210,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
@@ -3580,7 +3596,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -3621,7 +3638,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
@@ -3874,7 +3892,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -3915,7 +3934,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },
@@ -4144,7 +4164,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "request"
         },
         {
           "description": "Example response",
@@ -4185,7 +4206,8 @@
                 ]
               }
             }
-          ]
+          ],
+          "kind": "response"
         }
       ]
     },

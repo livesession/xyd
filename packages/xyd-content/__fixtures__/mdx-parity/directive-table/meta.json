@@ -1,0 +1,25 @@
+{
+  "name": "directive-table",
+  "capability": "directive",
+  "gate": "full",
+  "source": "synthetic",
+  "compileStatus": "ok",
+  "renderStatus": "ok",
+  "requiredComponents": [
+    "Table",
+    "Table.Head",
+    "Table.Td",
+    "Table.Th",
+    "Table.Tr"
+  ],
+  "oracleA": {
+    "file": "compiled.normalized.js",
+    "bytes": 2573,
+    "sha256": "c53f0e86afe3dc9c0efe6139b080fe8ffed5fe0ae9d28f8a45c578c771810213"
+  },
+  "oracleB": {
+    "file": "rendered.html",
+    "bytes": 787,
+    "sha256": "34544699029c41cba4ae55059fef447e425744ea11c0d32db94bd21e67c0d633"
+  }
+}
