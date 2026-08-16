@@ -1,0 +1,8 @@
+{
+  "name": "xyd-fixture-rt-13-vite-lib-namespace-complex-types",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  }
+}

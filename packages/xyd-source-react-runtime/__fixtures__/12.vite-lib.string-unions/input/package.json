@@ -1,0 +1,8 @@
+{
+  "name": "xyd-fixture-rt-12-vite-lib-string-unions",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  }
+}

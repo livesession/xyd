@@ -1,0 +1,8 @@
+{
+  "name": "xyd-fixture-rt-9-vite-lib-hooks-and-context",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  }
+}
