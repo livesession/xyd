@@ -8,6 +8,8 @@ import { robotsTxt, sitemapXml, sitemapRoutes } from "./seo";
 import { themePackage, themeShortName } from "./themePkg";
 import { settingsBundleJs } from "./serialize";
 import { pluginPagesEntrySrc, pluginPageRoutes } from "./pluginPages";
+import { prerenderPages } from "./prerenderPool";
+import { writeHtml } from "./htmlOut";
 
 /**
  * S3 static build (SSG). `XYD_BUN=1 xyd build` runs this instead of the two Vite
@@ -187,19 +189,9 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   const mapping: Record<string, string> = (globalThis as any).__xydPagePathMapping || {};
   const slugs = Object.keys(mapping);
   console.error(`[build] prerendering ${slugs.length} pages…`);
-  let ok = 0;
-  const missing: string[] = [];
-  for (const slug of slugs) {
-    const acc = accessMap["/" + slug] || accessMap[slug];
-    const shellOnly = !!acc && acc !== "public"; // static host = no deploy adapter → always shell
-    try {
-      const html = await (globalThis as any).__xydRenderStatic(slug, { shellOnly });
-      writeHtml(clientDir, slug, html);
-      ok++;
-    } catch (e: any) {
-      missing.push(`${slug}: ${e?.message || e}`);
-    }
-  }
+  // The content-page loop lives in prerenderPool so it can run serially (default)
+  // or across a worker pool (Stage 3) behind one {ok, missing} contract.
+  const { ok, missing } = await prerenderPages({ clientDir, slugs, accessMap });
   console.error(`[build] wrote ${ok}/${slugs.length} pages`);
 
   // 6a') REDIRECT STUBS: nav `route`s with no content of their own (section/tab
@@ -397,18 +389,6 @@ function collectRouteSlugs(navigation: any): string[] {
     walk(navigation?.sidebar || []);
   }
   return [...out];
-}
-
-/** '/' → index.html, else <slug>.html (mkdir -p parents), matching the Vite
- *  build's flattened output. Pages nest under the basename dir (docs/…) when
- *  `advanced.basename` is set — parity with the Vite build; assets stay at root. */
-function writeHtml(clientDir: string, slug: string, html: string) {
-  const base = ((globalThis as any).__xydSettings?.advanced?.basename || "").replace(/^\/+|\/+$/g, "");
-  const rel0 = slug === "index" || slug === "" ? "index.html" : `${slug}.html`;
-  const rel = base ? path.join(base, rel0) : rel0;
-  const abs = path.join(clientDir, rel);
-  fs.mkdirSync(path.dirname(abs), { recursive: true });
-  fs.writeFileSync(abs, html);
 }
 
 function copyDir(src: string, dest: string) {
