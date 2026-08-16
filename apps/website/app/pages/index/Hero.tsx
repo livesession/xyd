@@ -8,6 +8,11 @@ export function Hero() {
   const [activeTab, setActiveTab] = useState(0);
   const [os, setOs] = useState<string>("Mac");
   const [copied, setCopied] = useState(false);
+  // The install command targets the CURRENT host, so the canary site
+  // (canary.xyd.dev), deploy previews, and prod each point at their own /install
+  // — which the edge function serves with the matching channel. Defaults to
+  // xyd.dev for SSR/localhost; set to the real origin after hydration.
+  const [installUrl, setInstallUrl] = useState("https://xyd.dev/install");
   const [showTooltip, setShowTooltip] = useState(false);
   const [showFloatingMenu, setShowFloatingMenu] = useState(false);
   const [isScrolledToEnd, setIsScrolledToEnd] = useState(false);
@@ -185,9 +190,17 @@ export function Hero() {
     "/hero--deploy.mp4", // Deploy
   ];
 
+  useEffect(() => {
+    const { origin, hostname } = window.location;
+    if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+      setInstallUrl(`${origin}/install`);
+    }
+  }, []);
+  const installCmd = `curl -fsSL ${installUrl} | bash`;
+
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText("curl -fsSL https://xyd.dev/install | bash");
+      await navigator.clipboard.writeText(installCmd);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -246,7 +259,7 @@ export function Hero() {
               >
                 <span className="text-gray-500 flex-shrink-0">$</span>
                 <code className="text-gray-300 font-mono text-xs sm:text-sm whitespace-nowrap">
-                  curl -fsSL https://xyd.dev/install | bash
+                  {installCmd}
                 </code>
                 <div
                   className={`ml-2 flex-shrink-0 p-1.5 rounded transition-all duration-200 group-hover:scale-110 ${
