@@ -187,7 +187,7 @@ export function Hero() {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText("bun add -g xyd-js");
+      await navigator.clipboard.writeText("curl -fsSL https://xyd.dev/install | bash");
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
@@ -246,7 +246,7 @@ export function Hero() {
               >
                 <span className="text-gray-500 flex-shrink-0">$</span>
                 <code className="text-gray-300 font-mono text-xs sm:text-sm whitespace-nowrap">
-                  bun add -g xyd-js
+                  curl -fsSL https://xyd.dev/install | bash
                 </code>
                 <div
                   className={`ml-2 flex-shrink-0 p-1.5 rounded transition-all duration-200 group-hover:scale-110 ${
