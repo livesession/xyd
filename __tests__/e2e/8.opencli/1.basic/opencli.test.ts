@@ -37,9 +37,12 @@ test.describe('api.cli virtual CLI pages [build]', () => {
     await page.goto(server.getUrl('/docs/cli/overview'));
     await page.waitForLoadState('networkidle');
 
-    // sidebar links to each generated command page
+    // sidebar links to each generated command page. Scope to the desktop sidebar:
+    // the responsive layout also renders a mobile sidebar (`part="mobile-sidebar"`,
+    // hidden on desktop) FIRST in the DOM, so an unscoped `.first()` would grab that
+    // hidden copy.
     for (const cmd of ['install', 'remove', 'list']) {
-      await expect(page.locator(`a[href$="/docs/cli/${cmd}"]`).first()).toBeVisible();
+      await expect(page.locator(`aside[part="sidebar"] a[href$="/docs/cli/${cmd}"]`).first()).toBeVisible();
     }
   });
 
