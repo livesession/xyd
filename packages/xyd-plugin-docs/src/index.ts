@@ -214,7 +214,13 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
         return null
     }
 
-    await ensureAndCleanupVirtualFolder()
+    // disableFSWrite (prerender workers) reuse the content cache the main process
+    // already generated — they must NOT clear it or they'd race each other (and
+    // main) into ENOENT. The presets below likewise skip the file writes under this
+    // flag while still building the in-memory nav/mapping.
+    if (!options?.disableFSWrite) {
+        await ensureAndCleanupVirtualFolder()
+    }
 
     // graphql preset setup
     if (!options?.disableAPIGeneration && settings?.api?.graphql) {

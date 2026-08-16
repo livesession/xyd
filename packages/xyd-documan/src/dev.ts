@@ -107,6 +107,9 @@ export async function dev(options?: DevOptions) {
         return
     }
     const { respPluginDocs, resolvedPlugins } = inited
+    // respPluginDocs is null only in the appInit worker-inject path (prerender pool),
+    // which the dev server never takes — narrow the type for the rest of this fn.
+    if (!respPluginDocs) return
 
     // TODO: allow only for cwd + .xyd folder
     const allowCwd = searchForWorkspaceRoot(process.cwd())
