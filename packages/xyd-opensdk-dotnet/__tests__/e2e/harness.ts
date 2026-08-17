@@ -82,8 +82,11 @@ function callArgs(method: Method, exCtx: CsExampleCtx): string {
   for (const p of op.paramGroups.path) args.push(JSON.stringify(EXAMPLE));
 
   const bodyRef = method.requestBody?.type as TypeRef | undefined;
-  if (bodyRef && op.bodyRequired) {
+  if (bodyRef) {
     // Required-only body model literal (withOptional: false) with realistic values.
+    // Populate whenever a body exists — even an optional one — so its REQUIRED
+    // fields are carried: the recording server's request diff (and Go/Python/Java
+    // drivers) expect them regardless of whether the body param itself is required.
     const value = planExample(bodyRef, exCtx.types, { withOptional: false, realistic: true });
     args.push(renderRefValue(bodyRef, value, exCtx));
   }
@@ -205,6 +208,9 @@ export const dotnetDriverAdapter: DriverAdapter = {
     execSync(`dotnet build --nologo -c Release ${JSON.stringify(driverProject)}`, {
       cwd: tmpDir,
       stdio: 'pipe',
+      // maxBuffer: a clean SDK build still emits thousands of (harmless)
+      // nullable/annotation warnings; the default 1 MB pipe overflows → ENOBUFS.
+      maxBuffer: 64 * 1024 * 1024,
       env: { ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_NOLOGO: '1' },
     });
 

@@ -156,10 +156,14 @@ function bodyFieldNames(body: string, contentType: string): string[] {
     // Part headers are ASCII and precede any binary payload, so a regex over the
     // raw body reliably lifts the part names even when file bytes follow.
     const names = new Set<string>();
-    const re = /content-disposition:\s*form-data;[^\r\n]*\bname="([^"]*)"/gi;
+    // Accept both quoted (`name="x"`, Go/Java/Python) and unquoted (`name=x`,
+    // .NET's MultipartFormDataContent default) part names — both are valid per
+    // RFC 7578. `\bname=` never matches inside `filename=`/`name*=` (no word
+    // boundary), so file parts are counted by their real name, not the filename.
+    const re = /content-disposition:\s*form-data;[^\r\n]*\bname=(?:"([^"]*)"|([^";\s]+))/gi;
     let m: RegExpExecArray | null;
     // biome-ignore lint/suspicious/noAssignInExpressions: standard regex exec loop
-    while ((m = re.exec(body)) !== null) names.add(m[1]);
+    while ((m = re.exec(body)) !== null) names.add(m[1] ?? m[2]);
     return [...names].sort();
   }
   if (ct.includes('x-www-form-urlencoded')) {

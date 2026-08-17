@@ -62,7 +62,9 @@ for (const corpus of listComplexCorpora(FIXTURES)) {
         await writeProject(files, tmp);
         const projects = Object.keys(files).filter((p) => p.endsWith('.csproj'));
         for (const project of projects) {
-          execSync(`dotnet build --nologo ${JSON.stringify(project)}`, { cwd: tmp, stdio: 'pipe' });
+          // maxBuffer: a clean SDK build still emits thousands of (harmless)
+          // nullable/annotation warnings; the default 1 MB pipe overflows → ENOBUFS.
+          execSync(`dotnet build --nologo ${JSON.stringify(project)}`, { cwd: tmp, stdio: 'pipe', maxBuffer: 64 * 1024 * 1024 });
         }
       } finally {
         fs.rmSync(tmp, { recursive: true, force: true });
