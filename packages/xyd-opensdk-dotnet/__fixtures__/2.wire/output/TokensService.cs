@@ -24,8 +24,8 @@ public sealed class TokensService
     {
         var bodyMap = new Dictionary<string, object?>
         {
-            ["grant_type"] = body.GrantType,
-            ["scope"] = body.Scope,
+            ["grant_type"] = body?.GrantType,
+            ["scope"] = body?.Scope,
         };
         return await _transport.RequestAsync<Token>(HttpMethod.Post, "/tokens", body: bodyMap, encoding: "form", idempotency: true, cancellationToken: cancellationToken).ConfigureAwait(false);
     }

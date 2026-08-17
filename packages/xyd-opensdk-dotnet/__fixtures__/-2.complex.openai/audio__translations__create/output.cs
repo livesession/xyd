@@ -36,11 +36,11 @@ public sealed class AudioTranslationsService
     {
         var bodyMap = new Dictionary<string, object?>
         {
-            ["file"] = body.File,
-            ["model"] = body.Model,
-            ["prompt"] = body.Prompt,
-            ["response_format"] = body.ResponseFormat,
-            ["temperature"] = body.Temperature,
+            ["file"] = body?.File,
+            ["model"] = body?.Model,
+            ["prompt"] = body?.Prompt,
+            ["response_format"] = body?.ResponseFormat,
+            ["temperature"] = body?.Temperature,
         };
         return await _transport.RequestAsync<object>(HttpMethod.Post, "/audio/translations", body: bodyMap, encoding: "multipart", cancellationToken: cancellationToken).ConfigureAwait(false);
     }

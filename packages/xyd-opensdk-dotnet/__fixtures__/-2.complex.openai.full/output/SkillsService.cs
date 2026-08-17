@@ -36,7 +36,7 @@ public sealed class SkillsService
     {
         var bodyMap = new Dictionary<string, object?>
         {
-            ["files"] = body.Files,
+            ["files"] = body?.Files,
         };
         return await _transport.RequestAsync<SkillResource>(HttpMethod.Post, "/skills", body: bodyMap, encoding: "multipart", cancellationToken: cancellationToken).ConfigureAwait(false);
     }
@@ -116,8 +116,8 @@ public sealed class SkillsVersionsService
         }
         var bodyMap = new Dictionary<string, object?>
         {
-            ["files"] = body.Files,
-            ["default"] = body.Default,
+            ["files"] = body?.Files,
+            ["default"] = body?.Default,
         };
         return await _transport.RequestAsync<SkillVersionResource>(HttpMethod.Post, $"/skills/{skillId}/versions", body: bodyMap, encoding: "multipart", cancellationToken: cancellationToken).ConfigureAwait(false);
     }

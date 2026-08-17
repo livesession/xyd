@@ -154,11 +154,13 @@ function emitMethod(method: Method, ctx: DotnetServiceCtx): string {
     if (encoding === 'json') {
       callArgs.push('body: body');
     } else {
-      // `body.<Prop>` must use the collision-resolved property identifier (CS0542/
-      // CS0102) that the model declaration emitted — reuse the same allocator.
+      // `body?.<Prop>` must use the collision-resolved property identifier (CS0542/
+      // CS0102) that the model declaration emitted — reuse the same allocator. The
+      // null-conditional guards an omitted optional body (`body = null`): each entry
+      // is then null and the multipart encoder skips it, matching the json path.
       const bodyIdents = structPropertyNames(bodyType as string, bFields.map((f) => f.name));
       const entries = bFields
-        .map((f) => `[${JSON.stringify(f.name)}] = body.${bodyIdents.get(f.name) ?? pascalCase(f.name)},`)
+        .map((f) => `[${JSON.stringify(f.name)}] = body?.${bodyIdents.get(f.name) ?? pascalCase(f.name)},`)
         .join('\n');
       lines.push(`var bodyMap = new Dictionary<string, object?>\n{\n${indent(entries)}\n};`);
       callArgs.push('body: bodyMap');

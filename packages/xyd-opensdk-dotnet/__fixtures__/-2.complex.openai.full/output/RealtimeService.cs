@@ -60,8 +60,8 @@ public sealed class RealtimeCallsService
     {
         var bodyMap = new Dictionary<string, object?>
         {
-            ["sdp"] = body.Sdp,
-            ["session"] = body.Session,
+            ["sdp"] = body?.Sdp,
+            ["session"] = body?.Session,
         };
         return await _transport.RequestRawAsync(HttpMethod.Post, "/realtime/calls", body: bodyMap, encoding: "multipart", accept: "application/sdp", cancellationToken: cancellationToken).ConfigureAwait(false);
     }

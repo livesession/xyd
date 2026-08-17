@@ -24,9 +24,9 @@ public sealed class FilesService
     {
         var bodyMap = new Dictionary<string, object?>
         {
-            ["file"] = body.File,
-            ["purpose"] = body.Purpose,
-            ["description"] = body.Description,
+            ["file"] = body?.File,
+            ["purpose"] = body?.Purpose,
+            ["description"] = body?.Description,
         };
         var headers = new Dictionary<string, string?>
         {

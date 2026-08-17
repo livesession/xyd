@@ -40,18 +40,18 @@ public sealed class AudioTranscriptionsService
     {
         var bodyMap = new Dictionary<string, object?>
         {
-            ["file"] = body.File,
-            ["model"] = body.Model,
-            ["language"] = body.Language,
-            ["prompt"] = body.Prompt,
-            ["response_format"] = body.ResponseFormat,
-            ["temperature"] = body.Temperature,
-            ["include"] = body.Include,
-            ["timestamp_granularities"] = body.TimestampGranularities,
-            ["stream"] = body.Stream,
-            ["chunking_strategy"] = body.ChunkingStrategy,
-            ["known_speaker_names"] = body.KnownSpeakerNames,
-            ["known_speaker_references"] = body.KnownSpeakerReferences,
+            ["file"] = body?.File,
+            ["model"] = body?.Model,
+            ["language"] = body?.Language,
+            ["prompt"] = body?.Prompt,
+            ["response_format"] = body?.ResponseFormat,
+            ["temperature"] = body?.Temperature,
+            ["include"] = body?.Include,
+            ["timestamp_granularities"] = body?.TimestampGranularities,
+            ["stream"] = body?.Stream,
+            ["chunking_strategy"] = body?.ChunkingStrategy,
+            ["known_speaker_names"] = body?.KnownSpeakerNames,
+            ["known_speaker_references"] = body?.KnownSpeakerReferences,
         };
         return await _transport.RequestAsync<object>(HttpMethod.Post, "/audio/transcriptions", body: bodyMap, encoding: "multipart", cancellationToken: cancellationToken).ConfigureAwait(false);
     }

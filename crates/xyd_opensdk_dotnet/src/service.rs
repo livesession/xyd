@@ -260,7 +260,9 @@ fn emit_method(method: &Value, ctx: &DotnetServiceCtx) -> String {
                 .enumerate()
                 .map(|(i, f)| {
                     let wire = f.get("name").and_then(Value::as_str).unwrap_or("");
-                    format!("[{}] = body.{},", json_string(wire), body_idents[i].1)
+                    // `body?.` null-guards an omitted optional body (`body = null`):
+                    // each entry is then null and the multipart encoder skips it.
+                    format!("[{}] = body?.{},", json_string(wire), body_idents[i].1)
                 })
                 .collect::<Vec<_>>()
                 .join("\n");
