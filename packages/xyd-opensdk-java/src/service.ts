@@ -155,6 +155,11 @@ function methodDef(
   }
 
   const ret = returnPlan(method, plan, ctx);
+  // A generic-collection return type (e.g. `List<Thing>` from an array response)
+  // carries element imports that aren't added anywhere else — add them so the
+  // service compiles (mirrors the params-file import handling below).
+  if (ret.type.includes('List<')) imports.add('java.util.List');
+  if (ret.type.includes('Map<')) imports.add('java.util.Map');
   lines.push(ret.statement);
 
   const doc = javaDoc(method.description, '  ');

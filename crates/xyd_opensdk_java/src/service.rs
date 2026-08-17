@@ -253,6 +253,15 @@ fn method_def(
     }
 
     let ret = return_plan(method, &plan, ctx);
+    // A generic-collection return type (e.g. `List<Thing>` from an array
+    // response) carries element imports that aren't added anywhere else — add
+    // them so the service compiles (mirrors the params-file import handling).
+    if ret.0.contains("List<") {
+        imports.insert("java.util.List".to_string());
+    }
+    if ret.0.contains("Map<") {
+        imports.insert("java.util.Map".to_string());
+    }
     lines.push(ret.1);
 
     let doc = java_doc(str_field(method, "description"), "  ");
