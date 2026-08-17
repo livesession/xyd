@@ -29,7 +29,14 @@ export function snakeCase(input: string): string {
 
 /** SCREAMING_SNAKE_CASE for enum members / env vars, e.g. "petStatus" -> "PET_STATUS". */
 export function screamingSnakeCase(input: string): string {
-  return safeIdent(splitWords(input).join('_').toUpperCase().replace(/[^A-Z0-9_]/g, ''));
+  const s = splitWords(input).join('_').toUpperCase().replace(/[^A-Z0-9_]/g, '');
+  // A Ruby CONSTANT must start with an uppercase letter. A purely-numeric enum
+  // value ("4", "1024") would otherwise start with a digit; a bare `_` prefix
+  // (`_4`) is not a valid constant AND — for _1.._9 — is a reserved numbered
+  // parameter, a SyntaxError on Ruby >= 2.7. Prefix `NUMBER_` so the member stays
+  // a valid, referenceable constant (e.g. VideoSeconds::NUMBER_4). Mirrors the
+  // Rust twin in crates/xyd_opensdk_ruby/src/naming.rs (kept in parity).
+  return /^[0-9]/.test(s) ? `NUMBER_${s}` : s;
 }
 
 /** A Ruby gem/package name (snake_case, alnum + underscore), e.g. "My API" -> "my_api". */
