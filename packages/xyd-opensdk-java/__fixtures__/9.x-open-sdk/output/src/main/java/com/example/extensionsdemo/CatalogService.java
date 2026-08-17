@@ -2,6 +2,8 @@
 
 package com.example.extensionsdemo;
 
+import java.util.List;
+
 public final class CatalogService {
   private final Transport transport;
 
