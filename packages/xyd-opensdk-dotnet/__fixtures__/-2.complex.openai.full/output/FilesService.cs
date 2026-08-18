@@ -58,9 +58,9 @@ public sealed class FilesService
     {
         var bodyMap = new Dictionary<string, object?>
         {
-            ["file"] = body.File,
-            ["purpose"] = body.Purpose,
-            ["expires_after"] = body.ExpiresAfter,
+            ["file"] = body?.File,
+            ["purpose"] = body?.Purpose,
+            ["expires_after"] = body?.ExpiresAfter,
         };
         return await _transport.RequestAsync<OpenAiFile>(HttpMethod.Post, "/files", body: bodyMap, encoding: "multipart", cancellationToken: cancellationToken).ConfigureAwait(false);
     }

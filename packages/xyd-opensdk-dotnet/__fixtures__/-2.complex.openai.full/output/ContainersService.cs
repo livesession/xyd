@@ -93,8 +93,8 @@ public sealed class ContainersFilesService
         }
         var bodyMap = new Dictionary<string, object?>
         {
-            ["file_id"] = body.FileId,
-            ["file"] = body.File,
+            ["file_id"] = body?.FileId,
+            ["file"] = body?.File,
         };
         return await _transport.RequestAsync<ContainerFileResource>(HttpMethod.Post, $"/containers/{containerId}/files", body: bodyMap, encoding: "multipart", cancellationToken: cancellationToken).ConfigureAwait(false);
     }

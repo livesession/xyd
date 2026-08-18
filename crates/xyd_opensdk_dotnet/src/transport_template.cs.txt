@@ -43,6 +43,60 @@ public class ApiException : Exception
 
 __XYD_ERROR_CLASSES__
 
+/// <summary>
+/// Null-tolerant primitive converters: a JSON <c>null</c> decodes to the type's
+/// default (0 / false) instead of throwing "Cannot get the value of a token type
+/// 'Null' as a number". A response may carry a null where a non-nullable value
+/// type sits — e.g. a <c>List&lt;long&gt;</c> element — which System.Text.Json
+/// cannot bind; this mirrors the null-to-zero-value behavior of the Go/Java
+/// runtimes. Nullable properties (<c>long?</c>) are unaffected — the framework
+/// handles their null before delegating a non-null value here.
+/// </summary>
+internal sealed class NullTolerantInt64Converter : JsonConverter<long>
+{
+    public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        => reader.TokenType == JsonTokenType.Null ? 0L : reader.GetInt64();
+
+    public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options)
+        => writer.WriteNumberValue(value);
+}
+
+internal sealed class NullTolerantInt32Converter : JsonConverter<int>
+{
+    public override int Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        => reader.TokenType == JsonTokenType.Null ? 0 : reader.GetInt32();
+
+    public override void Write(Utf8JsonWriter writer, int value, JsonSerializerOptions options)
+        => writer.WriteNumberValue(value);
+}
+
+internal sealed class NullTolerantDoubleConverter : JsonConverter<double>
+{
+    public override double Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        => reader.TokenType == JsonTokenType.Null ? 0d : reader.GetDouble();
+
+    public override void Write(Utf8JsonWriter writer, double value, JsonSerializerOptions options)
+        => writer.WriteNumberValue(value);
+}
+
+internal sealed class NullTolerantSingleConverter : JsonConverter<float>
+{
+    public override float Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        => reader.TokenType == JsonTokenType.Null ? 0f : reader.GetSingle();
+
+    public override void Write(Utf8JsonWriter writer, float value, JsonSerializerOptions options)
+        => writer.WriteNumberValue(value);
+}
+
+internal sealed class NullTolerantBooleanConverter : JsonConverter<bool>
+{
+    public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        => reader.TokenType == JsonTokenType.Null ? false : reader.GetBoolean();
+
+    public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)
+        => writer.WriteBooleanValue(value);
+}
+
 /// <summary>The dependency-free HTTP transport shared by every resource service.</summary>
 internal sealed class Transport
 {
@@ -50,6 +104,14 @@ internal sealed class Transport
     {
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         PropertyNameCaseInsensitive = true,
+        Converters =
+        {
+            new NullTolerantInt64Converter(),
+            new NullTolerantInt32Converter(),
+            new NullTolerantDoubleConverter(),
+            new NullTolerantSingleConverter(),
+            new NullTolerantBooleanConverter(),
+        },
     };
 
 __XYD_CONSTANTS__

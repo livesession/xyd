@@ -24,7 +24,7 @@ public sealed class SkillsService
     {
         var bodyMap = new Dictionary<string, object?>
         {
-            ["files"] = body.Files,
+            ["files"] = body?.Files,
         };
         return await _transport.RequestAsync<SkillResource>(HttpMethod.Post, "/skills", body: bodyMap, encoding: "multipart", cancellationToken: cancellationToken).ConfigureAwait(false);
     }

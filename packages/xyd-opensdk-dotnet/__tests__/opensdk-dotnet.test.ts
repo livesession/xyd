@@ -107,7 +107,7 @@ describe('opensdk-dotnet shape', () => {
     const service = files['FilesService.cs'];
     // multipart upload builds a field map + routes through the multipart encoder.
     expect(service).toContain('var bodyMap = new Dictionary<string, object?>');
-    expect(service).toContain('["file"] = body.File,');
+    expect(service).toContain('["file"] = body?.File,');
     expect(service).toContain('encoding: "multipart"');
     // header params sent under their wire names.
     expect(service).toContain('["Idempotency-Key"] = idempotencyKey,');

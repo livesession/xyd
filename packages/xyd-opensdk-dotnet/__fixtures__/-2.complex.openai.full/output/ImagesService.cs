@@ -77,12 +77,12 @@ public sealed class ImagesVariationsService
     {
         var bodyMap = new Dictionary<string, object?>
         {
-            ["image"] = body.Image,
-            ["model"] = body.Model,
-            ["n"] = body.N,
-            ["response_format"] = body.ResponseFormat,
-            ["size"] = body.Size,
-            ["user"] = body.User,
+            ["image"] = body?.Image,
+            ["model"] = body?.Model,
+            ["n"] = body?.N,
+            ["response_format"] = body?.ResponseFormat,
+            ["size"] = body?.Size,
+            ["user"] = body?.User,
         };
         return await _transport.RequestAsync<ImagesResponse>(HttpMethod.Post, "/images/variations", body: bodyMap, encoding: "multipart", cancellationToken: cancellationToken).ConfigureAwait(false);
     }

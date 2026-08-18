@@ -39,9 +39,9 @@ public sealed class AudioVoicesService
     {
         var bodyMap = new Dictionary<string, object?>
         {
-            ["name"] = body.Name,
-            ["audio_sample"] = body.AudioSample,
-            ["consent"] = body.Consent,
+            ["name"] = body?.Name,
+            ["audio_sample"] = body?.AudioSample,
+            ["consent"] = body?.Consent,
         };
         return await _transport.RequestAsync<VoiceResource>(HttpMethod.Post, "/audio/voices", body: bodyMap, encoding: "multipart", cancellationToken: cancellationToken).ConfigureAwait(false);
     }

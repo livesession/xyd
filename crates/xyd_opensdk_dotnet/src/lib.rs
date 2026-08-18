@@ -146,7 +146,7 @@ fn csproj_file(sdk: &str, namespace_name: &str, target_framework: &str, spec: &V
         ));
     }
     format!(
-        "{CSPROJ_HEADER}\n<Project Sdk=\"Microsoft.NET.Sdk\">\n\n  <PropertyGroup>\n    <TargetFramework>{target_framework}</TargetFramework>\n    <LangVersion>latest</LangVersion>\n    <Nullable>enable</Nullable>\n    <ImplicitUsings>disable</ImplicitUsings>\n    <RootNamespace>{namespace_name}</RootNamespace>\n    <AssemblyName>{sdk}</AssemblyName>\n    <GenerateDocumentationFile>false</GenerateDocumentationFile>\n{}\n  </PropertyGroup>\n\n</Project>\n",
+        "{CSPROJ_HEADER}\n<Project Sdk=\"Microsoft.NET.Sdk\">\n\n  <PropertyGroup>\n    <TargetFramework>{target_framework}</TargetFramework>\n    <LangVersion>latest</LangVersion>\n    <Nullable>enable</Nullable>\n    <ImplicitUsings>disable</ImplicitUsings>\n    <RootNamespace>{namespace_name}</RootNamespace>\n    <AssemblyName>{sdk}</AssemblyName>\n    <GenerateDocumentationFile>false</GenerateDocumentationFile>\n{}\n  </PropertyGroup>\n\n  <ItemGroup>\n    <!-- The generated test project lives in a nested {sdk}.Tests/ folder; keep\n         its sources (and its build output's obj/ AssemblyInfo) out of THIS\n         assembly. Otherwise the SDK-style default **/*.cs glob would compile them\n         too, double-declaring assembly attributes once the test project has built\n         (CS0579) and pulling the test framework's types into the SDK (CS0436). -->\n    <Compile Remove=\"{sdk}.Tests/**/*.cs\" />\n  </ItemGroup>\n\n</Project>\n",
         pkg.join("\n")
     )
 }

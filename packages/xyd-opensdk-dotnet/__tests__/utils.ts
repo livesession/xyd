@@ -53,7 +53,9 @@ export function dotnetBuildSmoke(name: string, options?: OpensdkDotnetOptions) {
     writeTree(dir, files);
     const projects = Object.keys(files).filter((p) => p.endsWith('.csproj'));
     for (const project of projects) {
-      execSync(`dotnet build --nologo ${JSON.stringify(project)}`, { cwd: dir, stdio: 'pipe' });
+      // maxBuffer: a clean SDK build still emits thousands of (harmless)
+      // nullable/annotation warnings; the default 1 MB pipe overflows → ENOBUFS.
+      execSync(`dotnet build --nologo ${JSON.stringify(project)}`, { cwd: dir, stdio: 'pipe', maxBuffer: 64 * 1024 * 1024 });
     }
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });

@@ -95,7 +95,7 @@ public sealed class UploadsPartsService
         }
         var bodyMap = new Dictionary<string, object?>
         {
-            ["data"] = body.Data,
+            ["data"] = body?.Data,
         };
         return await _transport.RequestAsync<UploadPart>(HttpMethod.Post, $"/uploads/{uploadId}/parts", body: bodyMap, encoding: "multipart", cancellationToken: cancellationToken).ConfigureAwait(false);
     }

@@ -36,8 +36,8 @@ public sealed class VideosCharactersService
     {
         var bodyMap = new Dictionary<string, object?>
         {
-            ["video"] = body.Video,
-            ["name"] = body.Name,
+            ["video"] = body?.Video,
+            ["name"] = body?.Name,
         };
         return await _transport.RequestAsync<VideoCharacterResource>(HttpMethod.Post, "/videos/characters", body: bodyMap, encoding: "multipart", cancellationToken: cancellationToken).ConfigureAwait(false);
     }
