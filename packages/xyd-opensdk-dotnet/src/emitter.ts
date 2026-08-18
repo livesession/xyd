@@ -73,6 +73,15 @@ function csprojFile(sdk: string, namespaceName: string, targetFramework: string,
 ${pkg.join('\n')}
   </PropertyGroup>
 
+  <ItemGroup>
+    <!-- The generated test project lives in a nested ${sdk}.Tests/ folder; keep
+         its sources (and its build output's obj/ AssemblyInfo) out of THIS
+         assembly. Otherwise the SDK-style default **/*.cs glob would compile them
+         too, double-declaring assembly attributes once the test project has built
+         (CS0579) and pulling the test framework's types into the SDK (CS0436). -->
+    <Compile Remove="${sdk}.Tests/**/*.cs" />
+  </ItemGroup>
+
 </Project>
 `;
 }
