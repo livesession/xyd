@@ -65,19 +65,21 @@ pub(crate) fn decode(bytes: &[u8]) -> Value {
 }
 
 /** Static: `src/gen/runtime/mod.rs` — Context (execution) + run_request (hook threading). */
-export function runtimeModRs(): string {
+export function runtimeModRs(hasActions: boolean): string {
+  const actionMod = hasActions ? 'mod actions;\n' : '';
+  const actionUse = hasActions ? 'pub use actions::Actions;\n' : '';
   return `${HEADER}
 
 //! The vendored runtime: request execution context, override hooks, and the
 //! custom-command registry. Extension points live in \`overrides.rs\` (the
 //! \`CliOverrides\` trait) and \`custom.rs\` (the \`CustomCommands\` registry).
 
-pub mod config;
+${actionMod}pub mod config;
 mod custom;
 mod http;
 mod overrides;
 
-pub use custom::CustomCommands;
+${actionUse}pub use custom::CustomCommands;
 pub use http::{path_escape, Error, Request};
 pub use overrides::CliOverrides;
 
@@ -336,17 +338,106 @@ fn graft_at(parent: Command, under: &[String], cmd: Command) -> Command {
 `;
 }
 
+/**
+ * Static: `src/gen/runtime/actions.rs` — the `Actions` registry (only emitted when
+ * the doc has non-API runnable leaves). Parallel to `CustomCommands`: behavior for
+ * generated leaves is bound by path via `Actions::on` and dispatched by `gen::cli::run`.
+ */
+export function actionsRs(): string {
+  return `${HEADER}
+
+use std::future::Future;
+use std::pin::Pin;
+
+use clap::ArgMatches;
+
+use super::http::Error;
+use super::Context;
+
+/// The boxed async handler for one non-API "action" — a generated runnable leaf
+/// (e.g. \`dev\`/\`build\`) whose behavior is hand-written, not an HTTP call. Owned
+/// inputs, so plain \`|ctx, m| async move { ... }\` closures fit without lifetimes.
+pub type Action = Box<dyn Fn(Context, ArgMatches) -> Pin<Box<dyn Future<Output = Result<(), Error>>>>>;
+
+struct ActionEntry {
+    path: Vec<String>,
+    action: Action,
+}
+
+/// Behavior for the generated non-API leaves. Bind handlers from \`src/custom/mod.rs\`
+/// with [\`Actions::on\`]; \`gen::cli::run\` dispatches them AFTER custom commands and
+/// BEFORE the x-openapi handlers. An unbound leaf fails at runtime with a hint.
+#[derive(Default)]
+pub struct Actions {
+    entries: Vec<ActionEntry>,
+}
+
+impl Actions {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    /// Bind behavior to a generated leaf path:
+    /// \`on(&["dev"], |ctx, m| async move { ... })\` handles \`<bin> dev\`,
+    /// \`on(&["components", "install"], ...)\` handles \`<bin> components install\`.
+    #[allow(dead_code)] // user-facing API, called from src/custom/mod.rs
+    pub fn on<H, F>(&mut self, path: &[&str], action: H)
+    where
+        H: Fn(Context, ArgMatches) -> F + 'static,
+        F: Future<Output = Result<(), Error>> + 'static,
+    {
+        self.entries.push(ActionEntry {
+            path: path.iter().map(|s| s.to_string()).collect(),
+            action: Box::new(move |ctx, m| Box::pin(action(ctx, m))),
+        });
+    }
+
+    /// Run the handler bound to \`path\`, or fail with a "not implemented" hint.
+    pub(crate) async fn run(&self, ctx: &Context, path: &[String], m: &ArgMatches) -> Result<(), Error> {
+        match self.entries.iter().find(|e| e.path.as_slice() == path) {
+            Some(entry) => (entry.action)(ctx.clone(), m.clone()).await,
+            None => Err(Error::Invalid(format!(
+                "not implemented — add actions.on(&{path:?}, ...) in src/custom/mod.rs"
+            ))),
+        }
+    }
+}
+`;
+}
+
 /** User-owned scaffold: `src/custom/mod.rs` (written once, `skipIfExists`). */
-export function customScaffoldRs(): string {
+export function customScaffoldRs(hasActions: boolean): string {
+  const seamDoc = hasActions
+    ? `//!  * [\`register\`] — add fully custom commands anywhere in the tree; a command
+//!    registered on an existing path takes over that command's behavior.
+//!  * [\`actions\`] — bind behavior to the generated non-API leaves (dev/build/…).`
+    : `//!  * [\`register\`] — add fully custom commands anywhere in the tree; a command
+//!    registered on an existing path takes over that command's behavior.`;
+  const useLine = hasActions
+    ? 'use crate::gen::runtime::{Actions, CliOverrides, CustomCommands};'
+    : 'use crate::gen::runtime::{CliOverrides, CustomCommands};';
+  const actionsFn = hasActions
+    ? `
+/// Bind behavior to the generated non-API leaves. Called by the generated \`main\`.
+pub fn actions(actions: &mut Actions) {
+    let _ = actions;
+    // Example — implement the \`dev\` leaf:
+    //
+    // actions.on(&["dev"], |_ctx, _m| async move {
+    //     println!("dev");
+    //     Ok(())
+    // });
+}
+`
+    : '';
   return `//! Yours — scaffolded once by opencli2rust, never overwritten by regeneration.
 //!
 //! Two extension seams, both optional:
 //!  * \`CliOverrides\` on [\`Custom\`] — hook/override every generated command
 //!    (see src/gen/runtime/overrides.rs for the available methods).
-//!  * [\`register\`] — add fully custom commands anywhere in the tree; a command
-//!    registered on an existing path takes over that command's behavior.
+${seamDoc}
 
-use crate::gen::runtime::{CliOverrides, CustomCommands};
+${useLine}
 
 /// Override only what you need — every trait method has a default.
 pub struct Custom;
@@ -363,7 +454,7 @@ pub fn register(commands: &mut CustomCommands) {
     //     Ok(())
     // });
 }
-
+${actionsFn}
 pub fn overrides() -> Custom {
     Custom
 }

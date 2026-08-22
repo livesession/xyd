@@ -4,7 +4,23 @@
 
 import { GENERATED_HEADER } from './rslit';
 
-export function renderMain(): string {
+export function renderMain(hasActions: boolean): string {
+  if (hasActions) {
+    return `${GENERATED_HEADER}
+
+mod custom;
+mod gen;
+
+#[tokio::main]
+async fn main() -> std::process::ExitCode {
+    let mut commands = gen::runtime::CustomCommands::new();
+    custom::register(&mut commands);
+    let mut actions = gen::runtime::Actions::new();
+    custom::actions(&mut actions);
+    gen::cli::run(custom::overrides(), commands, actions).await
+}
+`;
+  }
   return `${GENERATED_HEADER}
 
 mod custom;

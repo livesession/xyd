@@ -22,8 +22,8 @@ use command::{render_resource_file, ResourceFile};
 use naming::{crate_name as to_crate_name, slug};
 use rslit::GENERATED_HEADER;
 use runtime::{
-    cargo_toml, config_rs, custom_registry_rs, custom_scaffold_rs, gen_mod_rs, http_rs, main_rs,
-    overrides_rs, runtime_mod_rs,
+    actions_rs, cargo_toml, config_rs, custom_registry_rs, custom_scaffold_rs, gen_mod_rs, http_rs,
+    main_rs, overrides_rs, runtime_mod_rs,
 };
 
 #[derive(Deserialize, Default)]
@@ -106,30 +106,41 @@ pub fn opencli2rust(spec: &Value, options: Option<Options>) -> FileMap {
 
     let mut files: FileMap = Vec::new();
 
-    files.push((
-        "Cargo.toml".into(),
-        scaffold(cargo_toml(spec, &crate_name, &bin_name, &edition)),
-    ));
-    files.push((".gitignore".into(), scaffold("/target\n".to_string())));
-
-    files.push(("src/main.rs".into(), owned(main_rs())));
-
     let empty: Vec<Value> = Vec::new();
     let commands = spec
         .get("commands")
         .and_then(|c| c.as_array())
         .unwrap_or(&empty);
     let resources: Vec<ResourceFile> = commands.iter().map(render_resource_file).collect();
+    // Aggregate the non-API runnable leaves; their presence gates the whole
+    // `Actions` seam (main wiring, cli dispatch, runtime mod, actions.rs, scaffold).
+    let action_paths: Vec<Vec<String>> = resources
+        .iter()
+        .flat_map(|r| r.action_paths.clone())
+        .collect();
+    let has_actions = !action_paths.is_empty();
+
+    files.push((
+        "Cargo.toml".into(),
+        scaffold(cargo_toml(spec, &crate_name, &bin_name, &edition)),
+    ));
+    files.push((".gitignore".into(), scaffold("/target\n".to_string())));
+
+    files.push(("src/main.rs".into(), owned(main_rs(has_actions))));
+
     for r in &resources {
         files.push((r.path.clone(), owned(r.content.clone())));
     }
     files.push(("src/gen/cmd/mod.rs".into(), owned(cmd_mod_rs(&resources))));
     files.push((
         "src/gen/cli.rs".into(),
-        owned(render_cli(spec, &bin_name, &resources)),
+        owned(render_cli(spec, &bin_name, &resources, &action_paths)),
     ));
     files.push(("src/gen/mod.rs".into(), owned(gen_mod_rs())));
-    files.push(("src/gen/runtime/mod.rs".into(), owned(runtime_mod_rs())));
+    files.push((
+        "src/gen/runtime/mod.rs".into(),
+        owned(runtime_mod_rs(has_actions)),
+    ));
     files.push(("src/gen/runtime/http.rs".into(), owned(http_rs())));
     files.push((
         "src/gen/runtime/config.rs".into(),
@@ -140,8 +151,14 @@ pub fn opencli2rust(spec: &Value, options: Option<Options>) -> FileMap {
         "src/gen/runtime/custom.rs".into(),
         owned(custom_registry_rs()),
     ));
+    if has_actions {
+        files.push(("src/gen/runtime/actions.rs".into(), owned(actions_rs())));
+    }
 
-    files.push(("src/custom/mod.rs".into(), scaffold(custom_scaffold_rs())));
+    files.push((
+        "src/custom/mod.rs".into(),
+        scaffold(custom_scaffold_rs(has_actions)),
+    ));
 
     files
 }

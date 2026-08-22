@@ -1,0 +1,15 @@
+# Hand-owned files — writeProject (regen.mjs) must never overwrite or prune these.
+# Everything else (src/gen/**, .gitignore) is regenerated from opencli.json.
+Cargo.toml
+# NOTE: the hand-owned crate-root `build.rs` (engine embed) is deliberately NOT
+# listed. opencli2rust never emits a crate-root build.rs, and stale-prune only
+# removes lock-tracked generated files, so it is safe from overwrite/prune with no
+# entry. It cannot be listed anyway: this matcher strips a leading `/` before its
+# "has a slash ⇒ anchored" test (write.ts), so any `build.rs` / `/build.rs` pattern
+# collapses to an unanchored match that would wrongly shield the GENERATED
+# src/gen/cmd/build.rs (the `build` command's module).
+src/main.rs
+src/custom/**
+opencli.json
+regen.mjs
+.sdkignore

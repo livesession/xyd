@@ -1,0 +1,113 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "xyd",
+    "version": "0.1.0",
+    "description": "A local-tool CLI (no HTTP): every leaf is a runnable action."
+  },
+  "commands": [
+    {
+      "name": "dev",
+      "description": "Run your docs locally in development mode"
+    },
+    {
+      "name": "build",
+      "description": "Build your docs",
+      "options": [
+        {
+          "name": "strict",
+          "description": "Fail the build on warnings"
+        },
+        {
+          "name": "mode",
+          "description": "Build mode",
+          "arguments": [
+            {
+              "name": "string",
+              "acceptedValues": ["static", "ssr"]
+            }
+          ]
+        },
+        {
+          "name": "define",
+          "description": "Inject build-time defines (repeatable)",
+          "arguments": [
+            {
+              "name": "string",
+              "arity": {
+                "minimum": 1
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "migrateme",
+      "description": "Migrate your docs to the new xyd framework",
+      "arguments": [
+        {
+          "name": "path",
+          "required": true,
+          "description": "Path to the docs directory to migrate"
+        }
+      ]
+    },
+    {
+      "name": "components",
+      "description": "Manage xyd components",
+      "commands": [
+        {
+          "name": "install",
+          "description": "Install a xyd component into your project",
+          "arguments": [
+            {
+              "name": "component",
+              "required": true,
+              "description": "Name of the component to install",
+              "acceptedValues": ["diagrams", "opensdk"]
+            }
+          ]
+        },
+        {
+          "name": "uninstall",
+          "description": "Remove an installed xyd component",
+          "arguments": [
+            {
+              "name": "component",
+              "required": true,
+              "description": "Name of the component to remove",
+              "acceptedValues": ["opensdk"]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "completion",
+      "description": "Generate shell completions",
+      "arguments": [
+        {
+          "name": "shell",
+          "required": true,
+          "description": "Shell to generate completions for",
+          "acceptedValues": ["zsh", "fish"]
+        }
+      ]
+    },
+    {
+      "name": "exec",
+      "description": "Run a project script with arguments",
+      "arguments": [
+        {
+          "name": "args",
+          "required": true,
+          "description": "Command and arguments to run",
+          "arity": {
+            "minimum": 1
+          }
+        }
+      ]
+    }
+  ]
+}

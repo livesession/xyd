@@ -4,7 +4,7 @@ use serde_json::Value;
 
 use crate::flags::{render_flag_args, render_positional_arg};
 use crate::handler::{render_handler, RenderedHandler};
-use crate::model::build_leaf_model;
+use crate::model::{build_leaf_model, build_local_flags};
 use crate::naming::snake_case;
 use crate::rslit::{chain, indent, json_str, lit, rs_file, rs_str, RsVal, Uses};
 
@@ -15,6 +15,8 @@ struct Leaf {
 
 struct State {
     has_arg: bool,
+    /// Non-API runnable-leaf paths recorded from this resource's subtree.
+    action_paths: Vec<Vec<String>>,
 }
 
 fn str_field(v: &Value, key: &str) -> Option<String> {
@@ -78,13 +80,7 @@ fn render_command_chain(
         if let Some(cmd_args) = command.get("arguments").and_then(|a| a.as_array()) {
             for arg in cmd_args {
                 state.has_arg = true;
-                let name = arg.get("name").and_then(|n| n.as_str()).unwrap_or("");
-                let required = arg.get("required").and_then(|r| r.as_bool()) == Some(true);
-                let desc = str_field(arg, "description");
-                calls.push((
-                    "arg".into(),
-                    vec![render_positional_arg(name, required, desc.as_deref())],
-                ));
+                calls.push(("arg".into(), vec![render_positional_arg(arg, false)]));
             }
         }
         for flag_val in render_flag_args(&model.flags) {
@@ -96,8 +92,21 @@ fn render_command_chain(
             command: command.clone(),
         });
     } else {
-        calls.push(("subcommand_required".into(), vec![lit("true")]));
-        calls.push(("arg_required_else_help".into(), vec![lit("true")]));
+        // A non-API "runnable leaf" (dev/build/…): a real clap leaf — positionals +
+        // local flags, NO subcommand_required — recorded as an action path. Behavior
+        // is bound via the `Actions` seam in src/custom/mod.rs and dispatched by
+        // gen::cli::run (after custom commands, before the x-openapi handlers).
+        if let Some(cmd_args) = command.get("arguments").and_then(|a| a.as_array()) {
+            for arg in cmd_args {
+                state.has_arg = true;
+                calls.push(("arg".into(), vec![render_positional_arg(arg, true)]));
+            }
+        }
+        for flag_val in render_flag_args(&build_local_flags(command)) {
+            state.has_arg = true;
+            calls.push(("arg".into(), vec![flag_val]));
+        }
+        state.action_paths.push(path_names.to_vec());
     }
 
     let name = command.get("name").and_then(|n| n.as_str()).unwrap_or("");
@@ -109,6 +118,8 @@ pub struct ResourceFile {
     pub content: String,
     pub mod_name: String,
     pub cmd_name: String,
+    /// Non-API runnable-leaf paths in this resource's subtree (drives `Actions` dispatch).
+    pub action_paths: Vec<Vec<String>>,
 }
 
 /// Render one `src/gen/cmd/<resource>.rs` for a top-level command + its subtree.
@@ -119,7 +130,10 @@ pub fn render_resource_file(top_command: &Value) -> ResourceFile {
         .unwrap_or("")
         .to_string();
     let mut leaves: Vec<Leaf> = Vec::new();
-    let mut state = State { has_arg: false };
+    let mut state = State {
+        has_arg: false,
+        action_paths: Vec::new(),
+    };
     let tree = render_command_chain(
         top_command,
         std::slice::from_ref(&top_name),
@@ -172,7 +186,13 @@ pub fn render_resource_file(top_command: &Value) -> ResourceFile {
     } else {
         "clap::{ArgMatches, Command}"
     }]);
-    uses.add(&["crate::gen::runtime::{self, CliOverrides, Context}"]);
+    // `self` (the runtime module) is only referenced by x-openapi handlers; a
+    // pure-local resource has none, so importing it would be an unused-import warning.
+    uses.add(&[if leaves.is_empty() {
+        "crate::gen::runtime::{CliOverrides, Context}"
+    } else {
+        "crate::gen::runtime::{self, CliOverrides, Context}"
+    }]);
 
     let mut decls = vec![command_fn, run_fn];
     decls.extend(handlers.into_iter().map(|h| h.code));
@@ -184,5 +204,6 @@ pub fn render_resource_file(top_command: &Value) -> ResourceFile {
         content,
         mod_name,
         cmd_name: top_name,
+        action_paths: state.action_paths,
     }
 }
