@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "generator": "opencli2rust",
+  "files": {
+    ".gitignore": "44c92e3a70ad3307b7056871c2bdb096d8bfa9373f5bf06a79bb6324a20ff2fb",
+    "Cargo.toml": "5b497c2d9b30726138706f79a20d198fa51bfbdc040c19401d6ce9ff4248e2f7",
+    "src/custom/mod.rs": "ab5b09815664853ea236d378a3332a7d5d5468c645a57c044f18c28d5741755a",
+    "src/gen/cli.rs": "405d009b569b660077a8464fbcbb2481052a93c93287fc330657f48f768abc4a",
+    "src/gen/cmd/build.rs": "c8a89f60ea10faa14837e05fbe9e429276bb36d19c39b93901e8bff117c42841",
+    "src/gen/cmd/completion.rs": "50045d968f4a4c6c67661e86d9318f4d966ca706dcc4d777e177d1c8c80bda76",
+    "src/gen/cmd/components.rs": "4b3d7b2db5eb01554c556f44b3d8f89567a7453f25c2d8bf69c03d62ae743559",
+    "src/gen/cmd/dev.rs": "02863144ba0f12f92a8d76b2632b4be798fec9b1b0203539d930b47d2c4aded2",
+    "src/gen/cmd/install.rs": "635c4946bed70ee7908425ec9b562b38774051e43ce4958fdbc572aedf87fc92",
+    "src/gen/cmd/migrateme.rs": "30bc79553c390423045e798932d0cc38cfbcafe14053a3187f0885d4e481083b",
+    "src/gen/cmd/mod.rs": "596c4184d6baf8299bd1f97e4fa0eb4cc14b70d26ef657887185be800f02990b",
+    "src/gen/cmd/opensdk.rs": "d5674a25bf2726b2a7fd300211c57ffebb3bd35a56182a5d6918bf6bf7d3b462",
+    "src/gen/cmd/serve.rs": "da92aa4d9d603a46b7b11c4dc6c7264c5f00cabe483ab7fdd8a1a838d5265063",
+    "src/gen/mod.rs": "3ffa1def7e7adff0d7b1d9db5531f0279adc6be59d5f41be33ca3fc08935ffc6",
+    "src/gen/runtime/actions.rs": "155bd0a95052907e8121248e91628be68e3baa56058ee0d5e80184de0d1386f0",
+    "src/gen/runtime/config.rs": "f41bb3bb82cc2f0ba3a84894b8e454447988a7c3a5692cbced31809a8825fa8f",
+    "src/gen/runtime/custom.rs": "64f7807ceff5f05d440ef49c31ed097a6302c804ebf501600b85bc316e97fe54",
+    "src/gen/runtime/http.rs": "8d69331571c3ca676567398b1931f48afb461cabd47e7fcf82bd0417bbc46ca0",
+    "src/gen/runtime/mod.rs": "a9ea005f73390fe309171880d2a765003b2e6780e79f7e96806a692795262e3b",
+    "src/gen/runtime/overrides.rs": "e9a5ee574239b1d64de9ee11db71ba732d82894d64834bfdb619a1d8029d2c22",
+    "src/main.rs": "2bbf5bc718069f7ea3c04e3db771ff7622fc20f9d3028c0f5fc7fe7ccb3010d7"
+  }
+}

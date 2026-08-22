@@ -29,6 +29,7 @@ members = [
     "xyd_mdx",
     "xyd_math",
     "xyd_oas_snippet",
+    "xyd_cli",
 ]
 # Workspace-excluded (like the napi crate): a wasm-only wasm-bindgen cdylib whose
 # regex primitive is a JS import — it must never be built for the host by the
@@ -59,6 +60,17 @@ license = "MIT"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 thiserror = "2"
+# CLI-only pins (crates/xyd_cli). Kept here so the generated command tree and the
+# hand-owned shim share one clap/tokio version, matching the repo pattern.
+clap = { version = "4", features = ["string"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "process", "signal"] }
+# Content-addressed cache key for the embedded engine (crates/xyd_cli S4): the
+# extract dir is `~/.xyd/cache/engine/<hex(sha256(engine))[..16]>/`.
+sha2 = "0.10"
+# Native static file server for `xyd serve` (crates/xyd_cli S5): a small, blocking,
+# dependency-light HTTP server — deliberately NOT a heavy async stack just to serve
+# the prebuilt `.xyd/build/client/` tree.
+tiny_http = "0.12"
 
 [profile.release]
 lto = true
