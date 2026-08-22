@@ -114,6 +114,16 @@ export function CTASection() {
             </a>
           </div>
 
+          <p className="mt-6 text-sm text-gray-500">
+            Try a new self-contained binary engine. {" "}
+            <a
+              href="/download-canary"
+              className="font-medium text-purple-600 underline decoration-purple-300 underline-offset-2 hover:text-purple-700"
+            >
+              Download the canary build ↗
+            </a>
+          </p>
+
           <div className="mt-12 pt-8 border-t border-white/10">
             <p className="text-sm text-gray-400">
               Brought to you by{" "}
