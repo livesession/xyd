@@ -208,8 +208,7 @@ export function PageDownloadCanary({ data }: { data: CanaryReleaseData }) {
             </h1>
 
             <p className="mx-auto mt-5 max-w-2xl text-lg text-gray-600">
-              The node-free, self-contained <code className="font-mono text-gray-900">xyd</code>{" "}
-              binary rewritten in Rust.
+              The node-free, self-contained binary rewritten in Rust.
             </p>
           </div>
 
