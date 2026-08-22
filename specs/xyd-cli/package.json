@@ -16,6 +16,8 @@
   },
   "dependencies": {
     "@typespec/compiler": "^1.13.0",
+    "@xyd-js/opencli2rust": "workspace:*",
+    "@xyd-js/opensdk-framework": "workspace:*",
     "@xyd-js/typespec-opencli": "workspace:*"
   }
 }

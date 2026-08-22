@@ -17,6 +17,9 @@ import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { opencli2rust } from '@xyd-js/opencli2rust';
+import { writeProject } from '@xyd-js/opensdk-framework';
+
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url)); // specs/xyd-cli
 const repoRoot = join(here, '..', '..');
@@ -58,3 +61,25 @@ for (const target of targets) {
   copyFileSync(emitted, target);
   console.log(`→ ${target}`);
 }
+
+// ── Rust codegen ─────────────────────────────────────────────────────────────
+// Regenerate the Rust CLI's command tree (crates/xyd_cli/src/gen/**) from the
+// OpenCLI doc via opencli2rust, written through the regen-safe writeProject
+// lifecycle (.sdkignore protects the hand-owned Cargo.toml / main.rs / src/custom).
+//
+// This lives HERE in the build layer, never inside the Rust crate: the crate is a
+// pure CONSUMER of generated code, so the JS generator (opencli2rust) can later be
+// swapped for its native Rust equivalent without touching the crate.
+const crateDir = join(repoRoot, 'crates', 'xyd_cli');
+const spec = JSON.parse(readFileSync(join(crateDir, 'opencli.json'), 'utf8'));
+const files = opencli2rust(spec, { binName: 'xyd', crateName: 'xyd_cli' });
+const result = await writeProject(files, crateDir, { generator: 'opencli2rust' });
+console.log(
+  `opencli2rust → src/gen (written ${result.written?.length ?? 0}, ` +
+    `unchanged ${result.unchanged?.length ?? 0}, skipped ${result.skipped?.length ?? 0})`,
+);
+
+// opencli2rust emits unformatted Rust; the crate is committed rustfmt-clean and CI
+// runs `cargo fmt --all -- --check`, so normalize the generated source to match.
+execFileSync('cargo', ['fmt', '-p', 'xyd_cli'], { cwd: crateDir, stdio: 'inherit' });
+console.log('→ cargo fmt -p xyd_cli');

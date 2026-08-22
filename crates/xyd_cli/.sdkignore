@@ -1,5 +1,7 @@
-# Hand-owned files — writeProject (regen.mjs) must never overwrite or prune these.
-# Everything else (src/gen/**, .gitignore) is regenerated from opencli.json.
+# Hand-owned files — writeProject (specs/xyd-cli/gen.mjs) must never overwrite or
+# prune these. Everything else (src/gen/**, .gitignore) is regenerated from the
+# OpenCLI doc. The regen tooling lives in the build layer (specs/xyd-cli), NOT in
+# this crate — the crate is a pure consumer of generated code.
 Cargo.toml
 # NOTE: the hand-owned crate-root `build.rs` (engine embed) is deliberately NOT
 # listed. opencli2rust never emits a crate-root build.rs, and stale-prune only
@@ -11,5 +13,4 @@ Cargo.toml
 src/main.rs
 src/custom/**
 opencli.json
-regen.mjs
 .sdkignore
