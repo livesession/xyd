@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@types/update-notifier": "^6.0.8",
+    "@xyd-js/cli-spec": "workspace:*",
     "@xyd-js/opencli": "workspace:*",
     "@xyd-js/opencli-completion": "workspace:*",
     "tsup": "^8.3.0",

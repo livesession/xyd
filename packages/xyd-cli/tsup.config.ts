@@ -13,7 +13,7 @@ export default defineConfig([
         dts: true,
         // Bundle the small OpenCLI helpers into the CLI so the published package
         // is self-contained (they aren't published as installable runtime deps).
-        noExternal: ['@xyd-js/opencli', '@xyd-js/opencli-completion'],
+        noExternal: ['@xyd-js/opencli', '@xyd-js/opencli-completion', '@xyd-js/cli-spec'],
         plugins: []
     },
 ]);
