@@ -5,6 +5,13 @@
 // off to the generated `gen::cli::run`.
 
 mod custom;
+
+// The generated tree vendors a full HTTP runtime (reqwest, path_escape,
+// CliOverrides hooks, run_request) that a local tool like xyd never exercises,
+// and emits single-arm dispatch matches. Scope those dead-code / clippy lints to
+// `gen` only — hand-owned `custom` stays fully linted — so the crate builds under
+// `-D warnings` without editing the generated "DO NOT EDIT" files.
+#[allow(dead_code, unused_imports, clippy::match_single_binding)]
 mod gen;
 
 use std::process::ExitCode;
