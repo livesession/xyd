@@ -8,6 +8,7 @@ import { crateName as toCrateName, slug } from './naming';
 import { native } from './native';
 import { GENERATED_HEADER } from './rslit';
 import {
+  actionsRs,
   cargoToml,
   configRs,
   customRegistryRs,
@@ -47,23 +48,29 @@ export function opencli2rust(spec: OpencliSpecJson, options: Opencli2RustOptions
 
   const files: ProjectFileMap = {};
 
+  const resources: ResourceFile[] = (spec.commands || []).map((top) => renderResourceFile(top));
+  // Aggregate the non-API runnable leaves; their presence gates the whole
+  // `Actions` seam (main wiring, cli dispatch, runtime mod, actions.rs, scaffold).
+  const actionPaths: string[][] = resources.flatMap((r) => r.actionPaths);
+  const hasActions = actionPaths.length > 0;
+
   files['Cargo.toml'] = { content: cargoToml(spec, crate, binName, edition), writeMode: 'skipIfExists' };
   files['.gitignore'] = { content: '/target\n', writeMode: 'skipIfExists' };
 
-  files['src/main.rs'] = renderMain();
+  files['src/main.rs'] = renderMain(hasActions);
 
-  const resources: ResourceFile[] = (spec.commands || []).map((top) => renderResourceFile(top));
   for (const r of resources) files[r.path] = r.content;
   files['src/gen/cmd/mod.rs'] = cmdModRs(resources);
-  files['src/gen/cli.rs'] = renderCli(spec, binName, resources);
+  files['src/gen/cli.rs'] = renderCli(spec, binName, resources, actionPaths);
   files['src/gen/mod.rs'] = genModRs();
-  files['src/gen/runtime/mod.rs'] = runtimeModRs();
+  files['src/gen/runtime/mod.rs'] = runtimeModRs(hasActions);
   files['src/gen/runtime/http.rs'] = httpRs();
   files['src/gen/runtime/config.rs'] = configRs(spec, binName, baseURL);
   files['src/gen/runtime/overrides.rs'] = overridesRs();
   files['src/gen/runtime/custom.rs'] = customRegistryRs();
+  if (hasActions) files['src/gen/runtime/actions.rs'] = actionsRs();
 
-  files['src/custom/mod.rs'] = { content: customScaffoldRs(), writeMode: 'skipIfExists' };
+  files['src/custom/mod.rs'] = { content: customScaffoldRs(hasActions), writeMode: 'skipIfExists' };
 
   return files;
 }

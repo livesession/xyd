@@ -1,7 +1,7 @@
 // The x-openapi -> request-model normalization, mirroring xyd-opencli2go's model.ts
 // with language-neutral renames (GoType -> FlagType, PathArg.goVar -> varName).
 
-import type { Command, Option, XOpenApiCommand } from '@xyd-js/opencli';
+import type { Arity, Command, Option, XOpenApiCommand } from '@xyd-js/opencli';
 
 import { snakeCase } from './naming';
 
@@ -25,6 +25,16 @@ export interface FlagModel {
   hidden: boolean;
   aliases: string[];
   description?: string;
+  /**
+   * Non-API only: a fixed set of accepted values (clap `.value_parser([...])`).
+   * NEVER set by {@link buildLeafModel} — an x-openapi flag stays byte-identical.
+   */
+  acceptedValues?: string[];
+  /**
+   * Non-API only: value arity (clap `.num_args(min..=max)`).
+   * NEVER set by {@link buildLeafModel}.
+   */
+  arity?: Arity;
 }
 
 export interface LeafModel {
@@ -150,4 +160,28 @@ export function buildLeafModel(command: Command): LeafModel {
     bodyStyle,
     bodyJsonOption,
   };
+}
+
+/**
+ * Flags for a non-API "runnable leaf" (dev/build/…): mapped straight from the
+ * command's own `options` (no x-openapi request binding). `acceptedValues`/`arity`
+ * carry through to the clap emitter — a validated local flag. `location`/`wireName`
+ * are placeholders (never read: local leaves have no HTTP handler).
+ */
+export function buildLocalFlags(command: Command): FlagModel[] {
+  return (command.options || []).map((opt): FlagModel => {
+    const arg = opt.arguments?.[0];
+    return {
+      flagName: opt.name,
+      wireName: opt.name,
+      location: 'query',
+      flagType: optionFlagType(opt),
+      required: opt.required === true,
+      hidden: opt.hidden === true,
+      aliases: opt.aliases || [],
+      description: opt.description,
+      acceptedValues: arg?.acceptedValues,
+      arity: arg?.arity,
+    };
+  });
 }

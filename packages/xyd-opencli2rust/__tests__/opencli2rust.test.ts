@@ -2,7 +2,7 @@ import { describe, it } from 'vitest';
 
 import { CARGO_SMOKE, cargoCheckSmoke, testFixture } from './utils';
 
-const FIXTURES = ['1.basic', '2.crud', '3.nested', '4.body-flatten'];
+const FIXTURES = ['1.basic', '2.crud', '3.nested', '4.body-flatten', '6.local-tool', '7.mixed'];
 
 describe('opencli2rust golden fixtures', () => {
   for (const name of FIXTURES) {

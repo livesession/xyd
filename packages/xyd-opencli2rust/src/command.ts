@@ -6,7 +6,7 @@ import type { Command } from '@xyd-js/opencli';
 
 import { renderFlagArgs, renderPositionalArg } from './flags';
 import { renderHandler, type RenderedHandler } from './handler';
-import { buildLeafModel } from './model';
+import { buildLeafModel, buildLocalFlags } from './model';
 import { snakeCase } from './naming';
 import { chain, indent, lit, rsFile, rsStr, Uses, type RsVal } from './rslit';
 
@@ -15,7 +15,13 @@ interface Leaf {
   command: Command;
 }
 
-function renderCommandChain(command: Command, pathNames: string[], leaves: Leaf[], state: { hasArg: boolean }): RsVal {
+interface ChainState {
+  hasArg: boolean;
+  /** Non-API runnable-leaf paths recorded from this resource's subtree. */
+  actionPaths: string[][];
+}
+
+function renderCommandChain(command: Command, pathNames: string[], leaves: Leaf[], state: ChainState): RsVal {
   const calls: [string, RsVal[]][] = [];
   if (command.aliases?.length === 1) calls.push(['visible_alias', [rsStr(command.aliases[0])]]);
   else if (command.aliases?.length)
@@ -33,7 +39,7 @@ function renderCommandChain(command: Command, pathNames: string[], leaves: Leaf[
     const model = buildLeafModel(command);
     for (const arg of command.arguments || []) {
       state.hasArg = true;
-      calls.push(['arg', [renderPositionalArg(arg)]]);
+      calls.push(['arg', [renderPositionalArg(arg, false)]]);
     }
     for (const flagVal of renderFlagArgs(model.flags)) {
       state.hasArg = true;
@@ -41,9 +47,19 @@ function renderCommandChain(command: Command, pathNames: string[], leaves: Leaf[
     }
     leaves.push({ pathNames, command });
   } else {
-    // A doc-only command with neither subcommands nor a binding: let clap show help.
-    calls.push(['subcommand_required', [lit('true')]]);
-    calls.push(['arg_required_else_help', [lit('true')]]);
+    // A non-API "runnable leaf" (dev/build/…): a real clap leaf — positionals +
+    // local flags, NO subcommand_required — recorded as an action path. Behavior
+    // is bound via the `Actions` seam in src/custom/mod.rs and dispatched by
+    // gen::cli::run (after custom commands, before the x-openapi handlers).
+    for (const arg of command.arguments || []) {
+      state.hasArg = true;
+      calls.push(['arg', [renderPositionalArg(arg, true)]]);
+    }
+    for (const flagVal of renderFlagArgs(buildLocalFlags(command))) {
+      state.hasArg = true;
+      calls.push(['arg', [flagVal]]);
+    }
+    state.actionPaths.push(pathNames);
   }
 
   return chain(`Command::new(${JSON.stringify(command.name)})`, calls);
@@ -56,12 +72,14 @@ export interface ResourceFile {
   modName: string;
   /** The raw command name, for the dispatch match in gen/cli.rs. */
   cmdName: string;
+  /** Non-API runnable-leaf paths in this resource's subtree (drives the `Actions` dispatch). */
+  actionPaths: string[][];
 }
 
 /** Render one `src/gen/cmd/<resource>.rs` for a top-level command + its subtree. */
 export function renderResourceFile(topCommand: Command): ResourceFile {
   const leaves: Leaf[] = [];
-  const state = { hasArg: false };
+  const state: ChainState = { hasArg: false, actionPaths: [] };
   const tree = renderCommandChain(topCommand, [topCommand.name], leaves, state);
 
   const handlers: RenderedHandler[] = [];
@@ -96,9 +114,11 @@ ${indent(matchBody, 2)}
 
   const uses = new Uses().add('std::process::ExitCode');
   uses.add(state.hasArg ? 'clap::{Arg, ArgMatches, Command}' : 'clap::{ArgMatches, Command}');
-  uses.add('crate::gen::runtime::{self, CliOverrides, Context}');
+  // `self` (the runtime module) is only referenced by x-openapi handlers; a
+  // pure-local resource has none, so importing it would be an unused-import warning.
+  uses.add(leaves.length ? 'crate::gen::runtime::{self, CliOverrides, Context}' : 'crate::gen::runtime::{CliOverrides, Context}');
   const content = rsFile(uses, [commandFn, runFn, ...handlers.map((h) => h.code)]);
 
   const modName = snakeCase(topCommand.name);
-  return { path: `src/gen/cmd/${modName}.rs`, content, modName, cmdName: topCommand.name };
+  return { path: `src/gen/cmd/${modName}.rs`, content, modName, cmdName: topCommand.name, actionPaths: state.actionPaths };
 }

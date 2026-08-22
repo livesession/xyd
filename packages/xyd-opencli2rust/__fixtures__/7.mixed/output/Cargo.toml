@@ -1,0 +1,17 @@
+# Generated once by opencli2rust — yours to edit; regeneration never overwrites it.
+
+[package]
+name = "sample_api"
+version = "1.2.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4", features = ["string"] }
+percent-encoding = "2"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+serde_json = "1"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+[[bin]]
+name = "sample-api"
+path = "src/main.rs"

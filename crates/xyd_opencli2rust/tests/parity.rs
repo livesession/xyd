@@ -87,3 +87,11 @@ fn nested() {
 fn body_flatten() {
     run_case("4.body-flatten");
 }
+#[test]
+fn local_tool() {
+    run_case("6.local-tool");
+}
+#[test]
+fn mixed() {
+    run_case("7.mixed");
+}
