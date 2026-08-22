@@ -1,0 +1,32 @@
+{
+  "name": "@xyd-js/typespec-opencli",
+  "version": "0.0.0",
+  "description": "TypeSpec library + emitter that compiles a CLI surface (.tsp) into an OpenCLI document.",
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "tspMain": "./lib/main.tsp",
+  "exports": {
+    ".": {
+      "typespec": "./lib/main.tsp",
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    }
+  },
+  "files": [
+    "lib/*.tsp",
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest"
+  },
+  "peerDependencies": {
+    "@typespec/compiler": "^1.13.0"
+  },
+  "devDependencies": {
+    "@typespec/compiler": "^1.13.0",
+    "@xyd-js/opencli": "workspace:*",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.8"
+  }
+}
