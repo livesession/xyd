@@ -116,17 +116,38 @@ jobs:
           echo "📦 Publishing xyd-js@0.0.0-${{ steps.version.outputs.CANARY_VERSION }} with canary tag"
           npm publish --tag canary
 
-  # 2) Build the self-contained binaries for every target (reusable workflow).
+  # 2) Build the self-contained BUN binaries for every target (reusable workflow).
+  #    Uploads artifacts named `xyd-<triple>` — the current stable-channel binary.
   binaries:
     name: 🧱 Build binaries
     uses: ./.github/workflows/build-binaries.yml
     with:
       ref: ${{ github.event.inputs.branch || github.ref }}
 
+  # 2b) STAGED: build the NEW self-contained RUST binaries (crates/xyd_cli, embeds
+  #     + drives the bun engine). Uploads artifacts named `xyd-native-<triple>` so
+  #     they sit ALONGSIDE the bun `xyd-<triple>` above without clobbering them —
+  #     canary consumers can opt into the Rust binary while stable stays on bun.
+  #
+  #     FLIP PROCEDURE (canary → stable, at parity):
+  #       • rename this workflow's upload artifact `xyd-native-<triple>` →
+  #         `xyd-<triple>` (build-native-binaries.yml, `matrix.artifact`);
+  #       • swap the `binaries` job above to call build-native-binaries.yml and
+  #         retire build-binaries.yml (also in cli-release.yml);
+  #       • install.sh + the `xyd-<os>-<arch>` asset name stay UNCHANGED.
+  native-binaries:
+    name: 🦀 Build native (Rust) binaries
+    uses: ./.github/workflows/build-native-binaries.yml
+    with:
+      ref: ${{ github.event.inputs.branch || github.ref }}
+
   # 3) Create the GitHub Release (prerelease) and attach the compiled binaries.
+  #    Both `xyd-*` (bun) and `xyd-native-*` (Rust) are attached — the download
+  #    pattern `xyd-*` matches both, and their per-triple filenames are distinct so
+  #    `merge-multiple` never collides.
   release:
     name: 🏷️ Canary GitHub Release
-    needs: [ publish, binaries ]
+    needs: [ publish, binaries, native-binaries ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -158,6 +179,11 @@ jobs:
             ```
 
             **Self-contained binaries** (node-free) are attached below — download the one for your platform, `chmod +x`, and run `xyd build` / `xyd dev`.
+
+            - `xyd-<os>-<arch>` — the current **bun** engine binary (what `install.sh` fetches).
+            - `xyd-native-<os>-<arch>` — the **staged Rust** binary (embeds + drives the bun engine). Opt-in preview; not yet wired into `install.sh`.
           prerelease: true
           make_latest: false
+          # `xyd-*` matches BOTH the bun `xyd-<triple>` and the staged Rust
+          # `xyd-native-<triple>` assets (distinct per-triple filenames → no clash).
           files: binaries/xyd-*
