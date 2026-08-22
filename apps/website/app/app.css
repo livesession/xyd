@@ -62,9 +62,20 @@ body {
   }
 }
 
-/* /download-canary uses a larger, more spaced-out dot grid. */
-body.download-canary-page {
+/* /download-canary paints its own larger 40px dot grid on the page wrapper, so
+   it is correct during SSR/prerender (no post-hydration flash from a JS-toggled
+   body class). The opaque base color hides the body's default 12px dots beneath.
+   --dot-color / --dot-size / --dot-stop inherit from the html,body rule above. */
+.download-canary-bg {
   --dot-step: 40px;
+  background-color: rgb(242, 245, 250);
+  background-size: var(--dot-step) var(--dot-step);
+  background-position: calc(50% + var(--dot-step) / 2) 0;
+  background-image: radial-gradient(
+    var(--dot-step) circle,
+    var(--dot-color) var(--dot-stop),
+    transparent var(--dot-size)
+  );
 }
 
 body.scrolled {

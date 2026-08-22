@@ -193,15 +193,10 @@ export function PageDownloadCanary({ data }: { data: CanaryReleaseData }) {
     setOs(detectOs());
   }, []);
 
-  // Scope a larger 40px dot grid to this page (the dotted background lives on
-  // <body> in app.css; overriding --dot-step via a body class re-tiles it).
-  useEffect(() => {
-    document.body.classList.add("download-canary-page");
-    return () => document.body.classList.remove("download-canary-page");
-  }, []);
-
   return (
-    <div className="flex min-h-screen flex-col">
+    // `download-canary-bg` paints the larger 40px dot grid on the wrapper itself
+    // (see app.css) so it is correct in the prerendered HTML — no post-hydration flash.
+    <div className="download-canary-bg flex min-h-screen flex-col">
       <Navbar />
 
       <main className="flex-1 px-6 pb-16 pt-40 sm:pt-48 lg:px-8">
