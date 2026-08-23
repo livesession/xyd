@@ -90,7 +90,7 @@ execFileSync(
 );
 
 // ── Completion goldens ───────────────────────────────────────────────────────
-// Regenerate the Rust completion byte-parity goldens (crates/xyd_cli/src/custom/
+// Regenerate the Rust completion byte-parity goldens (crates/xyd_cli/src/v0/
 // completion/testdata/xyd.{zsh,fish}) from the freshly-fanned opencli.json using the
 // canonical TS generators. The native Rust generators must reproduce these; a
 // `#[cfg(test)]` in the crate asserts equality and CI `git diff --exit-code`s them.

@@ -5,7 +5,7 @@
 // a temp Mintlify docs project (minimal docs.json + the input as `page.mdx`), run the built
 // xyd CLI `migrateme` (the actual MDX→Markdown transform), and capture the produced
 // `page.md` as `<case>/expected.md`. The native Rust content port
-// (crates/xyd_cli/src/custom/migrateme/mintlify/content.rs + serialize.rs) targets these.
+// (crates/xyd_cli/src/v0/migrateme/mintlify/content.rs + serialize.rs) targets these.
 //
 // Byte-parity is the goal for these CURATED, remark-canonical shapes; arbitrary real-world
 // prose falls back to semantic equivalence (see the plan). The migrator prompts (askForStart)
@@ -33,7 +33,7 @@ const testdata = join(
   'crates',
   'xyd_cli',
   'src',
-  'custom',
+  'v0',
   'migrateme',
   'mintlify',
   'content-testdata',

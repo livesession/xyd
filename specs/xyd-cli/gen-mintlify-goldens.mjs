@@ -5,7 +5,7 @@
 // config, plus any referenced asset files), copy it to a temp dir, run the built xyd CLI
 // `migrateme` (the actual `mintlifyMigrator`) against the copy, and capture the resulting
 // xyd `docs.json` as `<case>/expected.json`. The native Rust settings port
-// (crates/xyd_cli/src/custom/migrateme/mintlify/settings.rs) must byte-match these; a
+// (crates/xyd_cli/src/v0/migrateme/mintlify/settings.rs) must byte-match these; a
 // `#[cfg(test)]` asserts it and CI `git diff --exit-code`s the goldens.
 //
 // `migrateme` prompts (askForStart) for a local path, so we feed `y\n` on stdin. The
@@ -33,7 +33,7 @@ const testdata = join(
   'crates',
   'xyd_cli',
   'src',
-  'custom',
+  'v0',
   'migrateme',
   'mintlify',
   'testdata',
