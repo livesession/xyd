@@ -4,33 +4,33 @@
 
 import { GENERATED_HEADER } from './rslit';
 
-export function renderMain(hasActions: boolean): string {
+export function renderMain(hasActions: boolean, moduleName = 'gen', implModule = 'custom'): string {
   if (hasActions) {
     return `${GENERATED_HEADER}
 
-mod custom;
-mod gen;
+mod ${implModule};
+mod ${moduleName};
 
 #[tokio::main]
 async fn main() -> std::process::ExitCode {
-    let mut commands = gen::runtime::CustomCommands::new();
-    custom::register(&mut commands);
-    let mut actions = gen::runtime::Actions::new();
-    custom::actions(&mut actions);
-    gen::cli::run(custom::overrides(), commands, actions).await
+    let mut commands = ${moduleName}::runtime::CustomCommands::new();
+    ${implModule}::register(&mut commands);
+    let mut actions = ${moduleName}::runtime::Actions::new();
+    ${implModule}::actions(&mut actions);
+    ${moduleName}::cli::run(${implModule}::overrides(), commands, actions).await
 }
 `;
   }
   return `${GENERATED_HEADER}
 
-mod custom;
-mod gen;
+mod ${implModule};
+mod ${moduleName};
 
 #[tokio::main]
 async fn main() -> std::process::ExitCode {
-    let mut commands = gen::runtime::CustomCommands::new();
-    custom::register(&mut commands);
-    gen::cli::run(custom::overrides(), commands).await
+    let mut commands = ${moduleName}::runtime::CustomCommands::new();
+    ${implModule}::register(&mut commands);
+    ${moduleName}::cli::run(${implModule}::overrides(), commands).await
 }
 `;
 }

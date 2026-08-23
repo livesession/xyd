@@ -35,35 +35,48 @@ pub fn custom_registry_rs() -> String {
 pub fn actions_rs() -> String {
     blobs::ACTIONS_RS.to_string()
 }
-/// `src/custom/mod.rs` scaffold — adds the `actions()` seam (fn + doc + import)
-/// when the doc has non-API runnable leaves. Byte-identical to the base otherwise.
-pub fn custom_scaffold_rs(has_actions: bool) -> String {
-    if !has_actions {
-        return blobs::CUSTOM_SCAFFOLD_RS.to_string();
-    }
-    blobs::CUSTOM_SCAFFOLD_RS
-        .replace(
-            "//!    registered on an existing path takes over that command's behavior.\n",
-            "//!    registered on an existing path takes over that command's behavior.\n//!  * [`actions`] — bind behavior to the generated non-API leaves (dev/build/…).\n",
-        )
-        .replace(
-            "use crate::gen::runtime::{CliOverrides, CustomCommands};",
-            "use crate::gen::runtime::{Actions, CliOverrides, CustomCommands};",
-        )
-        .replace(
-            "\n\npub fn overrides() -> Custom {",
-            "\n\n/// Bind behavior to the generated non-API leaves. Called by the generated `main`.\npub fn actions(actions: &mut Actions) {\n    let _ = actions;\n    // Example — implement the `dev` leaf:\n    //\n    // actions.on(&[\"dev\"], |_ctx, _m| async move {\n    //     println!(\"dev\");\n    //     Ok(())\n    // });\n}\n\npub fn overrides() -> Custom {",
-        )
+/// `src/<impl_module>/mod.rs` scaffold — adds the `actions()` seam (fn + doc + import)
+/// when the doc has non-API runnable leaves, and retargets the generated-module use
+/// path. Byte-identical to the base blob when `has_actions == false && module == "gen"`.
+pub fn custom_scaffold_rs(has_actions: bool, module: &str) -> String {
+    let base = if !has_actions {
+        blobs::CUSTOM_SCAFFOLD_RS.to_string()
+    } else {
+        blobs::CUSTOM_SCAFFOLD_RS
+            .replace(
+                "//!    registered on an existing path takes over that command's behavior.\n",
+                "//!    registered on an existing path takes over that command's behavior.\n//!  * [`actions`] — bind behavior to the generated non-API leaves (dev/build/…).\n",
+            )
+            .replace(
+                "use crate::gen::runtime::{CliOverrides, CustomCommands};",
+                "use crate::gen::runtime::{Actions, CliOverrides, CustomCommands};",
+            )
+            .replace(
+                "\n\npub fn overrides() -> Custom {",
+                "\n\n/// Bind behavior to the generated non-API leaves. Called by the generated `main`.\npub fn actions(actions: &mut Actions) {\n    let _ = actions;\n    // Example — implement the `dev` leaf:\n    //\n    // actions.on(&[\"dev\"], |_ctx, _m| async move {\n    //     println!(\"dev\");\n    //     Ok(())\n    // });\n}\n\npub fn overrides() -> Custom {",
+            )
+    };
+    // Retarget the generated-module use path. `crate::gen::` never appears inside any
+    // other token, so this is a no-op when `module == "gen"`.
+    base.replace("crate::gen::", &format!("crate::{module}::"))
 }
 pub fn gen_mod_rs() -> String {
     blobs::GEN_MOD_RS.to_string()
 }
-pub fn main_rs(has_actions: bool) -> String {
-    if has_actions {
-        blobs::MAIN_LOCAL_RS.to_string()
+/// `src/main.rs` — the wiring seam. Retargets the generated (`gen`) and impl
+/// (`custom`) module tokens; a no-op when `module == "gen" && impl_mod == "custom"`.
+pub fn main_rs(has_actions: bool, module: &str, impl_mod: &str) -> String {
+    let base = if has_actions {
+        blobs::MAIN_LOCAL_RS
     } else {
-        blobs::MAIN_RS.to_string()
-    }
+        blobs::MAIN_RS
+    };
+    // Token-safe: `mod gen;`/`mod custom;` are unique; `gen::` never occurs inside
+    // "generated" and `custom::` never inside "CustomCommands" (both lack `::`).
+    base.replace("mod gen;", &format!("mod {module};"))
+        .replace("mod custom;", &format!("mod {impl_mod};"))
+        .replace("gen::", &format!("{module}::"))
+        .replace("custom::", &format!("{impl_mod}::"))
 }
 
 /// One environment-based auth attach block, or None for an unrecognized kind.

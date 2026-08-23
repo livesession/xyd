@@ -406,7 +406,7 @@ impl Actions {
 }
 
 /** User-owned scaffold: `src/custom/mod.rs` (written once, `skipIfExists`). */
-export function customScaffoldRs(hasActions: boolean): string {
+export function customScaffoldRs(hasActions: boolean, moduleName = 'gen'): string {
   const seamDoc = hasActions
     ? `//!  * [\`register\`] — add fully custom commands anywhere in the tree; a command
 //!    registered on an existing path takes over that command's behavior.
@@ -414,8 +414,8 @@ export function customScaffoldRs(hasActions: boolean): string {
     : `//!  * [\`register\`] — add fully custom commands anywhere in the tree; a command
 //!    registered on an existing path takes over that command's behavior.`;
   const useLine = hasActions
-    ? 'use crate::gen::runtime::{Actions, CliOverrides, CustomCommands};'
-    : 'use crate::gen::runtime::{CliOverrides, CustomCommands};';
+    ? `use crate::${moduleName}::runtime::{Actions, CliOverrides, CustomCommands};`
+    : `use crate::${moduleName}::runtime::{CliOverrides, CustomCommands};`;
   const actionsFn = hasActions
     ? `
 /// Bind behavior to the generated non-API leaves. Called by the generated \`main\`.

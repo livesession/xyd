@@ -122,8 +122,8 @@ pub struct ResourceFile {
     pub action_paths: Vec<Vec<String>>,
 }
 
-/// Render one `src/gen/cmd/<resource>.rs` for a top-level command + its subtree.
-pub fn render_resource_file(top_command: &Value) -> ResourceFile {
+/// Render one `src/<module>/cmd/<resource>.rs` for a top-level command + its subtree.
+pub fn render_resource_file(top_command: &Value, module: &str) -> ResourceFile {
     let top_name = top_command
         .get("name")
         .and_then(|n| n.as_str())
@@ -188,11 +188,12 @@ pub fn render_resource_file(top_command: &Value) -> ResourceFile {
     }]);
     // `self` (the runtime module) is only referenced by x-openapi handlers; a
     // pure-local resource has none, so importing it would be an unused-import warning.
-    uses.add(&[if leaves.is_empty() {
-        "crate::gen::runtime::{CliOverrides, Context}"
+    let runtime_use = if leaves.is_empty() {
+        format!("crate::{module}::runtime::{{CliOverrides, Context}}")
     } else {
-        "crate::gen::runtime::{self, CliOverrides, Context}"
-    }]);
+        format!("crate::{module}::runtime::{{self, CliOverrides, Context}}")
+    };
+    uses.add(&[runtime_use.as_str()]);
 
     let mut decls = vec![command_fn, run_fn];
     decls.extend(handlers.into_iter().map(|h| h.code));
@@ -200,7 +201,7 @@ pub fn render_resource_file(top_command: &Value) -> ResourceFile {
 
     let mod_name = snake_case(&top_name);
     ResourceFile {
-        path: format!("src/gen/cmd/{mod_name}.rs"),
+        path: format!("src/{module}/cmd/{mod_name}.rs"),
         content,
         mod_name,
         cmd_name: top_name,

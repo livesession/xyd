@@ -76,8 +76,8 @@ export interface ResourceFile {
   actionPaths: string[][];
 }
 
-/** Render one `src/gen/cmd/<resource>.rs` for a top-level command + its subtree. */
-export function renderResourceFile(topCommand: Command): ResourceFile {
+/** Render one `src/<moduleName>/cmd/<resource>.rs` for a top-level command + its subtree. */
+export function renderResourceFile(topCommand: Command, moduleName = 'gen'): ResourceFile {
   const leaves: Leaf[] = [];
   const state: ChainState = { hasArg: false, actionPaths: [] };
   const tree = renderCommandChain(topCommand, [topCommand.name], leaves, state);
@@ -116,9 +116,13 @@ ${indent(matchBody, 2)}
   uses.add(state.hasArg ? 'clap::{Arg, ArgMatches, Command}' : 'clap::{ArgMatches, Command}');
   // `self` (the runtime module) is only referenced by x-openapi handlers; a
   // pure-local resource has none, so importing it would be an unused-import warning.
-  uses.add(leaves.length ? 'crate::gen::runtime::{self, CliOverrides, Context}' : 'crate::gen::runtime::{CliOverrides, Context}');
+  uses.add(
+    leaves.length
+      ? `crate::${moduleName}::runtime::{self, CliOverrides, Context}`
+      : `crate::${moduleName}::runtime::{CliOverrides, Context}`,
+  );
   const content = rsFile(uses, [commandFn, runFn, ...handlers.map((h) => h.code)]);
 
   const modName = snakeCase(topCommand.name);
-  return { path: `src/gen/cmd/${modName}.rs`, content, modName, cmdName: topCommand.name, actionPaths: state.actionPaths };
+  return { path: `src/${moduleName}/cmd/${modName}.rs`, content, modName, cmdName: topCommand.name, actionPaths: state.actionPaths };
 }
