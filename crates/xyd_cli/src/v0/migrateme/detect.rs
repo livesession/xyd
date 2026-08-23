@@ -6,7 +6,7 @@
 use std::path::Path;
 
 use super::mintlify;
-use crate::gen::runtime::Error;
+use crate::opencli::runtime::Error;
 
 /// Detect the docs framework in `docs_path` and run its migration.
 pub async fn run(docs_path: &Path) -> Result<(), Error> {

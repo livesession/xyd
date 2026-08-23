@@ -4,10 +4,10 @@ use std::process::ExitCode;
 
 use clap::{ArgMatches, Command};
 
-use crate::gen::runtime::{CliOverrides, Context};
+use crate::opencli::runtime::{CliOverrides, Context};
 
 pub fn command() -> Command {
-    Command::new("build").about("Build your docs")
+    Command::new("serve").about("Serve your built docs in production mode")
 }
 
 pub async fn run<O: CliOverrides>(

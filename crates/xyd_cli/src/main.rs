@@ -1,18 +1,18 @@
 // Hand-owned (protected by .sdkignore). The generated command router lives in
-// src/gen/** (regenerated from opencli.json by regen.mjs). This shim mirrors the
+// src/opencli/** (regenerated from opencli.json by regen.mjs). This shim mirrors the
 // current TypeScript `cli.ts` entry point — `opensdk` raw passthrough, default
 // command `dev`, and `XYD_CLI=1` — applied BEFORE clap sees the args, then hands
-// off to the generated `gen::cli::run`.
+// off to the generated `opencli::cli::run`.
 
-mod custom;
+mod v0;
 
 // The generated tree vendors a full HTTP runtime (reqwest, path_escape,
 // CliOverrides hooks, run_request) that a local tool like xyd never exercises,
 // and emits single-arm dispatch matches. Scope those dead-code / clippy lints to
-// `gen` only — hand-owned `custom` stays fully linted — so the crate builds under
+// `opencli` only — hand-owned `v0` stays fully linted — so the crate builds under
 // `-D warnings` without editing the generated "DO NOT EDIT" files.
 #[allow(dead_code, unused_imports, clippy::match_single_binding)]
-mod gen;
+mod opencli;
 
 use std::process::ExitCode;
 
@@ -76,26 +76,26 @@ async fn main() -> ExitCode {
 
     // (c) Normal path: hand off to the generated router exactly as the generated
     // `main` did. It reads the real argv, which we deliberately left untouched.
-    let mut commands = gen::runtime::CustomCommands::new();
-    custom::register(&mut commands);
-    let mut actions = gen::runtime::Actions::new();
-    custom::actions(&mut actions);
-    gen::cli::run(custom::overrides(), commands, actions).await
+    let mut commands = opencli::runtime::CustomCommands::new();
+    v0::register(&mut commands);
+    let mut actions = opencli::runtime::Actions::new();
+    opencli::runtime::bind::<v0::Cli>(&mut actions);
+    opencli::cli::run(v0::overrides(), commands, actions).await
 }
 
 /// Run one generated non-API leaf action directly, outside clap — used by the
 /// argv shim for `dev`/`build` (whose global/build flags aren't in the clap tree)
 /// and the `opensdk` passthrough. These actions read their flags from raw argv,
-/// so the empty `ArgMatches` passed here is unused. Behavior binds in
-/// `src/custom/mod.rs`; an unbound leaf reports the standard "add actions.on(...)"
-/// hint via the override error path.
+/// so the empty `ArgMatches` passed here is unused. Behavior is implemented in
+/// `src/v0/mod.rs` (the `Commands` trait impl); an unbound leaf reports the standard
+/// "not implemented" hint via the override error path.
 async fn run_action(path: &[&str]) -> ExitCode {
-    use gen::runtime::CliOverrides;
+    use opencli::runtime::CliOverrides;
 
-    let ctx = gen::runtime::Context::from_env();
-    let mut actions = gen::runtime::Actions::new();
-    custom::actions(&mut actions);
-    let overrides = custom::overrides();
+    let ctx = opencli::runtime::Context::from_env();
+    let mut actions = opencli::runtime::Actions::new();
+    opencli::runtime::bind::<v0::Cli>(&mut actions);
+    let overrides = v0::overrides();
 
     let owned: Vec<String> = path.iter().map(|s| s.to_string()).collect();
     let matches = empty_matches();

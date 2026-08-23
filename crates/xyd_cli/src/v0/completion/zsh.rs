@@ -144,7 +144,7 @@ mod tests {
     use serde_json::Value;
 
     use super::{esc_zsh_describe, esc_zsh_spec, opt_to_spec, zsh};
-    use crate::custom::completion::tree::OptionC;
+    use crate::v0::completion::tree::OptionC;
 
     fn spec() -> Value {
         serde_json::from_str(include_str!("../../../opencli.json")).unwrap()

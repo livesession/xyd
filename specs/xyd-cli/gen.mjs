@@ -72,7 +72,14 @@ for (const target of targets) {
 // swapped for its native Rust equivalent without touching the crate.
 const crateDir = join(repoRoot, 'crates', 'xyd_cli');
 const spec = JSON.parse(readFileSync(join(crateDir, 'opencli.json'), 'utf8'));
-const files = opencli2rust(spec, { binName: 'xyd', crateName: 'xyd_cli' });
+const files = opencli2rust(spec, {
+  binName: 'xyd',
+  crateName: 'xyd_cli',
+  // The generated command tree lives in src/opencli/**; the hand-owned behavior
+  // (CliOverrides + the generated `Commands` trait impl) lives in src/v0/**.
+  moduleName: 'opencli',
+  implModule: 'v0',
+});
 const result = await writeProject(files, crateDir, { generator: 'opencli2rust' });
 console.log(
   `opencli2rust → src/gen (written ${result.written?.length ?? 0}, ` +

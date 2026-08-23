@@ -4,7 +4,7 @@
 
 use std::path::{Path, PathBuf};
 
-use crate::custom::paths;
+use crate::v0::paths;
 
 /// Resolve a docs-source path: `.`/`./` → cwd, `~/…` → under `$HOME`, absolute → as-is,
 /// otherwise relative to cwd.

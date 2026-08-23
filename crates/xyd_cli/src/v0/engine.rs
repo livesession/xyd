@@ -25,7 +25,7 @@
 
 use std::path::PathBuf;
 
-use crate::gen::runtime::Error;
+use crate::opencli::runtime::Error;
 
 /// Resolve the JS-on-Bun engine binary. Resolution order:
 ///

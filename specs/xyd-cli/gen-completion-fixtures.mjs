@@ -2,7 +2,7 @@
 // Regenerate the Rust completion goldens from the SAME opencli.json the crate embeds,
 // using the canonical TS generators (@xyd-js/opencli-completion).
 //
-// The native Rust generators (crates/xyd_cli/src/custom/completion/{zsh,fish}.rs) must
+// The native Rust generators (crates/xyd_cli/src/v0/completion/{zsh,fish}.rs) must
 // reproduce these byte-for-byte. A `#[cfg(test)]` in those modules asserts the Rust
 // output equals these committed goldens; CI re-runs THIS script and `git diff --exit-code`
 // so a change to the TS generator without regenerating the goldens fails.
@@ -25,7 +25,7 @@ const repoRoot = join(here, '..', '..');
 const crateDir = join(repoRoot, 'crates', 'xyd_cli');
 
 const spec = JSON.parse(readFileSync(join(crateDir, 'opencli.json'), 'utf8'));
-const outDir = join(crateDir, 'src', 'custom', 'completion', 'testdata');
+const outDir = join(crateDir, 'src', 'v0', 'completion', 'testdata');
 mkdirSync(outDir, { recursive: true });
 
 const targets = [

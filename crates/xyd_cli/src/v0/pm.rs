@@ -8,7 +8,7 @@
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-use crate::gen::runtime::Error;
+use crate::opencli::runtime::Error;
 
 /// Detect the package manager program (`npm` / `pnpm` / `bun`) to install with.
 pub fn detect_pm() -> &'static str {

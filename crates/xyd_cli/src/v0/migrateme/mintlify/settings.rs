@@ -693,7 +693,7 @@ mod tests {
     #[test]
     fn settings_byte_parity_against_goldens() {
         let testdata =
-            Path::new(env!("CARGO_MANIFEST_DIR")).join("src/custom/migrateme/mintlify/testdata");
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("src/v0/migrateme/mintlify/testdata");
         let mut cases: Vec<String> = fs::read_dir(&testdata)
             .unwrap()
             .flatten()

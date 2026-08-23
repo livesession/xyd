@@ -4,10 +4,10 @@ use std::process::ExitCode;
 
 use clap::{ArgMatches, Command};
 
-use crate::gen::runtime::{CliOverrides, Context};
+use crate::opencli::runtime::{CliOverrides, Context};
 
 pub fn command() -> Command {
-    Command::new("dev").about("Run your docs locally in development mode")
+    Command::new("install").about("Install the xyd framework manually")
 }
 
 pub async fn run<O: CliOverrides>(

@@ -7,7 +7,7 @@
 
 use std::path::{Path, PathBuf};
 
-use crate::gen::runtime::Error;
+use crate::opencli::runtime::Error;
 
 /// Parsed pieces of a GitHub URL (`{owner}/{repo}` + branch + optional subdirectory).
 pub struct GitHubRef {

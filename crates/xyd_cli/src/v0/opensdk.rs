@@ -14,7 +14,7 @@ use std::process::Command;
 
 use super::paths;
 use super::pm;
-use crate::gen::runtime::Error;
+use crate::opencli::runtime::Error;
 
 const OPENSDK_PACKAGE: &str = "@xyd-js/opensdk-cli";
 

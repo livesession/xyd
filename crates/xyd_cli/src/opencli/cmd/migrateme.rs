@@ -2,13 +2,18 @@
 
 use std::process::ExitCode;
 
-use clap::{ArgMatches, Command};
+use clap::{Arg, ArgMatches, Command};
 
-use crate::gen::runtime::{CliOverrides, Context};
+use crate::opencli::runtime::{CliOverrides, Context};
 
 pub fn command() -> Command {
-    Command::new("opensdk")
-        .about("Run the OpenSDK toolchain (requires `xyd components install opensdk`)")
+    Command::new("migrateme")
+        .about("Migrate your docs to the new xyd framework")
+        .arg(
+            Arg::new("path")
+                .help("Path to the docs directory to migrate")
+                .required(true),
+        )
 }
 
 pub async fn run<O: CliOverrides>(

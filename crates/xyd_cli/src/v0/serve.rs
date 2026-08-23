@@ -20,7 +20,7 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use super::engine;
-use crate::gen::runtime::Error;
+use crate::opencli::runtime::Error;
 
 /// Port used when neither `--port`/`-p` (argv) nor `PORT` (env) is set — matches
 /// serve.ts's `PORT || 3000`.

@@ -23,7 +23,7 @@ use std::path::Path;
 use serde_json::Value;
 
 use super::paths;
-use crate::gen::runtime::Error;
+use crate::opencli::runtime::Error;
 
 /// The embedded source-of-truth OpenCLI document (same file `completion opencli` prints).
 const OPENCLI_JSON: &str = include_str!("../../../opencli.json");

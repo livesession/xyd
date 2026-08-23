@@ -4,7 +4,7 @@
 // When the build-time env `XYD_ENGINE_PATH` points at the TARGET-MATCHED
 // `bun --compile` engine (`packages/xyd-cli/dist/xyd-<os>-<arch>`), this script
 // stages its bytes into `OUT_DIR/engine.bin` and emits `cfg(xyd_has_embedded_engine)`
-// so `src/custom/engine.rs` can `include_bytes!` + self-extract it. When
+// so `src/v0/engine.rs` can `include_bytes!` + self-extract it. When
 // `XYD_ENGINE_PATH` is UNSET, it embeds NOTHING — plain `cargo build` for local
 // development stays fast (no 233 MB blob baked in), and `engine.rs` falls back to
 // the runtime `XYD_ENGINE_PATH` override / the clear "not embedded" error.

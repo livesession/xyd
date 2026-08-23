@@ -2,18 +2,12 @@
 
 use std::process::ExitCode;
 
-use clap::{Arg, ArgMatches, Command};
+use clap::{ArgMatches, Command};
 
-use crate::gen::runtime::{CliOverrides, Context};
+use crate::opencli::runtime::{CliOverrides, Context};
 
 pub fn command() -> Command {
-    Command::new("migrateme")
-        .about("Migrate your docs to the new xyd framework")
-        .arg(
-            Arg::new("path")
-                .help("Path to the docs directory to migrate")
-                .required(true),
-        )
+    Command::new("dev").about("Run your docs locally in development mode")
 }
 
 pub async fn run<O: CliOverrides>(

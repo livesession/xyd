@@ -13,7 +13,7 @@ mod resource;
 
 use clap::ArgMatches;
 
-use crate::gen::runtime::Error;
+use crate::opencli::runtime::Error;
 
 /// `xyd migrateme <path>` — entry flow (mirrors `migrateme()` in migrateme.ts): a GitHub
 /// URL is downloaded/extracted (after a clean prompt) then migrated; a local path is

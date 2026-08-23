@@ -12,7 +12,7 @@ use std::path::{Path, PathBuf};
 use markdown::mdast::{AttributeContent, AttributeValue, Node};
 
 use super::serialize::{serialize, Md, StepItem, TabItem};
-use crate::gen::runtime::Error;
+use crate::opencli::runtime::Error;
 
 /// Find every `.mdx` file under `docs_path`, convert it to `.md`, and remove the original
 /// (mirrors `migrateContent` + `migrateMdxFile`). A file that fails to convert falls back
@@ -704,7 +704,7 @@ mod tests {
     #[test]
     fn content_byte_parity_against_goldens() {
         let testdata = Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("src/custom/migrateme/mintlify/content-testdata");
+            .join("src/v0/migrateme/mintlify/content-testdata");
         let mut cases: Vec<String> = fs::read_dir(&testdata)
             .unwrap()
             .flatten()

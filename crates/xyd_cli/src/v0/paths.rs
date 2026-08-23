@@ -4,7 +4,7 @@
 
 use std::path::PathBuf;
 
-use crate::gen::runtime::Error;
+use crate::opencli::runtime::Error;
 
 /// The user's home directory from `$HOME`. Errors when it is unset or empty, flowing
 /// through the standard `CliOverrides::print_error` path rather than panicking.

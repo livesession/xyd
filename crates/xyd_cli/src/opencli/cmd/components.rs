@@ -4,7 +4,7 @@ use std::process::ExitCode;
 
 use clap::{Arg, ArgMatches, Command};
 
-use crate::gen::runtime::{CliOverrides, Context};
+use crate::opencli::runtime::{CliOverrides, Context};
 
 pub fn command() -> Command {
     Command::new("components")

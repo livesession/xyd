@@ -4,10 +4,11 @@ use std::process::ExitCode;
 
 use clap::{ArgMatches, Command};
 
-use crate::gen::runtime::{CliOverrides, Context};
+use crate::opencli::runtime::{CliOverrides, Context};
 
 pub fn command() -> Command {
-    Command::new("install").about("Install the xyd framework manually")
+    Command::new("opensdk")
+        .about("Run the OpenSDK toolchain (requires `xyd components install opensdk`)")
 }
 
 pub async fn run<O: CliOverrides>(

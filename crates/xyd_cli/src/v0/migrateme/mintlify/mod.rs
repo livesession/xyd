@@ -11,7 +11,7 @@ mod settings;
 
 use std::path::Path;
 
-use crate::gen::runtime::Error;
+use crate::opencli::runtime::Error;
 
 /// True when `file_name` (already lowercased) is a Mintlify config (`docs.json` /
 /// `mint.json`) whose `$schema` is Mintlify's.
