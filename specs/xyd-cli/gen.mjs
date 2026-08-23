@@ -83,3 +83,13 @@ console.log(
 // runs `cargo fmt --all -- --check`, so normalize the generated source to match.
 execFileSync('cargo', ['fmt', '-p', 'xyd_cli'], { cwd: crateDir, stdio: 'inherit' });
 console.log('→ cargo fmt -p xyd_cli');
+
+// ── Completion goldens ───────────────────────────────────────────────────────
+// Regenerate the Rust completion byte-parity goldens (crates/xyd_cli/src/custom/
+// completion/testdata/xyd.{zsh,fish}) from the freshly-fanned opencli.json using the
+// canonical TS generators. The native Rust generators must reproduce these; a
+// `#[cfg(test)]` in the crate asserts equality and CI `git diff --exit-code`s them.
+execFileSync(process.execPath, [join(here, 'gen-completion-fixtures.mjs')], {
+  cwd: here,
+  stdio: 'inherit',
+});

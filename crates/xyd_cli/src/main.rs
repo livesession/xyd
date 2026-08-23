@@ -62,7 +62,12 @@ async fn main() -> ExitCode {
             Some("dev") | None => return run_action(&["dev"]).await,
             Some("build") => return run_action(&["build"]).await,
             Some("serve") => return run_action(&["serve"]).await,
-            // A known command other than dev/build/serve → hand off to clap (below).
+            // `completion` is native and reads its sub/shell tokens from raw argv:
+            // route it here so `completion install <shell>` (a second positional not in
+            // the clap tree) and bare `completion` (auto-detect $SHELL) aren't rejected
+            // by clap. `completion --help`/`--version` still fall through (wants_builtin).
+            Some("completion") => return run_action(&["completion"]).await,
+            // A known command other than the above → hand off to clap (below).
             Some(cmd) if KNOWN_COMMANDS.contains(&cmd) => {}
             // Unknown first token → default to `dev` (TS-CLI parity).
             Some(_) => return run_action(&["dev"]).await,

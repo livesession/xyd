@@ -1,14 +1,20 @@
 //! Hand-owned (protected by .sdkignore): behavior for the generated `xyd` CLI.
 //!
 //! The command SURFACE is generated from opencli.json into src/gen/**; behavior
-//! for the non-API leaves (`dev`/`build`/…) binds here via [`actions`]. `dev`/`build`
-//! drive the JS-on-Bun render engine (spawned via [`engine`]); `completion opencli`
-//! and `serve` (the static-site case) are NATIVE Rust; and every remaining leaf
-//! forwards its raw argv to the (embedded) engine — the engine is the full CLI, so
-//! `engine <original args>` reproduces the command exactly. No "not implemented"
-//! ever reaches a user.
+//! for the non-API leaves binds here via [`actions`]. `dev`/`build` drive the JS-on-Bun
+//! render engine (spawned via [`engine`]). NATIVE Rust leaves: `serve` (the static-site
+//! case), `completion` (zsh/fish/install/opencli), `opensdk`, and `components
+//! install/uninstall opensdk`. The rest — `install`, `components install diagrams`, and
+//! `migrateme` — forward their raw argv to the (embedded) engine, which is the full CLI,
+//! so `engine <original args>` reproduces the command exactly. No "not implemented" ever
+//! reaches a user.
 
+mod completion;
 mod engine;
+mod migrateme;
+mod opensdk;
+mod paths;
+mod pm;
 mod serve;
 
 use clap::ArgMatches;
@@ -50,33 +56,48 @@ pub fn actions(actions: &mut Actions) {
         serve::run(serve::resolve_port()).await
     });
 
-    // `completion opencli` prints the embedded source-of-truth OpenCLI document
-    // (`node …/xyd-cli completion opencli` parity) — native, no engine needed.
-    // Every other shell (zsh/fish/install) forwards its raw argv to the engine.
-    actions.on(&["completion"], |_ctx, m: ArgMatches| async move {
-        match m.get_one::<String>("shell").map(String::as_str) {
-            Some("opencli") => {
-                print!("{}", include_str!("../../opencli.json"));
-                Ok(())
-            }
-            // zsh/fish/install (and anything else clap accepted) → engine.
-            Some(_) => engine::forward_to_engine().await,
-            None => Err(Error::Invalid(
-                "completion: missing <shell> argument".into(),
-            )),
-        }
+    // `completion` (zsh/fish/install/opencli) is NATIVE — it generates the shell
+    // scripts / prints the embedded OpenCLI doc directly from `opencli.json`, no engine
+    // needed. Routed here BEFORE clap by the `main.rs` shim so `completion install
+    // <shell>` (a second positional not in the clap tree) and bare `completion` (shell
+    // auto-detected from $SHELL) reach the handler; it reads the tokens from raw argv.
+    actions.on(&["completion"], |_ctx, _m: ArgMatches| async move {
+        completion::run().await
     });
 
-    // Everything not ported natively forwards its RAW argv to the embedded engine
-    // for instant parity (the engine is the full CLI). `opensdk` is routed here by
-    // the pre-clap shim in `main.rs`; the rest arrive through clap → `Actions`.
-    for path in [
-        &["install"][..],
-        &["components", "install"][..],
-        &["components", "uninstall"][..],
-        &["migrateme"][..],
-        &["opensdk"][..],
-    ] {
+    // `opensdk` runs the installed toolchain natively (raw passthrough, routed pre-clap
+    // in `main.rs`); `components install/uninstall opensdk` manage that component. Only
+    // the `opensdk` component is native — the `diagrams` component and `install` are
+    // documan-owned and forward to the engine.
+    actions.on(&["opensdk"], |_ctx, _m: ArgMatches| async move {
+        opensdk::run()
+    });
+    actions.on(
+        &["components", "install"],
+        |_ctx, m: ArgMatches| async move {
+            match m.get_one::<String>("component").map(String::as_str) {
+                Some("opensdk") => opensdk::install(),
+                _ => engine::forward_to_engine().await,
+            }
+        },
+    );
+    actions.on(
+        &["components", "uninstall"],
+        |_ctx, m: ArgMatches| async move {
+            match m.get_one::<String>("component").map(String::as_str) {
+                Some("opensdk") => opensdk::uninstall(),
+                other => Err(Error::Invalid(format!(
+                    "'{}' cannot be uninstalled (only: opensdk).",
+                    other.unwrap_or("")
+                ))),
+            }
+        },
+    );
+
+    // `install` (framework installer) and `components install diagrams` are documan
+    // features (readSettings / docs.ts eval + the bundled host template), and `migrateme`
+    // is not yet ported — all forward their RAW argv to the embedded engine (the full CLI).
+    for path in [&["install"][..], &["migrateme"][..]] {
         actions.on(path, |_ctx, _m: ArgMatches| async move {
             engine::forward_to_engine().await
         });
