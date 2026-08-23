@@ -16,7 +16,7 @@ async fn main() -> std::process::ExitCode {
     let mut commands = ${moduleName}::runtime::CustomCommands::new();
     ${implModule}::register(&mut commands);
     let mut actions = ${moduleName}::runtime::Actions::new();
-    ${implModule}::actions(&mut actions);
+    ${moduleName}::runtime::bind::<${implModule}::Custom>(&mut actions);
     ${moduleName}::cli::run(${implModule}::overrides(), commands, actions).await
 }
 `;

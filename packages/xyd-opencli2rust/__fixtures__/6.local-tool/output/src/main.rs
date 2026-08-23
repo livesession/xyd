@@ -8,6 +8,6 @@ async fn main() -> std::process::ExitCode {
     let mut commands = gen::runtime::CustomCommands::new();
     custom::register(&mut commands);
     let mut actions = gen::runtime::Actions::new();
-    custom::actions(&mut actions);
+    gen::runtime::bind::<custom::Custom>(&mut actions);
     gen::cli::run(custom::overrides(), commands, actions).await
 }

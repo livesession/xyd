@@ -22,8 +22,8 @@ use command::{render_resource_file, ResourceFile};
 use naming::{crate_name as to_crate_name, slug};
 use rslit::GENERATED_HEADER;
 use runtime::{
-    actions_rs, cargo_toml, config_rs, custom_registry_rs, custom_scaffold_rs, gen_mod_rs, http_rs,
-    main_rs, overrides_rs, runtime_mod_rs,
+    actions_rs, cargo_toml, commands_rs, config_rs, custom_registry_rs, custom_scaffold_rs,
+    gen_mod_rs, http_rs, main_rs, overrides_rs, runtime_mod_rs,
 };
 
 #[derive(Deserialize, Default)]
@@ -186,11 +186,15 @@ pub fn opencli2rust(spec: &Value, options: Option<Options>) -> FileMap {
             format!("src/{module_name}/runtime/actions.rs"),
             owned(actions_rs()),
         ));
+        files.push((
+            format!("src/{module_name}/runtime/commands.rs"),
+            owned(commands_rs(&action_paths)),
+        ));
     }
 
     files.push((
         format!("src/{impl_module}/mod.rs"),
-        scaffold(custom_scaffold_rs(has_actions, &module_name)),
+        scaffold(custom_scaffold_rs(has_actions, &module_name, &action_paths)),
     ));
 
     files

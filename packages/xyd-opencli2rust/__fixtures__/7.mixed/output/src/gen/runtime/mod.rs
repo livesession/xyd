@@ -5,12 +5,14 @@
 //! `CliOverrides` trait) and `custom.rs` (the `CustomCommands` registry).
 
 mod actions;
+pub mod commands;
 pub mod config;
 mod custom;
 mod http;
 mod overrides;
 
 pub use actions::Actions;
+pub use commands::{bind, Commands};
 pub use custom::CustomCommands;
 pub use http::{path_escape, Error, Request};
 pub use overrides::CliOverrides;

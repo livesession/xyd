@@ -10,6 +10,7 @@ import { GENERATED_HEADER } from './rslit';
 import {
   actionsRs,
   cargoToml,
+  commandsRs,
   configRs,
   customRegistryRs,
   customScaffoldRs,
@@ -73,9 +74,15 @@ export function opencli2rust(spec: OpencliSpecJson, options: Opencli2RustOptions
   files[`src/${moduleName}/runtime/config.rs`] = configRs(spec, binName, baseURL);
   files[`src/${moduleName}/runtime/overrides.rs`] = overridesRs();
   files[`src/${moduleName}/runtime/custom.rs`] = customRegistryRs();
-  if (hasActions) files[`src/${moduleName}/runtime/actions.rs`] = actionsRs();
+  if (hasActions) {
+    files[`src/${moduleName}/runtime/actions.rs`] = actionsRs();
+    files[`src/${moduleName}/runtime/commands.rs`] = commandsRs(actionPaths);
+  }
 
-  files[`src/${implModule}/mod.rs`] = { content: customScaffoldRs(hasActions, moduleName), writeMode: 'skipIfExists' };
+  files[`src/${implModule}/mod.rs`] = {
+    content: customScaffoldRs(hasActions, moduleName, actionPaths),
+    writeMode: 'skipIfExists',
+  };
 
   return files;
 }
