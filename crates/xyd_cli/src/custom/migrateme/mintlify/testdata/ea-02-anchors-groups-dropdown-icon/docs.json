@@ -1,0 +1,31 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Anchors",
+  "navigation": {
+    "anchors": [
+      {
+        "anchor": "API",
+        "icon": "code",
+        "groups": [
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api/users",
+              { "group": "Deep", "pages": ["api/deep/a", "api/deep/b"] }
+            ]
+          }
+        ]
+      },
+      { "anchor": "Support", "href": "https://support.example.com" }
+    ],
+    "dropdowns": [
+      {
+        "dropdown": "Products",
+        "icon": { "name": "box", "style": "solid" },
+        "groups": [
+          { "group": "P", "pages": ["products/p1", "products/p2"] }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    },
+    "appearance": {
+      "colors": {
+        "primary": "#aabbcc",
+        "dark": "#001122"
+      }
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Handbook",
+        "icon": "",
+        "page": ""
+      }
+    ],
+    "sidebar": [
+      "handbook/intro",
+      "handbook/sec/a",
+      {
+        "group": "Sub",
+        "pages": [
+          "handbook/sec/sub/x",
+          "handbook/sec/sub/y"
+        ]
+      }
+    ]
+  },
+  "components": {}
+}

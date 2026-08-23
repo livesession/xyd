@@ -1,0 +1,72 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Résources",
+        "icon": "book-open",
+        "page": "résources"
+      },
+      {
+        "title": "Blog",
+        "icon": "",
+        "href": "https://blog.example.com/posts?tag=news&sort=new#recent",
+        "float": "right"
+      },
+      {
+        "title": "MULTI   Space   ROUTE",
+        "icon": "",
+        "page": "multi-space-route"
+      }
+    ],
+    "sidebar": [
+      {
+        "route": "résources",
+        "pages": [
+          {
+            "group": "Docs",
+            "pages": [
+              "résources/guide/deep/path/here",
+              "résources/api"
+            ]
+          }
+        ]
+      },
+      {
+        "route": "multi-space-route",
+        "pages": [
+          {
+            "group": "X",
+            "pages": [
+              "multi-space-route/a",
+              "multi-space-route/b"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "components": {},
+  "seo": {
+    "metatags": {
+      "description": "He said \"hi\": really",
+      "og:locale": "en_US"
+    }
+  }
+}

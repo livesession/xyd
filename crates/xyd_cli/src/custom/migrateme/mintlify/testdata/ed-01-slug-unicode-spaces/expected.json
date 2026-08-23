@@ -1,0 +1,60 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    },
+    "appearance": {
+      "colors": {
+        "primary": "#0A0",
+        "light": "#0F0"
+      }
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "  Café   Menü  ",
+        "icon": "",
+        "page": "",
+        "href": "cafe/a"
+      },
+      {
+        "title": "MixED   CaSe   Título",
+        "icon": "",
+        "page": "",
+        "href": "mixed/x"
+      },
+      {
+        "title": "straße  ÜBER",
+        "icon": "",
+        "page": "",
+        "href": "ss/one"
+      }
+    ],
+    "sidebar": [
+      "-café-menü-",
+      "mixed-case-título",
+      "straße-über"
+    ]
+  },
+  "components": {},
+  "seo": {
+    "metatags": {
+      "og:title": "Time: 10:30, \"quoted\" value",
+      "og:description": "a:b:c ünïcode ✓",
+      "twitter:label1": "Read time"
+    }
+  }
+}

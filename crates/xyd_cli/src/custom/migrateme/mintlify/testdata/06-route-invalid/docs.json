@@ -1,0 +1,9 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Invalid",
+  "navigation": {
+    "tabs": [
+      { "tab": "Mixed", "groups": [ { "group": "G", "pages": ["alpha/one", "beta/two"] } ] }
+    ]
+  }
+}

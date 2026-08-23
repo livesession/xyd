@@ -1,0 +1,39 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    },
+    "logo": {
+      "light": "/public/media/logo-light.svg",
+      "dark": "media/logo-dark.svg",
+      "href": "https://aurora.example.com"
+    },
+    "favicon": "/public/media/favicon-dark.svg"
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Reference",
+        "icon": "",
+        "page": "",
+        "href": "reference/intro"
+      }
+    ],
+    "sidebar": [
+      "reference"
+    ]
+  },
+  "components": {}
+}

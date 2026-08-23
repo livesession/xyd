@@ -4,6 +4,8 @@
 //!   * S2 — `settings.rs`: `docs.json`/`mint.json` → xyd `docs.json` (byte-parity).
 //!   * S3 — `content.rs` + `serialize.rs`: `.mdx` → `.md` (MDX rewrite + serializer).
 
+mod settings;
+
 use std::path::Path;
 
 use crate::gen::runtime::Error;

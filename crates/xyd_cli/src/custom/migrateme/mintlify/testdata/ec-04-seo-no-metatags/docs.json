@@ -1,0 +1,6 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "SeoEmpty",
+  "navigation": { "dropdowns": [ { "dropdown": "Platform", "icon": { "name": "layers" }, "groups": [ { "group": "P", "pages": ["platform/p"] } ] } ] },
+  "seo": { "indexing": "navigable" }
+}

@@ -1,0 +1,75 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    },
+    "appearance": {
+      "colors": {
+        "primary": "#111",
+        "dark": "#000",
+        "light": "#fff"
+      }
+    }
+  },
+  "webeditor": {
+    "header": [
+      {
+        "title": "Blog",
+        "href": "https://blog.example.com",
+        "icon": "rss",
+        "float": "right"
+      }
+    ]
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Start",
+        "icon": "",
+        "page": "",
+        "href": "start/a"
+      }
+    ],
+    "sidebar": [
+      "start"
+    ]
+  },
+  "components": {
+    "footer": {
+      "social": {
+        "github": "https://github.com/x",
+        "linkedin": "https://linkedin.com/x"
+      },
+      "links": [
+        {
+          "header": "Resources",
+          "items": [
+            {
+              "label": "Docs",
+              "href": "/docs"
+            },
+            {
+              "label": "API",
+              "href": "/api"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "seo": {
+    "metatags": {
+      "og:title": "Brand",
+      "og:image": "/og.png"
+    }
+  }
+}

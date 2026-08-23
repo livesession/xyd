@@ -1,0 +1,42 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Products",
+        "icon": "box",
+        "page": "products"
+      }
+    ],
+    "sidebar": [
+      {
+        "route": "products",
+        "pages": [
+          {
+            "group": "P1",
+            "pages": [
+              "products/p1/a"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "components": {}
+}

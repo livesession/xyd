@@ -1,0 +1,34 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Docs",
+        "icon": "",
+        "page": ""
+      }
+    ],
+    "sidebar": [
+      "intro",
+      "adv/x",
+      "adv/y"
+    ]
+  },
+  "components": {}
+}

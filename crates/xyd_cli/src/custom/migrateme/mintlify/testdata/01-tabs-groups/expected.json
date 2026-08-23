@@ -1,0 +1,74 @@
+{
+  "theme": {
+    "name": "solar",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    },
+    "appearance": {
+      "colors": {
+        "primary": "#0068ff",
+        "light": "#88aaff"
+      }
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Guides",
+        "icon": "book",
+        "page": "guides"
+      },
+      {
+        "title": "Community",
+        "icon": "",
+        "href": "https://x.com/xyd",
+        "float": "right"
+      }
+    ],
+    "sidebar": [
+      {
+        "route": "guides",
+        "pages": [
+          {
+            "group": "Getting Started",
+            "pages": [
+              "guides/intro",
+              "guides/setup"
+            ]
+          },
+          {
+            "group": "Advanced",
+            "pages": [
+              "guides/adv/a",
+              "guides/adv/b"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "components": {
+    "footer": {
+      "social": {
+        "x": "https://x.com/xyd",
+        "github": "https://github.com/livesession/xyd"
+      }
+    }
+  },
+  "seo": {
+    "metatags": {
+      "og:title": "Demo"
+    }
+  }
+}

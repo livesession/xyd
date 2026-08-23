@@ -1,0 +1,77 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": [
+      {
+        "title": "Changelog",
+        "href": "https://example.com/changelog?page=2&per=50#latest",
+        "float": "right"
+      },
+      {
+        "title": "Status",
+        "href": "https://status.example.com/?region=eu#uptime",
+        "icon": "signal",
+        "float": "right"
+      }
+    ]
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "API Reference",
+        "icon": "",
+        "href": "https://api.example.com/v2?token=xyz&lang=en#section-3",
+        "float": "right"
+      },
+      {
+        "title": "Support",
+        "icon": "life-ring",
+        "href": "https://support.example.com/tickets?status=open&sort=desc#new",
+        "float": "right"
+      }
+    ],
+    "sidebar": []
+  },
+  "components": {
+    "footer": {
+      "social": {
+        "x": "https://x.com/acme?ref=footer",
+        "reddit": "https://reddit.com/r/acme#hot"
+      },
+      "links": [
+        {
+          "header": "Legal",
+          "items": [
+            {
+              "label": "Terms",
+              "href": "/legal/terms?v=2"
+            },
+            {
+              "label": "Privacy",
+              "href": "/legal/privacy#gdpr"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "seo": {
+    "metatags": {
+      "twitter:card": "summary_large_image",
+      "og:url": "https://example.com/?utm_source=docs&utm_medium=footer#home"
+    }
+  }
+}

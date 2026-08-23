@@ -1,0 +1,12 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Navbar",
+  "navigation": { "groups": [ { "group": "Main", "pages": ["main/a"] } ] },
+  "navbar": {
+    "links": [
+      { "label": "GitHub", "href": "https://github.com/o/r", "icon": { "name": "github" } },
+      { "label": "Community", "href": "https://community.example.com" },
+      { "label": "Blog", "href": "https://blog.example.com", "icon": "rss" }
+    ]
+  }
+}

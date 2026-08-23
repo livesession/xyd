@@ -1,0 +1,9 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Flat",
+  "navigation": {
+    "tabs": [
+      { "tab": "Docs", "pages": ["intro", "index", { "group": "More", "pages": ["adv/x", "index", "adv/y"] }] }
+    ]
+  }
+}

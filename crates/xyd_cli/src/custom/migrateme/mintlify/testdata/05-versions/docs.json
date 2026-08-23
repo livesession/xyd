@@ -1,0 +1,10 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Versions",
+  "navigation": {
+    "versions": [
+      { "version": "v2", "groups": [ { "group": "V2", "pages": ["v2/intro", "v2/next"] } ] },
+      { "version": "v1", "groups": [ { "group": "V1", "pages": ["v1/intro"] } ] }
+    ]
+  }
+}

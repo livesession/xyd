@@ -1,0 +1,35 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    },
+    "logo": "/public/brand/logo.svg",
+    "favicon": "/public/icon.svg"
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Docs",
+        "icon": "",
+        "page": "",
+        "href": "docs/overview"
+      }
+    ],
+    "sidebar": [
+      "docs"
+    ]
+  },
+  "components": {}
+}

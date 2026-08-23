@@ -1,0 +1,35 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Guides",
+        "icon": "",
+        "page": "",
+        "href": "guides/intro"
+      }
+    ],
+    "sidebar": [
+      "guides"
+    ]
+  },
+  "components": {
+    "footer": {}
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    },
+    "appearance": {
+      "colors": {
+        "primary": "#123456"
+      }
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "",
+        "icon": "",
+        "page": ""
+      }
+    ],
+    "sidebar": [
+      {
+        "route": "",
+        "pages": [
+          {
+            "group": "Guide",
+            "pages": [
+              "v2/a",
+              {
+                "group": "Nested",
+                "pages": [
+                  "v2/nested/x",
+                  "index",
+                  "v2/nested/y"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "components": {}
+}

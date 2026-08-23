@@ -1,0 +1,27 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Branding",
+  "logo": "brand/logo.svg",
+  "favicon": { "light": "icons/fav-light.png", "dark": "icons/fav-dark.png" },
+  "navbar": {
+    "links": [
+      { "label": "GitHub", "href": "https://github.com/x", "icon": { "name": "github" } }
+    ]
+  },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Docs",
+        "pages": [
+          { "group": "Basics", "pages": ["docs/basics/a", "docs/basics/b"] }
+        ]
+      }
+    ]
+  },
+  "footer": {
+    "socials": { "twitter": "https://twitter.com/x", "mastodon": "https://mas.to/@x", "email": "a@b.c" },
+    "links": [
+      { "header": "Legal", "items": [ { "label": "Terms", "href": "/terms" } ] }
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Ref",
+        "icon": "",
+        "page": "",
+        "href": "ref-a"
+      }
+    ],
+    "sidebar": [
+      "ref"
+    ]
+  },
+  "components": {}
+}

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "aurora",
+  "name": "Aurora",
+  "logo": { "light": "media/logo-light.svg", "dark": "media/logo-dark.svg", "href": "https://aurora.example.com" },
+  "favicon": { "dark": "media/favicon-dark.svg" },
+  "navigation": { "groups": [ { "group": "Reference", "pages": ["reference/intro"] } ] }
+}

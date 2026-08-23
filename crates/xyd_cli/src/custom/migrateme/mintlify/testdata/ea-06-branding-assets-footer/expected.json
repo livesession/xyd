@@ -1,0 +1,62 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    },
+    "logo": "brand/logo.svg",
+    "favicon": "/public/icons/fav-light.png"
+  },
+  "webeditor": {
+    "header": [
+      {
+        "title": "GitHub",
+        "href": "https://github.com/x",
+        "icon": "github",
+        "float": "right"
+      }
+    ]
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Docs",
+        "icon": "",
+        "page": "",
+        "href": "/docs/basics/a"
+      }
+    ],
+    "sidebar": [
+      {
+        "group": "Basics",
+        "pages": [
+          "docs/basics/a",
+          "docs/basics/b"
+        ]
+      }
+    ]
+  },
+  "components": {
+    "footer": {
+      "links": [
+        {
+          "header": "Legal",
+          "items": [
+            {
+              "label": "Terms",
+              "href": "/terms"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

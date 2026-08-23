@@ -1,0 +1,8 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
+  "name": "Missing Logo",
+  "logo": "assets/missing-logo.svg",
+  "colors": { "primary": "#111827", "dark": "#000000", "light": "#ffffff" },
+  "navigation": { "groups": [ { "group": "Home", "pages": ["home/welcome"] } ] }
+}

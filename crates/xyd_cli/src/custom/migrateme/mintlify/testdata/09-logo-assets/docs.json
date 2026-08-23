@@ -1,0 +1,7 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Logos",
+  "logo": { "light": "logo/light.svg", "dark": "/logo/dark.svg", "href": "/" },
+  "favicon": "favicon.svg",
+  "navigation": { "groups": [ { "group": "G", "pages": ["g/a"] } ] }
+}

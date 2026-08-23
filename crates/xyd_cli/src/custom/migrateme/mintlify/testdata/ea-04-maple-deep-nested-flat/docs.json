@@ -1,0 +1,23 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
+  "name": "Deep",
+  "colors": { "primary": "#aabbcc", "dark": "#001122" },
+  "navigation": {
+    "groups": [
+      {
+        "group": "Handbook",
+        "pages": [
+          "handbook/intro",
+          {
+            "group": "Section",
+            "pages": [
+              "handbook/sec/a",
+              { "group": "Sub", "pages": ["handbook/sec/sub/x", "handbook/sec/sub/y"] }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

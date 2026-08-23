@@ -1,0 +1,57 @@
+{
+  "theme": {
+    "name": "solar",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Guides",
+        "icon": "book",
+        "page": "guides"
+      },
+      {
+        "title": "Reference",
+        "icon": "",
+        "page": ""
+      },
+      {
+        "title": "Community",
+        "icon": "users",
+        "href": "https://community.example.com",
+        "float": "right"
+      }
+    ],
+    "sidebar": [
+      {
+        "route": "guides",
+        "pages": [
+          {
+            "group": "Intro",
+            "pages": [
+              "guides/intro",
+              "guides/setup"
+            ]
+          }
+        ]
+      },
+      "reference/a",
+      "reference/deep/x",
+      "reference/deep/y"
+    ]
+  },
+  "components": {}
+}

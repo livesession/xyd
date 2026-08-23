@@ -1,0 +1,39 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    },
+    "logo": {
+      "light": "/public/logo/light.svg",
+      "dark": "/public/logo/dark.svg",
+      "href": "/"
+    },
+    "favicon": "/public/favicon.svg"
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "G",
+        "icon": "",
+        "page": "",
+        "href": "g/a"
+      }
+    ],
+    "sidebar": [
+      "g"
+    ]
+  },
+  "components": {}
+}

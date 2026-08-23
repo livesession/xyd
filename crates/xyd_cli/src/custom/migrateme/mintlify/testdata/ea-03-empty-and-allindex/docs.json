@@ -1,0 +1,11 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Edges",
+  "navigation": {
+    "tabs": [
+      { "tab": "Empty", "groups": [] },
+      { "tab": "No Pages", "pages": [] },
+      { "tab": "All Index", "groups": [ { "group": "OnlyIndex", "pages": ["index", "index"] } ] }
+    ]
+  }
+}

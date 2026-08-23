@@ -1,0 +1,25 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Multi",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "icon": "book",
+        "href": "https://ignored.example.com/guides",
+        "groups": [
+          { "group": "Intro", "pages": ["guides/intro", "guides/setup"] }
+        ]
+      },
+      {
+        "tab": "Reference",
+        "pages": [
+          "reference/a",
+          { "group": "Deep", "pages": ["reference/deep/x", "index", "reference/deep/y"] }
+        ]
+      },
+      { "tab": "Community", "icon": "users", "href": "https://community.example.com" }
+    ]
+  }
+}

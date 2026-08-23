@@ -1,0 +1,9 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Groups",
+  "navigation": {
+    "groups": [
+      { "group": "Core", "pages": ["core/a", "core/b"] }
+    ]
+  }
+}
