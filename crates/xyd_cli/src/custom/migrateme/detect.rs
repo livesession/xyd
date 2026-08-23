@@ -26,7 +26,7 @@ pub async fn run(docs_path: &Path) -> Result<(), Error> {
         }
         let name = entry.file_name().to_string_lossy().to_lowercase();
         if mintlify::is_mintlify(docs_path, &name) {
-            return mintlify::migrate(docs_path).await;
+            return mintlify::migrate(docs_path);
         }
     }
 

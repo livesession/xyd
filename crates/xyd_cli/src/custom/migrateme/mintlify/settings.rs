@@ -482,6 +482,55 @@ fn move_file(src: &Path, dest: &Path) -> std::io::Result<()> {
     }
 }
 
+/// Move every stray image under `docs_path` into `public/`, preserving its relative path
+/// (mirrors `migratePublicResources`). Skips node_modules/.git/dist/build/public and any
+/// image already present at the destination. A side effect only — it does not touch settings.
+pub fn migrate_public_resources(docs_path: &Path) {
+    let public_dir = docs_path.join("public");
+    scan_images(docs_path, docs_path, &public_dir);
+}
+
+fn scan_images(root: &Path, dir: &Path, public_dir: &Path) {
+    const IMAGE_EXTS: &[&str] = &[".svg", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico"];
+    let entries = match std::fs::read_dir(dir) {
+        Ok(entries) => entries,
+        Err(_) => return,
+    };
+    for entry in entries.flatten() {
+        let path = entry.path();
+        let Ok(file_type) = entry.file_type() else {
+            continue;
+        };
+        if file_type.is_dir() {
+            let name = entry.file_name();
+            if !matches!(
+                name.to_string_lossy().as_ref(),
+                "node_modules" | ".git" | "dist" | "build" | "public"
+            ) {
+                scan_images(root, &path, public_dir);
+            }
+        } else if file_type.is_file() {
+            let name = entry.file_name().to_string_lossy().to_lowercase();
+            let is_image = name
+                .rfind('.')
+                .map(|dot| IMAGE_EXTS.contains(&&name[dot..]))
+                .unwrap_or(false);
+            if !is_image {
+                continue;
+            }
+            if let Ok(rel) = path.strip_prefix(root) {
+                let dest = public_dir.join(rel);
+                if !dest.exists() {
+                    if let Some(parent) = dest.parent() {
+                        let _ = std::fs::create_dir_all(parent);
+                    }
+                    let _ = move_file(&path, &dest);
+                }
+            }
+        }
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Small utilities (ported from mintlify.ts helpers)
 // ---------------------------------------------------------------------------

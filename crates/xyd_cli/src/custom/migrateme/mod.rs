@@ -1,15 +1,9 @@
-//! Native `migrateme` — WORK IN PROGRESS (staged; see the plan).
+//! Native `migrateme` — port of `packages/xyd-cli/src/commands/migrateme/**`.
 //!
-//! Port of `packages/xyd-cli/src/commands/migrateme/**`. Staged:
-//!   * S1 (this): entry flow, GitHub download/extract, prompts, framework detection.
-//!   * S2: Mintlify `docs.json` → xyd Settings (byte-parity).
-//!   * S3: Mintlify `.mdx` → `.md` (MDX rewrite + a hand-written mdast→markdown serializer).
-//!
-//! Until S3 lands, the `migrateme` action in `super::mod` still FORWARDS the whole
-//! command to the embedded engine (the engine is the full CLI → zero regression). These
-//! modules are therefore exercised only by their own unit tests for now, hence the
-//! crate-local `dead_code` allow — it is removed when `run` is wired at the S3 flip.
-#![allow(dead_code)]
+//! Entry flow ([`run`]): a GitHub URL is downloaded/extracted then migrated; a local path
+//! is migrated in place. Migration = framework detection ([`detect`]) → the Mintlify
+//! migrator ([`mintlify`]): `docs.json` → xyd settings (byte-parity), stray images → public/,
+//! and every `.mdx` → `.md`. Bound natively in `super::mod`.
 
 mod detect;
 mod github;

@@ -1,0 +1,46 @@
+---
+title: Blockquotes
+---
+
+# Blockquotes
+
+Single line quote:
+
+> just one line
+
+Multi-line quote joined into one paragraph:
+
+> first line of the quote
+> second line of the quote
+> third line of the quote
+
+Multi-paragraph quote:
+
+> paragraph one inside the quote
+>
+> paragraph two inside the quote
+
+Nested blockquote:
+
+> outer level text
+>
+> > inner level text
+> > still inner level
+> > back to the outer level
+
+Quote containing a list and inline code:
+
+> A quote that wraps a list:
+>
+> - quoted item one
+> - quoted item two
+>
+> And some `inline code` at the end.
+
+Quote containing a fenced code block:
+
+> Here is code:
+>
+> ```js
+> const answer = 42;
+> ```

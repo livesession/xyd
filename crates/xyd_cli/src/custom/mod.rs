@@ -94,14 +94,19 @@ pub fn actions(actions: &mut Actions) {
         },
     );
 
-    // `install` (framework installer) and `components install diagrams` are documan
-    // features (readSettings / docs.ts eval + the bundled host template), and `migrateme`
-    // is not yet ported — all forward their RAW argv to the embedded engine (the full CLI).
-    for path in [&["install"][..], &["migrateme"][..]] {
-        actions.on(path, |_ctx, _m: ArgMatches| async move {
-            engine::forward_to_engine().await
-        });
-    }
+    // `migrateme <path>` is NATIVE — detect the source docs framework and migrate in place
+    // (Mintlify: docs.json → xyd settings + `.mdx` → `.md`). Its `<path>` positional is in
+    // the generated clap tree, so it's read from `ArgMatches`.
+    actions.on(&["migrateme"], |_ctx, m: ArgMatches| async move {
+        migrateme::run(&m).await
+    });
+
+    // `install` (framework installer) and `components install diagrams` remain documan
+    // features (readSettings / docs.ts eval + the bundled host template) → forwarded to the
+    // embedded engine (the full CLI).
+    actions.on(&["install"], |_ctx, _m: ArgMatches| async move {
+        engine::forward_to_engine().await
+    });
 }
 
 pub fn overrides() -> Custom {
