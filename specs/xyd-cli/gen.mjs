@@ -17,9 +17,6 @@ import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { opencli2rust } from '@xyd-js/opencli2rust';
-import { writeProject } from '@xyd-js/opensdk-framework';
-
 const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url)); // specs/xyd-cli
 const repoRoot = join(here, '..', '..');
@@ -62,34 +59,35 @@ for (const target of targets) {
   console.log(`→ ${target}`);
 }
 
-// ── Rust codegen ─────────────────────────────────────────────────────────────
-// Regenerate the Rust CLI's command tree (crates/xyd_cli/src/gen/**) from the
-// OpenCLI doc via opencli2rust, written through the regen-safe writeProject
-// lifecycle (.sdkignore protects the hand-owned Cargo.toml / main.rs / src/custom).
+// ── Rust codegen (now Rust-owned) ────────────────────────────────────────────
+// The Rust CLI's command tree (crates/xyd_cli/src/opencli/**) is regenerated from
+// the OpenCLI doc by the RUST regen binary (crates/xyd_opencli2rust/src/bin/regen.rs):
+// it runs opencli2rust → write_project (the regen-safe .sdk/sdk.lock / .sdkignore
+// lifecycle, ported to Rust in crates/xyd_opensdk_framework) → cargo fmt. The
+// module/impl/bin/crate layout config now lives in crates/xyd_cli/regen.toml — a
+// single Rust-owned home, no longer duplicated here — so this step no longer imports
+// the TS opencli2rust generator or the JS writeProject safe-write lifecycle.
 //
-// This lives HERE in the build layer, never inside the Rust crate: the crate is a
-// pure CONSUMER of generated code, so the JS generator (opencli2rust) can later be
-// swapped for its native Rust equivalent without touching the crate.
-const crateDir = join(repoRoot, 'crates', 'xyd_cli');
-const spec = JSON.parse(readFileSync(join(crateDir, 'opencli.json'), 'utf8'));
-const files = opencli2rust(spec, {
-  binName: 'xyd',
-  crateName: 'xyd_cli',
-  // The generated command tree lives in src/opencli/**; the hand-owned behavior
-  // (CliOverrides + the generated `Commands` trait impl) lives in src/v0/**.
-  moduleName: 'opencli',
-  implModule: 'v0',
-});
-const result = await writeProject(files, crateDir, { generator: 'opencli2rust' });
-console.log(
-  `opencli2rust → src/gen (written ${result.written?.length ?? 0}, ` +
-    `unchanged ${result.unchanged?.length ?? 0}, skipped ${result.skipped?.length ?? 0})`,
+// (The `tsp compile` above stays node because TypeSpec is a node compiler; only the
+// Rust-CLI codegen moved to Rust.)
+execFileSync(
+  'cargo',
+  [
+    'run',
+    '-q',
+    // cargo can't discover the workspace from repoRoot (the workspace is rooted at
+    // crates/, not the repo root), so point it at the crates/ manifest explicitly.
+    '--manifest-path',
+    join(repoRoot, 'crates', 'Cargo.toml'),
+    '-p',
+    'xyd_opencli2rust',
+    '--bin',
+    'regen',
+    '--',
+    join(repoRoot, 'crates', 'xyd_cli'),
+  ],
+  { cwd: repoRoot, stdio: 'inherit' },
 );
-
-// opencli2rust emits unformatted Rust; the crate is committed rustfmt-clean and CI
-// runs `cargo fmt --all -- --check`, so normalize the generated source to match.
-execFileSync('cargo', ['fmt', '-p', 'xyd_cli'], { cwd: crateDir, stdio: 'inherit' });
-console.log('→ cargo fmt -p xyd_cli');
 
 // ── Completion goldens ───────────────────────────────────────────────────────
 // Regenerate the Rust completion byte-parity goldens (crates/xyd_cli/src/custom/

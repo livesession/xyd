@@ -1,8 +1,11 @@
 //! OpenCLI doc → buildable Rust CLI project generator — Rust port of
 //! `@xyd-js/opencli2rust` (S6+ W7). Pure: returns a virtual file map of Rust
 //! source (generator-owned files `overwrite`, user scaffolds `skipIfExists`).
-//! The framework `writeProject` lifecycle (.sdk.lock / 3-way merge / .sdkignore)
-//! stays JS — this crate only produces the file map.
+//! The regen-safe `writeProject` lifecycle (.sdk.lock / 3-way merge / .sdkignore)
+//! is now ALSO Rust — ported in `xyd_opensdk_framework` and driven by this crate's
+//! `regen` binary (`src/bin/regen.rs`, configured by a target crate's `regen.toml`),
+//! which runs `opencli2rust` → `write_project` → `cargo fmt`. The lib itself stays
+//! pure — it only produces the file map.
 
 mod blobs;
 mod cli;

@@ -18,6 +18,7 @@ members = [
     "xyd_openapi2opencli",
     "xyd_opencli2go",
     "xyd_opencli2rust",
+    "xyd_opensdk_framework",
     "xyd_opensdk_go",
     "xyd_opensdk_python",
     "xyd_opensdk_node",
