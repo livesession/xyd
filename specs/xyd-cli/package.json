@@ -8,7 +8,9 @@
     "./opencli.json": "./opencli.json"
   },
   "files": [
-    "xyd.tsp",
+    "main.tsp",
+    "globals.tsp",
+    "commands/**/*.tsp",
     "opencli.json"
   ],
   "scripts": {

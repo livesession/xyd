@@ -1,7 +1,9 @@
 import {
+  type DiagnosticTarget,
   type EmitContext,
   emitFile,
   getDoc,
+  getSourceLocation,
   type Namespace,
   type ModelProperty,
   type Operation,
@@ -54,7 +56,7 @@ export async function $onEmit(context: EmitContext<XydCliEmitterOptions>): Promi
   const options = buildRootOptions(program, cliNs);
   if (options.length) doc.options = options;
 
-  const commands = buildCommands(program, cliNs);
+  const commands = buildCommands(program, cliNs, buildFileOrder(program));
   if (commands.length) doc.commands = commands;
 
   await emitFile(program, {
@@ -115,28 +117,67 @@ function isNumericScalar(name: string): boolean {
   return /^(u?int|integer|float|decimal|numeric|safeint)/.test(name);
 }
 
-/** Build the ordered command list for a namespace (ops + sub-namespaces, in source order). */
-function buildCommands(program: Program, ns: Namespace): Command[] {
-  const children: { pos: number; build: () => Command }[] = [];
+/**
+ * Deterministic cross-file ordering: map each source file to its index in
+ * `program.sourceFiles`, which is insertion-ordered by import resolution — the
+ * entry file, then a pre-order depth-first walk of its imports, each file added
+ * on first encounter. A command's `(fileIndex, pos)` key therefore orders it by
+ * the position its declaring file is *first* reached in that walk, then by its
+ * position within that file. In the common shape — a `main.tsp` that imports each
+ * command file exactly once — that first-reach order equals `main.tsp`'s import
+ * list, so reordering the imports reorders the commands. (Cross-importing one
+ * command file from another would instead order it by that earlier first-reach,
+ * with no diagnostic — keep the import graph a simple fan-out from the entry.)
+ * For a single-file spec every node shares one file, so the key collapses to
+ * source order (`pos`) — identical to the previous pos-only behavior.
+ */
+type FileOrder = Map<string, number>;
+
+function buildFileOrder(program: Program): FileOrder {
+  const order: FileOrder = new Map();
+  let i = 0;
+  for (const path of program.sourceFiles.keys()) order.set(path, i++);
+  return order;
+}
+
+/** `(fileIndex, pos)` sort key for a declaration node — see {@link FileOrder}. */
+function nodeSortKey(fileOrder: FileOrder, node: DiagnosticTarget | undefined): [number, number] {
+  if (!node) return [0, 0];
+  // SourceLocation carries both the declaring file and the intra-file position.
+  const loc = getSourceLocation(node);
+  if (!loc) return [0, 0];
+  return [fileOrder.get(loc.file.path) ?? 0, loc.pos];
+}
+
+/** Build the ordered command list for a namespace (ops + sub-namespaces). */
+function buildCommands(program: Program, ns: Namespace, fileOrder: FileOrder): Command[] {
+  const children: { key: [number, number]; build: () => Command }[] = [];
 
   for (const op of ns.operations.values()) {
     if (!isCommand(program, op)) continue;
-    children.push({ pos: op.node?.pos ?? 0, build: () => buildLeafCommand(program, op) });
+    children.push({ key: nodeSortKey(fileOrder, op.node), build: () => buildLeafCommand(program, op) });
   }
   for (const sub of ns.namespaces.values()) {
-    children.push({ pos: sub.node?.pos ?? 0, build: () => buildGroupCommand(program, sub) });
+    // A namespace reopened across files has one representative `.node`; its file
+    // index places the whole group. Fine as long as a group's declarations are
+    // contiguous in import order (the earliest reopening wins the position).
+    children.push({
+      key: nodeSortKey(fileOrder, sub.node),
+      build: () => buildGroupCommand(program, sub, fileOrder),
+    });
   }
 
-  // Interleave commands and groups in source-declaration order.
-  children.sort((a, b) => a.pos - b.pos);
+  // Interleave commands and groups by (file import order, source position) so a
+  // spec split across files still emits in the order the files are imported.
+  children.sort((a, b) => a.key[0] - b.key[0] || a.key[1] - b.key[1]);
   return children.map((c) => c.build());
 }
 
-function buildGroupCommand(program: Program, ns: Namespace): Command {
+function buildGroupCommand(program: Program, ns: Namespace, fileOrder: FileOrder): Command {
   const command: Command = { name: ns.name };
   const description = getDoc(program, ns);
   if (description) command.description = description;
-  const commands = buildCommands(program, ns);
+  const commands = buildCommands(program, ns, fileOrder);
   if (commands.length) command.commands = commands;
   return command;
 }

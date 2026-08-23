@@ -7,7 +7,8 @@ import colors from 'picocolors';
 import type { OpencliSpecJson } from '@xyd-js/opencli';
 import { fish, zsh, type Shell } from '@xyd-js/opencli-completion';
 // The OpenCLI document is generated from the TypeSpec source of truth
-// (`specs/xyd-cli/xyd.tsp`) and shipped by `@xyd-js/cli-spec` as `opencli.json` —
+// (`specs/xyd-cli/main.tsp` + `commands/**`) and shipped by `@xyd-js/cli-spec`
+// as `opencli.json` —
 // the same document the Rust crate embeds. It is BUNDLED into the CLI at build
 // time (esbuild inlines the JSON) so the published package stays self-contained;
 // re-stringifying with the emitter's exact format keeps `xyd completion opencli`

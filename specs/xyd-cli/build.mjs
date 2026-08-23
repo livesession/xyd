@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-// Compile the TypeSpec source of truth (xyd.tsp) into dist/opencli.json.
+// Compile the TypeSpec source of truth (main.tsp) into dist/opencli.json.
 //
-// specs/xyd-cli/xyd.tsp is the single source of truth for the xyd CLI surface.
+// specs/xyd-cli/main.tsp (+ globals.tsp + commands/**) is the single source of
+// truth for the xyd CLI surface.
 // The @xyd-js/typespec-opencli emitter compiles it into an OpenCLI document,
 // emitted to `specs/xyd-cli/dist/opencli.json` (and NOTHING else — no fan-out,
 // no Rust codegen). Consumers pull the spec themselves:
@@ -34,13 +35,13 @@ const version = cliPkg.version;
 const compilerPkgJson = require.resolve('@typespec/compiler/package.json');
 const tspBin = join(dirname(compilerPkgJson), 'cmd', 'tsp.js');
 
-console.log(`Compiling xyd.tsp → dist/opencli.json (version ${version})…`);
+console.log(`Compiling main.tsp → dist/opencli.json (version ${version})…`);
 execFileSync(
   process.execPath,
   [
     tspBin,
     'compile',
-    join(here, 'xyd.tsp'),
+    join(here, 'main.tsp'),
     '--emit',
     '@xyd-js/typespec-opencli',
     '--option',
