@@ -1,9 +1,10 @@
 # Hand-owned (protected by .sdkignore): a workspace-integrated manifest for the
-# generated `xyd` CLI. The command tree in src/gen/** is regenerated from
-# opencli.json by regen.mjs; this file, src/main.rs, and src/custom/** survive
-# regeneration. clap/tokio are pinned in crates/Cargo.toml [workspace.dependencies]
-# (repo pattern); reqwest/serde_json/percent-encoding are the runtime deps the
-# vendored src/gen/** still references (dead for a local tool — dead-code warnings
+# generated `xyd` CLI. The command tree in src/opencli/** is regenerated from
+# opencli.json by the Rust regen bin (crates/xyd_opencli2rust); this file,
+# src/main.rs, and src/v0/** survive regeneration. clap/tokio are pinned in
+# crates/Cargo.toml [workspace.dependencies] (repo pattern);
+# reqwest/serde_json/percent-encoding are the runtime deps the vendored
+# src/opencli/** still references (dead for a local tool — dead-code warnings
 # are expected — but needed to COMPILE).
 
 [package]
@@ -28,7 +29,7 @@ percent-encoding = "2"
 # the CLI build fast. serde: lets the transform inspect the AST as JSON in tests.
 markdown = { path = "../xyd_mdx/vendor/markdown-fork", features = ["serde"] }
 # S4: content-hash the embedded engine to key its extract dir. Only referenced
-# under cfg(xyd_has_embedded_engine) in src/custom/engine.rs; unused (no compile
+# under cfg(xyd_has_embedded_engine) in src/v0/engine.rs; unused (no compile
 # cost beyond building the crate) in the fast, non-embedded dev build.
 sha2 = { workspace = true }
 # S5: native `xyd serve` static file server. A missing build dir errors and an edge
@@ -37,6 +38,6 @@ sha2 = { workspace = true }
 tiny_http = { workspace = true }
 # unix-only: forward the EXACT termination signal (SIGINT/SIGTERM/SIGHUP) to the
 # spawned bun engine via kill(2) so it can run its own graceful teardown. Already
-# in the tree transitively (tokio); pinned here as a direct dep for `src/custom/engine.rs`.
+# in the tree transitively (tokio); pinned here as a direct dep for `src/v0/engine.rs`.
 [target.'cfg(unix)'.dependencies]
 libc = "0.2"

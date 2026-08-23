@@ -150,9 +150,19 @@ mod tests {
         serde_json::from_str(include_str!("../../../opencli.json")).unwrap()
     }
 
+    /// Byte-parity against the committed golden. `XYD_BLESS=1 cargo test` regenerates
+    /// `testdata/xyd.zsh` from the Rust generator — the crate is self-sufficient, no TS
+    /// golden tool is needed.
     #[test]
     fn matches_golden() {
-        assert_eq!(zsh(&spec()), include_str!("testdata/xyd.zsh"));
+        let actual = zsh(&spec());
+        if std::env::var("XYD_BLESS").is_ok() {
+            let golden = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("src/v0/completion/testdata/xyd.zsh");
+            std::fs::write(&golden, &actual).unwrap();
+            return;
+        }
+        assert_eq!(actual, include_str!("testdata/xyd.zsh"));
     }
 
     #[test]

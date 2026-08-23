@@ -7,11 +7,18 @@
 //! tree is rustfmt-clean, so the fmt normalizes the just-written source (the lock
 //! records the PRISTINE unformatted hash, exactly as the old TS pipeline did).
 //!
-//! This replaces the Rust-codegen half of `specs/xyd-cli/gen.mjs`: the generator
-//! and the module/impl layout config now live in Rust (regen.toml + this bin).
+//! This owns the Rust-codegen pipeline end-to-end: the generator and the module/impl
+//! layout config live in Rust (regen.toml + this bin). `specs/xyd-cli` now only
+//! compiles the TypeSpec surface into `dist/opencli.json`.
 //!
-//! Usage: `regen <crateDir> [--no-fmt]`  (crateDir resolved relative to CWD;
-//! absolute paths pass through).
+//! Usage: `regen <crateDir> [--spec <path>] [--no-fmt]`  (crateDir and `--spec`
+//! path both resolved relative to CWD; absolute paths pass through).
+//!
+//! `--spec <path>` copies that OpenCLI doc into the crate's own
+//! `<crateDir>/<opencli-from-regen.toml>` (e.g. `crates/xyd_cli/opencli.json`)
+//! BEFORE reading + generating, so the self-sufficient crate can pull in a freshly
+//! compiled spec (e.g. `specs/xyd-cli/dist/opencli.json`). Without it, regen runs
+//! from the committed crate spec unchanged.
 
 use std::path::PathBuf;
 use std::process::{exit, Command};
@@ -23,7 +30,7 @@ use xyd_opencli2rust::{opencli2rust, Options, WriteMode as GenWriteMode};
 use xyd_opensdk_framework::{write_project, FileEntry, FileMap, WriteMode, WriteProjectOptions};
 
 /// The `<crateDir>/regen.toml` schema — the single home of the generator +
-/// module/impl config (moved out of gen.mjs).
+/// module/impl config (Rust-owned; the crate is self-sufficient).
 #[derive(Deserialize)]
 struct RegenConfig {
     /// Generator name recorded in `.sdk/sdk.lock` (e.g. "opencli2rust").
@@ -50,19 +57,27 @@ fn die(msg: impl AsRef<str>) -> ! {
 }
 
 fn main() {
-    // args: <crateDir> [--no-fmt]
+    // args: <crateDir> [--spec <path>] [--no-fmt]
     let mut crate_dir_arg: Option<String> = None;
+    let mut spec_arg: Option<String> = None;
     let mut no_fmt = false;
-    for a in std::env::args().skip(1) {
+    let mut args = std::env::args().skip(1);
+    while let Some(a) = args.next() {
         if a == "--no-fmt" {
             no_fmt = true;
+        } else if a == "--spec" {
+            let path = args
+                .next()
+                .unwrap_or_else(|| die("--spec requires a path argument"));
+            spec_arg = Some(path);
         } else if crate_dir_arg.is_none() {
             crate_dir_arg = Some(a);
         } else {
             die(format!("unexpected extra argument: {a}"));
         }
     }
-    let crate_dir_arg = crate_dir_arg.unwrap_or_else(|| die("usage: regen <crateDir> [--no-fmt]"));
+    let crate_dir_arg =
+        crate_dir_arg.unwrap_or_else(|| die("usage: regen <crateDir> [--spec <path>] [--no-fmt]"));
 
     let cwd = std::env::current_dir().unwrap_or_else(|e| die(format!("cwd: {e}")));
     // `Path::join` replaces with the arg when it is absolute, so both a relative
@@ -82,6 +97,22 @@ fn main() {
         .clone()
         .unwrap_or_else(|| "opencli.json".to_string());
     let spec_path = crate_dir.join(&opencli_rel);
+
+    // 2a) `--spec <path>`: pull a freshly compiled OpenCLI doc into the crate's own
+    //     committed spec BEFORE reading, so the self-sufficient crate stays in sync
+    //     with `specs/xyd-cli/dist/opencli.json` (or any other source).
+    if let Some(spec_arg) = &spec_arg {
+        let src = cwd.join(spec_arg);
+        std::fs::copy(&src, &spec_path).unwrap_or_else(|e| {
+            die(format!(
+                "copy --spec {} → {}: {e}",
+                src.display(),
+                spec_path.display()
+            ))
+        });
+        println!("regen: --spec {} → {}", src.display(), spec_path.display());
+    }
+
     let spec_str = std::fs::read_to_string(&spec_path)
         .unwrap_or_else(|e| die(format!("read {}: {e}", spec_path.display())));
     let spec: Value = serde_json::from_str(&spec_str)
@@ -117,7 +148,7 @@ fn main() {
         })
         .collect();
 
-    // 5) write through the regen-safe lifecycle (merge off; matches the old gen.mjs).
+    // 5) write through the regen-safe lifecycle (merge off).
     let generator = cfg
         .generator
         .clone()

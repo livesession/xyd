@@ -81,10 +81,20 @@ mod tests {
 
     use super::{esc_fish, fish};
 
+    /// Byte-parity against the committed golden. `XYD_BLESS=1 cargo test` regenerates
+    /// `testdata/xyd.fish` from the Rust generator — the crate is self-sufficient, no TS
+    /// golden tool is needed.
     #[test]
     fn matches_golden() {
         let spec: Value = serde_json::from_str(include_str!("../../../opencli.json")).unwrap();
-        assert_eq!(fish(&spec), include_str!("testdata/xyd.fish"));
+        let actual = fish(&spec);
+        if std::env::var("XYD_BLESS").is_ok() {
+            let golden = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("src/v0/completion/testdata/xyd.fish");
+            std::fs::write(&golden, &actual).unwrap();
+            return;
+        }
+        assert_eq!(actual, include_str!("testdata/xyd.fish"));
     }
 
     #[test]

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "TypeSpec source of truth for the xyd CLI surface, compiled into opencli.json (consumed by the Rust crate and the TS xyd-cli).",
+  "description": "TypeSpec source of truth for the xyd CLI surface, compiled into dist/opencli.json (the committed opencli.json is consumed by the TS xyd-cli; the Rust crate syncs its own copy via regen --spec).",
   "exports": {
     "./opencli.json": "./opencli.json"
   },
@@ -12,12 +12,10 @@
     "opencli.json"
   ],
   "scripts": {
-    "gen": "node gen.mjs"
+    "build": "node build.mjs"
   },
   "dependencies": {
     "@typespec/compiler": "^1.13.0",
-    "@xyd-js/opencli2rust": "workspace:*",
-    "@xyd-js/opensdk-framework": "workspace:*",
     "@xyd-js/typespec-opencli": "workspace:*"
   }
 }

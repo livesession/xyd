@@ -3553,12 +3553,6 @@ importers:
       '@typespec/compiler':
         specifier: ^1.13.0
         version: 1.15.0(@types/node@24.12.3)
-      '@xyd-js/opencli2rust':
-        specifier: workspace:*
-        version: link:../../packages/xyd-opencli2rust
-      '@xyd-js/opensdk-framework':
-        specifier: workspace:*
-        version: link:../../packages/xyd-opensdk-framework
       '@xyd-js/typespec-opencli':
         specifier: workspace:*
         version: link:../../packages/xyd-typespec-opencli

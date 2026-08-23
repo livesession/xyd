@@ -1,5 +1,5 @@
 // Hand-owned (protected by .sdkignore). The generated command router lives in
-// src/opencli/** (regenerated from opencli.json by regen.mjs). This shim mirrors the
+// src/opencli/** (regenerated from opencli.json by the regen bin). This shim mirrors the
 // current TypeScript `cli.ts` entry point — `opensdk` raw passthrough, default
 // command `dev`, and `XYD_CLI=1` — applied BEFORE clap sees the args, then hands
 // off to the generated `opencli::cli::run`.

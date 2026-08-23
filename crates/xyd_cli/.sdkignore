@@ -1,7 +1,8 @@
-# Hand-owned files — writeProject (specs/xyd-cli/gen.mjs) must never overwrite or
-# prune these. Everything else (src/opencli/**, .gitignore) is regenerated from the
-# OpenCLI doc. The regen tooling lives in the build layer (specs/xyd-cli), NOT in
-# this crate — the crate is a pure consumer of generated code.
+# Hand-owned files — the Rust regen driver (crates/xyd_opencli2rust `regen` bin,
+# driven by regen.toml) must never overwrite or prune these. Everything else
+# (src/opencli/**, .gitignore) is regenerated from the OpenCLI doc via write_project.
+# The crate owns its committed opencli.json and is otherwise a pure consumer of
+# generated code.
 Cargo.toml
 # NOTE: the hand-owned crate-root `build.rs` (engine embed) is deliberately NOT
 # listed. opencli2rust never emits a crate-root build.rs, and stale-prune only

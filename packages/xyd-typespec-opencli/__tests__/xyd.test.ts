@@ -28,7 +28,7 @@ function findFile(dir: string, name: string): string | undefined {
  * with our emitter, and return the emitted `opencli.json`. We deliberately avoid
  * `@typespec/compiler/testing`'s `createTestHost` — its in-memory library glob
  * (`findFilesFromPattern`) is incompatible with some Node versions. This mirrors
- * exactly how `specs/xyd-cli/gen.mjs` runs the emitter in production.
+ * exactly how `specs/xyd-cli/build.mjs` runs the emitter in production.
  */
 async function emit(mainTsp: string, version?: string): Promise<string> {
   const outputDir = mkdtempSync(join(tmpdir(), "tsopencli-"));

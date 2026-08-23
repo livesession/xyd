@@ -701,6 +701,9 @@ mod tests {
 
     use super::convert_mdx;
 
+    /// Byte-parity against the committed `<case>/expected.md` goldens. `XYD_BLESS=1
+    /// cargo test` regenerates each golden from `convert_mdx` — the crate is
+    /// self-sufficient, no TS golden tool is needed.
     #[test]
     fn content_byte_parity_against_goldens() {
         let testdata = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -714,6 +717,7 @@ mod tests {
         cases.sort();
         assert!(!cases.is_empty());
 
+        let bless = std::env::var("XYD_BLESS").is_ok();
         let mut failures = Vec::new();
         for case in &cases {
             let dir = testdata.join(case);
@@ -722,8 +726,13 @@ mod tests {
             if !input.exists() || !expected_path.exists() {
                 continue;
             }
-            let expected = fs::read_to_string(&expected_path).unwrap();
             let actual = convert_mdx(&fs::read_to_string(&input).unwrap()).unwrap();
+            if bless {
+                // Write the freshly-computed Rust output to the REAL golden.
+                fs::write(&expected_path, &actual).unwrap();
+                continue;
+            }
+            let expected = fs::read_to_string(&expected_path).unwrap();
             if actual != expected {
                 failures.push(case.clone());
                 eprintln!("=== MISMATCH {case} ===\n--- expected ---\n{expected}\n--- actual ---\n{actual}\n");
