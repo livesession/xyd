@@ -233,12 +233,30 @@ pub fn has_raw_mdx(node: &Node) -> bool {
 /// Re-parse a container directive's raw content string as nested flow (the fork
 /// captures content raw; the JS `micromark-directive` subtokenizes it). Returns
 /// the child nodes.
+///
+/// A directive body may contain only prose and *nested directives* (still
+/// `ContainerDirective`/`LeafDirective` at this point — converted afterwards). If
+/// the re-parse surfaces a raw MDX expression / JSX / ESM node, either the author
+/// wrote real MDX or a nested directive failed to parse — e.g. `:::name{attrs}`
+/// inside a `:::tabs`/`:::steps` list item, where the list indentation stops the
+/// fork from recognizing the directive and `{attrs}` then reads as an MDX
+/// expression. Both cases need the JS pipeline, so we return `Err` → the page
+/// falls back. The top-level capability gate can't catch this: the container body
+/// was captured raw, so the leaked node only appears on this re-parse. Without
+/// this guard the leak is emitted as `capability: "full"` — a wrong render (the
+/// bug this fixes), instead of the "honest fallback, never a wrong render" the
+/// crate promises. Prose/simple-directive bodies have no raw MDX, so they still
+/// take the fast path unchanged.
 fn reparse_content(raw: &str, opts: &Options) -> Result<Vec<Node>, String> {
     let root = mdast_util_from_mdx(raw, opts).map_err(|e| format!("directive content: {e}"))?;
-    match root {
-        Node::Root(r) => Ok(r.children),
-        other => Ok(vec![other]),
+    let children = match root {
+        Node::Root(r) => r.children,
+        other => vec![other],
+    };
+    if children.iter().any(has_raw_mdx) {
+        return Err("directive body contains raw mdx".to_string());
     }
+    Ok(children)
 }
 
 /// Extract the raw content string a container directive captured (single `Text`

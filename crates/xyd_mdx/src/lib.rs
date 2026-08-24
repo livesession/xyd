@@ -171,6 +171,36 @@ mod tests {
     }
 
     #[test]
+    fn directive_nested_in_tabs_list_item_falls_back() {
+        // Regression: a directive nested inside a `:::tabs` list item is not
+        // recognized by the fork (the list indentation defeats directive
+        // parsing), so its `{attrs}` re-parse as an MDX expression. `build_nav`
+        // re-parses the tab body WITHOUT the top-level capability gate, so before
+        // the `reparse_content` guard the leaked expression shipped as
+        // `capability: "full"` — a wrong render (`title = "…"` as an
+        // undefined-variable reference that 500s at runtime). Now it falls back
+        // and the JS pipeline renders the page.
+        let src = r#":::::tabs{kind="secondary"}
+1. [SDK](platform=sdk)
+
+    :::code-group{title="Init LiveSession Browser"}
+    ```ts sdk
+    a
+    ```
+    :::
+:::::
+"#;
+        let out = compile_mdx(src, "{}", "");
+        assert_eq!(out.capability, CAP_FALLBACK, "reason={:?}", out.reason);
+        // Belt-and-suspenders: never emit the leaked assignment expression.
+        assert!(
+            !out.compiled.contains("title ="),
+            "leaked expression:\n{}",
+            out.compiled
+        );
+    }
+
+    #[test]
     fn math_inline_and_block_compile_full() {
         // Rust-native math: inline `$…$` and block `$$…$$` now compile `full` to
         // MathML (no more `fallback` for math).
