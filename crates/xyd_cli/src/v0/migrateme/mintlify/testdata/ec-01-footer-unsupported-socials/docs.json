@@ -1,0 +1,13 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "OnlyUnsupported",
+  "navigation": { "groups": [ { "group": "Guides", "pages": ["guides/intro"] } ] },
+  "footer": {
+    "socials": {
+      "twitch": "https://twitch.tv/x",
+      "tiktok": "https://tiktok.com/@x",
+      "mastodon": "https://mastodon.social/@x",
+      "nope": "z"
+    }
+  }
+}

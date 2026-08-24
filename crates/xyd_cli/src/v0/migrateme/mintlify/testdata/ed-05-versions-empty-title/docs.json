@@ -1,0 +1,17 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Versioned",
+  "navigation": {
+    "versions": [
+      { "version": "2.0 — Bëta", "groups": [ { "group": "Introdüçtion", "pages": ["v2/intro", "index", "v2/setup"] } ] },
+      { "version": "1.0", "groups": [ { "group": "Old", "pages": ["v1/old"] } ] }
+    ]
+  },
+  "seo": {
+    "metatags": {
+      "og:site_name": "Versioned: The Docs",
+      "article:published_time": "2024-01-01T10:00:00Z"
+    }
+  }
+}

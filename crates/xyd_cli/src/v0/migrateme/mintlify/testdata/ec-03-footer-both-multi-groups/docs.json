@@ -1,0 +1,20 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
+  "name": "Both",
+  "colors": { "primary": "#5865F2" },
+  "navigation": { "anchors": [ { "anchor": "Home", "groups": [ { "group": "Intro", "pages": ["home/intro"] } ] } ] },
+  "footer": {
+    "socials": {
+      "x": "https://x.com/z",
+      "youtube": "https://youtube.com/@z",
+      "discord": "https://discord.gg/z",
+      "notreal": "https://notreal.com"
+    },
+    "links": [
+      { "header": "Product", "items": [ { "label": "Features", "href": "/features" }, { "label": "Pricing", "href": "/pricing" } ] },
+      { "header": "Developers", "items": [ { "label": "API", "href": "/api" }, { "label": "SDKs", "href": "/sdks" } ] },
+      { "header": "Legal", "items": [ { "label": "Terms", "href": "/terms" } ] }
+    ]
+  }
+}

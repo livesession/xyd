@@ -1,0 +1,23 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Deep & Flat",
+  "colors": { "primary": "#123456", "dark": "#000000", "light": "#ffffff" },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "icon": "book",
+        "groups": [
+          { "group": "Deep", "pages": ["guides/a/b/c/d/e/f", "index", "guides/x/y/z"] }
+        ]
+      },
+      {
+        "tab": "Mixed",
+        "pages": [
+          { "group": "G1", "pages": ["a/one", "a/two"] },
+          "b/solo"
+        ]
+      }
+    ]
+  }
+}

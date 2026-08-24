@@ -1,0 +1,21 @@
+---
+title: Everything Mixed
+description: imports, frame, standalone imgs, and unknown components together
+---
+
+import Header from "./partials/header.mdx"
+
+<Header />
+
+<Frame>
+  <img className="dark:hidden" src="/images/diagram-light.png" alt="Diagram Light" />
+  <img className="dark:block" src="/images/diagram-dark.png" alt="Diagram Dark" />
+</Frame>
+
+<Placeholder>not a real component</Placeholder>
+
+<img className="dark:hidden" src="/images/note-light.png" alt="Note Light" />
+
+<MysteryBox />
+
+Regular paragraph with a [link](https://example.com).

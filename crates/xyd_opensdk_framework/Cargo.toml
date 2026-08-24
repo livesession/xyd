@@ -1,0 +1,17 @@
+[package]
+name = "xyd_opensdk_framework"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "Regen-safe project write lifecycle + 3-way merge (Rust port of @xyd-js/opensdk-framework writeProject + @xyd-js/opensdk-merge)"
+
+[dependencies]
+serde = { workspace = true }
+# preserve_order: the manifest + mergeJson canonicalization must reproduce
+# JSON.stringify's insertion-order keys byte-for-byte (matches the TS pipeline
+# that produced the committed .sdk/sdk.lock).
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+# gitignore-style .sdkignore matcher: compiles the SAME regex bodies the TS
+# `ignoreGlobToRegExp`/`ignorePatternMatches` build, so match results are identical.
+regex = "1"

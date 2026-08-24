@@ -1,0 +1,19 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Ünicode Dëmo",
+  "colors": { "primary": "#0A0", "light": "#0F0" },
+  "navigation": {
+    "groups": [
+      { "group": "  Café   Menü  ", "pages": ["cafe/a"] },
+      { "group": "MixED   CaSe   Título", "pages": ["mixed/x", "mixed/y"] },
+      { "group": "straße  ÜBER", "pages": ["ss/one"] }
+    ]
+  },
+  "seo": {
+    "metatags": {
+      "og:title": "Time: 10:30, \"quoted\" value",
+      "og:description": "a:b:c ünïcode ✓",
+      "twitter:label1": "Read time"
+    }
+  }
+}

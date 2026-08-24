@@ -1,0 +1,25 @@
+---
+title: Emphasis Styles
+---
+
+# Emphasis Styles
+
+Asterisk bold **strong words** in a sentence.
+
+Underscore bold **also strong words** in a sentence.
+
+Asterisk italic *slanted words* in a sentence.
+
+Underscore italic *also slanted words* in a sentence.
+
+Bold and italic together ***all emphasized*** here.
+
+Bold wrapping italic: **bold with *nested italic* inside**.
+
+Italic wrapping bold: *italic with **nested bold** inside*.
+
+Intraword emphasis with asterisks: super*cali*fragilistic expialidocious.
+
+A line with **bold**, *italic*, `code`, and a [link](https://x.com) all together.
+
+Escaped asterisks that are not emphasis: \*not italic\* and \*\*not bold\*\*.

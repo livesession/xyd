@@ -1,0 +1,16 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Scrambled",
+  "navigation": { "tabs": [ { "tab": "Reference", "pages": ["reference/one", "reference/two"] } ] },
+  "footer": {
+    "socials": {
+      "reddit": "https://reddit.com/r/x",
+      "bluesky": "https://bsky.app/x",
+      "notsupported": "https://foo",
+      "x": "https://x.com/x",
+      "medium": "https://medium.com/@x",
+      "telegram": "https://t.me/x",
+      "github": "https://github.com/x"
+    }
+  }
+}

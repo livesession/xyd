@@ -1,0 +1,25 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Versioned",
+  "colors": { "primary": "#123456" },
+  "navigation": {
+    "versions": [
+      {
+        "version": "2.0",
+        "groups": [
+          {
+            "group": "Guide",
+            "pages": [
+              "v2/a",
+              { "group": "Nested", "pages": ["v2/nested/x", "index", "v2/nested/y"] }
+            ]
+          }
+        ]
+      },
+      {
+        "version": "1.0",
+        "groups": [ { "group": "Old", "pages": ["v1/a"] } ]
+      }
+    ]
+  }
+}

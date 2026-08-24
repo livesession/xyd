@@ -1,0 +1,9 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Simple",
+  "navigation": {
+    "tabs": [
+      { "tab": "Ref", "pages": ["ref-a", "ref-b"] }
+    ]
+  }
+}

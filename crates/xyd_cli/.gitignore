@@ -1,0 +1,5 @@
+/target
+# writeProject's content-addressed 3-way-merge snapshots — regenerable, not
+# committed. The regen manifest `.sdk/sdk.lock` is deliberately NOT ignored: it is
+# TRACKED so a fresh checkout regenerates byte-identically.
+.sdk/base/

@@ -8,3 +8,15 @@ description = "OpenCLI -> buildable Rust CLI project generator (Rust port of @xy
 [dependencies]
 serde = { workspace = true }
 serde_json = { workspace = true }
+
+# The `regen` binary (src/bin/regen.rs) drives the Rust-native regeneration of a
+# generated CLI crate: opencli2rust -> write_project (regen-safe .sdk.lock lifecycle)
+# -> cargo fmt. Config comes from the target crate's regen.toml. These deps are only
+# pulled in by the bin target.
+xyd_opensdk_framework = { path = "../xyd_opensdk_framework" }
+toml = "0.8"
+
+# The regen binary reads the target crate dir + regen.toml at runtime.
+[[bin]]
+name = "regen"
+path = "src/bin/regen.rs"

@@ -1,0 +1,72 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "API",
+        "icon": "code",
+        "page": "api"
+      },
+      {
+        "title": "Support",
+        "icon": "",
+        "href": "https://support.example.com",
+        "float": "right"
+      },
+      {
+        "title": "Products",
+        "icon": "box",
+        "page": "products"
+      }
+    ],
+    "sidebar": [
+      {
+        "route": "api",
+        "pages": [
+          {
+            "group": "Endpoints",
+            "pages": [
+              "api/users",
+              {
+                "group": "Deep",
+                "pages": [
+                  "api/deep/a",
+                  "api/deep/b"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "route": "products",
+        "pages": [
+          {
+            "group": "P",
+            "pages": [
+              "products/p1",
+              "products/p2"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "components": {}
+}

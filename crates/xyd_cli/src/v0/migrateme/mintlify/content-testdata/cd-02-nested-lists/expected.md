@@ -1,0 +1,41 @@
+---
+title: Nested Lists
+---
+
+# Nested Lists
+
+Deeply nested unordered list, four levels down:
+
+- level one
+  - level two
+    - level three
+      - level four
+- back to one
+
+Mixed bullet markers across levels:
+
+- star top
+  - plus middle
+    - dash deep
+
+Unordered list containing an ordered child:
+
+- bullet parent
+  1. numbered child
+  2. another numbered child
+- second bullet parent
+
+Ordered list containing an unordered child:
+
+1. numbered parent
+   - bullet child one
+   - bullet child two
+2. second numbered parent
+
+Loose list with blank lines between items:
+
+- loose one
+
+- loose two
+
+- loose three

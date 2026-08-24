@@ -1,0 +1,51 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Ünïfied Ãpi",
+        "icon": "cube",
+        "page": "",
+        "href": "/alpha/deep/one"
+      }
+    ],
+    "sidebar": [
+      {
+        "group": "Alpha",
+        "pages": [
+          "alpha/deep/one",
+          "alpha/deep/two/three/four"
+        ]
+      },
+      {
+        "group": "Beta",
+        "pages": [
+          "beta/x",
+          "beta/y/z"
+        ]
+      }
+    ]
+  },
+  "components": {},
+  "seo": {
+    "metatags": {
+      "og:type": "website"
+    }
+  }
+}

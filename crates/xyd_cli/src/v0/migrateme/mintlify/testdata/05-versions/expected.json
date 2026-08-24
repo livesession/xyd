@@ -1,0 +1,43 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "",
+        "icon": "",
+        "page": ""
+      }
+    ],
+    "sidebar": [
+      {
+        "route": "",
+        "pages": [
+          {
+            "group": "V2",
+            "pages": [
+              "v2/intro",
+              "v2/next"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "components": {}
+}

@@ -1,0 +1,44 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Reference",
+        "icon": "",
+        "page": "",
+        "href": "reference/one"
+      }
+    ],
+    "sidebar": [
+      "reference"
+    ]
+  },
+  "components": {
+    "footer": {
+      "social": {
+        "reddit": "https://reddit.com/r/x",
+        "bluesky": "https://bsky.app/x",
+        "x": "https://x.com/x",
+        "medium": "https://medium.com/@x",
+        "telegram": "https://t.me/x",
+        "github": "https://github.com/x"
+      }
+    }
+  }
+}

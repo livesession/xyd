@@ -32,6 +32,16 @@ pub struct FlagModel {
     pub hidden: bool,
     pub aliases: Vec<String>,
     pub description: Option<String>,
+    /// Non-API only: fixed accepted values (`.value_parser([...])`). NEVER set by
+    /// `build_leaf_model`, so x-openapi flags stay byte-identical.
+    pub accepted_values: Option<Vec<String>>,
+    /// Non-API only: value arity (`.num_args(...)`). NEVER set by `build_leaf_model`.
+    pub arity: Option<ArityModel>,
+}
+
+pub struct ArityModel {
+    pub minimum: Option<i64>,
+    pub maximum: Option<i64>,
 }
 
 pub struct LeafModel {
@@ -227,6 +237,8 @@ pub fn build_leaf_model(command: &Value) -> LeafModel {
                 })
                 .unwrap_or_default(),
             description: str_field(opt, "description"),
+            accepted_values: None,
+            arity: None,
         });
     }
 
@@ -268,4 +280,70 @@ pub fn build_leaf_model(command: &Value) -> LeafModel {
         body_style,
         body_json_option,
     }
+}
+
+/// The `acceptedValues` of an OpenCLI argument, as a list (None when absent/empty).
+pub fn accepted_values_of(arg: &Value) -> Option<Vec<String>> {
+    arg.get("acceptedValues")
+        .and_then(|a| a.as_array())
+        .map(|a| {
+            a.iter()
+                .filter_map(|v| v.as_str().map(String::from))
+                .collect::<Vec<_>>()
+        })
+        .filter(|v| !v.is_empty())
+}
+
+/// The `arity` of an OpenCLI argument, as an `ArityModel` (None when absent).
+pub fn arity_of(arg: &Value) -> Option<ArityModel> {
+    arg.get("arity")
+        .filter(|a| a.is_object())
+        .map(|a| ArityModel {
+            minimum: a.get("minimum").and_then(|m| m.as_i64()),
+            maximum: a.get("maximum").and_then(|m| m.as_i64()),
+        })
+}
+
+/// Flags for a non-API "runnable leaf": mapped straight from the command's own
+/// `options` (no x-openapi binding). `accepted_values`/`arity` carry through to the
+/// clap emitter. `location`/`wire_name` are placeholders (never read for local leaves).
+pub fn build_local_flags(command: &Value) -> Vec<FlagModel> {
+    let empty: Vec<Value> = Vec::new();
+    let opts = command
+        .get("options")
+        .and_then(|o| o.as_array())
+        .unwrap_or(&empty);
+    opts.iter()
+        .map(|opt| {
+            let arg = opt
+                .get("arguments")
+                .and_then(|a| a.as_array())
+                .and_then(|a| a.first());
+            let opt_name = opt
+                .get("name")
+                .and_then(|n| n.as_str())
+                .unwrap_or("")
+                .to_string();
+            FlagModel {
+                flag_name: opt_name.clone(),
+                wire_name: opt_name,
+                location: "query".to_string(),
+                flag_type: option_flag_type(opt, None),
+                required: opt.get("required").and_then(|r| r.as_bool()) == Some(true),
+                hidden: opt.get("hidden").and_then(|h| h.as_bool()) == Some(true),
+                aliases: opt
+                    .get("aliases")
+                    .and_then(|a| a.as_array())
+                    .map(|a| {
+                        a.iter()
+                            .filter_map(|v| v.as_str().map(String::from))
+                            .collect()
+                    })
+                    .unwrap_or_default(),
+                description: str_field(opt, "description"),
+                accepted_values: arg.and_then(accepted_values_of),
+                arity: arg.and_then(arity_of),
+            }
+        })
+        .collect()
 }

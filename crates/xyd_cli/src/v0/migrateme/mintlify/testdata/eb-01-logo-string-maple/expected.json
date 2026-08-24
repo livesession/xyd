@@ -1,0 +1,41 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    },
+    "appearance": {
+      "colors": {
+        "primary": "#7c3aed",
+        "dark": "#0f172a",
+        "light": "#f8fafc"
+      }
+    },
+    "logo": "/public/brand-logo.svg"
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Guides",
+        "icon": "",
+        "page": "",
+        "href": "guides/intro"
+      }
+    ],
+    "sidebar": [
+      "guides"
+    ]
+  },
+  "components": {}
+}

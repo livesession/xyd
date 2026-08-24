@@ -1,0 +1,9 @@
+# Rust-native regen config for the xyd CLI. Consumed by:
+#   cargo run -q -p xyd_opencli2rust --bin regen -- crates/xyd_cli
+# (which reads opencli.json → opencli2rust → write_project → cargo fmt).
+generator = "opencli2rust"
+opencli   = "opencli.json"
+crate     = "xyd_cli"
+bin       = "xyd"
+module    = "opencli"   # generated command tree → src/opencli/**
+impl      = "v0"        # hand-owned behavior     → src/v0/**

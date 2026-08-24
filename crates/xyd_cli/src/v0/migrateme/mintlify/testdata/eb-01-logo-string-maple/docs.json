@@ -1,0 +1,8 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
+  "name": "Maple Docs",
+  "logo": "brand-logo.svg",
+  "colors": { "primary": "#7c3aed", "dark": "#0f172a", "light": "#f8fafc" },
+  "navigation": { "groups": [ { "group": "Guides", "pages": ["guides/intro"] } ] }
+}

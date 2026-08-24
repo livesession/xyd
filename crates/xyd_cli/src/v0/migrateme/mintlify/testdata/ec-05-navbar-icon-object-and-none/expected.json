@@ -1,0 +1,51 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": [
+      {
+        "title": "GitHub",
+        "href": "https://github.com/o/r",
+        "icon": "github",
+        "float": "right"
+      },
+      {
+        "title": "Community",
+        "href": "https://community.example.com",
+        "float": "right"
+      },
+      {
+        "title": "Blog",
+        "href": "https://blog.example.com",
+        "icon": "rss",
+        "float": "right"
+      }
+    ]
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Main",
+        "icon": "",
+        "page": "",
+        "href": "main/a"
+      }
+    ],
+    "sidebar": [
+      "main"
+    ]
+  },
+  "components": {}
+}

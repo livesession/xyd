@@ -8,7 +8,9 @@ import { crateName as toCrateName, slug } from './naming';
 import { native } from './native';
 import { GENERATED_HEADER } from './rslit';
 import {
+  actionsRs,
   cargoToml,
+  commandsRs,
   configRs,
   customRegistryRs,
   customScaffoldRs,
@@ -44,26 +46,43 @@ export function opencli2rust(spec: OpencliSpecJson, options: Opencli2RustOptions
   const crate = options.crateName ?? toCrateName(spec.info?.title || binName);
   const edition = options.edition ?? '2021';
   const baseURL = options.baseURL ?? spec['x-openapi']?.servers?.[0] ?? '';
+  // The top-level generated module (`src/<moduleName>/**`) and the hand-owned impl
+  // module (`src/<implModule>/mod.rs`). Defaults keep the historical `gen`/`custom`
+  // layout byte-identical.
+  const moduleName = options.moduleName ?? 'gen';
+  const implModule = options.implModule ?? 'custom';
 
   const files: ProjectFileMap = {};
+
+  const resources: ResourceFile[] = (spec.commands || []).map((top) => renderResourceFile(top, moduleName));
+  // Aggregate the non-API runnable leaves; their presence gates the whole
+  // `Actions` seam (main wiring, cli dispatch, runtime mod, actions.rs, scaffold).
+  const actionPaths: string[][] = resources.flatMap((r) => r.actionPaths);
+  const hasActions = actionPaths.length > 0;
 
   files['Cargo.toml'] = { content: cargoToml(spec, crate, binName, edition), writeMode: 'skipIfExists' };
   files['.gitignore'] = { content: '/target\n', writeMode: 'skipIfExists' };
 
-  files['src/main.rs'] = renderMain();
+  files['src/main.rs'] = renderMain(hasActions, moduleName, implModule);
 
-  const resources: ResourceFile[] = (spec.commands || []).map((top) => renderResourceFile(top));
   for (const r of resources) files[r.path] = r.content;
-  files['src/gen/cmd/mod.rs'] = cmdModRs(resources);
-  files['src/gen/cli.rs'] = renderCli(spec, binName, resources);
-  files['src/gen/mod.rs'] = genModRs();
-  files['src/gen/runtime/mod.rs'] = runtimeModRs();
-  files['src/gen/runtime/http.rs'] = httpRs();
-  files['src/gen/runtime/config.rs'] = configRs(spec, binName, baseURL);
-  files['src/gen/runtime/overrides.rs'] = overridesRs();
-  files['src/gen/runtime/custom.rs'] = customRegistryRs();
+  files[`src/${moduleName}/cmd/mod.rs`] = cmdModRs(resources);
+  files[`src/${moduleName}/cli.rs`] = renderCli(spec, binName, resources, actionPaths);
+  files[`src/${moduleName}/mod.rs`] = genModRs();
+  files[`src/${moduleName}/runtime/mod.rs`] = runtimeModRs(hasActions);
+  files[`src/${moduleName}/runtime/http.rs`] = httpRs();
+  files[`src/${moduleName}/runtime/config.rs`] = configRs(spec, binName, baseURL);
+  files[`src/${moduleName}/runtime/overrides.rs`] = overridesRs();
+  files[`src/${moduleName}/runtime/custom.rs`] = customRegistryRs();
+  if (hasActions) {
+    files[`src/${moduleName}/runtime/actions.rs`] = actionsRs();
+    files[`src/${moduleName}/runtime/commands.rs`] = commandsRs(actionPaths);
+  }
 
-  files['src/custom/mod.rs'] = { content: customScaffoldRs(), writeMode: 'skipIfExists' };
+  files[`src/${implModule}/mod.rs`] = {
+    content: customScaffoldRs(hasActions, moduleName, actionPaths),
+    writeMode: 'skipIfExists',
+  };
 
   return files;
 }

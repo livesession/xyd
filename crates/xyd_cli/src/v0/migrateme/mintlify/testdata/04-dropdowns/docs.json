@@ -1,0 +1,9 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Drops",
+  "navigation": {
+    "dropdowns": [
+      { "dropdown": "Products", "icon": { "name": "box" }, "groups": [ { "group": "P1", "pages": ["products/p1/a"] } ] }
+    ]
+  }
+}

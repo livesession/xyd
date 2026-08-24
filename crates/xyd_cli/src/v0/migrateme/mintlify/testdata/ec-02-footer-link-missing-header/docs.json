@@ -1,0 +1,13 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "MissingHeader",
+  "navigation": { "tabs": [ { "tab": "Docs", "groups": [ { "group": "G", "pages": ["docs/a", "docs/b"] } ] } ] },
+  "footer": {
+    "socials": { "github": "https://github.com/y" },
+    "links": [
+      { "header": "Company", "items": [ { "label": "About", "href": "/about" } ] },
+      { "items": [ { "label": "Careers", "href": "/careers" }, { "label": "Press", "href": "/press" } ] }
+    ]
+  }
+}

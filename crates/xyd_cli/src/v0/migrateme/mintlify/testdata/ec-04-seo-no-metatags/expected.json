@@ -1,0 +1,43 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Platform",
+        "icon": "layers",
+        "page": "platform"
+      }
+    ],
+    "sidebar": [
+      {
+        "route": "platform",
+        "pages": [
+          {
+            "group": "P",
+            "pages": [
+              "platform/p"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "components": {},
+  "seo": {}
+}

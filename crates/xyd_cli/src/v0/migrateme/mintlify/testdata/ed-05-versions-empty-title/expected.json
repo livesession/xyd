@@ -1,0 +1,49 @@
+{
+  "theme": {
+    "name": "solar",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "",
+        "icon": "",
+        "page": ""
+      }
+    ],
+    "sidebar": [
+      {
+        "route": "",
+        "pages": [
+          {
+            "group": "Introdüçtion",
+            "pages": [
+              "v2/intro",
+              "v2/setup"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "components": {},
+  "seo": {
+    "metatags": {
+      "og:site_name": "Versioned: The Docs",
+      "article:published_time": "2024-01-01T10:00:00Z"
+    }
+  }
+}

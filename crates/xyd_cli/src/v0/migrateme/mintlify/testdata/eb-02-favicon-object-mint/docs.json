@@ -1,0 +1,8 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Mint Docs",
+  "favicon": { "light": "icons/favicon-light.svg", "dark": "icons/favicon-dark.svg" },
+  "colors": { "dark": "#020617" },
+  "navigation": { "groups": [ { "group": "API Reference", "pages": ["api/overview"] } ] }
+}

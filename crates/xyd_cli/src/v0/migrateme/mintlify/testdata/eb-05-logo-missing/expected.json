@@ -1,0 +1,41 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    },
+    "appearance": {
+      "colors": {
+        "primary": "#111827",
+        "dark": "#000000",
+        "light": "#ffffff"
+      }
+    },
+    "logo": "assets/missing-logo.svg"
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Home",
+        "icon": "",
+        "page": "",
+        "href": "home/welcome"
+      }
+    ],
+    "sidebar": [
+      "home"
+    ]
+  },
+  "components": {}
+}

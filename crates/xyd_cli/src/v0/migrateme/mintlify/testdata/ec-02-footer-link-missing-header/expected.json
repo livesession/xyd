@@ -1,0 +1,73 @@
+{
+  "theme": {
+    "name": "solar",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Docs",
+        "icon": "",
+        "page": "docs"
+      }
+    ],
+    "sidebar": [
+      {
+        "route": "docs",
+        "pages": [
+          {
+            "group": "G",
+            "pages": [
+              "docs/a",
+              "docs/b"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "components": {
+    "footer": {
+      "social": {
+        "github": "https://github.com/y"
+      },
+      "links": [
+        {
+          "header": "Company",
+          "items": [
+            {
+              "label": "About",
+              "href": "/about"
+            }
+          ]
+        },
+        {
+          "header": "",
+          "items": [
+            {
+              "label": "Careers",
+              "href": "/careers"
+            },
+            {
+              "label": "Press",
+              "href": "/press"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

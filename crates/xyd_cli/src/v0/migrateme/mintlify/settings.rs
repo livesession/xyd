@@ -1,0 +1,738 @@
+//! Mintlify `docs.json` → xyd Settings (migrateme S2).
+//!
+//! Byte-for-byte port of the settings half of `mintlify/mintlify.ts` (`preSettings` +
+//! the 9 `migrate*` steps + the nav heuristics). [`convert`] builds the xyd settings as
+//! a `serde_json::Value` in TS insertion order (`preserve_order` on serde_json) and omits
+//! `undefined`-valued keys, so `serde_json::to_string_pretty` reproduces
+//! `JSON.stringify(settings, null, 2)` exactly (no trailing newline; the caller adds none).
+//!
+//! Asset migrations move files under `<docs>/public/` as a side effect and return the new
+//! path — verified against committed goldens (regenerate them from this Rust converter
+//! with `XYD_BLESS=1 cargo test -p xyd_cli`).
+
+use std::path::Path;
+
+use serde_json::{json, Map, Value};
+
+/// Convert a parsed Mintlify `docs.json` into the xyd settings tree. Performs the asset
+/// moves the TS migrator does (logo/favicon into `public/`) as it goes.
+pub fn convert(docs_path: &Path, docs_json: &Value) -> Value {
+    let public_dir = docs_path.join("public");
+    let _ = std::fs::create_dir_all(&public_dir); // ensurePublicDir
+
+    let mut settings = pre_settings(docs_json);
+    migrate_navigation(docs_json, &mut settings);
+    migrate_colors(docs_json, &mut settings);
+    migrate_logo(docs_path, &public_dir, docs_json, &mut settings);
+    migrate_favicon(docs_path, &public_dir, docs_json, &mut settings);
+    // migratePublicResources moves stray images but does not touch settings (S3 territory).
+    migrate_navbar_links(docs_json, &mut settings);
+    migrate_footer(docs_json, &mut settings);
+    // migrateRedirects is a no-op (warn only).
+    migrate_seo(docs_json, &mut settings);
+    settings
+}
+
+// ---------------------------------------------------------------------------
+// Stage 0: bootstrap
+// ---------------------------------------------------------------------------
+fn pre_settings(docs_json: &Value) -> Value {
+    let theme = match docs_json.get("theme").and_then(Value::as_str) {
+        Some("mint") => "solar",
+        // "maple" and anything else (incl. absent) → gusto.
+        _ => "gusto",
+    };
+    json!({
+        "theme": {
+            "name": theme,
+            "icons": { "library": [ { "name": "fa6-solid", "default": true } ] },
+            "writer": { "maxTocDepth": 4 }
+        },
+        "webeditor": { "header": [] },
+        "navigation": { "tabs": [], "sidebar": [] },
+        "components": {}
+    })
+}
+
+// ---------------------------------------------------------------------------
+// Navigation
+// ---------------------------------------------------------------------------
+fn migrate_navigation(docs_json: &Value, settings: &mut Value) {
+    let nav = match docs_json.get("navigation") {
+        Some(nav) => nav,
+        None => return,
+    };
+
+    let mut tabs: Vec<Value> = Vec::new();
+    let mut sidebar: Vec<Value> = Vec::new();
+
+    for key in ["groups", "tabs", "anchors", "dropdowns"] {
+        if let Some(arr) = nav.get(key).and_then(Value::as_array) {
+            migrate_nav(arr, &mut tabs, &mut sidebar);
+        }
+    }
+    // versions: only the first version's groups are migrated.
+    if let Some(versions) = nav.get("versions").and_then(Value::as_array) {
+        if let Some(first) = versions.first() {
+            if truthy(first.get("groups")) {
+                migrate_nav(std::slice::from_ref(first), &mut tabs, &mut sidebar);
+            }
+        }
+    }
+
+    settings["navigation"]["tabs"] = Value::Array(tabs);
+    settings["navigation"]["sidebar"] = Value::Array(sidebar);
+}
+
+fn migrate_nav(navs: &[Value], tabs: &mut Vec<Value>, sidebar: &mut Vec<Value>) {
+    for nav in navs {
+        let has_href = truthy(nav.get("href"));
+        let pages_present = truthy(nav.get("pages"));
+        let nested = nav.get("pages").map(has_nested_groups).unwrap_or(false);
+        let has_groups = truthy(nav.get("groups")) || (pages_present && nested);
+        let has_pages = pages_present;
+
+        let title = first_title(nav);
+        let mut header = Map::new();
+        header.insert("title".into(), Value::String(title.clone()));
+        if let Some(icon) = nav_icon(nav) {
+            header.insert("icon".into(), Value::String(icon));
+        }
+
+        if has_href && !has_groups && !has_pages {
+            // External link.
+            header.insert(
+                "href".into(),
+                nav.get("href").cloned().unwrap_or(Value::Null),
+            );
+            header.insert("float".into(), Value::String("right".into()));
+        } else if has_groups {
+            let mut route = slugify(&title);
+
+            let pages_only = has_pages && !truthy(nav.get("groups"));
+            if pages_only {
+                let pages = nav
+                    .get("pages")
+                    .and_then(Value::as_array)
+                    .cloned()
+                    .unwrap_or_default();
+                if is_flat_structure(&pages) {
+                    // Flat sidebar (no route): push flattened pages, skip index.
+                    header.insert("page".into(), Value::String(String::new()));
+                    for page_or_group in &pages {
+                        if let Some(s) = page_or_group.as_str() {
+                            if s == "index" {
+                                continue;
+                            }
+                            sidebar.push(Value::String(s.to_string()));
+                        } else if page_or_group.is_object()
+                            && truthy(page_or_group.get("group"))
+                            && page_or_group.get("pages").is_some()
+                        {
+                            if let Some(nested) =
+                                page_or_group.get("pages").and_then(Value::as_array)
+                            {
+                                for np in nested {
+                                    if np.as_str() == Some("index") {
+                                        continue;
+                                    }
+                                    sidebar.push(np.clone());
+                                }
+                            }
+                        }
+                    }
+                    tabs.push(Value::Object(header));
+                    continue;
+                }
+                // Not flat: derive the route from the first page.
+                if let Some(first) = pages.first() {
+                    if let Some(s) = first.as_str() {
+                        route = s.to_string();
+                    } else if let Some(fp) = first
+                        .get("pages")
+                        .and_then(Value::as_array)
+                        .and_then(|a| a.first())
+                        .and_then(Value::as_str)
+                    {
+                        route = fp.to_string();
+                    }
+                }
+            }
+
+            header.insert("page".into(), Value::String(route.clone()));
+
+            let sidebar_pages = build_sidebar_pages(nav);
+
+            if validate_route_pages(&route, &sidebar_pages) {
+                let mut route_obj = Map::new();
+                route_obj.insert("route".into(), Value::String(route.clone()));
+                route_obj.insert("pages".into(), Value::Array(sidebar_pages));
+                sidebar.push(Value::Object(route_obj));
+            } else {
+                sidebar.extend(sidebar_pages.iter().cloned());
+                header.insert("page".into(), Value::String(String::new()));
+                if let Some(first) = find_first_page(&sidebar_pages) {
+                    header.insert("href".into(), Value::String(format!("/{first}")));
+                }
+            }
+        } else if has_pages && !has_groups {
+            header.insert("page".into(), Value::String(String::new()));
+            if let Some(first) = nav
+                .get("pages")
+                .and_then(Value::as_array)
+                .and_then(|a| a.first())
+            {
+                if let Some(s) = first.as_str() {
+                    header.insert("href".into(), Value::String(s.to_string()));
+                }
+            }
+            sidebar.push(Value::String(slugify(&title)));
+        }
+
+        tabs.push(Value::Object(header));
+    }
+}
+
+/// Build the sidebar `pages` for a hasGroups nav: from `nav.groups` (skip index) or from
+/// `nav.pages` (strings + nested `{group, pages}`), mirroring the two TS branches.
+fn build_sidebar_pages(nav: &Value) -> Vec<Value> {
+    let mut out: Vec<Value> = Vec::new();
+    if truthy(nav.get("groups")) {
+        if let Some(groups) = nav.get("groups").and_then(Value::as_array) {
+            for group in groups {
+                if truthy(group.get("pages")) {
+                    let mut pages: Vec<Value> = Vec::new();
+                    if let Some(gp) = group.get("pages").and_then(Value::as_array) {
+                        for page_or_group in gp {
+                            if page_or_group.as_str() == Some("index") {
+                                continue;
+                            }
+                            pages.push(page_or_group.clone());
+                        }
+                    }
+                    let mut group_obj = Map::new();
+                    group_obj.insert(
+                        "group".into(),
+                        group.get("group").cloned().unwrap_or(Value::Null),
+                    );
+                    group_obj.insert("pages".into(), Value::Array(pages));
+                    out.push(Value::Object(group_obj));
+                }
+                // API-related groups (openapi/asyncapi) are simply skipped by TS.
+            }
+        }
+    } else if let Some(pgs) = nav.get("pages").and_then(Value::as_array) {
+        for page_or_group in pgs {
+            if let Some(s) = page_or_group.as_str() {
+                if s == "index" {
+                    continue;
+                }
+                out.push(Value::String(s.to_string()));
+            } else if page_or_group.is_object()
+                && truthy(page_or_group.get("group"))
+                && page_or_group.get("pages").is_some()
+            {
+                let mut group_obj = Map::new();
+                group_obj.insert("group".into(), page_or_group.get("group").cloned().unwrap());
+                group_obj.insert("pages".into(), page_or_group.get("pages").cloned().unwrap());
+                out.push(Value::Object(group_obj));
+            }
+        }
+    }
+    out
+}
+
+// ---------------------------------------------------------------------------
+// Theme & branding
+// ---------------------------------------------------------------------------
+fn migrate_colors(docs_json: &Value, settings: &mut Value) {
+    let colors = match docs_json.get("colors") {
+        Some(c) if is_truthy(c) => c,
+        _ => return,
+    };
+    let mut out = Map::new();
+    for key in ["primary", "dark", "light"] {
+        if let Some(v) = colors.get(key) {
+            if !v.is_null() {
+                out.insert(key.into(), v.clone());
+            }
+        }
+    }
+    let theme = settings["theme"].as_object_mut().unwrap();
+    let appearance = theme.entry("appearance").or_insert_with(|| json!({}));
+    appearance
+        .as_object_mut()
+        .unwrap()
+        .insert("colors".into(), Value::Object(out));
+}
+
+fn migrate_logo(docs_path: &Path, public_dir: &Path, docs_json: &Value, settings: &mut Value) {
+    let logo = match docs_json.get("logo") {
+        Some(l) if is_truthy(l) => l,
+        _ => return,
+    };
+    if let Some(s) = logo.as_str() {
+        settings["theme"]["logo"] =
+            Value::String(move_resource_to_public(docs_path, public_dir, Some(s)));
+    } else if logo.is_object() {
+        let light = move_resource_to_public(
+            docs_path,
+            public_dir,
+            logo.get("light").and_then(Value::as_str),
+        );
+        let dark = move_resource_to_public(
+            docs_path,
+            public_dir,
+            logo.get("dark").and_then(Value::as_str),
+        );
+        let mut out = Map::new();
+        out.insert("light".into(), Value::String(light));
+        out.insert("dark".into(), Value::String(dark));
+        if let Some(href) = logo.get("href") {
+            if !href.is_null() {
+                out.insert("href".into(), href.clone());
+            }
+        }
+        settings["theme"]["logo"] = Value::Object(out);
+    }
+}
+
+fn migrate_favicon(docs_path: &Path, public_dir: &Path, docs_json: &Value, settings: &mut Value) {
+    let favicon = match docs_json.get("favicon") {
+        Some(f) if is_truthy(f) => f,
+        _ => return,
+    };
+    if let Some(s) = favicon.as_str() {
+        settings["theme"]["favicon"] =
+            Value::String(move_resource_to_public(docs_path, public_dir, Some(s)));
+    } else if favicon.is_object() {
+        let light = move_resource_to_public(
+            docs_path,
+            public_dir,
+            favicon.get("light").and_then(Value::as_str),
+        );
+        let dark = move_resource_to_public(
+            docs_path,
+            public_dir,
+            favicon.get("dark").and_then(Value::as_str),
+        );
+        let value = if light.is_empty() { dark } else { light };
+        settings["theme"]["favicon"] = Value::String(value);
+    }
+}
+
+fn migrate_navbar_links(docs_json: &Value, settings: &mut Value) {
+    let links = match docs_json.get("navbar").and_then(|n| n.get("links")) {
+        Some(l) if is_truthy(l) => l,
+        _ => return,
+    };
+    let mapped: Vec<Value> = links
+        .as_array()
+        .map(|arr| {
+            arr.iter()
+                .map(|link| {
+                    let mut m = Map::new();
+                    m.insert(
+                        "title".into(),
+                        link.get("label").cloned().unwrap_or(Value::Null),
+                    );
+                    m.insert(
+                        "href".into(),
+                        link.get("href").cloned().unwrap_or(Value::Null),
+                    );
+                    if let Some(icon) = link_icon(link) {
+                        m.insert("icon".into(), icon);
+                    }
+                    m.insert("float".into(), Value::String("right".into()));
+                    Value::Object(m)
+                })
+                .collect()
+        })
+        .unwrap_or_default();
+    settings["webeditor"]["header"] = Value::Array(mapped);
+}
+
+fn migrate_footer(docs_json: &Value, settings: &mut Value) {
+    let footer = match docs_json.get("footer") {
+        Some(f) if is_truthy(f) => f,
+        _ => return,
+    };
+
+    const SUPPORTED: &[&str] = &[
+        "x",
+        "facebook",
+        "youtube",
+        "discord",
+        "slack",
+        "github",
+        "linkedin",
+        "instagram",
+        "hackernews",
+        "medium",
+        "telegram",
+        "bluesky",
+        "reddit",
+    ];
+    let mut socials = Map::new();
+    if let Some(entries) = footer.get("socials").and_then(Value::as_object) {
+        for (platform, url) in entries {
+            if SUPPORTED.contains(&platform.as_str()) {
+                socials.insert(platform.clone(), url.clone());
+            }
+        }
+    }
+
+    let mut out = Map::new();
+    if !socials.is_empty() {
+        out.insert("social".into(), Value::Object(socials));
+    }
+    if let Some(groups) = footer.get("links").and_then(Value::as_array) {
+        let mapped: Vec<Value> = groups
+            .iter()
+            .map(|group| {
+                let mut g = Map::new();
+                g.insert(
+                    "header".into(),
+                    Value::String(
+                        group
+                            .get("header")
+                            .and_then(Value::as_str)
+                            .unwrap_or("")
+                            .to_string(),
+                    ),
+                );
+                let items: Vec<Value> = group
+                    .get("items")
+                    .and_then(Value::as_array)
+                    .map(|arr| {
+                        arr.iter()
+                            .map(|item| {
+                                let mut i = Map::new();
+                                i.insert(
+                                    "label".into(),
+                                    item.get("label").cloned().unwrap_or(Value::Null),
+                                );
+                                i.insert(
+                                    "href".into(),
+                                    item.get("href").cloned().unwrap_or(Value::Null),
+                                );
+                                Value::Object(i)
+                            })
+                            .collect()
+                    })
+                    .unwrap_or_default();
+                g.insert("items".into(), Value::Array(items));
+                Value::Object(g)
+            })
+            .collect();
+        out.insert("links".into(), Value::Array(mapped));
+    }
+
+    settings["components"]["footer"] = Value::Object(out);
+}
+
+fn migrate_seo(docs_json: &Value, settings: &mut Value) {
+    let seo = match docs_json.get("seo") {
+        Some(s) if is_truthy(s) => s,
+        _ => return,
+    };
+    let mut out = Map::new();
+    if let Some(metatags) = seo.get("metatags") {
+        if is_truthy(metatags) {
+            out.insert("metatags".into(), metatags.clone());
+        }
+    }
+    settings["seo"] = Value::Object(out);
+}
+
+// ---------------------------------------------------------------------------
+// Assets
+// ---------------------------------------------------------------------------
+fn move_resource_to_public(docs_path: &Path, public_dir: &Path, resource: Option<&str>) -> String {
+    let resource = match resource {
+        Some(r) if !r.is_empty() => r,
+        _ => return String::new(),
+    };
+    let clean = resource.strip_prefix('/').unwrap_or(resource);
+    if clean.starts_with("public/") {
+        return format!("/{clean}");
+    }
+    let source = docs_path.join(clean);
+    if std::fs::metadata(&source).is_err() {
+        return resource.to_string(); // not found → fallback to original
+    }
+    let dest = public_dir.join(clean);
+    if let Some(parent) = dest.parent() {
+        let _ = std::fs::create_dir_all(parent);
+    }
+    if move_file(&source, &dest).is_err() {
+        return resource.to_string();
+    }
+    format!("/public/{clean}")
+}
+
+fn move_file(src: &Path, dest: &Path) -> std::io::Result<()> {
+    match std::fs::rename(src, dest) {
+        Ok(()) => Ok(()),
+        Err(_) => {
+            std::fs::copy(src, dest)?;
+            std::fs::remove_file(src)?;
+            Ok(())
+        }
+    }
+}
+
+/// Move every stray image under `docs_path` into `public/`, preserving its relative path
+/// (mirrors `migratePublicResources`). Skips node_modules/.git/dist/build/public and any
+/// image already present at the destination. A side effect only — it does not touch settings.
+pub fn migrate_public_resources(docs_path: &Path) {
+    let public_dir = docs_path.join("public");
+    scan_images(docs_path, docs_path, &public_dir);
+}
+
+fn scan_images(root: &Path, dir: &Path, public_dir: &Path) {
+    const IMAGE_EXTS: &[&str] = &[".svg", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico"];
+    let entries = match std::fs::read_dir(dir) {
+        Ok(entries) => entries,
+        Err(_) => return,
+    };
+    for entry in entries.flatten() {
+        let path = entry.path();
+        let Ok(file_type) = entry.file_type() else {
+            continue;
+        };
+        if file_type.is_dir() {
+            let name = entry.file_name();
+            if !matches!(
+                name.to_string_lossy().as_ref(),
+                "node_modules" | ".git" | "dist" | "build" | "public"
+            ) {
+                scan_images(root, &path, public_dir);
+            }
+        } else if file_type.is_file() {
+            let name = entry.file_name().to_string_lossy().to_lowercase();
+            let is_image = name
+                .rfind('.')
+                .map(|dot| IMAGE_EXTS.contains(&&name[dot..]))
+                .unwrap_or(false);
+            if !is_image {
+                continue;
+            }
+            if let Ok(rel) = path.strip_prefix(root) {
+                let dest = public_dir.join(rel);
+                if !dest.exists() {
+                    if let Some(parent) = dest.parent() {
+                        let _ = std::fs::create_dir_all(parent);
+                    }
+                    let _ = move_file(&path, &dest);
+                }
+            }
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Small utilities (ported from mintlify.ts helpers)
+// ---------------------------------------------------------------------------
+
+/// The header title: the value of the first present key among group/tab/dropdown/anchor.
+fn first_title(nav: &Value) -> String {
+    ["group", "tab", "dropdown", "anchor"]
+        .iter()
+        .find_map(|key| nav.get(*key).map(|v| v.as_str().unwrap_or("").to_string()))
+        .unwrap_or_default()
+}
+
+/// The header icon: absent → `Some("")`; string → itself; object → `name` (or `None` to
+/// omit). `None` means the icon key is dropped (TS `icon: undefined`).
+fn nav_icon(nav: &Value) -> Option<String> {
+    match nav.get("icon") {
+        None => Some(String::new()),
+        Some(Value::String(s)) => Some(s.clone()),
+        Some(v) => v.get("name").and_then(Value::as_str).map(str::to_string),
+    }
+}
+
+/// A navbar-link icon value (or `None` to omit): string → itself; object → `name`.
+fn link_icon(link: &Value) -> Option<Value> {
+    match link.get("icon") {
+        Some(Value::String(s)) => Some(Value::String(s.clone())),
+        Some(v) => v.get("name").cloned().filter(|n| !n.is_null()),
+        None => None,
+    }
+}
+
+fn has_nested_groups(pages: &Value) -> bool {
+    pages
+        .as_array()
+        .map(|arr| arr.iter().any(|p| p.is_object() && truthy(p.get("group"))))
+        .unwrap_or(false)
+}
+
+fn is_flat_structure(pages: &[Value]) -> bool {
+    let mut prefixes = std::collections::BTreeSet::new();
+    let mut has_string_pages = false;
+    let mut has_group_pages = false;
+
+    for page in pages {
+        if let Some(s) = page.as_str() {
+            has_string_pages = true;
+            if let Some((prefix, _)) = s.split_once('/') {
+                prefixes.insert(prefix.to_string());
+            }
+        } else if page.is_object() && truthy(page.get("pages")) {
+            has_group_pages = true;
+            if let Some(nested) = page.get("pages").and_then(Value::as_array) {
+                for np in nested {
+                    if let Some(ns) = np.as_str() {
+                        if let Some((prefix, _)) = ns.split_once('/') {
+                            prefixes.insert(prefix.to_string());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    prefixes.len() > 1
+        || (has_string_pages && has_group_pages)
+        || (prefixes.len() == 1
+            && pages
+                .iter()
+                .any(|p| p.as_str().map(|s| !s.contains('/')).unwrap_or(false)))
+}
+
+fn find_first_page(pages: &[Value]) -> Option<String> {
+    for page in pages {
+        if let Some(s) = page.as_str() {
+            return Some(s.to_string());
+        }
+        if page.is_object() {
+            if let Some(nested) = page.get("pages").and_then(Value::as_array) {
+                if let Some(first) = find_first_page(nested) {
+                    return Some(first);
+                }
+            }
+        }
+    }
+    None
+}
+
+fn validate_route_pages(route: &str, pages: &[Value]) -> bool {
+    if route.is_empty() {
+        return true;
+    }
+    pages.iter().all(|p| route_check(route, p))
+}
+
+fn route_check(route: &str, page: &Value) -> bool {
+    if let Some(s) = page.as_str() {
+        return s.starts_with(&format!("{route}/")) || s == route;
+    }
+    if page.is_object() {
+        if let Some(nested) = page.get("pages").and_then(Value::as_array) {
+            return nested.iter().all(|n| route_check(route, n));
+        }
+    }
+    false
+}
+
+/// `title.toLowerCase().replace(/\s+/g, "-")`: lowercase, runs of whitespace → single `-`.
+fn slugify(title: &str) -> String {
+    let mut out = String::with_capacity(title.len());
+    let mut in_ws = false;
+    for c in title.to_lowercase().chars() {
+        if c.is_whitespace() {
+            if !in_ws {
+                out.push('-');
+                in_ws = true;
+            }
+        } else {
+            out.push(c);
+            in_ws = false;
+        }
+    }
+    out
+}
+
+/// JS truthiness for a JSON value (null/false/0/""/absent → false; else true).
+fn is_truthy(v: &Value) -> bool {
+    match v {
+        Value::Null => false,
+        Value::Bool(b) => *b,
+        Value::Number(n) => n.as_f64().map(|f| f != 0.0).unwrap_or(true),
+        Value::String(s) => !s.is_empty(),
+        Value::Array(_) | Value::Object(_) => true,
+    }
+}
+
+fn truthy(v: Option<&Value>) -> bool {
+    v.map(is_truthy).unwrap_or(false)
+}
+
+#[cfg(test)]
+mod tests {
+    use std::fs;
+    use std::path::Path;
+
+    use super::convert;
+
+    fn copy_dir(src: &Path, dst: &Path) {
+        fs::create_dir_all(dst).unwrap();
+        for entry in fs::read_dir(src).unwrap().flatten() {
+            let from = entry.path();
+            let to = dst.join(entry.file_name());
+            if entry.file_type().unwrap().is_dir() {
+                copy_dir(&from, &to);
+            } else {
+                fs::copy(&from, &to).unwrap();
+            }
+        }
+    }
+
+    /// Byte-parity against the committed `<case>/expected.json` goldens. `XYD_BLESS=1
+    /// cargo test` regenerates each golden from the Rust converter — the crate is
+    /// self-sufficient, no TS golden tool is needed.
+    #[test]
+    fn settings_byte_parity_against_goldens() {
+        let testdata =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("src/v0/migrateme/mintlify/testdata");
+        let mut cases: Vec<String> = fs::read_dir(&testdata)
+            .unwrap()
+            .flatten()
+            .filter(|e| e.file_type().map(|t| t.is_dir()).unwrap_or(false))
+            .map(|e| e.file_name().to_string_lossy().into_owned())
+            .collect();
+        cases.sort();
+        assert!(!cases.is_empty(), "no migrateme mintlify fixtures found");
+
+        for case in cases {
+            let case_dir = testdata.join(&case);
+            let expected_path = case_dir.join("expected.json");
+            if !expected_path.exists() {
+                continue;
+            }
+            let expected = fs::read_to_string(&expected_path).unwrap();
+
+            // Run on a copy so the asset moves are contained in a temp dir.
+            let work = std::env::temp_dir().join(format!("xyd-s2-{case}-{}", std::process::id()));
+            let _ = fs::remove_dir_all(&work);
+            copy_dir(&case_dir, &work);
+            let _ = fs::remove_file(work.join("expected.json"));
+
+            let docs_json: serde_json::Value =
+                serde_json::from_str(&fs::read_to_string(work.join("docs.json")).unwrap()).unwrap();
+            let settings = convert(&work, &docs_json);
+            let actual = serde_json::to_string_pretty(&settings).unwrap();
+
+            let _ = fs::remove_dir_all(&work);
+
+            if std::env::var("XYD_BLESS").is_ok() {
+                // Write the freshly-computed Rust output to the REAL golden, not the temp copy.
+                fs::write(&expected_path, &actual).unwrap();
+                continue;
+            }
+            assert_eq!(actual, expected, "case `{case}` settings mismatch");
+        }
+    }
+}

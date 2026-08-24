@@ -10,4 +10,15 @@ export interface Opencli2RustOptions {
    * via `<ENVPREFIX>_BASE_URL`). Default: the first `x-openapi.servers` entry.
    */
   baseURL?: string;
+  /**
+   * Name of the top-level generated module (the `src/<moduleName>/**` tree that is
+   * regenerated on every run). Default: `"gen"`.
+   */
+  moduleName?: string;
+  /**
+   * Name of the hand-owned impl module (the `src/<implModule>/mod.rs` scaffold that
+   * implements `CliOverrides`/`Commands`, written once via `skipIfExists`). Default:
+   * `"custom"`.
+   */
+  implModule?: string;
 }

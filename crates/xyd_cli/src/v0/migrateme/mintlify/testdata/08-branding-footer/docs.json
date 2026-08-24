@@ -1,0 +1,14 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "maple",
+  "name": "Brand",
+  "colors": { "primary": "#111", "dark": "#000", "light": "#fff" },
+  "navbar": { "links": [ { "label": "Blog", "href": "https://blog.example.com", "icon": "rss" } ] },
+  "navigation": { "groups": [ { "group": "Start", "pages": ["start/a"] } ] },
+  "footer": {
+    "socials": { "github": "https://github.com/x", "linkedin": "https://linkedin.com/x", "nope": "z" },
+    "links": [ { "header": "Resources", "items": [ { "label": "Docs", "href": "/docs" }, { "label": "API", "href": "/api" } ] } ]
+  },
+  "redirects": [ { "source": "/old", "destination": "/new" } ],
+  "seo": { "metatags": { "og:title": "Brand", "og:image": "/og.png" } }
+}

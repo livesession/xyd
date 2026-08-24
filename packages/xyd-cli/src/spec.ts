@@ -83,7 +83,7 @@ export const cliSpec: CLI = {
                     name: 'shell',
                     required: true,
                     description: 'Shell to generate completions for',
-                    acceptedValues: ['zsh', 'fish'],
+                    acceptedValues: ['zsh', 'fish', 'install', 'opencli'],
                 },
             ],
         },

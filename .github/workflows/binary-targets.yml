@@ -19,6 +19,7 @@ on:
       - 'packages/xyd-documan/**'
       - '.github/workflows/binary-targets.yml'
       - '.github/workflows/build-binaries.yml'
+      - '.github/workflows/build-native-binaries.yml'
   pull_request:
     branches: [ master, canary ]
     paths:
@@ -28,8 +29,43 @@ on:
       - 'packages/xyd-documan/**'
       - '.github/workflows/binary-targets.yml'
       - '.github/workflows/build-binaries.yml'
+      - '.github/workflows/build-native-binaries.yml'
   workflow_dispatch:
 
 jobs:
+  # The current stable-channel binary: the self-contained bun engine binary.
   binaries:
     uses: ./.github/workflows/build-binaries.yml
+
+  # STAGED (canary phase) — validate the NEW self-contained Rust binary build
+  # path. Cheap paths-filter gate so the heavy embed matrix runs ONLY when the CLI
+  # crate (or its build inputs / the two workflows) change — a change to
+  # packages/xyd-documan or the napi core already rebuilds the bun engine in
+  # `binaries` above and is revalidated end-to-end by cli-canary.yml's native job.
+  # Treat as a NON-REQUIRED check in branch protection until the canary→stable flip
+  # (at which point it replaces `binaries`).
+  cli-changes:
+    name: detect Rust CLI changes
+    runs-on: ubuntu-latest
+    outputs:
+      cli: ${{ steps.filter.outputs.cli }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            cli:
+              - 'crates/xyd_cli/**'
+              - 'crates/Cargo.toml'
+              - 'crates/Cargo.lock'
+              - '.github/workflows/build-native-binaries.yml'
+              - '.github/workflows/binary-targets.yml'
+
+  native-binaries:
+    name: 🦀 native binaries
+    needs: cli-changes
+    if: needs.cli-changes.outputs.cli == 'true'
+    uses: ./.github/workflows/build-native-binaries.yml

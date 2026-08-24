@@ -1,0 +1,17 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Demo",
+  "colors": { "primary": "#0068ff", "light": "#88aaff" },
+  "navigation": {
+    "tabs": [
+      { "tab": "Guides", "icon": "book", "groups": [
+        { "group": "Getting Started", "pages": ["guides/intro", "index", "guides/setup"] },
+        { "group": "Advanced", "pages": ["guides/adv/a", "guides/adv/b"] }
+      ] }
+    ],
+    "anchors": [ { "anchor": "Community", "href": "https://x.com/xyd" } ]
+  },
+  "footer": { "socials": { "x": "https://x.com/xyd", "unsupported": "y", "github": "https://github.com/livesession/xyd" } },
+  "seo": { "metatags": { "og:title": "Demo" } }
+}

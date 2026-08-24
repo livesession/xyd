@@ -1,0 +1,58 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    },
+    "appearance": {
+      "colors": {
+        "primary": "#123456",
+        "dark": "#000000",
+        "light": "#ffffff"
+      }
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Guides",
+        "icon": "book",
+        "page": "guides"
+      },
+      {
+        "title": "Mixed",
+        "icon": "",
+        "page": ""
+      }
+    ],
+    "sidebar": [
+      {
+        "route": "guides",
+        "pages": [
+          {
+            "group": "Deep",
+            "pages": [
+              "guides/a/b/c/d/e/f",
+              "guides/x/y/z"
+            ]
+          }
+        ]
+      },
+      "a/one",
+      "a/two",
+      "b/solo"
+    ]
+  },
+  "components": {}
+}

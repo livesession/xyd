@@ -1,0 +1,55 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Empty",
+        "icon": "",
+        "page": "empty"
+      },
+      {
+        "title": "No Pages",
+        "icon": "",
+        "page": ""
+      },
+      {
+        "title": "All Index",
+        "icon": "",
+        "page": "all-index"
+      }
+    ],
+    "sidebar": [
+      {
+        "route": "empty",
+        "pages": []
+      },
+      "no-pages",
+      {
+        "route": "all-index",
+        "pages": [
+          {
+            "group": "OnlyIndex",
+            "pages": []
+          }
+        ]
+      }
+    ]
+  },
+  "components": {}
+}

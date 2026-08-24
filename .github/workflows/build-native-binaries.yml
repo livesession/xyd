@@ -1,0 +1,200 @@
+name: build:native-binaries
+
+# Reusable: build the NEW self-contained *Rust* `xyd` binary (crates/xyd_cli,
+# clap v4) — the outer CLI that EMBEDS the JS-on-Bun render engine and drives it
+# for dev/build (Design B / S6). It is a strict SUPERSET of build-binaries.yml:
+# it first produces the bun engine EXACTLY as build-binaries.yml does (the Rust
+# build DEPENDS on that engine binary existing on disk), then runs
+# `cargo build -p xyd_cli --release` with XYD_ENGINE_PATH pointed at the
+# target-matched engine so `crates/xyd_cli/build.rs` `include_bytes!`-embeds it
+# into ONE node-free executable.
+#
+# ── STAGED ROLLOUT (canary phase) ──────────────────────────────────────────────
+# During the canary phase this uploads a STAGING-named artifact
+# `xyd-native-<triple>` so it sits ALONGSIDE the bun `xyd-<triple>` produced by
+# build-binaries.yml WITHOUT clobbering it. cli-canary.yml attaches BOTH sets to
+# the canary pre-release, so canary consumers can opt into the Rust binary while
+# stable (cli-release.yml) keeps shipping the bun binary. install.sh and the
+# `xyd-<os>-<arch>` release-asset name it downloads are UNCHANGED.
+#
+# ── FLIP PROCEDURE (canary → stable), once the Rust binary reaches parity ───────
+#   1. Rename this workflow's upload artifact `xyd-native-<triple>` → `xyd-<triple>`
+#      (the `matrix.artifact` column below) so it takes over the release-asset name
+#      install.sh downloads. No install.sh / no asset-name change needed anywhere.
+#   2. Point the release workflows at THIS workflow instead of build-binaries.yml
+#      (binary-targets.yml, cli-canary.yml, cli-release.yml `uses:` swap) and
+#      retire the bun `build-binaries.yml` job.
+#   3. Drop the `xyd-native-*` → `xyd-*` download/attach comments below.
+#
+# TODO(windows): add windows-2022 → bun-windows-x64 (same deferral as
+# build-binaries.yml; compile.ts + build.rs already support the target).
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: 'Git ref to build from (default: the calling workflow''s ref)'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  binary:
+    name: ${{ matrix.artifact }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            bun-target: bun-linux-x64
+            engine: xyd-linux-x64
+            artifact: xyd-native-linux-x64
+          - os: ubuntu-24.04-arm
+            bun-target: bun-linux-arm64
+            engine: xyd-linux-arm64
+            artifact: xyd-native-linux-arm64
+          - os: macos-14
+            bun-target: bun-darwin-arm64
+            engine: xyd-darwin-arm64
+            artifact: xyd-native-darwin-arm64
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.10.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 'latest'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      # Two Rust build trees are exercised here: the napi core in
+      # packages/xyd-native/target (for the bun engine) and the CLI crate in
+      # crates/target (for the outer Rust binary — heavy: it embeds the ~233 MB
+      # engine, so this cache entry is large but well within the repo limit).
+      - name: Setup cargo cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/xyd-native/target
+            crates/target
+          key: ${{ runner.os }}-${{ runner.arch }}-cargo-native-cli-${{ hashFiles('crates/**/Cargo.toml', 'crates/Cargo.lock', 'packages/xyd-native/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ runner.arch }}-cargo-native-cli-
+
+      # ── Produce the bun engine binary (IDENTICAL to build-binaries.yml) ────────
+      # The Rust build embeds whatever this leaves at packages/xyd-cli/dist/<engine>,
+      # so these steps must stay byte-for-byte in step with build-binaries.yml.
+      - name: Install dependencies
+        run: pnpm i
+
+      - name: Build packages
+        run: pnpm build
+
+      - name: Build native core (napi .node)
+        run: pnpm --filter @xyd-js/native build:native
+
+      - name: Stage native core for the compile
+        shell: bash
+        run: cp packages/xyd-native/*.node packages/xyd-cli/src/core.node
+
+      - name: Compile the bun engine binary
+        working-directory: packages/xyd-cli
+        run: bun scripts/compile.ts ${{ matrix.bun-target }}
+
+      # Two-layer codesign, INNER layer (darwin): the engine keeps its own ad-hoc
+      # `allow-jit` signature INSIDE the bytes we `include_bytes!` — verify it on
+      # the freshly-compiled engine BEFORE embedding. (The plan's two-layer risk:
+      # inner allow-jit must survive the byte-copy into the outer binary.)
+      - name: 'Codesign check: inner engine has allow-jit (darwin)'
+        if: matrix.os == 'macos-14'
+        run: |
+          codesign -d --entitlements - "packages/xyd-cli/dist/${{ matrix.engine }}" | grep -q "allow-jit"
+          echo "inner engine allow-jit ok"
+
+      # ── Build the outer Rust binary that embeds the engine ─────────────────────
+      # build.rs bakes XYD_ENGINE_PATH's bytes in and asserts the path's <triple>
+      # matches CARGO_CFG_TARGET_{OS,ARCH} (panics on mismatch — no cross-compile of
+      # the embed). ${{ github.workspace }} is the repo root regardless of cwd, so
+      # the absolute engine path is correct even though cargo runs from crates/.
+      # Output: crates/target/release/xyd (~247 MB, engine embedded).
+      - name: Build the self-contained Rust binary
+        working-directory: crates
+        env:
+          XYD_ENGINE_PATH: ${{ github.workspace }}/packages/xyd-cli/dist/${{ matrix.engine }}
+        run: cargo build -p xyd_cli --release
+
+      # Stage under the release-asset name so `merge-multiple` downloads never
+      # collide: every target's raw output is just `xyd`, so all three would
+      # overwrite each other in one dir. Renaming per triple keeps them distinct.
+      - name: Stage binary under the artifact name
+        shell: bash
+        run: cp crates/target/release/xyd "crates/target/release/${{ matrix.artifact }}"
+
+      # Two-layer codesign, OUTER layer (darwin): an unsigned ~247 MB arm64 Mach-O
+      # won't run AT ALL. Ad-hoc sign the outer binary — it needs NO `allow-jit`
+      # (it only exec's the child engine) — and verify the signature is valid.
+      - name: 'Codesign + verify outer Rust binary (darwin)'
+        if: matrix.os == 'macos-14'
+        run: |
+          codesign -s - --force "crates/target/release/${{ matrix.artifact }}"
+          codesign -dv "crates/target/release/${{ matrix.artifact }}"
+          codesign --verify --strict --verbose=2 "crates/target/release/${{ matrix.artifact }}"
+          echo "outer codesign ok"
+
+      # Node-free single-binary proof: from a clean temp dir (no node_modules, no
+      # repo) with XYD_ENGINE_PATH UNSET, the binary must self-extract its EMBEDDED
+      # engine and build a real site. Nothing here shells out to node/bun — the one
+      # binary carries + spawns its own engine. Root `overview.md` → `overview.html`.
+      - name: 'Smoke: node-free self-contained xyd build'
+        shell: bash
+        run: |
+          unset XYD_ENGINE_PATH
+          BIN="$PWD/crates/target/release/${{ matrix.artifact }}"
+          SITE="$RUNNER_TEMP/native-smoke"
+          rm -rf "$SITE"; mkdir -p "$SITE"
+          printf '{ "theme": { "name": "poetry" }, "navigation": { "sidebar": ["overview"] } }\n' > "$SITE/docs.json"
+          printf -- '---\ntitle: Overview\ndescription: native smoke\n---\n# Native Binary Marker\n\nBuilt by the self-contained Rust binary (embedded engine, no node).\n\n```js\nconst ok = true;\n```\n' > "$SITE/overview.md"
+          cd "$SITE"
+          "$BIN" --version
+          "$BIN" build
+          test -f .xyd/build/client/overview.html
+          grep -q "Native Binary Marker" .xyd/build/client/overview.html
+          # syntax highlighting came through the embedded render bundle
+          grep -q "<span style" .xyd/build/client/overview.html
+          echo "native smoke ok: $(wc -c < .xyd/build/client/overview.html) bytes overview.html"
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: crates/target/release/${{ matrix.artifact }}
+          if-no-files-found: error

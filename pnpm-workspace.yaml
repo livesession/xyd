@@ -1,6 +1,7 @@
 packages:
   - 'apps/apidocs-demo'
   - 'packages/*'
+  - 'specs/*'
   - packages/xyd-ask-ai/examples/*
   - '!packages/xyd-js'
   # standalone bun package (own @apitoolchain scope), managed outside the @xyd-js pnpm workspace

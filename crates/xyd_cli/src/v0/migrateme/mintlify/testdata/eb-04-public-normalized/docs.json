@@ -1,0 +1,7 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Public Assets",
+  "logo": "public/brand/logo.svg",
+  "favicon": "/public/icon.svg",
+  "navigation": { "groups": [ { "group": "Docs", "pages": ["docs/overview"] } ] }
+}

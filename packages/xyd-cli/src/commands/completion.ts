@@ -4,25 +4,35 @@ import { basename, dirname, join } from 'node:path';
 
 import colors from 'picocolors';
 
+import type { OpencliSpecJson } from '@xyd-js/opencli';
 import { fish, zsh, type Shell } from '@xyd-js/opencli-completion';
+// The OpenCLI document is generated from the TypeSpec source of truth
+// (`specs/xyd-cli/main.tsp` + `commands/**`) and shipped by `@xyd-js/cli-spec`
+// as `opencli.json` —
+// the same document the Rust crate embeds. It is BUNDLED into the CLI at build
+// time (esbuild inlines the JSON) so the published package stays self-contained;
+// re-stringifying with the emitter's exact format keeps `xyd completion opencli`
+// byte-identical to that canonical artifact.
+import opencliJson from '@xyd-js/cli-spec/opencli.json';
 
-import { cliToOpencli } from '../completion-parser';
 import { cliSpec } from '../spec';
 
 const SHELLS: Shell[] = ['zsh', 'fish'];
+
+const opencli = opencliJson as OpencliSpecJson;
 
 /**
  * `xyd completion [<shell>|install|opencli]`
  * - `xyd completion [zsh|fish]` — print the completion script (shell auto-detected from $SHELL)
  * - `xyd completion install [shell]` — write it to the conventional location + enable instructions
- * - `xyd completion opencli` — print the OpenCLI document derived from the CLI
+ * - `xyd completion opencli` — print the OpenCLI document (from `@xyd-js/cli-spec`)
  */
 export async function completion(args: string[], _flags: any) {
     const sub = args[0];
-    const opencli = cliToOpencli(cliSpec);
 
     if (sub === 'opencli') {
-        console.log(JSON.stringify(opencli, null, 2));
+        // Byte-identical passthrough of the generated document (emitter format).
+        process.stdout.write(JSON.stringify(opencli, null, 2) + '\n');
         return;
     }
 
@@ -34,7 +44,7 @@ export async function completion(args: string[], _flags: any) {
     console.log(scriptFor(opencli, resolveShell(sub)));
 }
 
-function scriptFor(opencli: ReturnType<typeof cliToOpencli>, shell: Shell): string {
+function scriptFor(opencli: OpencliSpecJson, shell: Shell): string {
     return shell === 'fish' ? fish(opencli) : zsh(opencli);
 }
 
@@ -54,7 +64,7 @@ function completionPath(shell: Shell): string {
     return join(homedir(), '.config', name, 'completions', `_${name}`);
 }
 
-function installCompletion(shell: Shell, opencli: ReturnType<typeof cliToOpencli>) {
+function installCompletion(shell: Shell, opencli: OpencliSpecJson) {
     const target = completionPath(shell);
     mkdirSync(dirname(target), { recursive: true });
     writeFileSync(target, scriptFor(opencli, shell));

@@ -1,0 +1,92 @@
+{
+  "theme": {
+    "name": "gusto",
+    "icons": {
+      "library": [
+        {
+          "name": "fa6-solid",
+          "default": true
+        }
+      ]
+    },
+    "writer": {
+      "maxTocDepth": 4
+    },
+    "appearance": {
+      "colors": {
+        "primary": "#5865F2"
+      }
+    }
+  },
+  "webeditor": {
+    "header": []
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "title": "Home",
+        "icon": "",
+        "page": "home"
+      }
+    ],
+    "sidebar": [
+      {
+        "route": "home",
+        "pages": [
+          {
+            "group": "Intro",
+            "pages": [
+              "home/intro"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "components": {
+    "footer": {
+      "social": {
+        "x": "https://x.com/z",
+        "youtube": "https://youtube.com/@z",
+        "discord": "https://discord.gg/z"
+      },
+      "links": [
+        {
+          "header": "Product",
+          "items": [
+            {
+              "label": "Features",
+              "href": "/features"
+            },
+            {
+              "label": "Pricing",
+              "href": "/pricing"
+            }
+          ]
+        },
+        {
+          "header": "Developers",
+          "items": [
+            {
+              "label": "API",
+              "href": "/api"
+            },
+            {
+              "label": "SDKs",
+              "href": "/sdks"
+            }
+          ]
+        },
+        {
+          "header": "Legal",
+          "items": [
+            {
+              "label": "Terms",
+              "href": "/terms"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

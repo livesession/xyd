@@ -1,0 +1,24 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "name": "Dropdowns Ünïcode",
+  "navigation": {
+    "dropdowns": [
+      {
+        "dropdown": "Résources",
+        "icon": { "name": "book-open" },
+        "groups": [ { "group": "Docs", "pages": ["résources/guide/deep/path/here", "résources/api"] } ]
+      },
+      { "dropdown": "Blog", "href": "https://blog.example.com/posts?tag=news&sort=new#recent" },
+      {
+        "dropdown": "MULTI   Space   ROUTE",
+        "groups": [ { "group": "X", "pages": ["multi-space-route/a", "multi-space-route/b"] } ]
+      }
+    ]
+  },
+  "seo": {
+    "metatags": {
+      "description": "He said \"hi\": really",
+      "og:locale": "en_US"
+    }
+  }
+}

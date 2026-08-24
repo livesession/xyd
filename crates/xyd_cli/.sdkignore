@@ -1,0 +1,17 @@
+# Hand-owned files — the Rust regen driver (crates/xyd_opencli2rust `regen` bin,
+# driven by regen.toml) must never overwrite or prune these. Everything else
+# (src/opencli/**, .gitignore) is regenerated from the OpenCLI doc via write_project.
+# The crate owns its committed opencli.json and is otherwise a pure consumer of
+# generated code.
+Cargo.toml
+# NOTE: the hand-owned crate-root `build.rs` (engine embed) is deliberately NOT
+# listed. opencli2rust never emits a crate-root build.rs, and stale-prune only
+# removes lock-tracked generated files, so it is safe from overwrite/prune with no
+# entry. It cannot be listed anyway: this matcher strips a leading `/` before its
+# "has a slash ⇒ anchored" test (write.ts), so any `build.rs` / `/build.rs` pattern
+# collapses to an unanchored match that would wrongly shield the GENERATED
+# src/opencli/cmd/build.rs (the `build` command's module).
+src/main.rs
+src/v0/**
+opencli.json
+.sdkignore

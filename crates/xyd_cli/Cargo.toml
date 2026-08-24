@@ -1,0 +1,43 @@
+# Hand-owned (protected by .sdkignore): a workspace-integrated manifest for the
+# generated `xyd` CLI. The command tree in src/opencli/** is regenerated from
+# opencli.json by the Rust regen bin (crates/xyd_opencli2rust); this file,
+# src/main.rs, and src/v0/** survive regeneration. clap/tokio are pinned in
+# crates/Cargo.toml [workspace.dependencies] (repo pattern);
+# reqwest/serde_json/percent-encoding are the runtime deps the vendored
+# src/opencli/** still references (dead for a local tool — dead-code warnings
+# are expected — but needed to COMPILE).
+
+[package]
+name = "xyd_cli"
+edition.workspace = true
+version.workspace = true
+
+[[bin]]
+name = "xyd"
+path = "src/main.rs"
+
+[dependencies]
+clap = { workspace = true }
+tokio = { workspace = true }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+# preserve_order: migrateme's Mintlify settings port must reproduce JSON.stringify's
+# insertion-order keys byte-for-byte (theme→webeditor→…, footer social ordering, etc.).
+serde_json = { version = "1", features = ["preserve_order"] }
+percent-encoding = "2"
+# migrateme S3: parse Mintlify MDX to an mdast tree. The vendored fork is the repo's own
+# markdown-rs (MDX-aware); depend on it DIRECTLY (not xyd_mdx, which drags in swc) to keep
+# the CLI build fast. serde: lets the transform inspect the AST as JSON in tests.
+markdown = { path = "../xyd_mdx/vendor/markdown-fork", features = ["serde"] }
+# S4: content-hash the embedded engine to key its extract dir. Only referenced
+# under cfg(xyd_has_embedded_engine) in src/v0/engine.rs; unused (no compile
+# cost beyond building the crate) in the fast, non-embedded dev build.
+sha2 = { workspace = true }
+# S5: native `xyd serve` static file server. A missing build dir errors and an edge
+# deploy (`server.mjs`) still delegates to the embedded engine; the plain static
+# case is served here. Small/blocking — no async HTTP stack pulled in.
+tiny_http = { workspace = true }
+# unix-only: forward the EXACT termination signal (SIGINT/SIGTERM/SIGHUP) to the
+# spawned bun engine via kill(2) so it can run its own graceful teardown. Already
+# in the tree transitively (tokio); pinned here as a direct dep for `src/v0/engine.rs`.
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
