@@ -1,0 +1,145 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "variadic",
+    "version": "1.0.0"
+  },
+  "x-cli": {
+    "bin": "variadic",
+    "envVar": "VARIADIC_BIN",
+    "opencli": "1.0.0"
+  },
+  "types": [
+    {
+      "name": "CommandResult",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "stdout",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "stderr",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "exitCode",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true
+        }
+      ],
+      "description": "The result of one CLI invocation. json() parses stdout as JSON."
+    }
+  ],
+  "methods": [
+    {
+      "action": "copy",
+      "description": "Copy files",
+      "pathParams": [
+        {
+          "name": "dest",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Destination"
+        },
+        {
+          "name": "files",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "Files to copy"
+        }
+      ],
+      "queryParams": [
+        {
+          "name": "tag",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": false,
+          "description": "Tags to apply"
+        }
+      ],
+      "primaryResponse": {
+        "kind": "ref",
+        "name": "CommandResult"
+      },
+      "x-cli": {
+        "command": [
+          "copy"
+        ],
+        "args": [
+          {
+            "from": "param:dest",
+            "encoding": "string",
+            "required": true
+          },
+          {
+            "from": "param:files",
+            "encoding": "string",
+            "required": true,
+            "variadic": true
+          }
+        ],
+        "options": [
+          {
+            "flag": "--tag",
+            "from": "param:tag",
+            "encoding": "string",
+            "repeat": true
+          }
+        ]
+      }
+    }
+  ],
+  "sdk": {
+    "mode": "cli",
+    "timeout": {
+      "defaultTimeoutMs": 60000,
+      "onTimeout": "kill"
+    },
+    "errors": {
+      "nonZeroExit": "raise",
+      "errorName": "CliError"
+    },
+    "result": {
+      "typeName": "CommandResult",
+      "jsonHelper": true
+    },
+    "process": {
+      "inheritEnv": true,
+      "stdin": "null"
+    },
+    "clientOptions": {
+      "optionKeys": [
+        "binPath",
+        "cwd",
+        "env",
+        "timeout"
+      ]
+    }
+  }
+}

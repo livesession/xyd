@@ -1,0 +1,41 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "acme",
+    "version": "1.0.0"
+  },
+  "commands": [
+    {
+      "name": "convert",
+      "description": "Convert a document",
+      "arguments": [
+        {
+          "name": "target",
+          "required": true,
+          "description": "Output format",
+          "acceptedValues": [
+            "json-pretty",
+            "yaml",
+            "xml"
+          ]
+        }
+      ],
+      "options": [
+        {
+          "name": "level",
+          "description": "Verbosity level",
+          "arguments": [
+            {
+              "name": "string",
+              "acceptedValues": [
+                "debug-verbose",
+                "info",
+                "warn"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "toolbox",
+    "version": "2.0.0"
+  },
+  "x-cli": {
+    "bin": "tbx",
+    "envVar": "TOOLBOX_BINARY",
+    "opencli": "1.0.0"
+  },
+  "types": [
+    {
+      "name": "CommandResult",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "stdout",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "stderr",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "exitCode",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true
+        }
+      ],
+      "description": "The result of one CLI invocation. json() parses stdout as JSON."
+    }
+  ],
+  "methods": [
+    {
+      "action": "deploy",
+      "description": "Deploy a service",
+      "pathParams": [
+        {
+          "name": "service",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Service name"
+        },
+        {
+          "name": "region",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Target region"
+        }
+      ],
+      "queryParams": [
+        {
+          "name": "port",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": false,
+          "description": "Port to expose"
+        },
+        {
+          "name": "replicas",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": false
+        },
+        {
+          "name": "config",
+          "type": {
+            "kind": "any"
+          },
+          "required": false,
+          "description": "Inline config"
+        },
+        {
+          "name": "envFile",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "wireName": "env-file"
+        }
+      ],
+      "primaryResponse": {
+        "kind": "ref",
+        "name": "CommandResult"
+      },
+      "x-cli": {
+        "command": [
+          "deploy"
+        ],
+        "args": [
+          {
+            "from": "param:service",
+            "encoding": "string",
+            "required": true
+          },
+          {
+            "from": "param:region",
+            "encoding": "string"
+          }
+        ],
+        "options": [
+          {
+            "flag": "--port",
+            "from": "param:port",
+            "encoding": "number"
+          },
+          {
+            "flag": "--replicas",
+            "from": "param:replicas",
+            "encoding": "integer"
+          },
+          {
+            "flag": "--config",
+            "from": "param:config",
+            "encoding": "json"
+          },
+          {
+            "flag": "--env-file",
+            "from": "param:envFile",
+            "encoding": "string"
+          }
+        ]
+      }
+    }
+  ],
+  "sdk": {
+    "mode": "cli",
+    "timeout": {
+      "defaultTimeoutMs": 60000,
+      "onTimeout": "kill"
+    },
+    "errors": {
+      "nonZeroExit": "raise",
+      "errorName": "CliError"
+    },
+    "result": {
+      "typeName": "CommandResult",
+      "jsonHelper": true
+    },
+    "process": {
+      "inheritEnv": true,
+      "stdin": "null"
+    },
+    "clientOptions": {
+      "optionKeys": [
+        "binPath",
+        "cwd",
+        "env",
+        "timeout"
+      ]
+    }
+  }
+}

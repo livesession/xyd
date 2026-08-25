@@ -13,6 +13,9 @@ pub struct Spec {
     pub security: Vec<Security>,
     #[serde(default)]
     pub types: Vec<NamedType>,
+    /// Spec-level root methods (CLI mode only: rendered directly on the client).
+    #[serde(default)]
+    pub methods: Vec<Method>,
     #[serde(default)]
     pub resources: Vec<Resource>,
     /// Declarative runtime behavior (only `errors` is read here).
@@ -139,8 +142,12 @@ pub struct Resource {
 #[derive(Debug, Deserialize)]
 pub struct Method {
     pub action: String,
-    #[serde(rename = "httpMethod")]
+    /// Absent in CLI-mode specs (`""`): the HTTP path never reads it then.
+    /// `#[serde(default)]` (not `Option`) keeps the HTTP use sites untouched.
+    #[serde(default, rename = "httpMethod")]
     pub http_method: String,
+    /// Absent in CLI-mode specs (`""`), same convention as `http_method`.
+    #[serde(default)]
     pub path: String,
     #[serde(default)]
     pub description: Option<String>,
@@ -160,6 +167,9 @@ pub struct Method {
     pub pagination: Option<Pagination>,
     #[serde(default, rename = "injectIdempotencyKey")]
     pub inject_idempotency_key: bool,
+    /// CLI-mode argv binding, passed through untyped for the shared `CliPlan`.
+    #[serde(default, rename = "x-cli")]
+    pub x_cli: Option<serde_json::Value>,
 }
 
 #[derive(Debug, Deserialize)]

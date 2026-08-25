@@ -10,6 +10,7 @@
 //! `.rb` file, and NOT to the `.gemspec` (unknown extension).
 
 mod behavior;
+mod cli;
 mod client;
 mod example;
 mod example_plan;
@@ -89,7 +90,13 @@ fn with_header(path: &str, content: String) -> String {
 
 /// Generate the Ruby SDK's full generated file map (path → content), including
 /// the vendored transport runtime and the SDK's own minitest suite.
+///
+/// A spec with a root `x-cli` block is CLI-mode: the generated SDK spawns the
+/// real CLI binary instead of speaking HTTP (see `cli.rs`).
 pub fn generate_ruby(spec: &Value) -> BTreeMap<String, String> {
+    if xyd_opensdk_cli_common::is_cli_spec(spec) {
+        return cli::generate_cli(spec);
+    }
     let opts = resolve_options(spec);
     let types: HashMap<String, Value> = spec
         .get("types")

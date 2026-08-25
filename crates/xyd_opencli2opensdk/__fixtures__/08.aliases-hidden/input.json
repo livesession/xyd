@@ -1,0 +1,49 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "misc",
+    "version": "1.0.0"
+  },
+  "commands": [
+    {
+      "name": "publish",
+      "aliases": [
+        "pub"
+      ],
+      "description": "Publish the package",
+      "interactive": true,
+      "exitCodes": [
+        {
+          "code": 0,
+          "description": "ok"
+        },
+        {
+          "code": 2,
+          "description": "config error"
+        }
+      ],
+      "options": [
+        {
+          "name": "token",
+          "aliases": [
+            "t"
+          ],
+          "description": "Auth token",
+          "arguments": [
+            {
+              "name": "string"
+            }
+          ]
+        },
+        {
+          "name": "internal-debug",
+          "hidden": true
+        }
+      ]
+    },
+    {
+      "name": "secret-cmd",
+      "hidden": true
+    }
+  ]
+}

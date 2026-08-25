@@ -40,18 +40,7 @@ pub fn render_runtime_files(spec: &Value, ctx: &JavaCtx) -> Vec<GenFile> {
         method_encoding(m, &plan, &ctx.types) != "json"
     });
 
-    let mut files: Vec<GenFile> = Vec::new();
-    files.push(GenFile {
-        path: format!("{}Json.java", ctx.src_dir),
-        content: java_file(
-            &ctx.full_package,
-            &JSON_IMPORTS
-                .iter()
-                .map(|s| s.to_string())
-                .collect::<Vec<_>>(),
-            JSON_BODY,
-        ),
-    });
+    let mut files: Vec<GenFile> = vec![json_file(ctx)];
     files.extend(error_files(ctx));
     files.push(GenFile {
         path: format!("{}Transport.java", ctx.src_dir),
@@ -73,6 +62,21 @@ pub fn render_runtime_files(spec: &Value, ctx: &JavaCtx) -> Vec<GenFile> {
         }
     }
     files
+}
+
+/// Json.java — the vendored dependency-free codec (shared with CLI mode).
+pub(crate) fn json_file(ctx: &JavaCtx) -> GenFile {
+    GenFile {
+        path: format!("{}Json.java", ctx.src_dir),
+        content: java_file(
+            &ctx.full_package,
+            &JSON_IMPORTS
+                .iter()
+                .map(|s| s.to_string())
+                .collect::<Vec<_>>(),
+            JSON_BODY,
+        ),
+    }
 }
 
 /// Every method in the spec's resource tree, in declaration order.

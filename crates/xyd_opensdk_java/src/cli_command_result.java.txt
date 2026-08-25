@@ -1,0 +1,32 @@
+/** The result of one successful CLI invocation. {@link #json()} parses stdout as JSON. */
+public final class CommandResult {
+  private final String stdout;
+  private final String stderr;
+  private final int exitCode;
+
+  public CommandResult(String stdout, String stderr, int exitCode) {
+    this.stdout = stdout == null ? "" : stdout;
+    this.stderr = stderr == null ? "" : stderr;
+    this.exitCode = exitCode;
+  }
+
+  /** The invocation's captured stdout. */
+  public String stdout() {
+    return stdout;
+  }
+
+  /** The invocation's captured stderr. */
+  public String stderr() {
+    return stderr;
+  }
+
+  /** The exit code (always 0 — a non-zero exit throws {@link CliException}). */
+  public int exitCode() {
+    return exitCode;
+  }
+
+  /** Decode the invocation's stdout as JSON (Map / List / String / Long / Double / Boolean / null). */
+  public Object json() {
+    return Json.parse(stdout);
+  }
+}

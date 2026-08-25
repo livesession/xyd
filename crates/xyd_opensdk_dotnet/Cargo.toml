@@ -8,3 +8,4 @@ description = "dotnet SDK emitter — OpenSDK IR -> generated dotnet SDK code (R
 [dependencies]
 serde = { workspace = true }
 serde_json = { workspace = true }
+xyd_opensdk_cli_common = { path = "../xyd_opensdk_cli_common" }

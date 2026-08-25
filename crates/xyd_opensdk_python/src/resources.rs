@@ -169,8 +169,9 @@ fn emit_resources(
 }
 
 /// The globally-unique resource class name, path-qualified by the full segment
-/// chain from root (mirrors serviceTypeName).
-fn resource_class_name(segments: &[String]) -> String {
+/// chain from root (mirrors serviceTypeName). Shared with the CLI-mode
+/// generator so both modes name resource accessors identically.
+pub(crate) fn resource_class_name(segments: &[String]) -> String {
     let mut s = String::new();
     for seg in segments {
         s.push_str(&pascal_case(seg));

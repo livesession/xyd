@@ -46,6 +46,27 @@ pub fn render_models_file(spec: &Value) -> String {
     format!("use serde::{{Deserialize, Serialize}};\n\n{NULL_VEC_HELPER}\n\n{body}\n")
 }
 
+/// src/models.rs for CLI mode — `CommandResult` is owned by the vendored
+/// runner module (mirrors the Go emitter's types.go carve-out), so it is
+/// skipped here; any remaining named types render through the normal model
+/// path. `None` when nothing is left (the file is not emitted).
+pub(crate) fn render_cli_models_file(spec: &Value) -> Option<String> {
+    let types = spec.get("types").and_then(|t| t.as_array())?;
+    let decls: Vec<String> = types
+        .iter()
+        .filter(|t| t.get("name").and_then(|n| n.as_str()) != Some("CommandResult"))
+        .map(render_named_type)
+        .filter(|s| !s.is_empty())
+        .collect();
+    if decls.is_empty() {
+        return None;
+    }
+    Some(format!(
+        "use serde::{{Deserialize, Serialize}};\n\n{NULL_VEC_HELPER}\n\n{}\n",
+        decls.join("\n\n")
+    ))
+}
+
 fn render_named_type(type_: &Value) -> String {
     match type_.get("kind").and_then(|k| k.as_str()) {
         Some("enum") => {

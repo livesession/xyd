@@ -1,0 +1,23 @@
+[package]
+name = "xyd_opensdk_cli_common"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "Shared x-cli binding parser, argv plan, and test-kit for the CLI-mode OpenSDK emitters"
+
+# Deliberate deviation from per-crate duplication: the x-cli contract is
+# Rust-only (no JS emitter to mirror), so its parser lives ONCE here instead
+# of drifting across 7 emitter copies. Boundary: parsing + plan model +
+# test-kit only — all code GENERATION stays per-emitter.
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+# Lockstep gate: the shared fixture `input.json` files consumed by every
+# emitter are blessed CONVERTER output, so the contract cannot drift.
+xyd_opencli2opensdk = { path = "../xyd_opencli2opensdk" }
+
+[[bin]]
+name = "xyd-recording-cli"
+path = "src/bin/xyd_recording_cli.rs"

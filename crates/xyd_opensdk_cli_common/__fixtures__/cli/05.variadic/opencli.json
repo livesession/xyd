@@ -1,0 +1,54 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "packer",
+    "version": "1.0.0"
+  },
+  "commands": [
+    {
+      "name": "pack",
+      "description": "Pack files",
+      "arguments": [
+        {
+          "name": "dest",
+          "required": true,
+          "description": "Destination archive",
+          "arity": {
+            "minimum": 1,
+            "maximum": 1
+          }
+        },
+        {
+          "name": "files",
+          "description": "Files to pack",
+          "arity": {
+            "minimum": 1
+          }
+        }
+      ],
+      "options": [
+        {
+          "name": "tag",
+          "description": "Tags to apply",
+          "arguments": [
+            {
+              "name": "string",
+              "arity": {
+                "minimum": 1
+              }
+            }
+          ]
+        },
+        {
+          "name": "meta",
+          "description": "Metadata as JSON",
+          "arguments": [
+            {
+              "name": "json"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

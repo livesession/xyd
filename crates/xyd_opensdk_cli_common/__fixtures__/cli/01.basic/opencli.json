@@ -1,0 +1,40 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "acme",
+    "version": "1.0.0"
+  },
+  "options": [
+    {
+      "name": "version",
+      "description": "Print the CLI version and exit",
+      "recursive": true
+    }
+  ],
+  "commands": [
+    {
+      "name": "status",
+      "description": "Show status",
+      "options": [
+        {
+          "name": "format",
+          "description": "Output format",
+          "arguments": [
+            {
+              "name": "string"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "projects",
+      "commands": [
+        {
+          "name": "list",
+          "description": "List projects"
+        }
+      ]
+    }
+  ]
+}

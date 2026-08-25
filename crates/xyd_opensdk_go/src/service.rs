@@ -487,7 +487,7 @@ fn const_fill_lines(method: &Value, ctx: &GoCtx) -> Vec<String> {
     lines
 }
 
-fn query_field_line(q: &Value, ctx: &GoCtx, imports: &mut Imports) -> String {
+pub(crate) fn query_field_line(q: &Value, ctx: &GoCtx, imports: &mut Imports) -> String {
     let tag = format!("json:\"-\" query:{}", json_string(&wire_name(q)));
     let field_name = pascal_case(s(q, "name"));
     let kind = query_kind(q.get("type"), ctx.types);

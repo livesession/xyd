@@ -8,3 +8,4 @@ description = "ruby SDK emitter — OpenSDK IR -> generated ruby SDK code (Rust 
 [dependencies]
 serde = { workspace = true }
 serde_json = { workspace = true }
+xyd_opensdk_cli_common = { path = "../xyd_opensdk_cli_common" }

@@ -1,0 +1,50 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "enumcli",
+    "version": "1.0.0"
+  },
+  "commands": [
+    {
+      "name": "one",
+      "arguments": [
+        {
+          "name": "shell",
+          "required": true,
+          "acceptedValues": [
+            "zsh",
+            "fish"
+          ]
+        }
+      ],
+      "options": [
+        {
+          "name": "shell",
+          "description": "Override the shell",
+          "arguments": [
+            {
+              "name": "string",
+              "acceptedValues": [
+                "bash",
+                "sh"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "two",
+      "arguments": [
+        {
+          "name": "shell",
+          "required": true,
+          "acceptedValues": [
+            "zsh",
+            "fish"
+          ]
+        }
+      ]
+    }
+  ]
+}

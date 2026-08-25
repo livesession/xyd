@@ -1,0 +1,60 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "toolbox",
+    "version": "2.0.0"
+  },
+  "commands": [
+    {
+      "name": "deploy",
+      "description": "Deploy a service",
+      "arguments": [
+        {
+          "name": "service",
+          "required": true,
+          "description": "Service name"
+        },
+        {
+          "name": "region",
+          "description": "Target region"
+        }
+      ],
+      "options": [
+        {
+          "name": "port",
+          "description": "Port to expose",
+          "arguments": [
+            {
+              "name": "number"
+            }
+          ]
+        },
+        {
+          "name": "replicas",
+          "arguments": [
+            {
+              "name": "integer"
+            }
+          ]
+        },
+        {
+          "name": "config",
+          "description": "Inline config",
+          "arguments": [
+            {
+              "name": "json"
+            }
+          ]
+        },
+        {
+          "name": "env-file",
+          "arguments": [
+            {
+              "name": "string"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
