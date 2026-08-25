@@ -229,13 +229,25 @@ function _firstChildHref(groups: any[], slug: string): string {
   return "";
 }
 
-/** Redirect-stub HTML for a content-less nav route, or null if no child resolves. */
-export async function renderRedirectStatic(slug: string): Promise<string | null> {
+/**
+ * First-child href for a content-less section/route slug (e.g. "docs" →
+ * "/docs/get-started/quickstart") in NAV order, or "" if none resolves. Shared by
+ * the static build's redirect stub (renderRedirectStatic) and the dev server's
+ * section 302 (start's fetch handler), so both land a bare section URL on the same
+ * page.
+ */
+async function firstChildOf(slug: string): Promise<string> {
   const s = getSettings();
   const locale = deriveLocale(slug);
   const props: any = await mapSettingsToProps(s, globalThis.__xydPagePathMapping, slug, undefined as any, locale);
-  const child = _firstChildHref(props.groups, slug);
+  return _firstChildHref(props.groups, slug);
+}
+
+/** Redirect-stub HTML for a content-less nav route, or null if no child resolves. */
+export async function renderRedirectStatic(slug: string): Promise<string | null> {
+  const child = await firstChildOf(slug);
   if (!child) return null;
+  const s = getSettings();
   // Prefix the basename so the redirect resolves on a host serving the site under
   // it (e.g. /docs/components/callouts) — parity with the Vite build.
   const base = (s?.advanced?.basename || "").replace(/\/+$/, "");
@@ -711,6 +723,28 @@ export function start(ThemeCtor: any) {
         if (slug === "" || slug === "index") {
           const first = Object.keys(mapping).find((k) => k !== "index");
           if (first) return Response.redirect(`/${first}`, 302);
+        } else if (Object.keys(mapping).some((k) => k.startsWith(slug + "/"))) {
+          // A section/route landing with child pages but no page of its own
+          // (e.g. /docs, /docs/api) → redirect to its closest first child in nav
+          // order, matching the static build's redirect stubs (renderRedirectStatic)
+          // and the pre-Rust Vite/React-Router dev server. The `startsWith` guard
+          // keeps a genuine miss (/favicon.ico, a typo'd slug) a quiet 404.
+          let child = await firstChildOf(slug);
+          const under = (u: string) => {
+            const n = u.replace(/^\/+/, "");
+            return n === slug || n.startsWith(slug + "/");
+          };
+          // Nav-filtering can surface a sibling section's first page; require the
+          // child to live under this slug, else take the first mapped page under it.
+          if (!child || !under(child)) {
+            const firstUnder = Object.keys(mapping).find((k) => k.startsWith(slug + "/"));
+            child = firstUnder ? "/" + firstUnder : "";
+          }
+          if (child) {
+            const target = basename && child.startsWith("/") && !child.startsWith(basename + "/")
+              ? basename + child : child;
+            return Response.redirect(target, 302);
+          }
         }
         return new Response("Not found", { status: 404, headers: { "content-type": "text/plain; charset=utf-8" } });
       }
