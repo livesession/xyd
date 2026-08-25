@@ -112,6 +112,62 @@ jobs:
         working-directory: crates
         run: cargo test --workspace
 
+  # CLI-mode e2e smokes: generate a real SDK per language from the shared
+  # x-cli fixtures, compile/run it against the recording CLI
+  # (xyd_opensdk_cli_common's xyd-recording-cli), and diff the ACTUAL argv the
+  # SDK spawned — plus error mapping and the timeout kill. All language
+  # toolchains (go/python/ruby/java/dotnet) are preinstalled on the runner
+  # image; node's driver compiles with the repo's tsc (hence pnpm i).
+  cli-smokes:
+    name: cli smokes (generated SDKs spawn the recording CLI)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup cargo cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            crates/target
+          key: ${{ runner.os }}-cargo-crates-${{ hashFiles('crates/**/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-crates-
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+
+      - name: Install dependencies (node smoke compiles its driver with the repo's tsc)
+        run: pnpm i
+
+      - name: cli smokes
+        working-directory: crates
+        env:
+          XYD_CLI_SMOKE_GO: "1"
+          XYD_CLI_SMOKE_NODE: "1"
+          XYD_CLI_SMOKE_PYTHON: "1"
+          XYD_CLI_SMOKE_RUBY: "1"
+          XYD_CLI_SMOKE_JAVA: "1"
+          XYD_CLI_SMOKE_DOTNET: "1"
+          XYD_CLI_SMOKE_RUST: "1"
+        run: |
+          cargo test -p xyd_opensdk_go --test cli_smoke
+          cargo test -p xyd_opensdk_node --test cli_smoke
+          cargo test -p xyd_opensdk_python --test cli_smoke
+          cargo test -p xyd_opensdk_ruby --test cli_smoke
+          cargo test -p xyd_opensdk_java --test cli_smoke
+          cargo test -p xyd_opensdk_dotnet --test cli_smoke
+          cargo test -p xyd_opensdk_rust --test cli_smoke
+
   ffi:
     name: ffi (napi build + through-shim vitest, both modes)
     runs-on: ubuntu-24.04
