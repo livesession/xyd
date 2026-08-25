@@ -1,0 +1,55 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "acme",
+    "version": "1.0.0"
+  },
+  "commands": [
+    {
+      "name": "chat",
+      "commands": [
+        {
+          "name": "completions",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Create a completion",
+              "arguments": [
+                {
+                  "name": "prompt",
+                  "required": true,
+                  "description": "The prompt"
+                }
+              ],
+              "options": [
+                {
+                  "name": "model",
+                  "required": true,
+                  "description": "Model id",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                },
+                {
+                  "name": "temperature",
+                  "description": "Sampling temperature",
+                  "arguments": [
+                    {
+                      "name": "number"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "list",
+              "description": "List completions"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

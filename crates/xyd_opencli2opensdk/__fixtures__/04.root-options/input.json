@@ -1,0 +1,53 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "rooty",
+    "version": "1.0.0"
+  },
+  "options": [
+    {
+      "name": "help",
+      "description": "Print help",
+      "recursive": true
+    },
+    {
+      "name": "version",
+      "description": "Print version",
+      "recursive": true
+    },
+    {
+      "name": "verbose",
+      "description": "Verbose output",
+      "recursive": true
+    },
+    {
+      "name": "logLevel",
+      "description": "Log level",
+      "arguments": [
+        {
+          "name": "string"
+        }
+      ],
+      "recursive": true
+    },
+    {
+      "name": "no-color",
+      "description": "Disable colors"
+    }
+  ],
+  "commands": [
+    {
+      "name": "run",
+      "description": "Run it"
+    },
+    {
+      "name": "lint",
+      "options": [
+        {
+          "name": "verbose",
+          "description": "Lint-specific verbosity"
+        }
+      ]
+    }
+  ]
+}

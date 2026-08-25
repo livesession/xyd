@@ -1,0 +1,55 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "acme",
+    "version": "0.1.0"
+  },
+  "commands": [
+    {
+      "name": "chat",
+      "description": "Chat commands",
+      "commands": [
+        {
+          "name": "completions",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Create a completion",
+              "options": [
+                {
+                  "name": "model",
+                  "required": true,
+                  "description": "Model id",
+                  "arguments": [
+                    {
+                      "name": "string"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "list",
+              "description": "List completions"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "config",
+      "commands": [
+        {
+          "name": "get",
+          "arguments": [
+            {
+              "name": "key",
+              "required": true,
+              "description": "Config key"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

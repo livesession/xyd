@@ -1,0 +1,28 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "flags",
+    "version": "1.0.0"
+  },
+  "commands": [
+    {
+      "name": "watch",
+      "description": "Watch for changes",
+      "options": [
+        {
+          "name": "force",
+          "description": "Force it"
+        },
+        {
+          "name": "q",
+          "description": "Quiet mode"
+        },
+        {
+          "name": "dry-run",
+          "description": "Do not write anything",
+          "arguments": []
+        }
+      ]
+    }
+  ]
+}

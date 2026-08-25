@@ -1,0 +1,25 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "rooty",
+    "version": "0.2.0"
+  },
+  "options": [
+    {
+      "name": "help",
+      "description": "Print help",
+      "recursive": true
+    },
+    {
+      "name": "version",
+      "description": "Print version",
+      "recursive": true
+    }
+  ],
+  "commands": [
+    {
+      "name": "init",
+      "description": "Initialize a project"
+    }
+  ]
+}

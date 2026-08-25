@@ -1,0 +1,4 @@
+{
+  "bin": "tbx",
+  "envVar": "TOOLBOX_BINARY"
+}

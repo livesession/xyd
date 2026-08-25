@@ -1,0 +1,13 @@
+[package]
+name = "xyd_opencli2opensdk"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "OpenCLI -> OpenSDK IR converter (CLI-execution SDK mode; emits x-cli argv bindings)"
+
+# Rust-only crate: no TS counterpart package and no xyd_parity dev-dep — its
+# fixtures live inside this crate and goldens regenerate via XYD_BLESS=1.
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }

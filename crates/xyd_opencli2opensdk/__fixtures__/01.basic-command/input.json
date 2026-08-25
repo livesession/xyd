@@ -1,0 +1,14 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "demo",
+    "version": "1.2.3",
+    "description": "A tiny demo CLI"
+  },
+  "commands": [
+    {
+      "name": "build",
+      "description": "Build the project"
+    }
+  ]
+}
