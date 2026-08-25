@@ -11,6 +11,7 @@
 //! file (and the `<!-- ... -->` variant into each `.csproj`) by the writers.
 
 mod behavior;
+mod cli;
 mod client;
 mod cstype;
 mod cswriter;
@@ -36,15 +37,15 @@ use runtime::{render_pagination_file, render_transport_file, DotnetRuntimeCtx};
 use service::{render_service_file, Behavior, DotnetServiceCtx};
 use tests_gen::{render_test_files, DotnetTestsCtx};
 
-struct ResolvedOptions {
-    sdk: String,
-    namespace: String,
-    base_url: String,
-    target_framework: String,
-    env_var: Option<String>,
+pub(crate) struct ResolvedOptions {
+    pub(crate) sdk: String,
+    pub(crate) namespace: String,
+    pub(crate) base_url: String,
+    pub(crate) target_framework: String,
+    pub(crate) env_var: Option<String>,
 }
 
-fn resolve_options(spec: &Value) -> ResolvedOptions {
+pub(crate) fn resolve_options(spec: &Value) -> ResolvedOptions {
     let title = spec
         .get("info")
         .and_then(|i| i.get("title"))
@@ -103,7 +104,16 @@ fn resolve_behavior(spec: &Value) -> Behavior {
 }
 
 /// XML-escaped `.csproj` string with NuGet packaging metadata from `spec.info`.
-fn csproj_file(sdk: &str, namespace_name: &str, target_framework: &str, spec: &Value) -> String {
+/// `tests_exclusion` adds the `<Compile Remove="{sdk}.Tests/**">` ItemGroup that
+/// keeps the nested test project out of the SDK assembly — HTTP mode only (CLI
+/// mode generates no test project).
+pub(crate) fn csproj_file(
+    sdk: &str,
+    namespace_name: &str,
+    target_framework: &str,
+    spec: &Value,
+    tests_exclusion: bool,
+) -> String {
     let info = spec.get("info").cloned().unwrap_or(Value::Null);
     let get_str = |path: &[&str]| -> Option<String> {
         let mut cur = &info;
@@ -145,8 +155,15 @@ fn csproj_file(sdk: &str, namespace_name: &str, target_framework: &str, spec: &V
             escape_xml(&home)
         ));
     }
+    let item_group = if tests_exclusion {
+        format!(
+            "\n  <ItemGroup>\n    <!-- The generated test project lives in a nested {sdk}.Tests/ folder; keep\n         its sources (and its build output's obj/ AssemblyInfo) out of THIS\n         assembly. Otherwise the SDK-style default **/*.cs glob would compile them\n         too, double-declaring assembly attributes once the test project has built\n         (CS0579) and pulling the test framework's types into the SDK (CS0436). -->\n    <Compile Remove=\"{sdk}.Tests/**/*.cs\" />\n  </ItemGroup>\n"
+        )
+    } else {
+        String::new()
+    };
     format!(
-        "{CSPROJ_HEADER}\n<Project Sdk=\"Microsoft.NET.Sdk\">\n\n  <PropertyGroup>\n    <TargetFramework>{target_framework}</TargetFramework>\n    <LangVersion>latest</LangVersion>\n    <Nullable>enable</Nullable>\n    <ImplicitUsings>disable</ImplicitUsings>\n    <RootNamespace>{namespace_name}</RootNamespace>\n    <AssemblyName>{sdk}</AssemblyName>\n    <GenerateDocumentationFile>false</GenerateDocumentationFile>\n{}\n  </PropertyGroup>\n\n  <ItemGroup>\n    <!-- The generated test project lives in a nested {sdk}.Tests/ folder; keep\n         its sources (and its build output's obj/ AssemblyInfo) out of THIS\n         assembly. Otherwise the SDK-style default **/*.cs glob would compile them\n         too, double-declaring assembly attributes once the test project has built\n         (CS0579) and pulling the test framework's types into the SDK (CS0436). -->\n    <Compile Remove=\"{sdk}.Tests/**/*.cs\" />\n  </ItemGroup>\n\n</Project>\n",
+        "{CSPROJ_HEADER}\n<Project Sdk=\"Microsoft.NET.Sdk\">\n\n  <PropertyGroup>\n    <TargetFramework>{target_framework}</TargetFramework>\n    <LangVersion>latest</LangVersion>\n    <Nullable>enable</Nullable>\n    <ImplicitUsings>disable</ImplicitUsings>\n    <RootNamespace>{namespace_name}</RootNamespace>\n    <AssemblyName>{sdk}</AssemblyName>\n    <GenerateDocumentationFile>false</GenerateDocumentationFile>\n{}\n  </PropertyGroup>\n{item_group}\n</Project>\n",
         pkg.join("\n")
     )
 }
@@ -154,6 +171,9 @@ fn csproj_file(sdk: &str, namespace_name: &str, target_framework: &str, spec: &V
 /// Generate the substantive IR→C# files (`.csproj`, `Client.cs`, `Models.cs`,
 /// `<Resource>Service.cs`). The vendored runtime + tests are out of scope.
 pub fn generate_dotnet(spec: &Value) -> BTreeMap<String, String> {
+    if xyd_opensdk_cli_common::is_cli_spec(spec) {
+        return cli::generate_cli(spec);
+    }
     let opts = resolve_options(spec);
 
     // Symbol table for lookups (order-independent; iteration uses the array).
@@ -174,7 +194,13 @@ pub fn generate_dotnet(spec: &Value) -> BTreeMap<String, String> {
     // generateProject → <Sdk>.csproj
     files.insert(
         format!("{}.csproj", opts.sdk),
-        csproj_file(&opts.sdk, &opts.namespace, &opts.target_framework, spec),
+        csproj_file(
+            &opts.sdk,
+            &opts.namespace,
+            &opts.target_framework,
+            spec,
+            true,
+        ),
     );
 
     // generateClient → Client.cs

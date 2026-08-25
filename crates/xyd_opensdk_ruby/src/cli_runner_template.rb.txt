@@ -1,0 +1,125 @@
+require "json"
+require "open3"
+
+module __XYD_MODULE__
+  # The binary invoked when neither an explicit bin_path: option nor the
+  # BIN_ENV_VAR override is set; it is resolved via PATH by Process.spawn.
+  DEFAULT_BIN = __XYD_BIN__
+
+  # The environment variable checked for a binary path before falling back to
+  # DEFAULT_BIN on PATH.
+  BIN_ENV_VAR = __XYD_BIN_ENV_VAR__
+
+  # Milliseconds bounding one CLI invocation (sdk.timeout.defaultTimeoutMs);
+  # on expiry the child process is killed and the call raises a timed-out
+  # CliError.
+  DEFAULT_TIMEOUT_MS = __XYD_TIMEOUT_MS__
+
+  # The result of one successful CLI invocation.
+  class CommandResult
+    attr_reader :stdout, :stderr, :exit_code
+
+    def initialize(stdout:, stderr:, exit_code:)
+      @stdout = stdout
+      @stderr = stderr
+      @exit_code = exit_code
+    end
+
+    # Decode the invocation's stdout as JSON.
+    def json
+      JSON.parse(@stdout)
+    end
+  end
+
+  # A failed CLI invocation: a non-zero exit, or a timeout (exit_code -1,
+  # timed_out true).
+  class CliError < StandardError
+    attr_reader :exit_code, :stdout, :stderr, :timed_out
+
+    def initialize(exit_code:, stdout:, stderr:, timed_out: false)
+      @exit_code = exit_code
+      @stdout = stdout || ""
+      @stderr = stderr || ""
+      @timed_out = timed_out ? true : false
+      super(build_message)
+    end
+
+    private
+
+    def build_message
+      return "cli timed out" if @timed_out
+      message = "cli exited with code #{@exit_code}"
+      message = message + ": " + @stderr unless @stderr.empty?
+      message
+    end
+  end
+
+  # The CLI prologue: spawns the real CLI binary for every generated SDK
+  # method, captures stdout/stderr via reader threads (pipe-deadlock-safe),
+  # enforces the configured timeout with a hard KILL, and maps non-zero exits
+  # to CliError (sdk.errors.nonZeroExit). Stdin is closed, never attached
+  # (sdk.process.stdin). Constructed once and shared by every resource.
+  class Runner
+    def initialize(bin_path: nil, env: nil, cwd: nil, timeout_ms: nil)
+      @bin_path = bin_path
+      @env = env || {}
+      @cwd = cwd
+      @timeout_ms = timeout_ms.nil? ? DEFAULT_TIMEOUT_MS : timeout_ms
+    end
+
+    # Execute the CLI with the given argv. Binary resolution precedence:
+    # explicit bin_path: option > the BIN_ENV_VAR environment variable >
+    # DEFAULT_BIN on PATH. The child environment is the inherited process
+    # environment plus the client's env: extras.
+    def run(argv)
+      bin = @bin_path
+      bin = ENV[BIN_ENV_VAR] if bin.nil? || bin.to_s.empty?
+      bin = DEFAULT_BIN if bin.nil? || bin.to_s.empty?
+
+      spawn_env = {}
+      @env.each { |key, value| spawn_env[key.to_s] = value.nil? ? nil : value.to_s }
+      spawn_opts = {}
+      spawn_opts[:chdir] = @cwd unless @cwd.nil?
+
+      stdout = ""
+      stderr = ""
+      timed_out = false
+      status = nil
+
+      Open3.popen3(spawn_env, bin, *argv, spawn_opts) do |stdin, out, err, wait_thr|
+        stdin.close
+        out_reader = Thread.new { out.read }
+        err_reader = Thread.new { err.read }
+
+        if @timeout_ms.nil? || @timeout_ms <= 0
+          wait_thr.join
+        else
+          remaining = @timeout_ms / 1000.0
+          if wait_thr.join(remaining).nil?
+            timed_out = true
+            begin
+              Process.kill("KILL", wait_thr.pid)
+            rescue StandardError
+              nil
+            end
+            wait_thr.join
+          end
+        end
+
+        stdout = out_reader.value
+        stderr = err_reader.value
+        status = wait_thr.value
+      end
+
+      if timed_out
+        raise CliError.new(exit_code: -1, stdout: stdout, stderr: stderr, timed_out: true)
+      end
+      exit_code = status.exitstatus
+      exit_code = -1 if exit_code.nil?
+      unless exit_code.zero?
+        raise CliError.new(exit_code: exit_code, stdout: stdout, stderr: stderr)
+      end
+      CommandResult.new(stdout: stdout, stderr: stderr, exit_code: 0)
+    end
+  end
+end

@@ -5,7 +5,9 @@ use serde_json::Value;
 use crate::naming::snake_case;
 use crate::rswriter::rs_string;
 
-pub fn render_cargo_toml(spec: &Value, crate_name: &str, edition: &str) -> String {
+/// The `[package]` block lines, shared byte-for-byte by the HTTP and CLI
+/// Cargo.toml renderers (only the dependency set differs between modes).
+pub(crate) fn package_block(spec: &Value, crate_name: &str, edition: &str) -> String {
     let info = spec.get("info");
     let title = info
         .and_then(|i| i.get("title"))
@@ -57,9 +59,13 @@ pub fn render_cargo_toml(spec: &Value, crate_name: &str, edition: &str) -> Strin
         }
     }
 
+    pkg.join("\n")
+}
+
+pub fn render_cargo_toml(spec: &Value, crate_name: &str, edition: &str) -> String {
     format!(
         "{}\n\n# Field docs are OpenAPI descriptions (arbitrary markdown), not Rust doctests.\n[lib]\ndoctest = false\n\n[dependencies]\nreqwest = {{ version = \"0.12\", default-features = false, features = [\"json\", \"multipart\", \"rustls-tls\"] }}\ntokio = {{ version = \"1\", features = [\"time\"] }}\nserde = {{ version = \"1\", features = [\"derive\"] }}\nserde_json = \"1\"\nthiserror = \"1\"\nuuid = {{ version = \"1\", features = [\"v4\"] }}\n\n[dev-dependencies]\ntokio = {{ version = \"1\", features = [\"macros\", \"rt-multi-thread\"] }}\n",
-        pkg.join("\n")
+        package_block(spec, crate_name, edition)
     )
 }
 

@@ -434,7 +434,7 @@ fn body_encoding<'a>(op: &OperationPlan, body_list: &[&Field], types: &[&NamedTy
     }
 }
 
-fn render_params_interface(
+pub(crate) fn render_params_interface(
     type_name: &str,
     has_body: bool,
     body_list: &[&Field],
@@ -584,7 +584,7 @@ fn is_js_ident(key: &str) -> bool {
     chars.all(|c| c.is_ascii_alphanumeric() || c == '_' || c == '$')
 }
 
-fn member_access(obj: &str, key: &str, optional: bool) -> String {
+pub(crate) fn member_access(obj: &str, key: &str, optional: bool) -> String {
     let ident = is_js_ident(key);
     if optional {
         if ident {

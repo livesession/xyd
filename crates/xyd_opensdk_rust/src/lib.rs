@@ -10,8 +10,12 @@
 //! NOT to Cargo.toml (unknown extension). The vendored runtime is a fixed reqwest/
 //! tokio source with `__XYD_*__` seams substituted from `sdkBehavior(spec)`; the
 //! test suite's example values come from the shared language-neutral planner.
+//!
+//! CLI mode: a spec with a root `x-cli` block (see `xyd_opensdk_cli_common`)
+//! instead produces an SDK that spawns the real CLI binary — see `cli.rs`.
 
 mod behavior;
+mod cli;
 mod client;
 mod example;
 mod example_plan;
@@ -76,6 +80,9 @@ fn resolve_env_var(spec: &Value, crate_: &str) -> String {
 /// Generate the SUBSTANTIVE Rust SDK files from an OpenSDK IR document.
 /// Returns `{ relativePath: contents }` for the emitted (generated-code) files.
 pub fn generate_rust(spec: &Value) -> BTreeMap<String, String> {
+    if xyd_opensdk_cli_common::is_cli_spec(spec) {
+        return cli::generate_cli(spec);
+    }
     let crate_ = resolve_crate(spec);
     let edition = "2021";
     let env_var = resolve_env_var(spec, &crate_);

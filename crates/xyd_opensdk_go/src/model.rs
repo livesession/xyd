@@ -17,7 +17,7 @@ pub fn render_types_file(spec: &Value, pkg: &str) -> String {
     go_file(pkg, &imports, &decls)
 }
 
-fn render_named_type(t: &Value, imports: &mut Imports) -> String {
+pub(crate) fn render_named_type(t: &Value, imports: &mut Imports) -> String {
     match t.get("kind").and_then(|k| k.as_str()) {
         Some("enum") => render_enum(t),
         Some("alias") => render_alias(t),

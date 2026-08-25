@@ -1,0 +1,50 @@
+/**
+ * A failed CLI invocation: a non-zero exit, or a timeout kill (exitCode -1,
+ * timedOut true). Carries the captured stdout/stderr; the message includes the
+ * exit code plus stderr (sdk.errors.nonZeroExit).
+ */
+public final class CliException extends RuntimeException {
+  private final int exitCode;
+  private final String stdout;
+  private final String stderr;
+  private final boolean timedOut;
+
+  public CliException(int exitCode, String stdout, String stderr, boolean timedOut) {
+    super(buildMessage(exitCode, stderr, timedOut));
+    this.exitCode = exitCode;
+    this.stdout = stdout == null ? "" : stdout;
+    this.stderr = stderr == null ? "" : stderr;
+    this.timedOut = timedOut;
+  }
+
+  private static String buildMessage(int exitCode, String stderr, boolean timedOut) {
+    if (timedOut) {
+      return "cli timed out";
+    }
+    String message = "cli exited with code " + exitCode;
+    if (stderr != null && !stderr.isEmpty()) {
+      message = message + ": " + stderr;
+    }
+    return message;
+  }
+
+  /** The child's exit code (-1 for a timeout). */
+  public int exitCode() {
+    return exitCode;
+  }
+
+  /** The captured stdout up to the failure. */
+  public String stdout() {
+    return stdout;
+  }
+
+  /** The captured stderr up to the failure. */
+  public String stderr() {
+    return stderr;
+  }
+
+  /** Whether the invocation was killed by the configured timeout. */
+  public boolean timedOut() {
+    return timedOut;
+  }
+}

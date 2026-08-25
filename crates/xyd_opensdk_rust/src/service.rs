@@ -94,7 +94,7 @@ fn emit_resource(resource: &Value, segments: &[String], ctx: &RustCtx, out: &mut
     }
 }
 
-fn scalar_string(param: &Value) -> bool {
+pub(crate) fn scalar_string(param: &Value) -> bool {
     let t = param.get("type");
     t.and_then(|t| t.get("kind")).and_then(|k| k.as_str()) == Some("scalar")
         && t.and_then(|t| t.get("scalar")).and_then(|x| x.as_str()) == Some("string")
@@ -225,7 +225,7 @@ fn wire_name(p: &Value) -> &str {
         .unwrap_or_else(|| s(p, "name"))
 }
 
-fn path_arg(p: &Value) -> String {
+pub(crate) fn path_arg(p: &Value) -> String {
     let local = snake_case(s(p, "name"));
     if scalar_string(p) {
         format!("{local}: &str")
@@ -345,7 +345,7 @@ pub fn body_field_list<'a>(method: &'a Value, types: &'a Map<String, Value>) -> 
     Vec::new()
 }
 
-fn emit_params_struct(
+pub(crate) fn emit_params_struct(
     name: &str,
     query_params: &[Value],
     header_params: &[Value],

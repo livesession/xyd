@@ -141,7 +141,7 @@ pub fn render_models_file(spec: &Spec) -> String {
     format!("{}\n", decls.join("\n\n"))
 }
 
-fn render_named_type(t: &NamedType) -> String {
+pub(crate) fn render_named_type(t: &NamedType) -> String {
     match t.kind.as_str() {
         "enum" => render_enum(t),
         "alias" => render_alias(t),

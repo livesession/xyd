@@ -6,12 +6,23 @@ use crate::naming::snake_case;
 use crate::writer::rb_string;
 
 pub fn render_gemspec(spec: &Value, pkg: &str) -> String {
+    render_gemspec_with(spec, pkg, "API")
+}
+
+/// CLI-mode gemspec: identical fields, but the summary names the CLI. The
+/// file list (`lib/**/*.rb` + the gemspec itself) is already CLI-relevant-only
+/// — no test extras or development dependencies are declared in either mode.
+pub fn render_gemspec_cli(spec: &Value, pkg: &str) -> String {
+    render_gemspec_with(spec, pkg, "CLI")
+}
+
+fn render_gemspec_with(spec: &Value, pkg: &str, what: &str) -> String {
     let info = spec.get("info");
     let title = info
         .and_then(|i| i.get("title"))
         .and_then(|t| t.as_str())
         .unwrap_or("");
-    let summary = format!("Ruby client for the {title} API");
+    let summary = format!("Ruby client for the {title} {what}");
     let description = info
         .and_then(|i| i.get("description"))
         .and_then(|d| d.as_str())

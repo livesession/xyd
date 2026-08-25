@@ -10,6 +10,7 @@
 //! path→content map.
 
 mod behavior;
+mod cli;
 mod client;
 mod example_go;
 mod example_plan;
@@ -62,7 +63,7 @@ fn resolve_options(spec: &Value) -> Options {
 }
 
 /// Prepend the .go ownership header (only for .go files), once.
-fn with_header(rel: &str, content: String) -> String {
+pub(crate) fn with_header(rel: &str, content: String) -> String {
     if !rel.ends_with(".go") {
         return content;
     }
@@ -76,6 +77,9 @@ fn with_header(rel: &str, content: String) -> String {
 /// per-resource service files, the vendored runtime, and the SDK's own test
 /// suite). Returns a sorted path→content map.
 pub fn generate_go(spec: &Value) -> std::collections::BTreeMap<String, String> {
+    if xyd_opensdk_cli_common::is_cli_spec(spec) {
+        return cli::generate_cli(spec);
+    }
     let opts = resolve_options(spec);
     let types = spec.get("types").and_then(|t| t.as_array());
     let mut type_map: Map<String, Value> = Map::new();

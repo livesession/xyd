@@ -72,14 +72,14 @@ pub(crate) fn method_encoding(method: &Value, plan: &OperationPlan, types: &Type
     encoding
 }
 
-struct ParamsPlan<'a> {
-    class_name: String,
+pub(crate) struct ParamsPlan<'a> {
+    pub(crate) class_name: String,
     body_fields: Vec<&'a Value>,
     query: Vec<&'a Value>,
     header: Vec<&'a Value>,
 }
 
-fn plan_params<'a>(
+pub(crate) fn plan_params<'a>(
     segments: &[String],
     method: &'a Value,
     plan: &OperationPlan<'a>,
@@ -458,7 +458,7 @@ fn path_expr(path: &str, path_params: &[&Value]) -> String {
     parts.join(" + ")
 }
 
-fn params_file(
+pub(crate) fn params_file(
     resource: &Value,
     segments: &[String],
     method: &Value,

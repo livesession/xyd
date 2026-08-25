@@ -13,6 +13,7 @@
 //! none — matching the JS `generate()`.
 
 mod behavior;
+mod cli;
 mod client;
 mod example;
 mod example_plan;
@@ -42,6 +43,9 @@ use tests_gen::generate_java_tests;
 /// Returns `{ relativePath: contents }` for the covered capabilities only (the
 /// vendored runtime + tests stay with the JS emitter).
 pub fn generate_java(spec: &Value) -> BTreeMap<String, String> {
+    if xyd_opensdk_cli_common::is_cli_spec(spec) {
+        return cli::generate_cli(spec);
+    }
     let types_map = build_types(spec);
     let ctx = resolve_java_options(spec, types_map);
 
