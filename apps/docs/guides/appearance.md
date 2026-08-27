@@ -236,7 +236,7 @@ Customize content appearance and navigation elements:
 ```
 ::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'AppearanceContent'})"}
 
-## Navigation Dropdown
+## Navigation Dropdown {label="Coming Soon"}
 Style the [dropdown menus](/guides/navigation) on header anchors and tabs (the
 `dropdownMenu` feature).
 
@@ -258,46 +258,3 @@ Style the [dropdown menus](/guides/navigation) on header anchors and tabs (the
 - **`items`** — `"flush"` makes the hovered item background touch all four edges of
   the popover (no surrounding padding); `"padded"` (default) keeps a small inset with
   rounded item corners.
-
-### Advanced: CSS variables
-For finer control, set the underlying variables via [`cssTokens`](#css-tokens) — e.g.
-rotate the chevron a quarter turn:
-```json
-{
-    "theme": {
-        "appearance": {
-            "cssTokens": {
-                "--xyd-nav-dropdown-chevron-rotate": "90deg"
-            }
-        }
-    }
-}
-```
-
-| Variable | Default | What it controls |
-|---|---|---|
-| `--xyd-nav-dropdown-chevron-rotate` | `180deg` | Trigger chevron rotation when open (`0deg` disables) |
-| `--xyd-nav-dropdown-padding` | `6px` | Padding around the menu panel |
-| `--xyd-nav-dropdown-gap` | `2px` | Gap between items |
-| `--xyd-nav-dropdown-item-radius` | small | Item corner radius |
-| `--xyd-nav-dropdown-item-padding` | `6px 8px` | Per-item padding (bumped to `10px 16px` when `items: "flush"`) |
-| `--xyd-nav-dropdown-bgcolor` | content bg | Menu panel background |
-| `--xyd-nav-dropdown-border-color` | header border | Menu panel border |
-| `--xyd-nav-dropdown-shadow` | soft shadow | Menu panel shadow |
-| `--xyd-nav-dropdown-item-bgcolor--hover` | subtle | Hovered/active item background |
-
-For anything beyond tokens, target the custom elements directly (in a custom
-stylesheet or theme):
-
-| Element / part | What it is |
-|---|---|
-| `xyd-nav-dropdown` | the dropdown host (trigger + menu) |
-| `[part="dropdown-trigger"]` | the trigger (anchor/tab label) |
-| `xyd-nav-dropdown-menu` | the menu panel (popover content + each submenu) |
-| `xyd-nav-dropdown-item` | a menu item / submenu trigger |
-| `[part="dropdown-icon"]` · `[part="dropdown-label"]` · `[part="dropdown-description"]` · `[part="dropdown-submenu-indicator"]` | item internals |
-
-```css
-xyd-nav-dropdown-menu { border-radius: 12px; }
-xyd-nav-dropdown-item { font-size: 14px; }
-```
