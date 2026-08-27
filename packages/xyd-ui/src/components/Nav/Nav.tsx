@@ -2,6 +2,8 @@ import React from "react";
 import { Tabs as RadixTabs } from "radix-ui"; // TODO: remove and use separation
 
 import * as cn from "./Nav.styles";
+import { NavDropdown } from "./NavDropdown";
+export type { NavDropdownProps, NavDropdownItem } from "./NavDropdown";
 
 export interface NavProps {
     children: React.ReactNode
@@ -86,6 +88,9 @@ Nav.Item = function NavItem(props: NavItemProps) {
         <Nav.ItemRaw {...props} />
     </RadixTabs.Trigger>
 };
+
+/** Multi-level dropdown nav item (header anchors + tabs). See {@link NavDropdown}. */
+Nav.Dropdown = NavDropdown;
 
 Nav.ItemRaw = function NavItemRaw({ children, href, as, ...rest }: Omit<NavItemProps, "value">) {
     const Link = as || $Link;

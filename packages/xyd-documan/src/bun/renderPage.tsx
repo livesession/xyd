@@ -13,6 +13,7 @@ import { seedGlobals, ShellProviders, getSettings, getSettingsClone, matchRoute,
 import { metaTagsHtml, robotsTxt, sitemapXml, sitemapRoutes } from "./seo";
 import { themePackage, themeShortName } from "./themePkg";
 import { stripReactElements, settingsBundleJs } from "./serialize";
+import { userAppearanceStyle } from "./userCss";
 import { resolveShellOnly, authFromCookie, accessAllowed, pageAccess } from "./accessControl";
 import { matchPluginPage, pluginPageMeta } from "./pluginPages";
 export { stripReactElements }; // re-exported for existing consumers
@@ -73,6 +74,8 @@ function renderShell({ settings, bodyHtml, data }: any): string {
     `<link rel="stylesheet" href="/_xyd/components.css">` +
     `<link rel="stylesheet" href="/_xyd/atlas.css">` +
     `<link rel="stylesheet" href="/_xyd/ui.css">` +
+    // theme.appearance overrides (colors + cssTokens) — parity with the Vite path.
+    userAppearanceStyle(settings) +
     themeHeadHtml(settings) +
     `</head><body>` +
     `<div id="root">${bodyHtml}</div>` +
@@ -393,6 +396,8 @@ function renderStaticShell({ settings, bodyHtml, data }: any): string {
     (favicon ? `<link rel="icon" href="${esc(favicon)}">` : "") +
     `<style>${layer}</style>` + // @layer declaration before the layer-using stylesheets
     (a?.cssLinks || []).map((h: string) => `<link rel="stylesheet" href="${h}">`).join("") +
+    // theme.appearance overrides (colors + cssTokens) — parity with the Vite path.
+    userAppearanceStyle(settings) +
     themeHeadHtml(settings) +
     `</head><body>` +
     `<div id="root">${bodyHtml}</div>` +

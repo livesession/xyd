@@ -9,6 +9,7 @@ import { useAppearance } from "../contexts";
 import { FwLink } from "../components";
 import { useHeaderItems } from "../hooks";
 import { WebEditorComponent } from "./WebEditorComponent";
+import { FwNavDropdown } from "./FwNavDropdown";
 
 export function FwHeaderItems() {
     const headerItems = useHeaderItems()
@@ -29,6 +30,12 @@ export function FwHeaderItems() {
 
 export function FwHeaderItem(props: WebEditorHeader) {
     const appearance = useAppearance()
+
+    // Header anchors / center-surface tabs that declare a nested menu render as a
+    // multi-level dropdown (hover default | click) instead of a plain Nav.Item.
+    if (props.dropdownMenu?.length) {
+        return <FwNavDropdown key={keyId(props)} item={props} />
+    }
 
     let href: string | null = null
 

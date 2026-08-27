@@ -210,6 +210,19 @@ export abstract class Theme {
                     desktop: true,
                 }
 
+                // A header anchor with a nested menu renders as a multi-level
+                // dropdown (FwHeaderItem → Nav.Dropdown). Keep it a plain header
+                // item (no Button component) so `dropdownMenu`/`trigger` survive.
+                if ("dropdownMenu" in item && item.dropdownMenu?.length) {
+                    this.webeditor.header = this.headerAppend({
+                        ...item,
+                        float: "right" as const,
+                        desktop: true,
+                    })
+
+                    return
+                }
+
                 if ("button" in item) {
                     this.webeditor.header = this.headerAppend({
                         ...button,

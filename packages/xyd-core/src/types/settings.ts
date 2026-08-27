@@ -315,6 +315,11 @@ export interface Appearance {
    * Footer appearance for the theme.
    */
   footer?: AppearanceFooter;
+
+  /**
+   * Navigation dropdown appearance (header anchors & tabs `dropdownMenu`).
+   */
+  navigationDropdown?: AppearanceNavigationDropdown;
 }
 
 export interface Colors {
@@ -453,6 +458,21 @@ export interface AppearanceSidebar {
 
 export interface AppearanceButtons {
   rounded?: boolean | "lg" | "md" | "sm";
+}
+
+export interface AppearanceNavigationDropdown {
+  /**
+   * Trigger chevron behavior when the menu is open. `"rotate"` (default) flips the
+   * chevron; `"static"` leaves it unchanged.
+   */
+  chevron?: "rotate" | "static";
+
+  /**
+   * Menu item layout. `"flush"` makes the hovered item background touch all four
+   * edges of the popover (no surrounding padding); `"padded"` (default) keeps a
+   * small inset with rounded item corners.
+   */
+  items?: "padded" | "flush";
 }
 
 export interface AppearanceTables {
@@ -763,6 +783,20 @@ export interface NavigationItem {
    * The navigation item icon
    */
   icon?: string | React.ReactNode;
+
+  /**
+   * Nested navigation rendered as a dropdown menu under this item.
+   *
+   * Recursive — a child may itself declare `dropdownMenu` to create submenus
+   * (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors
+   * and tabs.
+   */
+  dropdownMenu?: NavigationItem[];
+
+  /**
+   * How the `dropdownMenu` opens. Defaults to `"hover"`.
+   */
+  trigger?: "hover" | "click";
 }
 
 export type NavigationItemButton = NavigationItem & {
