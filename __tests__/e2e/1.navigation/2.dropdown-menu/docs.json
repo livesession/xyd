@@ -1,0 +1,45 @@
+{
+    "theme": {
+        "name": "opener",
+        "appearance": {
+            "navigationDropdown": {
+                "chevron": "static",
+                "items": "flush"
+            }
+        }
+    },
+    "navigation": {
+        "anchors": {
+            "header": [
+                {
+                    "title": "Products",
+                    "trigger": "hover",
+                    "dropdownMenu": [
+                        { "title": "Browser SDK", "page": "docs/browser" },
+                        { "title": "REST API", "page": "docs/rest" },
+                        {
+                            "title": "Guides",
+                            "dropdownMenu": [
+                                { "title": "Authentication", "page": "docs/auth" }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "title": "Company",
+                    "trigger": "click",
+                    "dropdownMenu": [
+                        { "title": "Changelog", "page": "changelog" }
+                    ]
+                }
+            ]
+        },
+        "sidebar": [
+            "overview",
+            "docs/browser",
+            "docs/rest",
+            "docs/auth",
+            "changelog"
+        ]
+    }
+}

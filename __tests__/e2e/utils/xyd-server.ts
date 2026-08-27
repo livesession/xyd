@@ -287,4 +287,16 @@ export async function createXydBuildServer(templateDir: string, options: Omit<Xy
     });
     await server.start();
     return server;
-} 
+}
+
+// Helper: dev server on the NEW Rust+bun engine (XYD_BUN=1). Use for features
+// that only ship on the bun engine (the Vite/React-Router path is deprecating).
+export async function createXydBunServer(testDirPath: string, options: Omit<XydServerOptions, 'testDir'> = {}): Promise<XydServer> {
+    const server = new XydServer({
+        ...options,
+        testDir: path.resolve(testDirPath),
+        env: { XYD_BUN: '1', ...(options.env || {}) },
+    });
+    await server.start();
+    return server;
+}

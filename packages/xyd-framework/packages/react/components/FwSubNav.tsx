@@ -5,6 +5,7 @@ import { SubNav } from "@xyd-js/ui";
 import { pageLink } from "../utils";
 import { useActiveMatchedSubNav, useMatchedSubNav } from "../hooks";
 import { FwLink } from "./FwLink";
+import { FwNavDropdown } from "./FwNavDropdown";
 
 export function FwSubNav() {
     const matchedSubnav = useMatchedSubNav()
@@ -21,6 +22,14 @@ export function FwSubNav() {
         }}
     >
         {matchedSubnav?.pages?.map((item, index) => {
+            // A tab that declares a nested menu renders as a multi-level dropdown.
+            if (item.dropdownMenu?.length) {
+                return <FwNavDropdown
+                    key={item.title || item.page || item.href || index}
+                    item={item}
+                />
+            }
+
             let href: string | null = null
 
             if (typeof item.href === "string") {

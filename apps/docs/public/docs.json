@@ -98,6 +98,10 @@
           "$ref": "#/definitions/APIInfo",
           "description": "API information configuration"
         },
+        "options": {
+          "$ref": "#/definitions/APIFileOptions",
+          "description": "Preset-specific rendering options (e.g. CLI)."
+        },
         "route": {
           "description": "Route configuration",
           "type": "string"
@@ -124,6 +128,17 @@
         ]
       },
       "description": "API file map type",
+      "type": "object"
+    },
+    "APIFileOptions": {
+      "additionalProperties": false,
+      "description": "Preset-specific rendering options for an API source.",
+      "properties": {
+        "globalOptionsPerCommand": {
+          "description": "(CLI) Render the CLI's global options on every command page. When `false` (the default), the global options are rendered once as a dedicated \"Global options\" page in the sidebar instead of repeated on each command.",
+          "type": "boolean"
+        }
+      },
       "type": "object"
     },
     "APIInfo": {
@@ -809,6 +824,10 @@
           "$ref": "#/definitions/AppearanceLogo",
           "description": "Logo appearance for the theme."
         },
+        "navigationDropdown": {
+          "$ref": "#/definitions/AppearanceNavigationDropdown",
+          "description": "Navigation dropdown appearance (header anchors & tabs `dropdownMenu`)."
+        },
         "presets": {
           "description": "Presets for the theme.",
           "items": {
@@ -967,6 +986,28 @@
             }
           ],
           "description": "If `true` then the logo will be displayed on the sidebar."
+        }
+      },
+      "type": "object"
+    },
+    "AppearanceNavigationDropdown": {
+      "additionalProperties": false,
+      "properties": {
+        "chevron": {
+          "description": "Trigger chevron behavior when the menu is open. `\"rotate\"` (default) flips the chevron; `\"static\"` leaves it unchanged.",
+          "enum": [
+            "rotate",
+            "static"
+          ],
+          "type": "string"
+        },
+        "items": {
+          "description": "Menu item layout. `\"flush\"` makes the hovered item background touch all four edges of the popover (no surrounding padding); `\"padded\"` (default) keeps a small inset with rounded item corners.",
+          "enum": [
+            "padded",
+            "flush"
+          ],
+          "type": "string"
         }
       },
       "type": "object"
@@ -2119,6 +2160,13 @@
           "description": "The navigation item description",
           "type": "string"
         },
+        "dropdownMenu": {
+          "description": "Nested navigation rendered as a dropdown menu under this item.\n\nRecursive — a child may itself declare `dropdownMenu` to create submenus (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors and tabs.",
+          "items": {
+            "$ref": "#/definitions/NavigationItem"
+          },
+          "type": "array"
+        },
         "href": {
           "description": "The navigation href, if set it redirects but does not match based on routing",
           "type": "string"
@@ -2140,6 +2188,14 @@
         },
         "title": {
           "description": "The navigation item title",
+          "type": "string"
+        },
+        "trigger": {
+          "description": "How the `dropdownMenu` opens. Defaults to `\"hover\"`.",
+          "enum": [
+            "hover",
+            "click"
+          ],
           "type": "string"
         }
       },
@@ -2159,6 +2215,13 @@
           "description": "The navigation item description",
           "type": "string"
         },
+        "dropdownMenu": {
+          "description": "Nested navigation rendered as a dropdown menu under this item.\n\nRecursive — a child may itself declare `dropdownMenu` to create submenus (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors and tabs.",
+          "items": {
+            "$ref": "#/definitions/NavigationItem"
+          },
+          "type": "array"
+        },
         "href": {
           "description": "The navigation href, if set it redirects but does not match based on routing",
           "type": "string"
@@ -2181,6 +2244,14 @@
         "title": {
           "description": "The navigation item title",
           "type": "string"
+        },
+        "trigger": {
+          "description": "How the `dropdownMenu` opens. Defaults to `\"hover\"`.",
+          "enum": [
+            "hover",
+            "click"
+          ],
+          "type": "string"
         }
       },
       "required": [
@@ -2194,6 +2265,13 @@
         "description": {
           "description": "The navigation item description",
           "type": "string"
+        },
+        "dropdownMenu": {
+          "description": "Nested navigation rendered as a dropdown menu under this item.\n\nRecursive — a child may itself declare `dropdownMenu` to create submenus (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors and tabs.",
+          "items": {
+            "$ref": "#/definitions/NavigationItem"
+          },
+          "type": "array"
         },
         "href": {
           "description": "The navigation href, if set it redirects but does not match based on routing",
@@ -2219,6 +2297,14 @@
         },
         "title": {
           "description": "The navigation item title",
+          "type": "string"
+        },
+        "trigger": {
+          "description": "How the `dropdownMenu` opens. Defaults to `\"hover\"`.",
+          "enum": [
+            "hover",
+            "click"
+          ],
           "type": "string"
         }
       },
@@ -3067,6 +3153,13 @@
           "description": "If `true` then the item will be displayed on desktop.",
           "type": "boolean"
         },
+        "dropdownMenu": {
+          "description": "Nested navigation rendered as a dropdown menu under this item.\n\nRecursive — a child may itself declare `dropdownMenu` to create submenus (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors and tabs.",
+          "items": {
+            "$ref": "#/definitions/NavigationItem"
+          },
+          "type": "array"
+        },
         "float": {
           "description": "Float the header to the right",
           "enum": [
@@ -3105,6 +3198,14 @@
         "title": {
           "description": "The navigation item title",
           "type": "string"
+        },
+        "trigger": {
+          "description": "How the `dropdownMenu` opens. Defaults to `\"hover\"`.",
+          "enum": [
+            "hover",
+            "click"
+          ],
+          "type": "string"
         }
       },
       "type": "object"
@@ -3124,6 +3225,13 @@
         "desktop": {
           "description": "If `true` then the item will be displayed on desktop.",
           "type": "boolean"
+        },
+        "dropdownMenu": {
+          "description": "Nested navigation rendered as a dropdown menu under this item.\n\nRecursive — a child may itself declare `dropdownMenu` to create submenus (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors and tabs.",
+          "items": {
+            "$ref": "#/definitions/NavigationItem"
+          },
+          "type": "array"
         },
         "href": {
           "description": "The navigation href, if set it redirects but does not match based on routing",
@@ -3154,6 +3262,14 @@
         },
         "title": {
           "description": "The navigation item title",
+          "type": "string"
+        },
+        "trigger": {
+          "description": "How the `dropdownMenu` opens. Defaults to `\"hover\"`.",
+          "enum": [
+            "hover",
+            "click"
+          ],
           "type": "string"
         }
       },

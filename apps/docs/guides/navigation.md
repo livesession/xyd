@@ -423,6 +423,71 @@ Anchors provide a way to add fixed navigation elements. They're useful for displ
   ::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'Anchors'})"}
 ::::
 
+## Dropdown Menu {label="Coming Soon"}
+
+Turn a **header anchor** or a **tab** into a nested menu with `dropdownMenu`. Each entry is a [Navigation Item](/reference/core/navigationitem); an entry that itself declares `dropdownMenu` becomes a **submenu**, so menus can nest to multiple levels.
+
+Use `trigger` to control how the menu opens — `"hover"` (default) or `"click"`.
+
+:::tabs
+1. [Anchor](dropdownmenu=anchor)
+    ```json [!scroll]
+    {
+      "navigation": {
+        "anchors": {
+          "header": [
+            {
+              // !diff +
+              "title": "Products",
+              // !diff +
+              "trigger": "hover",
+              // !diff +
+              "dropdownMenu": [
+                {
+                  "title": "Browser SDK",
+                  "dropdownMenu": [
+                    { "title": "Install", "page": "docs/browser/install" },
+                    { "title": "Methods", "page": "docs/browser/methods" }
+                  ]
+                },
+                { "title": "REST API", "page": "docs/rest" },
+                { "title": "GraphQL", "page": "docs/graphql" }
+              ]
+            }
+          ]
+        }
+      }
+    }
+    ```
+
+2. [Tab](dropdownmenu=tab)
+    ```json [!scroll]
+    {
+      "navigation": {
+        "tabs": [
+          { "title": "Overview", "page": "overview" },
+          {
+            // !diff +
+            "title": "API Reference",
+            // !diff +
+            "trigger": "hover",
+            // !diff +
+            "dropdownMenu": [
+              { "title": "Browser SDK", "page": "docs/browser" },
+              { "title": "REST API", "page": "docs/rest" },
+              { "title": "GraphQL", "page": "docs/graphql" }
+            ]
+          }
+        ]
+      }
+    }
+    ```
+:::
+
+:::callout{kind="tip"}
+Style the dropdown — chevron rotation, edge-to-edge items, colors — via [`appearance.navigationDropdown`](/guides/appearance#navigation-dropdown).
+:::
+
 ## Segments {label="Experimental"}
 
 ![asset](/public/assets/Segments.png)

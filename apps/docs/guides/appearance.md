@@ -235,3 +235,26 @@ Customize content appearance and navigation elements:
 }
 ```
 ::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'AppearanceContent'})"}
+
+## Navigation Dropdown {label="Coming Soon"}
+Style the [dropdown menus](/guides/navigation) on header anchors and tabs (the
+`dropdownMenu` feature).
+
+```json
+{
+    "theme": {
+        "appearance": {
+            "navigationDropdown": {
+                "chevron": "'rotate' | 'static'",
+                "items": "'padded' | 'flush'"
+            }
+        }
+    }
+}
+```
+::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'AppearanceNavigationDropdown'})"}
+
+- **`chevron`** — trigger chevron behavior when open: `"rotate"` (default) flips it, `"static"` leaves it unchanged.
+- **`items`** — `"flush"` makes the hovered item background touch all four edges of
+  the popover (no surrounding padding); `"padded"` (default) keeps a small inset with
+  rounded item corners.
