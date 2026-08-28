@@ -18,12 +18,12 @@ import { resolveLocaleSettings } from "@xyd-js/framework/hydration/locale";
 
 import type { Metadata, MetadataMap, Settings, Theme as ThemeSettings } from "@xyd-js/core";
 import type { INavLinks, IBreadcrumb } from "@xyd-js/ui";
-import { Framework, FwLink, FwLogo, FwLocaleSwitcher, useSettings, type FwSidebarItemProps, type IFrameworkI18n } from "@xyd-js/framework/react";
+import { Framework, FwLink, FwLogo, FwLocaleSwitcher, FwSegmentLogoTrailing, useSettings, type FwSidebarItemProps, type IFrameworkI18n } from "@xyd-js/framework/react";
 import { ReactContent } from "@xyd-js/components/content";
 import { Atlas, AtlasContext, type VariantToggleConfig } from "@xyd-js/atlas";
 import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
 
-import { Surfaces, pageMetaLayout } from "@xyd-js/framework";
+import { Surfaces, SurfaceTarget, pageMetaLayout } from "@xyd-js/framework";
 import { Composer } from "@xyd-js/composer";
 import { Analytics, useAnalytics } from "@xyd-js/analytics";
 // @ts-ignore
@@ -110,6 +110,11 @@ if (settings?.navigation?.languages?.length) {
         { append: true }
     )
 }
+
+// `logoTrailing` segments render after the logo via this surface (hosted by
+// FwLogo). The component self-gates (null unless a logoTrailing segment matches),
+// so registering unconditionally is safe.
+surfaces.define(SurfaceTarget.LogoTrailing, <FwSegmentLogoTrailing />)
 
 const reactContent = new ReactContent(settings, {
     Link: FwLink,

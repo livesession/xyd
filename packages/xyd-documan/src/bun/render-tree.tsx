@@ -1,7 +1,7 @@
 import React from "react";
 
-import { Surfaces } from "@xyd-js/framework";
-import { Framework, FrameworkPage, FwLink, FwLogo, FwLocaleSwitcher, type IFrameworkI18n } from "@xyd-js/framework/react";
+import { Surfaces, SurfaceTarget } from "@xyd-js/framework";
+import { Framework, FrameworkPage, FwLink, FwLogo, FwLocaleSwitcher, FwSegmentLogoTrailing, type IFrameworkI18n } from "@xyd-js/framework/react";
 import { resolveLocaleSettings } from "@xyd-js/framework/hydration/locale";
 import { ReactContent } from "@xyd-js/components/content";
 import { IconProvider } from "@xyd-js/components/writer";
@@ -61,6 +61,9 @@ export function seedGlobals(ThemeCtor: any) {
   if (settings?.navigation?.languages?.length) {
     surfaces.define("nav.right", FwLocaleSwitcher as any, { append: true } as any);
   }
+  // `logoTrailing` segments render after the logo via this surface (hosted by
+  // FwLogo). Self-gating component, so registering unconditionally is safe.
+  surfaces.define(SurfaceTarget.LogoTrailing, <FwSegmentLogoTrailing />);
   state.surfaces = surfaces;
 
   globalThis.__xydReactContent = new ReactContent(settings, {

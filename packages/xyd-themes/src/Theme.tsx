@@ -165,6 +165,9 @@ export abstract class Theme {
         if (this.theme.appearance?.logo?.sidebar) {
             const logo: WebEditorNavigationItem = {
                 component: "Logo",
+                // opt this sidebar logo into hosting the `logo.trailing` surface
+                // (FwLogo reads `trailing` — see FwJsonComponent props pass-through)
+                props: { trailing: true },
                 mobile: this.theme.appearance?.logo?.sidebar === "mobile" || undefined,
                 desktop: this.theme.appearance?.logo?.sidebar === "desktop" || undefined
             }
@@ -193,7 +196,9 @@ export abstract class Theme {
             this.theme.appearance?.tabs?.surface !== "center") {
 
             this.navigation.segments = this.navigation.segments.map(segment => {
-                if (segment.appearance !== "sidebarDropdown") {
+                // only default when unset — a segment that opts into another
+                // appearance (e.g. "logoTrailing") must survive.
+                if (!segment.appearance) {
                     segment.appearance = "sidebarDropdown"
                 }
                 return segment

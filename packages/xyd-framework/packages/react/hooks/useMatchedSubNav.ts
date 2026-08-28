@@ -19,7 +19,9 @@ export function useMatchedSubNav(): Segment | null {
         return null
     }
 
-    if (!matchedSegment || matchedSegment.appearance === "sidebarDropdown") {
+    // A segment with an explicit appearance (sidebarDropdown, logoTrailing, …)
+    // renders in its own dedicated place — never as the default subnav/subheader.
+    if (!matchedSegment || matchedSegment.appearance) {
         return tabSegments
     }
 

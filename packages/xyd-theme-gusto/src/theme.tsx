@@ -57,7 +57,7 @@ function _SidebarTop() {
     return <>
         <UISidebar.Item ghost>
             <div className={styles.SidebarTop}>
-                <FwLogo/>
+                <FwLogo trailing/>
                 <div>
                     {showColorSchemeButton && <ColorSchemeButton/>}
                 </div>
