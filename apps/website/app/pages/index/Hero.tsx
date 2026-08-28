@@ -5,10 +5,16 @@ import { IconWindows } from "~/icons/Windows";
 import { IconLinux } from "~/icons/Linux";
 
 // Injected by vite `define` at build time (see vite.config.ts): the current
-// site's origin. Baked into the prerendered HTML so canary.xyd.dev ships the
-// canary install command and prod ships xyd.dev's — no client-side host sniffing.
+// site's origin + whether this is the canary build. Baked into the prerendered
+// HTML — no client-side host sniffing.
 declare const __XYD_INSTALL_ORIGIN__: string;
-const INSTALL_CMD = `curl -fsSL ${__XYD_INSTALL_ORIGIN__}/install | bash`;
+declare const __XYD_IS_CANARY__: boolean;
+// The native one-line installer is canary-only for now; stable/prod ships the
+// published npm CLI. (`__XYD_IS_CANARY__` is a compile-time constant, so the
+// unused branch is dead-code-eliminated from each build.)
+const INSTALL_CMD = __XYD_IS_CANARY__
+  ? `curl -fsSL ${__XYD_INSTALL_ORIGIN__}/install | bash`
+  : "bun add -g xyd-js";
 
 export function Hero() {
   const [activeTab, setActiveTab] = useState(0);

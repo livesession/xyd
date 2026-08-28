@@ -4,6 +4,13 @@ import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import PluginCritical from "rollup-plugin-critical";
 
+// Resolved once at build time (Netlify `URL`, else deploy-preview prime URL, else
+// local → xyd.dev). Both the install origin and the canary flag derive from it.
+const INSTALL_ORIGIN =
+  process.env.URL || process.env.DEPLOY_PRIME_URL || "https://xyd.dev";
+// Canary site is canary.<domain>; only it advertises the native installer.
+const IS_CANARY = /^https?:\/\/canary\./i.test(INSTALL_ORIGIN);
+
 export default defineConfig({
   // The homepage is prerendered (ssr: true, prerender: true), so the install
   // command's host has to be known at BUILD time — there is no request to read
@@ -11,10 +18,14 @@ export default defineConfig({
   // the canary site (canary.xyd.dev) bakes in its own /install, prod bakes in
   // xyd.dev, and deploy previews fall back to their prime URL. Local builds have
   // neither → xyd.dev.
+  //
+  // The native one-line installer (`curl … /install | bash`) is currently
+  // canary-only, so the hero advertises it ONLY on the canary build; stable/prod
+  // advertises the npm CLI (`bun add -g xyd-js`). Canary-ness is derived from the
+  // same resolved origin (a `canary.` host) so there is one source of truth.
   define: {
-    __XYD_INSTALL_ORIGIN__: JSON.stringify(
-      process.env.URL || process.env.DEPLOY_PRIME_URL || "https://xyd.dev",
-    ),
+    __XYD_INSTALL_ORIGIN__: JSON.stringify(INSTALL_ORIGIN),
+    __XYD_IS_CANARY__: JSON.stringify(IS_CANARY),
   },
   plugins: [
     tailwindcss(), 
