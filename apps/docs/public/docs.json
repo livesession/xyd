@@ -2624,9 +2624,8 @@
       "description": "Segment configuration",
       "properties": {
         "appearance": {
-          "const": "sidebarDropdown",
-          "description": "Appearance of this segment. If 'sidebarDropdown' then show this segment as a dropdown in the sidebar if match.",
-          "type": "string"
+          "$ref": "#/definitions/SegmentAppearance",
+          "description": "Appearance of this segment. See  {@link  SegmentAppearance } ."
         },
         "pages": {
           "description": "Items within this segment",
@@ -2642,6 +2641,14 @@
         "title": {
           "description": "Title of this segment",
           "type": "string"
+        },
+        "trigger": {
+          "description": "How a `logoTrailing` segment's dropdown opens. Defaults to `\"hover\"`.",
+          "enum": [
+            "hover",
+            "click"
+          ],
+          "type": "string"
         }
       },
       "required": [
@@ -2649,6 +2656,14 @@
         "pages"
       ],
       "type": "object"
+    },
+    "SegmentAppearance": {
+      "description": "How a matched  {@link  Segment }  is presented.\n\n- `\"sidebarDropdown\"` — a click dropdown at the top of the sidebar.\n- `\"logoTrailing\"` — a hover product-switcher rendered right after the logo   (wherever the active theme places its logo — header or sidebar). The trigger   shows the active page's title (falling back to the segment `title`), and the   menu is the segment `pages` with a check on the active one.",
+      "enum": [
+        "sidebarDropdown",
+        "logoTrailing"
+      ],
+      "type": "string"
     },
     "Sidebar": {
       "additionalProperties": false,

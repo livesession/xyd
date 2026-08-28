@@ -9,6 +9,11 @@ export enum SurfaceTarget {
 
     SidebarItemLeft = "sidebar.item.left",
     SidebarItemRight = "sidebar.item.right",
+
+    // Rendered immediately after the logo, wherever the active theme places it
+    // (header or sidebar). Hosted by FwLogo (gated by its `trailing` prop so the
+    // footer logo never fills it). Used by the `logoTrailing` segment appearance.
+    LogoTrailing = "logo.trailing",
 }
 
 // Type that allows both enum and string values

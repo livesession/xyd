@@ -539,6 +539,43 @@ Thanks to that you can create for example a subheader that will shown only on sp
   ::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'Segment'})"}
 ::::
 
+### Logo Trailing {label="Coming Soon"}
+
+Set a segment's `appearance` to `"logoTrailing"` to render it as a product-switcher
+right after the logo — wherever your theme places the logo (header, or the sidebar
+like `picasso`). Unlike `sidebarDropdown`, it is **global**: it appears on every page
+(a top-level switcher), so you can switch products from anywhere — including the
+landing page. The trigger shows the active product (whichever `page` prefixes the
+current route), falling back to the segment `title` when none is active; the menu
+switches between the segment `pages` (the active one is checked).
+
+This suits docs that span multiple products — e.g. a **Products** switcher over
+_Session Replay_ and _Web Analytics_:
+
+```json
+{
+  "navigation": {
+    "segments": [
+      {
+        "route": "products",
+        "title": "Products",
+        // !diff +
+        "appearance": "logoTrailing",
+        // !diff +
+        "trigger": "hover",
+        "pages": [
+          { "title": "Session Replay", "page": "products/session-replay" },
+          { "title": "Web Analytics", "page": "products/web-analytics" }
+        ]
+      }
+    ]
+  }
+}
+```
+
+The dropdown opens on `trigger: "hover"` (default) or `"click"`. A page may itself
+declare a nested [`dropdownMenu`](/guides/navigation#dropdown-menu) to add submenus.
+
 ##  File-Convention Routing {label="Coming Soon"}
 :::callout
 File-convention routing is powerful because you don't need any configuration but also has some limitations. 

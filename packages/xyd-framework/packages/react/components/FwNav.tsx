@@ -24,7 +24,7 @@ export function FwNav() {
     const logo = appearance?.logo?.header ? <WebEditorComponent.NavItemRaw
         device={appearance?.logo?.header}
     >
-        <FwLogo />
+        <FwLogo trailing />
     </WebEditorComponent.NavItemRaw> : null
 
     // TODO: in the future better floating system - just pure css?

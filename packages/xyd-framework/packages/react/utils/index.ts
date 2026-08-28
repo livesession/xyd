@@ -15,3 +15,8 @@ export {
     resolveDropdownHref,
 } from "./navDropdown"
 export type { ResolvedDropdownItem } from "./navDropdown"
+
+export {
+    resolveLogoTrailingSwitcher,
+} from "./segmentLogoTrailing"
+export type { LogoTrailingItem, LogoTrailingSwitcher } from "./segmentLogoTrailing"

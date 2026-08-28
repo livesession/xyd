@@ -39,6 +39,10 @@ export {
 } from "./useMatchedSegmentSidebarDropdown";
 
 export {
+    useLogoTrailingSegment
+} from "./useLogoTrailingSegment";
+
+export {
     useMatchedSubNav,
 } from "./useMatchedSubNav";
 

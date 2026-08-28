@@ -739,6 +739,17 @@ export type VirtualPage =
     };
 
 /**
+ * How a matched {@link Segment} is presented.
+ *
+ * - `"sidebarDropdown"` — a click dropdown at the top of the sidebar.
+ * - `"logoTrailing"` — a hover product-switcher rendered right after the logo
+ *   (wherever the active theme places its logo — header or sidebar). The trigger
+ *   shows the active page's title (falling back to the segment `title`), and the
+ *   menu is the segment `pages` with a check on the active one.
+ */
+export type SegmentAppearance = "sidebarDropdown" | "logoTrailing";
+
+/**
  * Segment configuration
  */
 export interface Segment {
@@ -748,8 +759,11 @@ export interface Segment {
   /** Title of this segment */
   title?: string;
 
-  /** Appearance of this segment. If 'sidebarDropdown' then show this segment as a dropdown in the sidebar if match. */
-  appearance?: "sidebarDropdown";
+  /** Appearance of this segment. See {@link SegmentAppearance}. */
+  appearance?: SegmentAppearance;
+
+  /** How a `logoTrailing` segment's dropdown opens. Defaults to `"hover"`. */
+  trigger?: "hover" | "click";
 
   /** Items within this segment */
   pages: NavigationItem[];
