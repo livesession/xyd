@@ -361,6 +361,24 @@ export interface AppearanceLogo {
   header?: boolean | "mobile" | "desktop";
 }
 
+/**
+ * Fine-grained breadcrumbs options (the object form of
+ * {@link AppearanceContent.breadcrumbs}).
+ */
+export interface AppearanceBreadcrumbs {
+  /**
+   * If `true` (default) breadcrumb items that resolve to a real route render as
+   * clickable links; if `false` every crumb is plain text.
+   */
+  links?: boolean;
+
+  /**
+   * If `true` (default) the top-level segment (the tab/route the page belongs to,
+   * e.g. "Guides") is included; if `false` it is omitted.
+   */
+  rootLevel?: boolean;
+}
+
 export interface AppearanceContent {
   /**
    * Content decorator for the theme.
@@ -368,9 +386,11 @@ export interface AppearanceContent {
   contentDecorator?: "secondary";
 
   /**
-   * If `true` then the breadcrumbs will be displayed.
+   * Controls the breadcrumbs. `true`/`false` toggles them; an object
+   * ({@link AppearanceBreadcrumbs}) additionally configures `links` and
+   * `rootLevel` (both default `true`).
    */
-  breadcrumbs?: boolean;
+  breadcrumbs?: boolean | AppearanceBreadcrumbs;
 
   /**
    * If `true` then the section separator will be displayed.
@@ -683,6 +703,13 @@ export interface SidebarRoute {
 export interface Sidebar {
   /** The name of the group */
   group?: string | false;
+
+  /**
+   * Makes the group itself a real page (the "Group Page" feature). When set, the
+   * group resolves to this route — so it becomes a clickable breadcrumb
+   * automatically. (Clickable group headers in the sidebar are still Coming Soon.)
+   */
+  page?: string;
 
   /**
    * The relative paths to the markdown files that will serve as pages.

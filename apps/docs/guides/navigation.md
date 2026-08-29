@@ -126,6 +126,11 @@ If you want to have a clickable group as a page, define `page` instead of `group
 }
 ```
 
+Even while the clickable group **header** in the sidebar is still Coming Soon, a
+group that declares a `page` (either a Group Page, or a named group with a `page`)
+already becomes a **clickable breadcrumb** automatically — breadcrumbs link any
+crumb that resolves to a real route. See [breadcrumb `links`](/guides/appearance#content).
+
 ### Routing
 You can also do more advanced routing in the sidebar, like matching based on the specific route:
 
