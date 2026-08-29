@@ -17,7 +17,17 @@ export const BreadcrumbsHost = css`
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
             transition-duration: 300ms;
         }
-        
+
+        [part="item"] a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        [part="item"] a:hover {
+            color: var(--xyd-breadcrumbs-color--hover, var(--xyd-content-color, currentColor));
+            text-decoration: underline;
+        }
+
         [part="item"][data-active="true"] {
         }
     }

@@ -1,0 +1,32 @@
+{
+    "theme": {
+        "name": "cosmo",
+        "logo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSIxOCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjE4IiByeD0iMyIgZmlsbD0iIzExMSIvPjwvc3ZnPg==",
+        "appearance": { "content": { "breadcrumbs": true } }
+    },
+    "navigation": {
+        "tabs": [ { "title": "Guides", "page": "guides" } ],
+        "sidebar": [
+            {
+                "route": "guides",
+                "pages": [
+                    {
+                        "group": "Customization",
+                        "pages": [
+                            "guides/customization/overview",
+                            "guides/customization/appearance"
+                        ]
+                    },
+                    {
+                        "group": "Integrations",
+                        "page": "guides/integrations/overview",
+                        "pages": [
+                            "guides/integrations/overview",
+                            "guides/integrations/analytics"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

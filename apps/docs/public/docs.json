@@ -864,6 +864,21 @@
       },
       "type": "object"
     },
+    "AppearanceBreadcrumbs": {
+      "additionalProperties": false,
+      "description": "Fine-grained breadcrumbs options (the object form of  {@link  AppearanceContent.breadcrumbs } ).",
+      "properties": {
+        "links": {
+          "description": "If `true` (default) breadcrumb items that resolve to a real route render as clickable links; if `false` every crumb is plain text.",
+          "type": "boolean"
+        },
+        "rootLevel": {
+          "description": "If `true` (default) the top-level segment (the tab/route the page belongs to, e.g. \"Guides\") is included; if `false` it is omitted.",
+          "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
     "AppearanceButtons": {
       "additionalProperties": false,
       "properties": {
@@ -893,8 +908,15 @@
       "additionalProperties": false,
       "properties": {
         "breadcrumbs": {
-          "description": "If `true` then the breadcrumbs will be displayed.",
-          "type": "boolean"
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/AppearanceBreadcrumbs"
+            }
+          ],
+          "description": "Controls the breadcrumbs. `true`/`false` toggles them; an object ( {@link  AppearanceBreadcrumbs } ) additionally configures `links` and `rootLevel` (both default `true`)."
         },
         "contentDecorator": {
           "const": "secondary",
@@ -2721,6 +2743,10 @@
             }
           ],
           "description": "The order of the group."
+        },
+        "page": {
+          "description": "Makes the group itself a real page (the \"Group Page\" feature). When set, the group resolves to this route — so it becomes a clickable breadcrumb automatically. (Clickable group headers in the sidebar are still Coming Soon.)",
+          "type": "string"
         },
         "pages": {
           "description": "The relative paths to the markdown files that will serve as pages. Note: groups are recursive, so to add a sub-folder add another group object in the page array.",

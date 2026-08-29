@@ -234,7 +234,38 @@ Customize content appearance and navigation elements:
     }
 }
 ```
+
 ::atlas{apiRefItemKind="secondary" references="@uniform('@core/types/settings.ts', {mini: 'AppearanceContent'})"}
+
+### Breadcrumbs {label="Coming Soon"}
+Breadcrumbs show the full path from the top-level tab/route down to the current page —
+each crumb is a clickable link only when it resolves to a real route (the parent
+tab/route, a page, or a group that declares a `page`); a plain group (no route) and the
+current page are plain text.
+
+`content.breadcrumbs` accepts a boolean, or an object for finer control (both flags
+default to `true`):
+```json
+{
+    "theme": {
+        "appearance": {
+            "content": {
+                "breadcrumbs": {
+                    // !diff +
+                    "links": true,
+                    // !diff +
+                    "rootLevel": true
+                }
+            }
+        }
+    }
+}
+```
+
+- **`links`** — when `true`, breadcrumb items that resolve to a real route render as
+  clickable links; when `false`, every crumb is plain text.
+- **`rootLevel`** — when `true`, the top-level segment (e.g. `Guides`) is shown; when
+  `false`, it is omitted.
 
 ## Navigation Dropdown {label="Coming Soon"}
 Style the [dropdown menus](/guides/navigation) on header anchors and tabs (the
