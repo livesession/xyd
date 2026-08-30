@@ -22,7 +22,10 @@ export function useSidebarTree(): [React.ReactElement[], { initialActiveItems: a
     const sidebarTree = React.useMemo(
         () =>
             groups?.map((group, index) => <FwSidebarItem
-                key={index + group.group}
+                // `index + group.group` is NaN for a groupless group (flat items,
+                // pageless component wrap) → key collisions. Index is stable +
+                // unique here (groups don't reorder).
+                key={`group-${index}-${group.group ?? ""}`}
                 {...group}
                 groupIndex={index}
             />) || [],

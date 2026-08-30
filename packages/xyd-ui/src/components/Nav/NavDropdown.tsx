@@ -26,10 +26,26 @@ export interface NavDropdownProps {
     /** Trigger label. */
     title?: string;
     icon?: React.ReactNode | string;
+    /**
+     * Render the trigger ICON-ONLY: show `icon` at a larger size and hide `title`.
+     * For `logoTrailing` switchers whose icon is a wordmark image (logo + name).
+     */
+    iconOnly?: boolean;
     /** How the menu opens. Defaults to `"hover"`. */
     trigger?: "hover" | "click";
     /** Menu entries (recursive). */
     items: NavDropdownItem[];
+    /**
+     * Custom panel content rendered INSIDE the dropdown instead of the default
+     * `items` list — e.g. a rich multi-column mega-menu. When set, `items` is
+     * ignored for rendering (still used for trigger active-state).
+     */
+    content?: React.ReactNode;
+    /**
+     * Maximum items rendered in ONE COLUMN — overflowing items wrap into
+     * additional columns (column-first fill). Omit for a single column.
+     */
+    itemsPerColumn?: number;
     /**
      * Router-agnostic link component used for leaf entries — receives `{ href }`.
      * The framework passes `FwLink`; falls back to a plain anchor.
@@ -49,12 +65,18 @@ function $Link({ children, ...props }: any) {
     return <a {...props}>{children}</a>;
 }
 
-function IconSlot({ icon }: { icon?: React.ReactNode | string }) {
+/** Default dropdown icon size (trigger + menu items). */
+const ICON_SIZE = 16;
+/** Larger trigger icon for `logoTrailing` icon-only mode — the wordmark image
+    carries the product name, so it stands in for the (hidden) text label. */
+const ICON_ONLY_SIZE = 30;
+
+function IconSlot({ icon, size = ICON_SIZE }: { icon?: React.ReactNode | string; size?: number }) {
     if (!icon) return null;
     if (typeof icon === "string") {
         return (
             <span part="dropdown-icon">
-                <Icon name={icon} size={16} />
+                <Icon name={icon} size={size} />
             </span>
         );
     }
@@ -186,7 +208,9 @@ function renderItems(items: NavDropdownItem[], as?: React.ElementType) {
  * `FwLink`) so it works under the bun engine's router.
  */
 export function NavDropdown(props: NavDropdownProps) {
-    const { title, icon, trigger = "hover", items, as, active, className } = props;
+    const { title, icon, iconOnly, trigger = "hover", items, content, itemsPerColumn, as, active, className } = props;
+    // Multi-column only when the items actually overflow one column.
+    const multiCol = !content && !!itemsPerColumn && items.length > itemsPerColumn;
     const [open, setOpen] = useState(false);
     const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -229,9 +253,17 @@ export function NavDropdown(props: NavDropdownProps) {
                 <DropdownMenu.Trigger
                     part="dropdown-trigger"
                     data-active={active || undefined}
+                    data-icon-only={iconOnly || undefined}
+                    // In icon-only mode the visible label is hidden, so name the
+                    // trigger for AT when there's an icon standing in for it.
+                    aria-label={iconOnly && icon ? title : undefined}
                 >
-                    <IconSlot icon={icon} />
-                    {title && <span part="dropdown-trigger-label">{title}</span>}
+                    <IconSlot icon={icon} size={iconOnly ? ICON_ONLY_SIZE : ICON_SIZE} />
+                    {/* Hide the label in icon-only mode ONLY when there's an icon to
+                        show. With no active product (e.g. the landing page) there's
+                        no icon, so fall back to the label so the trigger isn't a
+                        bare chevron. */}
+                    {(!iconOnly || !icon) && title && <span part="dropdown-trigger-label">{title}</span>}
                     <Chevron />
                 </DropdownMenu.Trigger>
 
@@ -241,8 +273,14 @@ export function NavDropdown(props: NavDropdownProps) {
                     `asChild` → the panel is the styleable `<xyd-nav-dropdown-menu>`
                     custom element (theme/user CSS targets it directly). */}
                 <DropdownMenu.Content asChild align="start" sideOffset={0}>
-                    <xyd-nav-dropdown-menu className={cn.DropdownList} part="dropdown-list">
-                        {renderItems(items, as)}
+                    <xyd-nav-dropdown-menu
+                        className={cn.DropdownList}
+                        part="dropdown-list"
+                        data-panel={content ? "true" : undefined}
+                        data-columns={multiCol ? "true" : undefined}
+                        style={multiCol ? { "--xyd-nav-dropdown-rows": String(itemsPerColumn) } as React.CSSProperties : undefined}
+                    >
+                        {content ?? renderItems(items, as)}
                     </xyd-nav-dropdown-menu>
                 </DropdownMenu.Content>
             </DropdownMenu.Root>

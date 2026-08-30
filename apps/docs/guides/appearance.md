@@ -169,7 +169,8 @@ Customize sidebar styling and scroll indicators:
                 "externalArrow": "true | false",
                 "scrollShadow": "true | false",
                 "scrollbar": "'secondary'",
-                "scrollbarColor": "#000"
+                "scrollbarColor": "#000",
+                "groupCase": "'none' | 'uppercase'"
             }
         }
     }

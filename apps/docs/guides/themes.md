@@ -42,6 +42,9 @@ You can configure the theme in the [`settings`](/guides/settings) file:
 
     - 
         ::card{title="cosmo" description="Platform-like design with robust navigation feeling." href="https://cosmo.xyd.dev" imgSrc="/public/assets/cosmo-frame.png" logoSrc="/public/assets/cosmo-logo.png"}
+
+    - 
+        ::card{title="terrarium" description="Full-width, high-contrast docs (HashiCorp-style) with ~800px left-aligned content, a decoupled TOC, and a top product switcher that recolors the accent per product."}
 :::
 
 ## Customizing The Theme

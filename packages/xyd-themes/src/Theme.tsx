@@ -116,7 +116,7 @@ export abstract class Theme {
         this.resetWebeditor()
         this.resetNavigation()
 
-        const searchAppearance = this.theme.appearance?.search?.sidebar || this.theme.appearance?.search?.middle
+        const searchAppearance = this.theme.appearance?.search?.sidebar || this.theme.appearance?.search?.middle || this.theme.appearance?.search?.right
         if (searchAppearance) {
             const hasSearch = this.webeditor.header?.find(item => item.component === "Search")
 
@@ -152,6 +152,19 @@ export abstract class Theme {
                 }
 
                 this.webeditor.header = this.headerPrepend(searchItem, "center")
+            }
+
+            if (this.theme.appearance?.search?.right) {
+                const search: WebEditorNavigationItem = {
+                    component: "Search",
+                    mobile: this.theme.appearance?.search?.right === "mobile" || undefined,
+                    desktop: this.theme.appearance?.search?.right === "desktop" || undefined
+                }
+
+                this.webeditor.header = this.headerAppend({
+                    ...search,
+                    float: "right" as const
+                })
             }
         }
 
@@ -218,7 +231,7 @@ export abstract class Theme {
                 // A header anchor with a nested menu renders as a multi-level
                 // dropdown (FwHeaderItem → Nav.Dropdown). Keep it a plain header
                 // item (no Button component) so `dropdownMenu`/`trigger` survive.
-                if ("dropdownMenu" in item && item.dropdownMenu?.length) {
+                if ("dropdownMenu" in item && (Array.isArray(item.dropdownMenu) ? item.dropdownMenu.length : (item.dropdownMenu as any)?.items?.length)) {
                     this.webeditor.header = this.headerAppend({
                         ...item,
                         float: "right" as const,

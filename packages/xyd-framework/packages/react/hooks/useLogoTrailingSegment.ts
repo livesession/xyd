@@ -1,6 +1,7 @@
 import { Segment } from "@xyd-js/core";
 
 import { useSettings } from "../contexts";
+import { segmentAppearanceKind } from "../utils";
 
 /**
  * The (first) segment declaring `appearance: "logoTrailing"`.
@@ -15,6 +16,6 @@ export function useLogoTrailingSegment(): Segment | null {
     const settings = useSettings()
 
     return settings.navigation?.segments?.find(
-        segment => segment.appearance === "logoTrailing"
+        segment => segmentAppearanceKind(segment) === "logoTrailing"
     ) || null
 }

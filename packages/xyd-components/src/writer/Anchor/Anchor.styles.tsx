@@ -18,6 +18,8 @@ export const AnchorHost = css`
         }
 
         color: var(--xyd-anchor-color);
+        text-decoration: var(--xyd-anchor-text-decoration, none);
+        text-underline-offset: var(--xyd-anchor-text-underline-offset, 0.15em);
 
         &:hover {
             color: var(--xyd-anchor-color--hover);

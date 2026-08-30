@@ -3,6 +3,7 @@ import { hydrateRoot } from "react-dom/client";
 import { createRouterStore, RouterProvider } from "@xyd-js/router";
 
 import { seedGlobals, ShellProviders, slugToPathname } from "./render-tree";
+import { registerFederatedModules } from "./federationRegistry";
 
 /**
  * Client hydration entry (S1/S2). Reads the SSR data embedded by `renderShell`,
@@ -11,7 +12,22 @@ import { seedGlobals, ShellProviders, slugToPathname } from "./render-tree";
  * swap) is wired in a later step; until then navigate() hard-nav falls back to a
  * full load (MPA), so nothing regresses.
  */
-export function bootClient(ThemeCtor: any) {
+export async function bootClient(ThemeCtor: any) {
+  // Expose the shared React/@xyd-js modules, then load the project-local
+  // user-components chunk (binary path) BEFORE hydrating, so its components are on
+  // globalThis.__xydUserComponentImpls when the tree renders — matching the SSR
+  // HTML (no hydration mismatch). No-op on the vite/dev-source path (the chunk URL
+  // is unset; components are already bundled into this client bundle).
+  registerFederatedModules();
+  const chunkUrl = (globalThis as any).__xydUserComponentsChunkUrl;
+  if (chunkUrl) {
+    try {
+      await import(/* @vite-ignore */ chunkUrl);
+    } catch (e) {
+      console.error("[xyd] user-components chunk failed to load:", e);
+    }
+  }
+
   const el = document.getElementById("__xyd_data");
   const data = JSON.parse(el!.textContent || "{}");
 

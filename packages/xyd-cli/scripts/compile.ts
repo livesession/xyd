@@ -52,9 +52,9 @@ const embedTs = path.resolve(DIR, "..", "src", "embed.generated.ts");
 const EMBED_STUB = readFileSync(embedTs, "utf8"); // the committed empty stub
 const REPO_ROOT = path.resolve(DIR, "..", "..", "..");
 const prebuiltDir = path.resolve(DIR, "..", "prebuilt");
-// All 6 built-in themes by default (override with XYD_PREBUILD_THEMES for a
+// All 7 built-in themes by default (override with XYD_PREBUILD_THEMES for a
 // faster proof compile). One shared multi-theme server bundle keeps the size sane.
-const PREBUILD_THEMES = (process.env.XYD_PREBUILD_THEMES || "poetry,cosmo,opener,picasso,gusto,solar")
+const PREBUILD_THEMES = (process.env.XYD_PREBUILD_THEMES || "poetry,cosmo,opener,picasso,gusto,solar,terrarium")
   .split(",").map((s) => s.trim()).filter(Boolean);
 // Absolute path (not the package specifier) so it never resolves to a cached
 // published @xyd-js/documan instead of the workspace source.

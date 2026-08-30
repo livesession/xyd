@@ -162,6 +162,9 @@ export async function prebuildThemes(host: string, themes: string[], prebuiltDir
       `const THEMES = ${themeDict};\n` +
       `const pick = (name) => THEMES[name] || THEMES[${JSON.stringify(themes[0])}];\n` +
       `import { renderPageStatic, seedForBuild, start, reseed, renderRedirectStatic } from "./renderPage";\n` +
+      // Expose the shared React/@xyd-js modules so runtime-federated project-local
+      // user components (built by userComponentsFederation.ts) resolve at render.
+      `import { registerFederatedModules } from "./federationRegistry";\nregisterFederatedModules();\n` +
       // build (SSG):
       `globalThis.__xydSeedForBuild = (name) => seedForBuild(pick(name));\n` +
       `globalThis.__xydRenderStatic = (slug, opts) => renderPageStatic(slug, opts);\n` +

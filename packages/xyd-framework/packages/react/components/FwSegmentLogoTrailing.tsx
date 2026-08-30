@@ -1,11 +1,12 @@
 import React from "react";
-import { useLocation } from "react-router";
 
 import { Nav } from "@xyd-js/ui";
 
-import { useLogoTrailingSegment } from "../hooks";
-import { pageLink, trailingSlash, resolveLogoTrailingSwitcher } from "../utils";
+import { useLogoTrailingSegment, useActiveLogoTrailingItem } from "../hooks";
+import { useComponents } from "../contexts";
+import { resolveLogoTrailingSwitcher } from "../utils";
 import { FwLink } from "./FwLink";
+import { resolveDropdownIcons } from "./FwNavDropdown";
 
 /**
  * Renders a `logoTrailing` segment as a GLOBAL hover product-switcher, hosted on
@@ -20,24 +21,42 @@ import { FwLink } from "./FwLink";
  */
 export function FwSegmentLogoTrailing() {
     const segment = useLogoTrailingSegment()
-    const location = useLocation()
+    const activeItem = useActiveLogoTrailingItem()
+    const components = useComponents() as Record<string, React.ComponentType<any>> | undefined
 
     if (!segment) {
         return null
     }
 
-    const pathname = trailingSlash(location.pathname)
-    const activePage = segment.pages?.findLast(
-        page => !!page.page && pathname.startsWith(pageLink(page.page))
-    )?.page || ""
+    const { triggerLabel, items: rawItems } = resolveLogoTrailingSwitcher(segment, activeItem?.page || "")
+    // Icon-set NAME icons must resolve to <Icon> here (framework) — see
+    // resolveDropdownIcons; image-path icons stay strings for the ui to size.
+    const items = resolveDropdownIcons(rawItems as any)
 
-    const { triggerLabel, items } = resolveLogoTrailingSwitcher(segment, activePage)
+    // Optional custom PANEL component (`segment.component`: path string or
+    // `{ import, props }`), resolved through the user-components registry — same as
+    // sidebar `ComponentPage`. When present, it renders as the dropdown panel
+    // instead of the default `items` list; it receives the config `props` plus the
+    // active item, the segment, and the resolved items.
+    const rawComp = (segment as any).component as string | { import: string; props?: Record<string, any> } | undefined
+    const compPath = typeof rawComp === "string" ? rawComp : rawComp?.import
+    const compProps = rawComp && typeof rawComp === "object" ? rawComp.props : undefined
+    const PanelComp = compPath ? components?.[compPath] : undefined
+    if (compPath && !PanelComp && typeof console !== "undefined") {
+        console.warn(`[xyd] segment component not found: "${compPath}"`)
+    }
+    const content = PanelComp
+        ? <PanelComp {...(compProps || {})} activeItem={activeItem} segment={segment} items={items} />
+        : undefined
 
     return (
         <Nav.Dropdown
             title={triggerLabel}
+            icon={activeItem?.icon}
+            iconOnly={segment.iconOnly}
             trigger={segment.trigger}
             items={items}
+            content={content}
             as={FwLink}
         />
     )

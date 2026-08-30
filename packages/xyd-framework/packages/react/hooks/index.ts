@@ -43,8 +43,16 @@ export {
 } from "./useLogoTrailingSegment";
 
 export {
+    useActiveLogoTrailingItem
+} from "./useActiveLogoTrailingItem";
+
+export {
     useMatchedSubNav,
 } from "./useMatchedSubNav";
+
+export {
+    useMatchedSegmentTabs
+} from "./useMatchedSegmentTabs";
 
 export {
     useTabSegments

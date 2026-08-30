@@ -25,7 +25,7 @@ export function useActivePage(match: boolean = false) {
         }
 
         if (matchedSubnav) {
-            const routeMatch = pageLink(item.page || "") === pageLink(matchedSubnav?.route)
+            const routeMatch = pageLink(item.page || "") === pageLink(matchedSubnav?.route || "")
 
             if (routeMatch) {
                 return routeMatch

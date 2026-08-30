@@ -31,6 +31,9 @@ export interface PrerenderCtx {
   buildAssets: any;
   /** The server render bundle main built/extracted; workers import the same one. */
   serverBundlePath: string;
+  /** Project-local user-components SERVER chunk (binary federation); workers import
+   *  it after the server bundle so __xydUserComponentImpls is populated. "" if none. */
+  userComponentsServerChunk?: string;
 }
 
 export interface PrerenderResult {
@@ -112,6 +115,7 @@ async function prerenderPagesPool(ctx: PrerenderCtx, n: number): Promise<Prerend
           cwd: ctx.cwd, host: ctx.host, isBin: ctx.isBin, argv2: ctx.argv2,
           buildAssets: ctx.buildAssets, clientDir: ctx.clientDir,
           serverBundlePath: ctx.serverBundlePath, cursorSAB,
+          userComponentsServerChunk: ctx.userComponentsServerChunk || "",
           slugs: ctx.slugs, accessMap: ctx.accessMap, dataPlane: ctx.dataPlane,
         };
         const w = new Worker(workerUrl, { workerData: input });

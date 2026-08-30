@@ -81,6 +81,11 @@ function renderShell({ settings, bodyHtml, data }: any): string {
     `<div id="root">${bodyHtml}</div>` +
     `<script src="/_xyd/settings.js"></script>` +
     `<script src="/_xyd/iconset.js"></script>` +
+    // Project-local user-components chunk (binary dev federation); bootClient loads
+    // it before hydrating. Unset on the non-binary dev path (components in-bundle).
+    ((globalThis as any).__xydDevUserComponentsChunkUrl
+      ? `<script>window.__xydUserComponentsChunkUrl=${JSON.stringify((globalThis as any).__xydDevUserComponentsChunkUrl)}</script>`
+      : "") +
     `<script id="__xyd_data" type="application/json">${json}</script>` +
     `<script type="module" src="/_bun/client.js"></script>` +
     LIVE_RELOAD +
@@ -378,6 +383,7 @@ function themeHeadHtml(settings: any): string {
 function renderStaticShell({ settings, bodyHtml, data }: any): string {
   const a = (globalThis as any).__xydBuildAssets as {
     clientJs: string; cssLinks: string[]; iconSetJs?: string; settingsJs?: string;
+    userComponentsChunkJs?: string;
   };
   const defaultColorScheme = settings?.theme?.appearance?.colorScheme || "os";
   const metadata = data.loaderData.metadata;
@@ -403,6 +409,11 @@ function renderStaticShell({ settings, bodyHtml, data }: any): string {
     `<div id="root">${bodyHtml}</div>` +
     (a?.settingsJs ? `<script src="${esc(a.settingsJs)}"></script>` : "") +
     (a?.iconSetJs ? `<script src="${esc(a.iconSetJs)}"></script>` : "") +
+    // Project-local user-components chunk URL (binary federation) — bootClient
+    // loads it before hydrating so the impls match the SSR markup.
+    (a?.userComponentsChunkJs
+      ? `<script>window.__xydUserComponentsChunkUrl=${JSON.stringify(a.userComponentsChunkJs)}</script>`
+      : "") +
     `<script id="__xyd_data" type="application/json">${json}</script>` +
     `<script type="module" src="${a?.clientJs || "/assets/client.js"}"></script>` +
     `</body></html>`
@@ -616,6 +627,16 @@ export function start(ThemeCtor: any) {
         return new Response(settingsBundleJs(getSettings(), getSettingsClone()), {
           headers: { "content-type": "text/javascript; charset=utf-8" },
         });
+      }
+      if (url.pathname === "/_bun/user-components.js") {
+        // Project-local user-components federated client chunk (binary dev). Served
+        // from the tmp path startDevServer built it to (globalThis global). 404 →
+        // bootClient just skips it (no components declared).
+        const p = (globalThis as any).__xydDevUserComponentsChunkPath || "";
+        if (p) {
+          return new Response(Bun.file(p), { headers: { "content-type": "text/javascript; charset=utf-8" } });
+        }
+        return new Response("/* no user components */", { headers: { "content-type": "text/javascript" } });
       }
       if (url.pathname === "/_bun/client.js") {
         // Read live — an icon rebuild re-bundles the client and updates this env,

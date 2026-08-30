@@ -13,14 +13,27 @@ export {
 export {
     resolveDropdownItems,
     resolveDropdownHref,
+    dropdownMenuItems,
+    dropdownMenuOptions,
 } from "./navDropdown"
 export type { ResolvedDropdownItem } from "./navDropdown"
 
 export {
     resolveLogoTrailingSwitcher,
+    resolveActiveLogoTrailingItem,
 } from "./segmentLogoTrailing"
 export type { LogoTrailingItem, LogoTrailingSwitcher } from "./segmentLogoTrailing"
 
 export {
     displayBreadcrumbs,
 } from "./breadcrumbs"
+
+export {
+    sidebarItemMatchesQuery,
+} from "./sidebarFilter"
+export type { FilterableSidebarItem } from "./sidebarFilter"
+
+export {
+    segmentAppearanceKind,
+    segmentAppearanceOptions,
+} from "./segmentAppearance"

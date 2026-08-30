@@ -1,0 +1,185 @@
+{
+    "theme": {
+        "name": "terrarium",
+        "logo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSIxOCI+PHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjE4IiByeD0iMyIgZmlsbD0iIzExMSIvPjx0ZXh0IHg9IjgiIHk9IjEzIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIxMSIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI2ZmZiI+ZG9jczwvdGV4dD48L3N2Zz4="
+    },
+    "components": {
+        "filterSidebar": {
+            "placeholder": "Filter sidebar",
+            "routes": [
+                "nomad"
+            ]
+        }
+    },
+    "navigation": {
+        "segments": [
+            {
+                "title": "Products",
+                "appearance": "logoTrailing",
+                "trigger": "hover",
+                "pages": [
+                    {
+                        "title": "Nomad",
+                        "page": "nomad",
+                        "href": "nomad/docs/what-is-nomad",
+                        "icon": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiI+PHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSIjMDBjYThlIi8+PC9zdmc+",
+                        "color": "#00ca8e"
+                    },
+                    {
+                        "title": "Consul",
+                        "page": "consul",
+                        "href": "consul/docs/what-is-consul",
+                        "icon": "lock",
+                        "color": "#dc477d"
+                    }
+                ],
+                "iconOnly": true,
+                "component": {
+                    "import": "./components/TestSegmentPanel"
+                }
+            },
+            {
+                "route": "nomad",
+                "appearance": "tabs",
+                "pages": [
+                    {
+                        "title": "Documentation",
+                        "page": "nomad/docs",
+                        "href": "nomad/docs/what-is-nomad"
+                    },
+                    {
+                        "title": "API",
+                        "page": "nomad/api",
+                        "href": "nomad/api/overview"
+                    },
+                    {
+                        "title": "Guides",
+                        "trigger": "hover",
+                        "dropdownMenu": {
+                            "itemsPerColumn": 1,
+                            "items": [
+                                {
+                                    "title": "Getting Started",
+                                    "page": "nomad/docs",
+                                    "href": "nomad/docs/what-is-nomad",
+                                    "icon": "book"
+                                },
+                                {
+                                    "title": "API Reference",
+                                    "page": "nomad/api",
+                                    "href": "nomad/api/overview",
+                                    "icon": "server"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
+                "route": "consul",
+                "appearance": "tabs",
+                "pages": [
+                    {
+                        "title": "Documentation",
+                        "page": "consul/docs",
+                        "href": "consul/docs/what-is-consul"
+                    }
+                ]
+            },
+            {
+                "route": "nomad",
+                "appearance": {
+                    "kind": "sidebarDropdown",
+                    "options": {
+                        "fixed": true
+                    }
+                },
+                "pages": [
+                    {
+                        "title": "Documentation",
+                        "page": "nomad/docs",
+                        "href": "nomad/docs/what-is-nomad"
+                    },
+                    {
+                        "title": "API",
+                        "page": "nomad/api",
+                        "href": "nomad/api/overview"
+                    }
+                ]
+            }
+        ],
+        "sidebar": [
+            "overview",
+            {
+                "route": "nomad/docs",
+                "pages": [
+                    {
+                        "fixed": true,
+                        "component": {
+                            "import": "./components/TestSidebarWidget",
+                            "props": {
+                                "label": "Pinned Widget"
+                            }
+                        }
+                    },
+                    {
+                        "group": "Nomad",
+                        "pages": [
+                            "nomad/docs/what-is-nomad",
+                            "nomad/docs/quickstart"
+                        ]
+                    },
+                    {
+                        "group": "Operations",
+                        "pages": [
+                            "nomad/docs/architecture"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "nomad/api",
+                "pages": [
+                    {
+                        "fixed": true,
+                        "component": "./components/TestSidebarWidget"
+                    },
+                    {
+                        "group": "HTTP API",
+                        "pages": [
+                            "nomad/api/overview",
+                            {
+                                "group": "Advanced",
+                                "pages": [
+                                    "nomad/api/acl"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "consul/docs",
+                "pages": [
+                    {
+                        "group": "Consul",
+                        "pages": [
+                            "consul/docs/what-is-consul"
+                        ]
+                    }
+                ]
+            },
+            {
+                "route": "nomad/other",
+                "pages": [
+                    {
+                        "group": "Other",
+                        "pages": [
+                            "nomad/other/index"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

@@ -31,6 +31,9 @@ export interface WorkerInput {
   /** The server render bundle main built/extracted — importing it registers
    *  globalThis.__xydRenderStatic / __xydSeedForBuild in this worker's heap. */
   serverBundlePath: string;
+  /** Project-local user-components SERVER chunk (binary federation) — imported
+   *  after the server bundle to populate globalThis.__xydUserComponentImpls. */
+  userComponentsServerChunk?: string;
   /** Int32Array-backed shared cursor: Atomics.add hands out slug indices. */
   cursorSAB: SharedArrayBuffer;
   slugs: string[];
@@ -97,6 +100,13 @@ async function run(input: WorkerInput) {
   //    __xydSeedForBuild in this heap) and seed the theme instance.
   await import(pathToFileURL(input.serverBundlePath).href);
   (globalThis as any).__xydSeedForBuild(themeName);
+
+  // 4b) Import the project-local user-components SERVER chunk (binary federation) —
+  //     the server bundle above ran registerFederatedModules(), so this chunk's
+  //     react/@xyd-js shims resolve; it populates __xydUserComponentImpls here.
+  if (input.userComponentsServerChunk) {
+    await import(pathToFileURL(input.userComponentsServerChunk).href);
+  }
 
   parentPort!.postMessage({ type: "ready" });
 

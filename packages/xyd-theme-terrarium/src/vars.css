@@ -1,0 +1,110 @@
+@import "@xyd-js/themes/dist/decorators/atlas-vars.css";
+
+/* Theme palette — high-contrast blacks/darks on white (HashiCorp-style) */
+:root {
+    --terrarium-black: #0c0c0e;
+    --terrarium-gray-dark: #3b3d45;
+    --terrarium-gray: #656a76;
+    --terrarium-border: #656a7626;
+    --terrarium-active-bg: #f5f5f5;
+
+    /* Default accent = green. Per-product themes recolor via --theme-color-primary
+       (set inline on <xyd-layout-primary> by BaseTheme when the active logoTrailing
+       product declares a `color`), so this whole accent follows the active product. */
+    --terrarium-green: #00ca8e;
+    --color-primary: var(--theme-color-primary, var(--terrarium-green));
+    --color-primary--active: var(--theme-color-primary, var(--terrarium-green));
+
+    /* In-content links use a fixed blue, INDEPENDENT of the per-product accent.
+       Hover darkens the link (mix toward black). */
+    --terrarium-link: #1060ff;
+    --xyd-anchor-color: var(--terrarium-link);
+    --xyd-anchor-color--hover: color-mix(in srgb, var(--terrarium-link) 72%, black);
+}
+
+/* Core high-contrast text/bg */
+:root {
+    --color-bg: var(--white);
+    --color-text: var(--terrarium-black);
+    --text-primary: var(--terrarium-black);
+    --text-secondary: var(--terrarium-gray-dark);
+    --text-tertiary: var(--terrarium-gray);
+}
+
+/* Layout — full-width, taller nav, ~800px content, wider sidebar + TOC */
+:root {
+    --xyd-page-gutter: 0;
+    --xyd-nav-height: 64px;
+    --xyd-sidebar-width: 300px;
+    --xyd-layout-width-small: 800px;
+    --xyd-layout-nav-width-medium: 280px;
+}
+
+/* Sidebar */
+:root {
+    --xyd-sidebar-padding: 8px 16px;
+    /* Pin the derived total (base derives it from --xyd-sidebar-padding, which is
+       now a 2-value shorthand → its calc() would be invalid). Track the 16px
+       horizontal padding so item/subnav/left-pad alignment follows. */
+    --xyd-sidebar-item-padding-total: calc(16px + var(--xyd-sidebar-item-padding-left));
+    --xyd-sidebar-bgcolor: var(--white);
+    --xyd-sidebar-filter-border-color: var(--terrarium-border);
+    --xyd-sidebar-item-color: var(--text-tertiary);         /* items — #656a76 */
+    --xyd-sidebar-item-header-color: var(--text-secondary); /* group text — #3b3d45 */
+
+    /* Active row: neutral light-gray background (stays gray across products),
+       accent-colored text + mark (recolors per product via --color-primary). */
+    --xyd-sidebar-item-color--active: var(--color-primary);
+    --xyd-sidebar-item-bgcolor--active: var(--terrarium-active-bg);
+    --xyd-sidebar-item-bgcolor--active-hover: var(--terrarium-active-bg);
+    --xyd-sidebar-item-bgcolor--active-mark: var(--color-primary);
+}
+
+/* TOC */
+:root {
+    --xyd-toc-item-color: var(--text-tertiary);          /* #656a76 */
+    --xyd-toc-item-color--active: var(--text-primary);   /* active — #0c0c0e */
+}
+
+/* Content — body text is one tier lighter than headings for readable hierarchy */
+:root {
+    --xyd-text-color--default: var(--text-secondary);    /* content text — #3b3d45 */
+    --xyd-heading-color: var(--text-primary);            /* headings — #0c0c0e */
+}
+
+/* Nav items */
+:root {
+    --xyd-nav-item-color: var(--text-secondary);         /* nav items — #3b3d45 */
+}
+
+/* Breadcrumbs — muted by default, darken on hover so links read as clickable */
+:root {
+    --xyd-breadcrumbs-color: var(--text-tertiary);         /* #656a76 */
+    --xyd-breadcrumbs-color--hover: var(--text-primary);   /* darken on hover — #0c0c0e */
+}
+
+@define-mixin dark-theme {
+    --color-bg: var(--terrarium-black);
+    --color-text: #f5f5f5;
+    --text-primary: #f5f5f5;
+    --text-secondary: #c8ccd4;
+    --text-tertiary: var(--terrarium-gray);
+
+    --terrarium-border: #ffffff1a;
+    --terrarium-active-bg: #1c1c1f;
+    --terrarium-link: #5b9bff;
+    /* On dark, hover BRIGHTENS the link (mixing toward black would hide it). */
+    --xyd-anchor-color--hover: color-mix(in srgb, var(--terrarium-link) 78%, white);
+
+    --xyd-sidebar-bgcolor: var(--terrarium-black);
+}
+
+[data-color-scheme="dark"] {
+    @mixin dark-theme;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+        @mixin dark-theme;
+    }
+}

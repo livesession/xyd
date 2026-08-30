@@ -46,6 +46,18 @@
     --xyd-gradient-via-position: ;
 }
 
+/* Per-product accent. BaseTheme.Layout sets `--theme-color-primary` INLINE on
+   <xyd-layout-primary> (from the active logoTrailing product's `color`). A custom
+   property resolves where it is DECLARED — the :root chain above computes its
+   fallback at the root (where the inline var doesn't exist) and descendants
+   inherit that COMPUTED value, so the inline accent would never take effect.
+   Re-declare on the layout host, gated on the inline var actually being present,
+   so theme :root fallbacks are untouched when no product is active. */
+xyd-layout-primary[style*="--theme-color-primary"] {
+    --color-primary: var(--theme-color-primary);
+    --color-primary--active: var(--theme-color-primary-active, var(--theme-color-primary));
+}
+
 /* Dark Mode Global */
 [data-color-scheme="dark"] {
     --white: #0e0e10;

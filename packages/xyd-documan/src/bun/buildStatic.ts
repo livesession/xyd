@@ -8,6 +8,8 @@ import { robotsTxt, sitemapXml, sitemapRoutes } from "./seo";
 import { themePackage, themeShortName } from "./themePkg";
 import { settingsBundleJs } from "./serialize";
 import { pluginPagesEntrySrc, pluginPageRoutes } from "./pluginPages";
+import { sidebarComponentsEntrySrc } from "./sidebarComponents";
+import { collectFederatedComponents, buildUserComponentsServer, buildUserComponentsClient } from "./userComponentsFederation";
 import { prerenderPages } from "./prerenderPool";
 import { writeHtml } from "./htmlOut";
 
@@ -90,7 +92,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     const clientRes: any = await buildBundle(
       "client",
       // iconSet is NOT baked — the SSR shell injects the project set (step 10).
-      `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}` +
+      `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}${sidebarComponentsEntrySrc()}` +
         `import { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
       "browser",
       [],
@@ -140,8 +142,21 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   fs.writeFileSync(path.join(clientDir, settingsOut), settingsSrc);
   const settingsJs = "/" + settingsOut;
 
+  // 2d) Project-local user components (sidebar `{ component }` items + MDX/plugin
+  // components) — the binary can't fold them into the embedded client/server graph
+  // (no on-disk framework source), so federate them: a separate chunk whose
+  // react/@xyd-js imports read globalThis.__xydModules at runtime. Non-binary
+  // bundles them via the entry-src, so this is binary-only.
+  const fedComponents = isBin ? collectFederatedComponents() : [];
+  let userComponentsChunkJs: string | undefined;
+  if (fedComponents.length) {
+    const r = await buildUserComponentsClient(fedComponents, clientDir);
+    userComponentsChunkJs = r?.href;
+    console.error(`[build] user-components (federated client, ${fedComponents.length}) → ${userComponentsChunkJs}`);
+  }
+
   // 3) Asset manifest for the (same-process) render bundle.
-  (globalThis as any).__xydBuildAssets = { clientJs, cssLinks, iconSetJs, settingsJs };
+  (globalThis as any).__xydBuildAssets = { clientJs, cssLinks, iconSetJs, settingsJs, userComponentsChunkJs };
 
   // 4) SERVER render bundle → registers globalThis.__xydRenderStatic/__xydSeedForBuild.
   // Capture its path so prerender workers import the SAME bundle instead of rebuilding it.
@@ -161,7 +176,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     console.error("[build] bundling server render…");
     const serverBundle: string = await buildBundle(
       "buildserver",
-      `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}` +
+      `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}${sidebarComponentsEntrySrc()}` +
         `import { renderPageStatic, seedForBuild, buildPageData, renderPluginPageStatic, renderRedirectStatic } from "./renderPage";\n` +
         `globalThis.__xydSeedForBuild = () => seedForBuild(Theme);\n` +
         `globalThis.__xydRenderStatic = (slug, opts) => renderPageStatic(slug, opts);\n` +
@@ -177,6 +192,22 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   // The multi-theme server bundle selects the theme by name; the non-binary
   // single-theme entry ignores the arg — so passing themeName is safe for both.
   (globalThis as any).__xydSeedForBuild(themeName);
+
+  // 4b) Project-local user components — SERVER (in-process) federated chunk. Built
+  // AFTER the server bundle (which registered globalThis.__xydModules) and imported
+  // so __xydUserComponentImpls is populated before the serial prerender loop. The
+  // worker pool re-imports the SAME chunk (path passed via ctx).
+  let userComponentsServerChunk = "";
+  if (isBin && fedComponents.length) {
+    const os = await import("node:os");
+    const ucTmp = path.join(os.tmpdir(), `xyd-uc-${Bun.hash(fedComponents.map((c) => c.name + c.importPath).join("|")).toString(16)}`);
+    const chunk = await buildUserComponentsServer(fedComponents, ucTmp);
+    if (chunk) {
+      userComponentsServerChunk = chunk;
+      await import(pathToFileURL(chunk).href);
+      console.error(`[build] user-components (federated server, ${fedComponents.length}) → ${path.basename(chunk)}`);
+    }
+  }
 
   // Serializable data plane for prerender workers: main's already-computed state.
   // Each worker rebuilds render FUNCTIONS via loadPlugins but adopts THIS verbatim
@@ -215,6 +246,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     clientDir, slugs, accessMap, dataPlane,
     cwd, host: HOST, isBin, argv2: process.argv.slice(2),
     buildAssets: (globalThis as any).__xydBuildAssets, serverBundlePath,
+    userComponentsServerChunk,
   });
   console.error(`[build] wrote ${ok}/${slugs.length} pages`);
 

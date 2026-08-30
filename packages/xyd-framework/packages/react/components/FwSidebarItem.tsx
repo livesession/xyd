@@ -6,7 +6,10 @@ import { UISidebar } from "@xyd-js/ui";
 
 
 import { Surface } from "./Surfaces";
+import { FwSidebarComponent } from "./FwSidebarComponent";
 import { FooSidebarItemProps, useFooSidebar, useSidebarActive } from "../lib";
+import { useSidebarFilter } from "../contexts";
+import { sidebarItemMatchesQuery } from "../utils";
 
 export interface FwSidebarItemProps {
     group: string
@@ -19,6 +22,15 @@ export interface FwSidebarItemProps {
 }
 
 export function FwSidebarItem(props: FwSidebarItemProps) {
+    const { query } = useSidebarFilter()
+    const q = query.trim().toLowerCase()
+
+    // Sidebar filter (opt-in): drop a whole group (header + items) when nothing
+    // in it matches. No-op when there is no query.
+    if (q && !props.items.some(item => sidebarItemMatchesQuery(item, q))) {
+        return null
+    }
+
     const icon = props.icon ? <Icon name={props.icon || ""} size={16} /> : null
 
     return <>
@@ -28,22 +40,36 @@ export function FwSidebarItem(props: FwSidebarItemProps) {
             </UISidebar.ItemHeader>
         }
 
-        {props.items.map((item, index) => <FwSidebarItem.Item
-            uniqIndex={item.uniqIndex}
-            group={item.group}
-            groupIndex={props.groupIndex}
-            level={0}
-            itemIndex={index}
-            key={index + item.href}
-            title={item.title}
-            sidebarTitle={item.sidebarTitle}
-            url={item.url}
-            pageMeta={item.pageMeta}
-            href={item.href}
-            items={item.items}
-            active={item.active}
-            icon={item.icon}
-        />)}
+        {props.items.map((item, index) => {
+            // A custom-component sidebar item (`{ component: "./path" }`). `fixed`
+            // ones are pinned in the fixed region (rendered by FwSidebar), so skip
+            // them here; non-fixed ones render inline in tree order.
+            if (item.component) {
+                if (item.fixed) return null
+                return <FwSidebarComponent
+                    key={`component-${index}-${item.component}`}
+                    component={item.component}
+                    props={item.componentProps}
+                />
+            }
+
+            return <FwSidebarItem.Item
+                uniqIndex={item.uniqIndex}
+                group={item.group}
+                groupIndex={props.groupIndex}
+                level={0}
+                itemIndex={index}
+                key={index + item.href}
+                title={item.title}
+                sidebarTitle={item.sidebarTitle}
+                url={item.url}
+                pageMeta={item.pageMeta}
+                href={item.href}
+                items={item.items}
+                active={item.active}
+                icon={item.icon}
+            />
+        })}
     </>
 }
 
@@ -65,6 +91,15 @@ export interface FwSidebarItemElementProps extends FooSidebarItemProps {
     url?: string
 
     pageMeta?: Metadata
+
+    /** Custom-component sidebar item: path resolved via the components registry. */
+    component?: string
+
+    /** Pin this item in the sidebar's fixed region (hoisted out of the tree). */
+    fixed?: boolean
+
+    /** Props passed to the custom `component`. */
+    componentProps?: Record<string, any>
 }
 
 // Whether an injected active href lives anywhere under these items (drives a
@@ -79,7 +114,10 @@ function containsHref(items: FwSidebarItemElementProps[] | undefined, href: stri
 FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
     const { active } = useFooSidebar()
     const { activeHref } = useSidebarActive()
+    const { query } = useSidebarFilter()
     const [isActive, setActive] = active(props)
+
+    const q = query.trim().toLowerCase()
 
     // Mount the subtree while open, AND briefly while it closes so UICollapse can
     // animate the collapse (it measures the children's height — if they've
@@ -97,6 +135,14 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
 
     const title = props.sidebarTitle || props.title || ""
     const nested = !!props.items?.length
+
+    // Sidebar filter (opt-in): hide items whose subtree has no title match, and
+    // force-expand a group that contains a match so the hit is visible. No-op
+    // when there is no query.
+    const forceExpand = !!q && nested && (props.items || []).some(item => sidebarItemMatchesQuery(item, q))
+    if (q && !sidebarItemMatchesQuery(props, q)) {
+        return null
+    }
 
     function handleClick() {
         if (!nested) {
@@ -181,8 +227,8 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
             </>
         }
         {
-            props.group !== false && props.items?.length && <UISidebar.SubTree isOpen={isActive}>
-                {renderChildren && <>
+            props.group !== false && props.items?.length && <UISidebar.SubTree isOpen={isActive || forceExpand}>
+                {(renderChildren || forceExpand) && <>
                     {
                         props.items?.map((item, index) => <FwSidebarItem
                             uniqIndex={item.uniqIndex}

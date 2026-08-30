@@ -66,6 +66,23 @@ export const DropdownList = css`
            edge-to-edge hovered-item backgrounds (touching all four sides). */
         gap: var(--xyd-nav-dropdown-gap, 2px);
         padding: var(--xyd-nav-dropdown-padding, 6px);
+
+        /* A custom panel component (segment.component) controls its own padding +
+           width and may be tall — drop the list padding and give it more room. */
+        &[data-panel] {
+            padding: 0;
+            max-height: min(85vh, 760px);
+        }
+
+        /* Multi-column menu (\`itemsPerColumn\`): fill column-first — N rows down,
+           then the next column (e.g. 12 items with 7/column → 7 + 5). */
+        &[data-columns] {
+            display: grid;
+            grid-auto-flow: column;
+            grid-template-rows: repeat(var(--xyd-nav-dropdown-rows, 7), auto);
+            column-gap: 8px;
+            max-height: none;
+        }
         background: var(--xyd-nav-dropdown-bgcolor, var(--xyd-content-bgcolor, var(--white, #fff)));
         color: var(--xyd-nav-item-color);
         border: 1px solid var(--xyd-nav-dropdown-border-color, var(--color-header-border, var(--dark12, rgba(0, 0, 0, 0.08))));
@@ -112,6 +129,14 @@ export const DropdownList = css`
                 font-weight: var(--xyd-font-weight-semibold, 600);
                 color: var(--xyd-nav-item-color--active);
             }
+        }
+
+        /* The router link wrapping each leaf item IS the Radix menuitem — Radix
+           moves focus to it on hover, so the browser draws a focus outline on the
+           <a> (not on [part="dropdown-item"], which already resets it). Kill it; the
+           row background is the hover affordance. */
+        a {
+            outline: none;
         }
 
         [part="dropdown-icon"] {

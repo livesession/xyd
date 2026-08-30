@@ -18,7 +18,7 @@ export function useActivePageRoute(match: boolean = false) {
     
     let active = sidebarRoutes?.find?.(item => {
         if (matchedSubnav) {
-            const routeMatch = pageLink(item.route || "") === pageLink(matchedSubnav?.route)
+            const routeMatch = pageLink(item.route || "") === pageLink(matchedSubnav?.route || "")
 
             if (routeMatch) {
                 return routeMatch
