@@ -548,24 +548,21 @@ Thanks to that you can create for example a subheader that will shown only on sp
 
 Set a segment's `appearance` to `"logoTrailing"` to render it as a product-switcher
 right after the logo — wherever your theme places the logo (header, or the sidebar
-like `picasso`). The trigger shows the active product (whichever `page` prefixes the
+like `picasso`). Unlike `sidebarDropdown`, it is **global**: it appears on every page
+(a top-level switcher), so you can switch products from anywhere — including the
+landing page. The trigger shows the active product (whichever `page` prefixes the
 current route), falling back to the segment `title` when none is active; the menu
 switches between the segment `pages` (the active one is checked).
 
-A product switcher should be **global** (visible on every page). Globalness comes
-from **omitting `route`** (or setting `route: false`) — it is not tied to the
-`logoTrailing` appearance. A routeless segment appears everywhere, so you can switch
-products from anywhere, including the landing page. (Give a segment a `route` string
-to scope it to that route prefix instead — see [Tabs](/guides/navigation#tabs).)
-
 This suits docs that span multiple products — e.g. a **Products** switcher over
-_Session Replay_ and _Web Analytics_ (note: no `route`, so it is global):
+_Session Replay_ and _Web Analytics_:
 
 ```json
 {
   "navigation": {
     "segments": [
       {
+        "route": "products",
         "title": "Products",
         // !diff +
         "appearance": "logoTrailing",
@@ -583,91 +580,6 @@ _Session Replay_ and _Web Analytics_ (note: no `route`, so it is global):
 
 The dropdown opens on `trigger: "hover"` (default) or `"click"`. A page may itself
 declare a nested [`dropdownMenu`](/guides/navigation#dropdown-menu) to add submenus.
-
-#### Per-product accent {label="Experimental"}
-
-A `logoTrailing` page can declare a `color` (any CSS color). Accent-aware themes —
-notably [`terrarium`](/guides/themes) — apply the **active** product's `color` as
-`--theme-color-primary`, so links, the active sidebar item, and the active table-of-contents
-entry all recolor per product (e.g. Nomad → green, Consul → pink, Vault → yellow).
-Pair each `page` (the route prefix that drives which product is *active*) with an `href`
-(the landing page the switcher navigates to):
-
-```json
-{
-  "navigation": {
-    "segments": [
-      {
-        "title": "HashiCorp",
-        "appearance": "logoTrailing",
-        "pages": [
-          // !diff +
-          { "title": "Nomad",  "page": "nomad",  "href": "nomad/docs/what-is-nomad",  "icon": "server",         "color": "#00ca8e" },
-          // !diff +
-          { "title": "Consul", "page": "consul", "href": "consul/docs/what-is-consul", "icon": "network-wired", "color": "#dc477d" },
-          // !diff +
-          { "title": "Vault",  "page": "vault",  "href": "vault/docs/what-is-vault",   "icon": "lock",          "color": "#ffcf25" }
-        ]
-      }
-    ]
-  }
-}
-```
-
-Combine this with one route-scoped [`SidebarRoute`](/guides/navigation#routing) per product
-so the sidebar swaps as you switch. The `terrarium` theme additionally renders a
-`‹ {Product} Home` back-link, a colored product-icon header, and a **Filter sidebar** input.
-
-### Tabs {label="Experimental"}
-
-Set a segment's `appearance` to `"tabs"` to render its `pages` as a horizontal tab bar
-in the sub-navigation, **scoped to the segment's `route`**. Because a `tabs` segment is
-route-scoped, you can declare **one per product** to get a per-product tab bar that swaps
-as you switch products — like HashiCorp's _Documentation / API / CLI / Tools / Plugins_.
-
-Each tab is a section: its **`page`** is a route prefix (it decides which tab is *active*
-— the tab stays highlighted across every page of that section) and its **`href`** is the
-landing page the tab links to.
-
-```json
-{
-  "navigation": {
-    "segments": [
-      {
-        // !diff +
-        "route": "nomad",
-        // !diff +
-        "appearance": "tabs",
-        "pages": [
-          { "title": "Documentation", "page": "nomad/docs", "href": "nomad/docs/what-is-nomad" },
-          { "title": "API",           "page": "nomad/api",  "href": "nomad/api/index" },
-          { "title": "CLI",           "page": "nomad/cli",  "href": "nomad/cli/index" }
-        ]
-      },
-      {
-        // a DIFFERENT product → different tabs
-        "route": "vault",
-        "appearance": "tabs",
-        "pages": [
-          { "title": "Documentation", "page": "vault/docs", "href": "vault/docs/what-is-vault" },
-          { "title": "API",           "page": "vault/api",  "href": "vault/api/index" }
-        ]
-      }
-    ]
-  }
-}
-```
-
-Give each section its own route-scoped [`SidebarRoute`](/guides/navigation#routing)
-(`{ "route": "nomad/docs", … }`, `{ "route": "nomad/api", … }`, …) so the left sidebar
-switches with the active tab.
-
-**Where the tabs render** is controlled by `theme.appearance.tabs.surface`:
-
-- default — a **sub-navigation** bar below the primary nav (the same `xyd-subnav` the
-  global [`tabs`](#tabs) use, so every theme styles it consistently);
-- `"center"` — the **center of the primary nav** (like HashiCorp Developer). The
-  `terrarium` theme sets this by default.
 
 ##  File-Convention Routing {label="Coming Soon"}
 :::callout
