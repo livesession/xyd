@@ -211,6 +211,9 @@ function DocsBody() {
       a[c.name] = c.component;
       return a;
     }, {});
+    // Binary: real federated impls override the ()=>null placeholders appInit set
+    // for project-local components it couldn't bundle into the embedded graph.
+    Object.assign(userComponents, (globalThis as any).__xydUserComponentImpls || {});
   }
 
   return (
@@ -297,7 +300,14 @@ export function ShellProviders() {
           metadata={loaderData.metadata || {}}
           surfaces={state.surfaces}
           BannerContent={BannerContent}
-          components={{ Search: SearchButton, Logo: FwLogo }}
+          components={{
+            Search: SearchButton,
+            Logo: FwLogo,
+            // Non-binary bun dev: real components bundled via sidebarComponentsEntrySrc.
+            ...((globalThis as any).__xydSidebarComponents || {}),
+            // Binary: project-local components federated at build/dev (real impls win).
+            ...((globalThis as any).__xydUserComponentImpls || {}),
+          }}
         >
           <AtlasContext
             value={

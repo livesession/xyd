@@ -5,6 +5,12 @@ export enum SurfaceTarget {
 
     SidebarTop = "sidebar.top",
 
+    // Rendered in the sidebar's FIXED (pinned) region — a sibling ABOVE the
+    // scrollable item list, so its content stays visible while the list scrolls.
+    // Holds the built-in filter (components.filterSidebar), theme chrome, and
+    // sidebar pages marked `{ fixed: true }`.
+    SidebarFixed = "sidebar.fixed",
+
     PageFooterBottom = "page.footer.bottom",
 
     SidebarItemLeft = "sidebar.item.left",

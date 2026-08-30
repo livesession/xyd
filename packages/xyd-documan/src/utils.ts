@@ -50,6 +50,7 @@ import themeOpenerPkg from "../../xyd-theme-opener/package.json";
 import themePicassoPkg from "../../xyd-theme-picasso/package.json";
 import themeGustoPkg from "../../xyd-theme-gusto/package.json";
 import themeSolarPkg from "../../xyd-theme-solar/package.json";
+import themeTerrariumPkg from "../../xyd-theme-terrarium/package.json";
 
 import {
     BUILD_FOLDER_PATH,
@@ -269,6 +270,7 @@ const BUILT_IN_THEME_VERSIONS: Record<string, string> = {
     "@xyd-js/theme-picasso": themePicassoPkg.version,
     "@xyd-js/theme-gusto": themeGustoPkg.version,
     "@xyd-js/theme-solar": themeSolarPkg.version,
+    "@xyd-js/theme-terrarium": themeTerrariumPkg.version,
 };
 
 const NPM_THEME_PREFIX = "npm:";
@@ -575,6 +577,62 @@ export async function appInit(options?: PluginDocsOptions) {
                 }
             }
         });
+
+        // Custom sidebar-item components: collect `{ component: "./path" }` entries
+        // from the navigation and register them (keyed by the path string) so BOTH
+        // engines can resolve them by path at render time:
+        //  - Vite: pushed into componentPlugins → virtualComponentsPlugin bundles them.
+        //  - Bun:  recorded on __xydSidebarComponentPaths → sidebarComponentsEntrySrc()
+        //          emits static imports (needs an ABSOLUTE path since the bun entry
+        //          lives in documan's dir, not the docs project).
+        {
+            const seenComponents = new Set<string>();
+            const componentPaths: { path: string; importPath: string }[] = [];
+            // A component ref is a path string OR `{ import, props }` — key by path.
+            const registerComponent = (rawComp: any) => {
+                const comp = typeof rawComp === "string" ? rawComp : rawComp?.import;
+                if (typeof comp !== "string" || seenComponents.has(comp)) return;
+                seenComponents.add(comp);
+                const { resolvedDist, exists } = resolveComponentDist(comp);
+                componentPlugins.push({
+                    name: comp,              // key by the path string
+                    dist: resolvedDist,
+                    isInline: !exists,
+                    component: () => null,   // placeholder; real one is imported
+                });
+                if (exists) {
+                    componentPaths.push({
+                        path: comp,
+                        importPath: path.isAbsolute(resolvedDist)
+                            ? resolvedDist
+                            : path.resolve(process.cwd(), resolvedDist),
+                    });
+                }
+            };
+            const collectSidebarComponents = (pages: any[]) => {
+                for (const p of pages || []) {
+                    if (!p || typeof p !== "object") continue;
+                    registerComponent((p as any).component);
+                    if (Array.isArray((p as any).pages)) collectSidebarComponents((p as any).pages);
+                }
+            };
+            const walkNav = (nav: any) => {
+                for (const s of ((nav?.sidebar as any[]) || [])) {
+                    if (s && typeof s === "object" && Array.isArray((s as any).pages)) {
+                        collectSidebarComponents((s as any).pages);
+                    }
+                }
+                // Segment custom panel components (`segment.component`).
+                for (const seg of ((nav?.segments as any[]) || [])) {
+                    if (seg && typeof seg === "object") registerComponent((seg as any).component);
+                }
+            };
+            walkNav(preloadSettings?.navigation);
+            for (const lang of ((preloadSettings?.navigation as any)?.languages) || []) {
+                walkNav(lang);
+            }
+            (globalThis as any).__xydSidebarComponentPaths = componentPaths;
+        }
 
         globalThis.__xydUserUniformVitePlugins = userUniformVitePlugins;
         globalThis.__xydUserMarkdownPlugins = userMarkdownPlugins;

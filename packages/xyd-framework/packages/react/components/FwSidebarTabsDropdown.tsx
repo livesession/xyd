@@ -7,9 +7,19 @@ import { SidebarTabsDropdown, UISidebar } from "@xyd-js/ui"
 
 import { useActivePage, useActiveSegment, useMatchedSegmentSidebarDropdown } from "../hooks"
 import { NavigationItem } from "@xyd-js/core"
-import { pageLink } from "../utils"
+import { pageLink, segmentAppearanceOptions } from "../utils"
 
-export function FwSidebarTabsDropdown() {
+/**
+ * The sidebar section switcher: the global `navigation.sidebarDropdown` plus the
+ * matched `appearance: "sidebarDropdown"` segment.
+ *
+ * `fixed` selects the render SITE. A segment declaring
+ * `appearance: { kind: "sidebarDropdown", options: { fixed: true } }` renders in
+ * the sidebar's FIXED (pinned) region — FwSidebar mounts one instance there with
+ * `fixed`, and one at the top of the scrollable list without it; each instance
+ * shows only the content that belongs to its site.
+ */
+export function FwSidebarTabsDropdown({ fixed = false }: { fixed?: boolean } = {}) {
     const settings = useSettings()
 
     const activeSegment = useActiveSegment()
@@ -17,9 +27,20 @@ export function FwSidebarTabsDropdown() {
 
     const activePage = useActivePage(true)
 
-    const sidebarDropdown = settings.navigation?.sidebarDropdown || []
+    // The global config has no `fixed` concept → always the in-list site.
+    const sidebarDropdown = fixed ? [] : (settings.navigation?.sidebarDropdown || [])
+    const segmentIsFixed = !!segmentAppearanceOptions<{ fixed?: boolean }>(matchedSegmentSidebarDropdown).fixed
+    const segmentDropdownPages = (matchedSegmentSidebarDropdown && segmentIsFixed === fixed)
+        ? (matchedSegmentSidebarDropdown.pages || [])
+        : []
 
-    return <UISidebar.ItemGroup>
+    // Nothing to show → render nothing (an empty `[part="item-group"]` would still
+    // add its top margin + separator space at the top of the sidebar).
+    if (!sidebarDropdown.length && !segmentDropdownPages.length) {
+        return null
+    }
+
+    const content = <>
         <$NavigationItemsSidebarTabs
             active={activePage || ""}
             items={sidebarDropdown || []}
@@ -27,9 +48,17 @@ export function FwSidebarTabsDropdown() {
 
         <$NavigationItemsSidebarTabs
             active={activeSegment || ""}
-            items={matchedSegmentSidebarDropdown?.pages || []}
+            items={segmentDropdownPages}
         />
-    </UISidebar.ItemGroup>
+    </>
+
+    // In the fixed (pinned) container there's no surrounding item list, so the
+    // `[part="item-group"]` list chrome (top margin, separator) is skipped.
+    if (fixed) {
+        return content
+    }
+
+    return <UISidebar.ItemGroup>{content}</UISidebar.ItemGroup>
 }
 
 function $NavigationItemsSidebarTabs({ items, active }: { items: NavigationItem[], active?: string }) {

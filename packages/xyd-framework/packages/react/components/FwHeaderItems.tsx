@@ -4,7 +4,7 @@ import { WebEditorHeader } from "@xyd-js/core";
 import { Icon } from "@xyd-js/components/writer";
 import { Nav } from "@xyd-js/ui"
 
-import { isExternal, pageLink } from "../utils";
+import { isExternal, pageLink, dropdownMenuItems } from "../utils";
 import { useAppearance } from "../contexts";
 import { FwLink } from "../components";
 import { useHeaderItems } from "../hooks";
@@ -33,7 +33,7 @@ export function FwHeaderItem(props: WebEditorHeader) {
 
     // Header anchors / center-surface tabs that declare a nested menu render as a
     // multi-level dropdown (hover default | click) instead of a plain Nav.Item.
-    if (props.dropdownMenu?.length) {
+    if (dropdownMenuItems(props.dropdownMenu).length) {
         return <FwNavDropdown key={keyId(props)} item={props} />
     }
 

@@ -112,6 +112,7 @@ async function main() {
             '@xyd-js/theme-picasso',
             '@xyd-js/theme-poetry',
             '@xyd-js/theme-solar',
+            '@xyd-js/theme-terrarium',
             '@xyd-js/themes',
             '@xyd-js/ui',
             '@xyd-js/uniform',

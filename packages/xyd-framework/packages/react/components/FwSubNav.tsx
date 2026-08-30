@@ -2,7 +2,7 @@ import React from "react";
 
 import { SubNav } from "@xyd-js/ui";
 
-import { pageLink } from "../utils";
+import { pageLink, dropdownMenuItems } from "../utils";
 import { useActiveMatchedSubNav, useMatchedSubNav } from "../hooks";
 import { FwLink } from "./FwLink";
 import { FwNavDropdown } from "./FwNavDropdown";
@@ -23,7 +23,7 @@ export function FwSubNav() {
     >
         {matchedSubnav?.pages?.map((item, index) => {
             // A tab that declares a nested menu renders as a multi-level dropdown.
-            if (item.dropdownMenu?.length) {
+            if (dropdownMenuItems(item.dropdownMenu).length) {
                 return <FwNavDropdown
                     key={item.title || item.page || item.href || index}
                     item={item}

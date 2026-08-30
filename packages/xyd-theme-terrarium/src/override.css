@@ -1,0 +1,353 @@
+/* Fixed, independently-scrolling left sidebar (sticky, full-height under the
+   nav) — the sticky approach keeps [part="page"] in the flex row, so terrarium's
+   full-width + left-content + decoupled-TOC layout is untouched. */
+@import "@xyd-js/themes/dist/decorators/sidebar-pad.css";
+
+@layer themes {
+    /* Full-width docs: kill the centered max-width container, pin ~800px content
+       to the LEFT (close to the sidebar), and decouple the TOC to the far right. */
+    xyd-layout-primary:not([data-layout="wide"]) {
+        [part="page-container"] {
+            max-width: 100%;
+        }
+
+        [part="page-scroll"] {
+            padding: 0 48px;
+        }
+
+        [part="page-article-container"] {
+            gap: 0;
+            padding: 32px 0;
+        }
+
+        [part="page-article"] {
+            flex: 0 1 var(--xyd-layout-width-small);
+            max-width: var(--xyd-layout-width-small);
+            /* auto margin absorbs the remaining width → content left, TOC far right.
+               More robust than justify-content: content stays left even when the
+               TOC is absent (short pages / wide|page|reader layouts). */
+            margin-right: auto;
+        }
+
+        [part="page-article-nav"] {
+            flex: none;
+        }
+    }
+
+    /* High-contrast frame between sidebar and content */
+    [part="sidebar"] {
+        border-right: 1px solid var(--terrarium-border);
+    }
+
+    xyd-sidebar [part="item-header"] {
+        font-size: 13px;
+        font-weight: var(--xyd-font-weight-semibold);
+    }
+
+    /* built-in filter input focus/placeholder (the base border is the token above) */
+    [part="sidebar-filter-input"]:focus {
+        border-color: var(--color-primary) !important;
+    }
+    [part="sidebar-filter-input"]::placeholder {
+        color: var(--terrarium-gray);
+    }
+
+    /* Divider BETWEEN groups: a rule above every group header that follows a
+       previous group's items (a `[part="item"]`). The first group header follows
+       the sidebar-top separator (`[part="item-group"]`), so it gets no rule — and
+       a sidebar with only one group shows no divider at all. */
+    xyd-sidebar [part="item"] + [part="item-header"] {
+        border-top: 1px solid var(--terrarium-border);
+        padding-top: 20px;
+    }
+
+    /* The sticky nav is OPAQUE (with the wrapped multi-row mobile header the
+       base transparent host let content show through) and carries the header's
+       bottom border ITSELF — on the parent [part="header"] the border doesn't
+       travel with the sticky bar and gets painted over. */
+    xyd-nav {
+        background: var(--color-bg);
+        border-bottom: 1px solid var(--terrarium-border);
+    }
+
+    /* Prose links get a visible underline (this @layer themes rule beats the base
+       @layer defaults anchor rule). Scope to the content column; chrome links
+       (prev/next, heading anchors) stay clean, and breadcrumbs underline ONLY on
+       hover (below). */
+    [part="page-article-content"] a {
+        text-decoration: underline;
+        text-underline-offset: 0.15em;
+    }
+    [part="page-article-content"] xyd-navlinks a,
+    [part="page-article-content"] :is(h1, h2, h3, h4, h5, h6) a {
+        text-decoration: none;
+    }
+
+    /* Breadcrumbs: room below so they don't crowd the content; links underline
+       ONLY on hover (this is more specific than the prose rule above, which would
+       otherwise force it always-on); links are slightly heavier than the plain
+       current-page text so what's clickable is obvious. The hover color darkens via
+       --xyd-breadcrumbs-color--hover (vars.css). */
+    [part="page-article-content"] xyd-breadcrumbs {
+        margin-bottom: 20px;
+    }
+    [part="page-article-content"] xyd-breadcrumbs [part="item"] {
+        font-weight: 400;
+    }
+    [part="page-article-content"] xyd-breadcrumbs a {
+        text-decoration: none;
+        font-weight: var(--xyd-font-weight-medium);
+    }
+    [part="page-article-content"] xyd-breadcrumbs a:hover {
+        text-decoration: underline;
+    }
+
+    /* Cards (GuideCard): a soft ring shadow that reads as a border, lifting
+       slightly on hover — and card links never take the prose underline. */
+    /* equal-height rows: the card fills its grid cell (base host is
+       height:auto, so a short card's box would end before its row-mate's) */
+    xyd-guidecard-list xyd-guidecard {
+        height: 100%;
+    }
+    xyd-guidecard-list xyd-guidecard [part="link"] {
+        display: block;
+        height: 100%;
+    }
+    xyd-guidecard [part="item"] {
+        height: 100%;
+        box-sizing: border-box;
+        padding: 20px;
+        border-radius: var(--xyd-border-radius-medium, 8px);
+        box-shadow: 0 0 0 1px var(--terrarium-border), 0 2px 8px rgba(2, 8, 23, 0.04);
+        transition: box-shadow .15s ease;
+    }
+    xyd-guidecard:hover [part="item"] {
+        box-shadow: 0 0 0 1px color-mix(in srgb, var(--terrarium-gray) 40%, transparent), 0 4px 14px rgba(2, 8, 23, 0.08);
+    }
+    [part="page-article-content"] xyd-guidecard a,
+    [part="page-article-content"] xyd-guidecard a:hover {
+        text-decoration: none;
+    }
+
+    /* Space the product switcher a bit away from the logo. */
+    [part="logo"] [data-fw-nav-dropdown] {
+        margin-left: 14px;
+    }
+
+    /* Gap between the pinned fixed region (filter / fixed components) and the
+       list. The blank space lives in the FIXED region's own bottom padding so it
+       stays put while the list scrolls under it (a list `padding-top` scrolls
+       away, letting the scrolled items touch the input). The list itself starts
+       flush. */
+    xyd-sidebar [part="fixed"]:not(:empty) {
+        padding-bottom: 12px;
+    }
+    xyd-sidebar [part="fixed"]:not(:empty) + [part="list"] {
+        padding-top: 0;
+    }
+    /* …and when the list STARTS with a group header, drop the header's own
+       24px top margin (base ItemHeaderHost) so the first group sits close under
+       the pinned container. Headers between groups (preceded by an item) keep
+       their spacing. */
+    xyd-sidebar [part="fixed"]:not(:empty) + [part="list"] [part="item-header"]:not([part="item"] + *) {
+        margin-top: 0;
+    }
+
+    /* Section switcher (sidebarDropdown segment): no inline padding — the base
+       ghost-item padding indents it so it doesn't line up with sidebar items. */
+    xyd-sidebar-tabs-dropdown {
+        padding-inline: 0;
+    }
+
+    /* The switcher TRIGGER sizes like a normal sidebar item (same paddings, no
+       card chrome / 52px min-height) and is tinted with the per-product accent
+       lightened via alpha. */
+    xyd-sidebar-tabs-dropdown button[part="dropdown-trigger"] {
+        min-height: 0;
+        padding: 6px 12px 6px var(--xyd-sidebar-item-padding-left);
+        gap: 8px;
+        border: none;
+        border-radius: var(--xyd-border-radius-small, 4px);
+        /* HashiCorp-style soft accent gradient + inset ring, both derived from the
+           per-product accent mixed toward the page bg (for terraform purple this
+           lands on ~#f4ecff→#fcfaff with an #ebdbfc-ish ring; mixing toward
+           --color-bg keeps it correct in dark mode). */
+        background: linear-gradient(
+            315deg,
+            color-mix(in srgb, var(--color-primary) 10%, var(--color-bg)) 0%,
+            color-mix(in srgb, var(--color-primary) 2%, var(--color-bg)) 100%
+        );
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 22%, var(--color-bg));
+        font-size: var(--xyd-font-size-small);
+        color: var(--text-primary);
+    }
+    xyd-sidebar-tabs-dropdown button[part="dropdown-trigger"]:hover,
+    xyd-sidebar-tabs-dropdown button[part="dropdown-trigger"][data-state="open"] {
+        background: linear-gradient(
+            315deg,
+            color-mix(in srgb, var(--color-primary) 15%, var(--color-bg)) 0%,
+            color-mix(in srgb, var(--color-primary) 5%, var(--color-bg)) 100%
+        );
+        border-color: transparent;
+        box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-primary) 30%, var(--color-bg));
+    }
+    /* Icons in the switcher (trigger AND popover entries — the popover renders
+       INLINE inside the host, not portaled) are plain 20px glyphs, not the base
+       34px bordered tiles — so rows match sidebar-item height. */
+    xyd-sidebar-tabs-dropdown [part="dropdown-icon"] {
+        width: 20px;
+        height: 20px;
+        border: none;
+        border-radius: 0;
+    }
+
+    /* Switcher TRIGGER text is medium (base is semibold) — the popover ENTRIES
+       are normal weight, so the selected section stands out over the options. */
+    xyd-sidebar-tabs-dropdown [part="dropdown-label"] {
+        font-weight: var(--xyd-font-weight-medium);
+    }
+    xyd-sidebar-tabs-dropdown [part="dropdown-listitem"] [part="dropdown-label"] {
+        font-weight: var(--xyd-font-weight-normal);
+    }
+
+    /* Popover entries size like sidebar items too — same treatment as the
+       trigger (base is 12px/16px padded cards with 10px radius) — and hover with
+       the SAME bg as the nav segment dropdown items (base uses --dark16, which
+       renders slightly differently). */
+    xyd-sidebar-tabs-dropdown [part="dropdown-listitem"] {
+        padding: 6px 12px;
+        gap: 8px;
+        border-radius: var(--xyd-border-radius-small, 4px);
+    }
+    xyd-sidebar-tabs-dropdown [part="dropdown-listitem"]:hover {
+        background: var(--xyd-nav-dropdown-item-bgcolor--hover, var(--xyd-sidebar-item-bgcolor--active));
+    }
+
+
+    /* Terrarium chevron + FAST expand/collapse:
+       — custom chevron glyph (the base draws it as a mask-image on ::after, so
+         swapping the mask URL is the whole override; open=rotate(0)/down,
+         closed=rotate(-90)/right states come from the base);
+       — snappier chevron rotation (0.1s vs base 0.2s);
+       — expanding/collapsing is INSTANT: no height slide, no fade-in (base
+         animates 300ms via the xyd-collapse CSS transitions). */
+    xyd-sidebar [part="item-button"]:has(+ [part="subtree"] xyd-collapse)::after {
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'16'%20height%3D'16'%20fill%3D'none'%20viewBox%3D'0%200%2016%2016'%20aria-hidden%3D'true'%3E%3Cpath%20fill%3D'currentColor'%20fill-rule%3D'evenodd'%20d%3D'M3.235%205.205a.75.75%200%20011.06.03L8%209.158l3.705-3.923a.75.75%200%20011.09%201.03l-4.25%204.5a.75.75%200%2001-1.09%200l-4.25-4.5a.75.75%200%2001.03-1.06z'%20clip-rule%3D'evenodd'%3E%3C%2Fpath%3E%3C%2Fsvg%3E");
+        mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'16'%20height%3D'16'%20fill%3D'none'%20viewBox%3D'0%200%2016%2016'%20aria-hidden%3D'true'%3E%3Cpath%20fill%3D'currentColor'%20fill-rule%3D'evenodd'%20d%3D'M3.235%205.205a.75.75%200%20011.06.03L8%209.158l3.705-3.923a.75.75%200%20011.09%201.03l-4.25%204.5a.75.75%200%2001-1.09%200l-4.25-4.5a.75.75%200%2001.03-1.06z'%20clip-rule%3D'evenodd'%3E%3C%2Fpath%3E%3C%2Fsvg%3E");
+        transition: transform 0.1s ease, background-color 0.1s ease;
+        /* smaller glyph: the base ::after is 16px wide with mask-size: contain,
+           so shrinking the box shrinks the icon */
+        width: 14px;
+    }
+    xyd-sidebar xyd-collapse,
+    xyd-sidebar xyd-collapse [part="child"] {
+        transition: none;
+    }
+
+    /* Expanding a group must NOT change its weight: the base bolds an open
+       group (overridden above) AND semibolds ancestors of the active page
+       ([data-parent-active]) — keep both at the normal item weight. */
+    xyd-sidebar [part="primary-item"][data-parent-active="true"] {
+        font-weight: var(--xyd-font-weight-medium);
+    }
+
+    /* An expanded group (its subtree open) should NOT go bold — keep the regular
+       item weight (base sets it bold on open). */
+    xyd-sidebar [part="item-button"]:has(+ [part="subtree"] > xyd-collapse[data-open="true"]) {
+        font-weight: inherit;
+    }
+
+    /* RWD: never crush the logo + product switcher off-screen — nav-left keeps
+       its intrinsic width; the CENTER (tabs) is the flexible part and scrolls
+       horizontally on narrow viewports instead of squeezing its siblings. */
+    [part="nav-left"] {
+        flex-shrink: 0;
+        overflow: visible;
+    }
+    [part="nav-center"] {
+        min-width: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+    [part="nav-center"]::-webkit-scrollbar {
+        display: none;
+    }
+    [part="nav-center"] [role="tablist"] {
+        flex-wrap: nowrap;
+        white-space: nowrap;
+    }
+
+    /* RWD (narrow): a single row can't usably hold logo + switcher + 4 tabs +
+       search — wrap the header into TWO ROWS: row 1 = logo/switcher/search,
+       row 2 = the tabs, full-width and horizontally scrollable. */
+    @media (max-width: 1024px) {
+        xyd-nav [part="nav"] {
+            flex-wrap: wrap;
+            height: auto;
+        }
+        xyd-nav [part="nav-center"] {
+            order: 10;
+            flex: 1 1 100%;
+            min-width: 100%;
+            border-top: 1px solid var(--terrarium-border);
+        }
+        xyd-nav [part="nav-center"] {
+            overflow-x: visible;
+        }
+        xyd-nav [part="nav-center"] [role="tablist"] {
+            flex-wrap: wrap;
+            white-space: normal;
+            height: auto;
+            min-height: 44px;
+        }
+        /* wrapped lines need a fixed row height (desktop stretches items to the
+           64px nav; multi-line rows size by their items) */
+        xyd-nav [part="nav-center"] xyd-nav-item,
+        xyd-nav [part="nav-center"] [part="dropdown-trigger"] {
+            height: 40px;
+        }
+    }
+
+    /* Center nav tabs: the active tab uses a bottom underline that touches the
+       header's bottom edge + darker text — NOT the default pill background. The
+       items stretch to the full nav height so the underline sits on the header
+       bottom line. */
+    [part="nav-center"] [role="tablist"] {
+        height: var(--xyd-nav-height);
+        align-items: stretch;
+    }
+    [part="nav-center"] [role="tablist"] a {
+        display: flex;
+        align-items: stretch;
+    }
+    [part="nav-center"] xyd-nav-item {
+        height: 100%;
+        box-sizing: border-box;
+        background: transparent;
+        border-radius: 0;
+        border-bottom: 2px solid transparent;
+    }
+    [part="nav-center"] xyd-nav-item[data-state="active"] {
+        background: transparent;
+        color: var(--terrarium-black);
+        border-bottom-color: var(--color-primary);
+    }
+
+    /* A dropdown tab (e.g. "Documentation ▾") in the nav center matches the plain
+       tabs: full-height, bottom-underline when active (a child section matches). */
+    [part="nav-center"] [data-fw-nav-dropdown] {
+        display: flex;
+        align-items: stretch;
+    }
+    [part="nav-center"] [part="dropdown-trigger"] {
+        height: 100%;
+        box-sizing: border-box;
+        background: transparent;
+        border-radius: 0;
+        border-bottom: 2px solid transparent;
+    }
+    [part="nav-center"] [part="dropdown-trigger"][data-active] {
+        color: var(--terrarium-black);
+        border-bottom-color: var(--color-primary);
+    }
+}

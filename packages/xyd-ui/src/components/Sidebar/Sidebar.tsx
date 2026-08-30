@@ -8,21 +8,37 @@ import * as cn from "./Sidebar.styles";
 export interface UISidebarProps {
     children: React.ReactNode;
     footerItems?: React.ReactNode;
+    /** Pinned content rendered ABOVE the scrollable item list (stays visible on scroll). */
+    fixedTop?: React.ReactNode;
     className?: string;
     scrollShadow?: boolean;
     scrollTransition?: "smooth" | "instant";
+    groupCase?: "none" | "uppercase";
+    /**
+     * Which element scrolls. `"list"` (default): only the item list scrolls, below
+     * the fixed region. `"sidebar"`: the WHOLE sidebar scrolls (the scrollbar spans
+     * its full height) and the fixed region sticks to the top.
+     */
+    scroll?: "list" | "sidebar";
 }
 
-export function UISidebar({ children, footerItems, className, scrollShadow, scrollTransition = 'instant' }: UISidebarProps) {
+export function UISidebar({ children, footerItems, fixedTop, className, scrollShadow, scrollTransition = 'instant', groupCase, scroll = "list" }: UISidebarProps) {
     const listRef = useRef<HTMLUListElement>(null);
+    const hostRef = useRef<HTMLElement>(null);
 
-    useSidebarScrollTransition(listRef, scrollTransition);
+    // Active-item centering must target the element that actually scrolls.
+    useSidebarScrollTransition(scroll === "sidebar" ? hostRef : listRef, scrollTransition);
 
     // TODO: in the future theming api?
     return <xyd-sidebar
+        ref={hostRef}
         className={`${cn.SidebarHost} ${className || ""}`}
+        data-group-case={groupCase}
+        data-scroll={scroll === "sidebar" ? "sidebar" : undefined}
     >
         {scrollShadow && <div part="scroll-shadow" />}
+
+        {fixedTop && <div part="fixed">{fixedTop}</div>}
 
         <ul part="list" ref={listRef}>
             {children}
@@ -161,7 +177,7 @@ UISidebar.SubTree = function SidebarSubItem({ children, isOpen }: UISidebarSubTr
 
 // TODO: move to shared code
 function useSidebarScrollTransition(
-    listRef: React.RefObject<HTMLUListElement | null>,
+    listRef: React.RefObject<HTMLElement | null>,
     scrollTransition: "smooth" | "instant" | "auto" = 'auto'
 ) {
     const location = useLocation();

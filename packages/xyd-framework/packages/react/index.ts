@@ -10,6 +10,7 @@ export {
 } from "./components/Surfaces"
 
 export type { FrameworkProps, IFrameworkI18n } from "./contexts"
+export type { SidebarFilterValue } from "./contexts"
 export {
     Framework, FrameworkPage,
     useMetadata,
@@ -24,6 +25,8 @@ export {
     useDefaultLocale,
     useAvailableLocales,
     useT,
+    SidebarFilterProvider,
+    useSidebarFilter,
 } from "./contexts"
 
 export {
@@ -31,9 +34,15 @@ export {
     useActiveRoute,
     useActivePageRoute,
     useActivePage,
+    useLogoTrailingSegment,
+    useActiveLogoTrailingItem,
 } from "./hooks"
 
 export {
     SidebarActiveProvider,
     useSidebarActive,
 } from "./lib"
+
+export {
+    resolveDropdownHref,
+} from "./utils"

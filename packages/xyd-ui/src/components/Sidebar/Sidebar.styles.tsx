@@ -5,12 +5,18 @@ import ChevronIcon from './chevronIcon.svg';
 export const SidebarHost = css`
     @layer defaults {
         background: var(--xyd-sidebar-bgcolor);
-    
+
         height: 100%;
         border-radius: 4px;
         display: flex;
         flex-direction: column;
-        
+
+        /* appearance.sidebar.groupCase="none" → render group headers as authored */
+        &[data-group-case="none"] [part="item-header"] {
+            text-transform: none;
+            letter-spacing: normal;
+        }
+
         [part="item-group"] {
             & > * {
                 padding-bottom: 4px;
@@ -38,11 +44,39 @@ export const SidebarHost = css`
             right: 0;
         }
 
+        /* Pinned region above the scrollable list — stays visible while the list
+           scrolls (flex:none so it doesn't shrink; the list flex-shrinks around it). */
+        [part="fixed"] {
+            flex: none;
+            padding: var(--xyd-sidebar-padding);
+        }
+        /* collapse when there's no pinned content (no filter / surface / fixed items) */
+        [part="fixed"]:empty {
+            display: none;
+        }
+
         [part="list"] {
             overflow-y: auto;
             overflow-x: hidden;
             height: 100%;
             padding: var(--xyd-sidebar-padding);
+        }
+
+        /* scroll="sidebar": the WHOLE sidebar scrolls (scrollbar spans its full
+           height); the fixed region sticks to the top and items pass beneath it. */
+        &[data-scroll="sidebar"] {
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        &[data-scroll="sidebar"] [part="fixed"] {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background: var(--xyd-sidebar-bgcolor);
+        }
+        &[data-scroll="sidebar"] [part="list"] {
+            overflow: visible;
+            height: auto;
         }
 
         [part="footer"] {

@@ -80,6 +80,28 @@ export async function mapSettingsToProps(
             return null
         }
 
+        // Custom-component sidebar item: `{ component: "./path", fixed?, props? }`.
+        // Carries the component path through to the renderer (resolved via the
+        // user-components registry); no frontmatter/href to load.
+        if (typeof page !== "string" && "component" in page) {
+            // `component` is either a path string, or `{ import, props }`.
+            // Normalize to a registry-key path + optional props for the renderer.
+            const rawComponent = (page as any).component
+            const componentPath = typeof rawComponent === "string" ? rawComponent : rawComponent?.import
+            // Malformed (e.g. object form without `import`) → skip, don't emit a blank item.
+            if (!componentPath) return null
+            const componentProps = (rawComponent && typeof rawComponent === "object") ? rawComponent.props : undefined
+            return {
+                title: "",
+                href: "",
+                active: false,
+                uniqIndex: uniqIndex++,
+                component: componentPath,
+                fixed: !!(page as any).fixed,
+                componentProps,
+            }
+        }
+
         if (typeof page !== "string" && !("virtual" in page)) {
             const items = page.pages
                 ?.map((p) => mapItems(p, page, nav))
@@ -166,6 +188,15 @@ export async function mapSettingsToProps(
                 flatItems.push(nav)
 
                 return
+            }
+
+            // Pageless custom-component item at the top level of a route's pages
+            // (`{ component, fixed?, props? }`). It has no `page`/`pages`, so it
+            // must go through mapItems (which carries the component through) rather
+            // than sidebarItems (which would drop it as an empty group).
+            if (typeof nav !== "string" && "component" in nav) {
+                const item = mapItems(nav, {} as Sidebar, filteredNav)
+                return item ? ({ items: [item] } as FwSidebarItemProps) : undefined
             }
 
             // TODO: finish

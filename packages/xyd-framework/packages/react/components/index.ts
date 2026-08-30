@@ -21,6 +21,10 @@ export {FwSidebar} from "./FwSidebar";
 
 export {FwSegmentLogoTrailing} from "./FwSegmentLogoTrailing";
 
+export {FwSegmentTabs} from "./FwSegmentTabs";
+
+export {FwSidebarFilter} from "./FwSidebarFilter";
+
 export {FwSubNav} from "./FwSubNav";
 
 export {FwToc} from "./FwToc";

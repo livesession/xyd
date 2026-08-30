@@ -474,6 +474,20 @@ export interface AppearanceSidebar {
    * The transition behaviour of the sidebar scroll when navigating to a new page.
    */
   scrollTransition?: "smooth" | "instant";
+
+  /**
+   * Letter-casing of sidebar group headers. Defaults to `"uppercase"`; set
+   * `"none"` to render group labels exactly as authored.
+   */
+  groupCase?: "none" | "uppercase";
+
+  /**
+   * Which element scrolls. `"list"` (default): only the item list scrolls, below
+   * the fixed (pinned) region. `"sidebar"`: the WHOLE sidebar scrolls — the
+   * scrollbar spans its full height — and the fixed region sticks to the top
+   * while items scroll beneath it.
+   */
+  scroll?: "list" | "sidebar";
 }
 
 export interface AppearanceButtons {
@@ -562,7 +576,8 @@ export type ThemePresetName =
   | "opener"
   | "picasso"
   | "gusto"
-  | "solar";
+  | "solar"
+  | "terrarium";
 
 /** Search bar location options */
 export type SearchType = "side" | "top";
@@ -731,9 +746,36 @@ export interface Sidebar {
 type Order = 0 | -1 | { after: string } | { before: string };
 
 /**
+ * A custom React component rendered AS a sidebar item.
+ *
+ * `component` is a path (relative to the docs project, e.g.
+ * `"./components/TryNewVersion"`) to a module whose DEFAULT export is a function
+ * component. It renders inside the framework context, so it may use
+ * `@xyd-js/framework/react` hooks; `props` are passed to it. `fixed: true` pins it
+ * in the sidebar's fixed region (above the scrollable list).
+ */
+export interface ComponentPage {
+  /** Pin this item in the sidebar's fixed region (stays visible on scroll). */
+  fixed?: boolean;
+  /**
+   * A path to a default-export React component (relative to the docs project),
+   * or an object with that path under `import` plus `props` for the component.
+   */
+  component: string | ComponentPageImport;
+}
+
+/** Object form of `ComponentPage.component`: an import path plus optional props. */
+export interface ComponentPageImport {
+  /** Path to a default-export React component, relative to the docs project. */
+  import: string;
+  /** Props passed to the component. */
+  props?: Record<string, any>;
+}
+
+/**
  * Page URL type
  */
-export type PageURL = string | VirtualPage | Sidebar;
+export type PageURL = string | VirtualPage | Sidebar | ComponentPage;
 
 /**
  * @internal
@@ -773,24 +815,80 @@ export type VirtualPage =
  *   (wherever the active theme places its logo — header or sidebar). The trigger
  *   shows the active page's title (falling back to the segment `title`), and the
  *   menu is the segment `pages` with a check on the active one.
+ * - `"tabs"` — a horizontal tab bar in the sub-navigation, scoped to the
+ *   segment's `route`. Each `page` is a section: its `page` (a route prefix)
+ *   decides which tab is active, and its `href` is the landing page the tab
+ *   links to. Use one route-scoped `tabs` segment per product to get
+ *   per-product tab bars (e.g. Documentation / API / CLI).
  */
-export type SegmentAppearance = "sidebarDropdown" | "logoTrailing";
+export type SegmentAppearance = "sidebarDropdown" | "logoTrailing" | "tabs";
+
+/**
+ * Object form of {@link Segment.appearance}: a `kind` (same values as the string
+ * form) plus kind-specific `options`. The options shape depends on the kind —
+ * currently only `sidebarDropdown` has options.
+ */
+export type SegmentAppearanceConfig =
+  | SegmentAppearanceSidebarDropdown
+  | { kind: "logoTrailing" }
+  | { kind: "tabs" };
+
+/** `appearance: { kind: "sidebarDropdown", options }` */
+export interface SegmentAppearanceSidebarDropdown {
+  kind: "sidebarDropdown";
+  options?: {
+    /**
+     * Render the section switcher in the sidebar's FIXED (pinned) region — it
+     * stays visible while the item list scrolls. Defaults to `false` (rendered
+     * at the top of the scrollable list).
+     */
+    fixed?: boolean;
+  };
+}
 
 /**
  * Segment configuration
  */
 export interface Segment {
-  /** Route for this segment */
-  route: string;
+  /**
+   * Route this segment is scoped to. When a **string**, the segment only shows
+   * under that route prefix (route-scoped). When **omitted or `false`**, the
+   * segment is GLOBAL — always visible (e.g. a top-level product switcher). The
+   * globalness comes from the absence of a route, NOT from the `appearance`.
+   */
+  route?: string | false;
 
   /** Title of this segment */
   title?: string;
 
-  /** Appearance of this segment. See {@link SegmentAppearance}. */
-  appearance?: SegmentAppearance;
+  /**
+   * Appearance of this segment — a {@link SegmentAppearance} string, or the
+   * object form {@link SegmentAppearanceConfig} carrying kind-specific options
+   * (e.g. `{ kind: "sidebarDropdown", options: { fixed: true } }`).
+   */
+  appearance?: SegmentAppearance | SegmentAppearanceConfig;
 
   /** How a `logoTrailing` segment's dropdown opens. Defaults to `"hover"`. */
   trigger?: "hover" | "click";
+
+  /**
+   * `logoTrailing` only: render the trigger ICON-ONLY — show the active item's
+   * icon at a larger size and hide the trigger title label. Use when the icon is
+   * a full wordmark image (logo + product name) so a text label is redundant.
+   * Defaults to `false`.
+   */
+  iconOnly?: boolean;
+
+  /**
+   * `logoTrailing` only: a custom component rendered AS this segment's dropdown
+   * PANEL (e.g. a rich multi-column product mega-menu), instead of the default
+   * `pages` list. A path to a default-export React component (relative to the docs
+   * project), or `{ import, props }`. Resolved through the same user-components
+   * registry as sidebar `ComponentPage` components, so it may use
+   * `@xyd-js/framework/react` hooks; the framework also passes it the active item,
+   * the segment, and the resolved `items`.
+   */
+  component?: string | ComponentPageImport;
 
   /** Items within this segment */
   pages: NavigationItem[];
@@ -826,18 +924,42 @@ export interface NavigationItem {
   icon?: string | React.ReactNode;
 
   /**
+   * Accent color (any CSS color) for this item. Used by `logoTrailing` product
+   * switchers and accent-aware themes (e.g. `terrarium`) to recolor the UI per
+   * product — the active item's `color` is applied as `--theme-color-primary`.
+   */
+  color?: string;
+
+  /**
    * Nested navigation rendered as a dropdown menu under this item.
    *
    * Recursive — a child may itself declare `dropdownMenu` to create submenus
    * (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors
-   * and tabs.
+   * and tabs. Accepts a plain item array, or the object form {@link DropdownMenu}
+   * carrying menu-level options (e.g. `{ itemsPerColumn: 7, items: [...] }`).
    */
-  dropdownMenu?: NavigationItem[];
+  dropdownMenu?: NavigationItem[] | DropdownMenu;
 
   /**
    * How the `dropdownMenu` opens. Defaults to `"hover"`.
    */
   trigger?: "hover" | "click";
+}
+
+/**
+ * Object form of {@link NavigationItem.dropdownMenu}: the menu items plus
+ * menu-level options.
+ */
+export interface DropdownMenu {
+  /** The menu items. */
+  items: NavigationItem[];
+
+  /**
+   * Maximum items rendered in ONE COLUMN — overflowing items wrap into
+   * additional columns (e.g. `7` renders a 12-item menu as two columns of
+   * 7 + 5). Omit for a single column.
+   */
+  itemsPerColumn?: number;
 }
 
 export type NavigationItemButton = NavigationItem & {
@@ -902,6 +1024,29 @@ export interface Components {
    * WebEditor footer configuration
    */
   footer?: WebEditorFooter;
+
+  /**
+   * Built-in "filter sidebar" input that narrows the sidebar tree to matching
+   * items. It renders in the sidebar's fixed (pinned) region. `true` uses the
+   * default placeholder; pass a {@link FilterSidebar} object to customize the
+   * placeholder and scope it to specific routes.
+   */
+  filterSidebar?: boolean | FilterSidebar;
+}
+
+/**
+ * Configuration for the built-in sidebar filter input (`components.filterSidebar`).
+ */
+export interface FilterSidebar {
+  /** Placeholder text for the filter input. Defaults to `"Filter sidebar"`. */
+  placeholder?: string;
+
+  /**
+   * Render the filter ONLY on pages whose route is under one of these prefixes
+   * (e.g. `["terraform/language"]`). A page matches when its slug starts with a
+   * listed prefix. Omit (or leave empty) to show the filter on every page.
+   */
+  routes?: string[];
 }
 
 // TODO: webeditor appearance?

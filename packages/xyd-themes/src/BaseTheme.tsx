@@ -42,6 +42,7 @@ import {
     FwCopyPage,
     FwBreadcrumbs,
     useEditLink,
+    useActiveLogoTrailingItem,
 } from "@xyd-js/framework/react";
 
 import { Theme } from "./Theme";
@@ -120,6 +121,7 @@ export class BaseTheme extends Theme {
         const activeRoute = useActiveRoute()
         const meta = useMetadata()
         const appearance = useAppearance()
+        const activeProduct = useActiveLogoTrailingItem()
         const isPage = meta?.layout === "page"
 
         const hideSidebar = this.useHideSidebar()
@@ -130,12 +132,30 @@ export class BaseTheme extends Theme {
 
         const id = activeRoute?.id || matchActivePageRout?.id || undefined
 
+        // Per-product accent (opt-in): when the active `logoTrailing` product
+        // declares a `color`, drive `--theme-color-primary` from it so the whole
+        // accent (links, sidebar/toc active) recolors per product. Baked into the
+        // SSR HTML per route (flash-free); no-op when no product declares a color.
+        //
+        // The var must be set at :ROOT (a <style> tag), not only inline on the
+        // layout host: custom properties resolve where they are DECLARED, and both
+        // `--color-primary` AND its derived tokens (--xyd-sidebar-item-color--active,
+        // …) are declared at :root — an inline var lower in the tree can never
+        // reach those chains. The inline style is kept as a secondary hook
+        // (tokens.css re-declares --color-primary on the host off of it).
+        const accentColor = safeCssColor(activeProduct?.color)
+        const accentStyle = accentColor
+            ? ({ "--theme-color-primary": accentColor } as React.CSSProperties)
+            : undefined
+
         return <UXNode name="BaseTheme.Layout" props={{}}>
+            {accentColor && <style>{`:root{--theme-color-primary:${accentColor};}`}</style>}
             <LayoutPrimary
                 subheader={!!subheader}
                 layout={meta?.layout}
                 scrollKey={location.pathname}
                 id={id}
+                style={accentStyle}
             >
                 <LayoutPrimary.Header
                     banner={banner}
@@ -508,5 +528,13 @@ function isDefaultContent(meta: Metadata) {
         meta.component === "atlas" ||
         meta.uniform ||
         meta.layout === "page"
+}
+
+/** The per-product accent color is emitted into a `<style>` tag — restrict it to
+ *  a plain CSS color charset (hex, rgb()/hsl(), named) so config can't inject CSS. */
+function safeCssColor(color?: string): string | undefined {
+    if (typeof color !== "string") return undefined
+    const c = color.trim()
+    return /^[#a-zA-Z0-9(),.%\s\/-]+$/.test(c) && c.length <= 64 ? c : undefined
 }
 

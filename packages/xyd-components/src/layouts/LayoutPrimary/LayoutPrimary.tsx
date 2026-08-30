@@ -13,6 +13,7 @@ export interface LayoutPrimaryProps {
     layout?: PageLayout
     scrollKey?: string
     id?: string
+    style?: React.CSSProperties
 }
 
 const LayoutPrimaryContext = React.createContext<{
@@ -47,6 +48,7 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
             data-hide-subheader={String(hideMainHeader)}
             data-layout={props.layout}
             id={props.id}
+            style={props.style}
         >
             {props.children}
         </xyd-layout-primary>

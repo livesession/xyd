@@ -14,10 +14,28 @@ interface IconProps {
     color?: string;
 }
 
+/** Whether an icon `name` is actually an image SOURCE (path / URL / data-uri /
+ *  image file) rather than an icon-set key — then it renders as an `<img>`. */
+export function isImageSource(name: string): boolean {
+    if (!name) return false
+    return /^(\/|https?:|data:)/.test(name) || /\.(svg|png|jpe?g|webp|gif)$/i.test(name)
+}
+
 export function Icon(props: IconProps): ReactElement | null {
     const {name, size = 24, color} = props
 
     const iconProvider = use(IconProvider)
+
+    // A path/URL/data-uri icon (e.g. a product logo "/nomad.svg") renders as an
+    // image, keeping its intrinsic aspect ratio (logos are usually not square).
+    if (isImageSource(name)) {
+        return <img
+            src={name}
+            alt=""
+            style={{ height: size, width: "auto", maxHeight: size, display: "inline-block" }}
+        />
+    }
+
     const iconSet = iconProvider?.iconSet
 
     if (!iconSet) {

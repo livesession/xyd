@@ -7,10 +7,11 @@ import {
 import { LayoutPrimary } from "@xyd-js/components/layouts";
 
 import { SurfaceTarget } from "../../../src";
-import { useActivePage, useDefaultHeaderItems } from "../hooks";
+import { useActivePage, useDefaultHeaderItems, useMatchedSegmentTabs } from "../hooks";
 import { Surface } from "./Surfaces";
 import { FwLogo } from "./FwLogo";
 import { FwHeaderItem, FwHeaderItems } from "./FwHeaderItems";
+import { FwSegmentTabs } from "./FwSegmentTabs";
 import { useAppearance, useShowColorSchemeButton } from "../contexts";
 import { WebEditorComponent } from "./WebEditorComponent";
 
@@ -19,6 +20,11 @@ export function FwNav() {
     const activeHeaderPage = useActivePage()
     const appearance = useAppearance()
     const showColorSchemeButton = useShowColorSchemeButton()
+
+    // A route-scoped `appearance:"tabs"` segment renders in the nav CENTER when
+    // `appearance.tabs.surface === "center"` (otherwise it renders as a subnav).
+    const tabsSegment = useMatchedSegmentTabs()
+    const tabsInCenter = !!tabsSegment && appearance?.tabs?.surface === "center"
 
     const Header = FwHeaderItems()
     const logo = appearance?.logo?.header ? <WebEditorComponent.NavItemRaw
@@ -34,7 +40,9 @@ export function FwNav() {
         }}
         logo={logo}
         centerSurface={
-            Header?.center?.length ? <>
+            tabsInCenter ? (
+                <FwSegmentTabs segment={tabsSegment!} />
+            ) : Header?.center?.length ? <>
                 <Nav.Tabs
                     value={activeHeaderPage}
                 >

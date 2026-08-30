@@ -10,6 +10,7 @@ import { appInit, getHostPath, pluginIconSet, postWorkspaceSetup } from "../../d
 import { startWatcher, type WatchHandle } from "./watcher";
 import { themePackage, themeShortName } from "./themePkg";
 import { pluginPagesEntrySrc } from "./pluginPages";
+import { sidebarComponentsEntrySrc } from "./sidebarComponents";
 
 /**
  * S1 dev server (Bun.serve + Bun.build — no Vite, no React Router). Reusable
@@ -213,7 +214,7 @@ async function rebundleClient(): Promise<string> {
     // iconSet is NOT baked — the SSR shell injects the project set (step 10).
     // pluginPagesEntrySrc() (empty for most projects) registers login/auth-callback
     // components before bootClient runs, so plugin routes hydrate.
-    `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}import { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
+    `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}${sidebarComponentsEntrySrc()}import { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
     "browser",
     [],
     true
@@ -228,7 +229,7 @@ async function rebundleServer(): Promise<string> {
   // trigger a re-seed after a hot re-appInit.
   return buildBundle(
     "server",
-    `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}` +
+    `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}${sidebarComponentsEntrySrc()}` +
       `import { start, reseed } from "./renderPage";\n` +
       `globalThis.__xydBunStart  = () => start(Theme);\n` +
       `globalThis.__xydBunReseed = () => reseed(Theme);\n`,
@@ -321,6 +322,31 @@ export async function startDevServer(
   }
 
   await importFresh(serverBundle!);
+
+  // Project-local user components in the binary dev server — the embedded bundles
+  // can't fold them into their graph (no on-disk framework source), so federate:
+  // build a browser chunk (served at /_bun/user-components.js, loaded before
+  // hydration) + a server chunk (imported now — the server bundle above ran
+  // registerFederatedModules() so its react/@xyd-js shims resolve). Binary-only;
+  // the non-binary dev path bundles components via the entry-src.
+  if (isBin) {
+    const { collectFederatedComponents, buildUserComponentsClient, buildUserComponentsServer } =
+      await import("./userComponentsFederation");
+    const fed = collectFederatedComponents();
+    if (fed.length) {
+      const os = await import("node:os");
+      const tmpDir = path.join(os.tmpdir(), `xyd-uc-dev-${Bun.hash(fed.map((c) => c.name + c.importPath).join("|")).toString(16)}`);
+      const cli = await buildUserComponentsClient(fed, tmpDir);
+      if (cli) {
+        (globalThis as any).__xydDevUserComponentsChunkPath = cli.absPath;
+        (globalThis as any).__xydDevUserComponentsChunkUrl = "/_bun/user-components.js";
+      }
+      const srv = await buildUserComponentsServer(fed, tmpDir);
+      if (srv) await import(pathToFileURL(srv).href);
+      console.error(`[dev] user-components (federated, ${fed.length})`);
+    }
+  }
+
   // Pass themeName so the multi-theme binary bundle selects the right theme; the
   // non-binary single-theme entry ignores the arg.
   const server = (globalThis as any).__xydBunStart(themeName);

@@ -8,6 +8,8 @@ import { robotsTxt, sitemapXml, sitemapRoutes } from "./seo";
 import { themePackage, themeShortName } from "./themePkg";
 import { settingsBundleJs } from "./serialize";
 import { pluginPagesEntrySrc, pluginPageRoutes } from "./pluginPages";
+import { sidebarComponentsEntrySrc } from "./sidebarComponents";
+import { collectFederatedComponents, buildUserComponentsServer, buildUserComponentsClient } from "./userComponentsFederation";
 import { prerenderPages } from "./prerenderPool";
 import { writeHtml } from "./htmlOut";
 
@@ -90,7 +92,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     const clientRes: any = await buildBundle(
       "client",
       // iconSet is NOT baked — the SSR shell injects the project set (step 10).
-      `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}` +
+      `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}${sidebarComponentsEntrySrc()}` +
         `import { bootClient } from "./client-entry";\nbootClient(Theme);\n`,
       "browser",
       [],
@@ -140,8 +142,21 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   fs.writeFileSync(path.join(clientDir, settingsOut), settingsSrc);
   const settingsJs = "/" + settingsOut;
 
+  // 2d) Project-local user components (sidebar `{ component }` items + MDX/plugin
+  // components) — the binary can't fold them into the embedded client/server graph
+  // (no on-disk framework source), so federate them: a separate chunk whose
+  // react/@xyd-js imports read globalThis.__xydModules at runtime. Non-binary
+  // bundles them via the entry-src, so this is binary-only.
+  const fedComponents = isBin ? collectFederatedComponents() : [];
+  let userComponentsChunkJs: string | undefined;
+  if (fedComponents.length) {
+    const r = await buildUserComponentsClient(fedComponents, clientDir);
+    userComponentsChunkJs = r?.href;
+    console.error(`[build] user-components (federated client, ${fedComponents.length}) → ${userComponentsChunkJs}`);
+  }
+
   // 3) Asset manifest for the (same-process) render bundle.
-  (globalThis as any).__xydBuildAssets = { clientJs, cssLinks, iconSetJs, settingsJs };
+  (globalThis as any).__xydBuildAssets = { clientJs, cssLinks, iconSetJs, settingsJs, userComponentsChunkJs };
 
   // 4) SERVER render bundle → registers globalThis.__xydRenderStatic/__xydSeedForBuild.
   // Capture its path so prerender workers import the SAME bundle instead of rebuilding it.
@@ -161,7 +176,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     console.error("[build] bundling server render…");
     const serverBundle: string = await buildBundle(
       "buildserver",
-      `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}` +
+      `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}${sidebarComponentsEntrySrc()}` +
         `import { renderPageStatic, seedForBuild, buildPageData, renderPluginPageStatic, renderRedirectStatic } from "./renderPage";\n` +
         `globalThis.__xydSeedForBuild = () => seedForBuild(Theme);\n` +
         `globalThis.__xydRenderStatic = (slug, opts) => renderPageStatic(slug, opts);\n` +
@@ -177,6 +192,22 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   // The multi-theme server bundle selects the theme by name; the non-binary
   // single-theme entry ignores the arg — so passing themeName is safe for both.
   (globalThis as any).__xydSeedForBuild(themeName);
+
+  // 4b) Project-local user components — SERVER (in-process) federated chunk. Built
+  // AFTER the server bundle (which registered globalThis.__xydModules) and imported
+  // so __xydUserComponentImpls is populated before the serial prerender loop. The
+  // worker pool re-imports the SAME chunk (path passed via ctx).
+  let userComponentsServerChunk = "";
+  if (isBin && fedComponents.length) {
+    const os = await import("node:os");
+    const ucTmp = path.join(os.tmpdir(), `xyd-uc-${Bun.hash(fedComponents.map((c) => c.name + c.importPath).join("|")).toString(16)}`);
+    const chunk = await buildUserComponentsServer(fedComponents, ucTmp);
+    if (chunk) {
+      userComponentsServerChunk = chunk;
+      await import(pathToFileURL(chunk).href);
+      console.error(`[build] user-components (federated server, ${fedComponents.length}) → ${path.basename(chunk)}`);
+    }
+  }
 
   // Serializable data plane for prerender workers: main's already-computed state.
   // Each worker rebuilds render FUNCTIONS via loadPlugins but adopts THIS verbatim
@@ -197,7 +228,9 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   // (e.g. /public/assets/logo.svg) and — because presets prefix logo/favicon and
   // some component images with the basename — ALSO as /<basename>/public/… . Mirror
   // to both so every ref resolves on a static host (dev's serveStatic reconciled
-  // these at request time; a static build must place the files).
+  // these at request time; a static build must place the files). Root-form refs
+  // (/logo.svg — the Vite publicDir convention dev also serves) are mirrored to the
+  // client root at step 7b, AFTER prerender, so generated files always win.
   const publicSrc = getPublicPath();
   copyDir(publicSrc, path.join(clientDir, "public"));
   const baseDir = (settings?.advanced?.basename || "").replace(/^\/+|\/+$/g, "");
@@ -215,6 +248,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     clientDir, slugs, accessMap, dataPlane,
     cwd, host: HOST, isBin, argv2: process.argv.slice(2),
     buildAssets: (globalThis as any).__xydBuildAssets, serverBundlePath,
+    userComponentsServerChunk,
   });
   console.error(`[build] wrote ${ok}/${slugs.length} pages`);
 
@@ -301,6 +335,15 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   emitSitemap(clientDir, settings, accessMap, slugs);
   emitRobots(clientDir, settings);
   emitRawRouteFiles(clientDir); // /llms.txt + raw .md (already protected-filtered at appInit)
+
+  // 7b) PUBLIC at ROOT (Vite parity). Vite's publicDir serves public/ contents at
+  // the SITE ROOT, and dev's serveStatic resolves both /file and /public/file — so
+  // a build must ship the root form too (theme.logo: "/logo.svg", segment icons,
+  // …). Runs after every emit above and skips paths the build already wrote, so
+  // generated output always wins (a public/index.html never clobbers the
+  // prerendered one, hashed assets/ are untouched).
+  copyDirIfAbsent(publicSrc, clientDir);
+  if (baseDir) copyDirIfAbsent(publicSrc, path.join(clientDir, baseDir));
 
   // FAIL LOUD on any page that failed to render — otherwise a broken page ships
   // as a 404 while the build reports success (silent broken deploy).
@@ -424,6 +467,21 @@ function copyDir(src: string, dest: string) {
       fs.mkdirSync(d, { recursive: true });
       copyDir(s, d);
     } else {
+      fs.mkdirSync(path.dirname(d), { recursive: true });
+      fs.copyFileSync(s, d);
+    }
+  }
+}
+
+/** copyDir, but an existing destination FILE is left alone (build output wins). */
+function copyDirIfAbsent(src: string, dest: string) {
+  if (!src || !fs.existsSync(src)) return;
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const s = path.join(src, entry.name);
+    const d = path.join(dest, entry.name);
+    if (entry.isDirectory()) {
+      copyDirIfAbsent(s, d);
+    } else if (!fs.existsSync(d)) {
       fs.mkdirSync(path.dirname(d), { recursive: true });
       fs.copyFileSync(s, d);
     }
