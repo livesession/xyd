@@ -228,7 +228,9 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   // (e.g. /public/assets/logo.svg) and — because presets prefix logo/favicon and
   // some component images with the basename — ALSO as /<basename>/public/… . Mirror
   // to both so every ref resolves on a static host (dev's serveStatic reconciled
-  // these at request time; a static build must place the files).
+  // these at request time; a static build must place the files). Root-form refs
+  // (/logo.svg — the Vite publicDir convention dev also serves) are mirrored to the
+  // client root at step 7b, AFTER prerender, so generated files always win.
   const publicSrc = getPublicPath();
   copyDir(publicSrc, path.join(clientDir, "public"));
   const baseDir = (settings?.advanced?.basename || "").replace(/^\/+|\/+$/g, "");
@@ -333,6 +335,15 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   emitSitemap(clientDir, settings, accessMap, slugs);
   emitRobots(clientDir, settings);
   emitRawRouteFiles(clientDir); // /llms.txt + raw .md (already protected-filtered at appInit)
+
+  // 7b) PUBLIC at ROOT (Vite parity). Vite's publicDir serves public/ contents at
+  // the SITE ROOT, and dev's serveStatic resolves both /file and /public/file — so
+  // a build must ship the root form too (theme.logo: "/logo.svg", segment icons,
+  // …). Runs after every emit above and skips paths the build already wrote, so
+  // generated output always wins (a public/index.html never clobbers the
+  // prerendered one, hashed assets/ are untouched).
+  copyDirIfAbsent(publicSrc, clientDir);
+  if (baseDir) copyDirIfAbsent(publicSrc, path.join(clientDir, baseDir));
 
   // FAIL LOUD on any page that failed to render — otherwise a broken page ships
   // as a 404 while the build reports success (silent broken deploy).
@@ -456,6 +467,21 @@ function copyDir(src: string, dest: string) {
       fs.mkdirSync(d, { recursive: true });
       copyDir(s, d);
     } else {
+      fs.mkdirSync(path.dirname(d), { recursive: true });
+      fs.copyFileSync(s, d);
+    }
+  }
+}
+
+/** copyDir, but an existing destination FILE is left alone (build output wins). */
+function copyDirIfAbsent(src: string, dest: string) {
+  if (!src || !fs.existsSync(src)) return;
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const s = path.join(src, entry.name);
+    const d = path.join(dest, entry.name);
+    if (entry.isDirectory()) {
+      copyDirIfAbsent(s, d);
+    } else if (!fs.existsSync(d)) {
       fs.mkdirSync(path.dirname(d), { recursive: true });
       fs.copyFileSync(s, d);
     }
