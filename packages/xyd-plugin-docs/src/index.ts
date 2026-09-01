@@ -674,17 +674,19 @@ function prefixSidebarPages(sidebar: any[], prefix: string) {
 }
 
 // TODO: in the future better algorithm - we should be .md/.mdx faster than checking fs here
-export function mapNavigationToPagePathMapping(navigation: Navigation) {
+// `cwd` scopes the file probes (defaults to process.cwd(), matching the Rust
+// port's explicit cwd argument); mapping VALUES stay cwd-relative either way.
+export function mapNavigationToPagePathMapping(navigation: Navigation, cwd?: string) {
     const mapping: Record<string, string> = {}
 
     function getExistingFilePath(basePath: string): string | null {
         const mdPath = `${basePath}.md`
         const mdxPath = `${basePath}.mdx`
 
-        if (fs.existsSync(mdPath)) {
+        if (fs.existsSync(cwd ? path.join(cwd, mdPath) : mdPath)) {
             return mdPath
         }
-        if (fs.existsSync(mdxPath)) {
+        if (fs.existsSync(cwd ? path.join(cwd, mdxPath) : mdxPath)) {
             return mdxPath
         }
         return null

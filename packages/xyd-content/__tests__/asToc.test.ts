@@ -12,27 +12,29 @@ import { composeAsTocRaw, asTocHostFor, isAsTocSectionPage } from "../src";
  * frontmatter (always with `asTocHost: true`) + the host's intro + every
  * section wrapped in `<div id="<sectionId>" data-astoc-section>`.
  * The recipe comes from globalThis.__xydAsTocPages (set by plugin-docs boot).
+ *
+ * The fake data plane uses ABSOLUTE file paths into a tmp dir — no
+ * process.chdir (unsupported in vitest worker threads: this package's local
+ * vitest 1.x runs the threads pool).
  */
 describe("composeAsTocRaw", () => {
     let tmpDir: string;
-    let prevCwd: string;
 
     beforeEach(() => {
-        prevCwd = process.cwd();
         tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "xyd-astoc-compose-"));
-        process.chdir(tmpDir);
     });
 
     afterEach(() => {
-        process.chdir(prevCwd);
         fs.rmSync(tmpDir, { recursive: true, force: true });
         delete (globalThis as any).__xydAsTocPages;
     });
 
-    function write(rel: string, content: string) {
+    /** writes rel under tmpDir, returns the ABSOLUTE path */
+    function write(rel: string, content: string): string {
         const abs = path.join(tmpDir, rel);
         fs.mkdirSync(path.dirname(abs), { recursive: true });
         fs.writeFileSync(abs, content);
+        return abs;
     }
 
     function setAsTocPages(hosts: any, pages: any = {}) {
@@ -46,22 +48,22 @@ describe("composeAsTocRaw", () => {
     });
 
     it("composes intro + wrapped sections and flags asTocHost in frontmatter", async () => {
-        write("index.md", "---\ntitle: Welcome\n---\n\nIntro text.\n");
-        write("os/linux.md", "---\ntitle: Linux\n---\n\n# Linux\n\nLinux content.\n");
-        write("os/windows.md", "---\ntitle: Windows\n---\n\nWindows content without heading.\n");
+        const indexFile = write("index.md", "---\ntitle: Welcome\n---\n\nIntro text.\n");
+        const linuxFile = write("os/linux.md", "---\ntitle: Linux\n---\n\n# Linux\n\nLinux content.\n");
+        const windowsFile = write("os/windows.md", "---\ntitle: Windows\n---\n\nWindows content without heading.\n");
         setAsTocPages({
             index: {
-                indexFile: "index.md",
+                indexFile,
                 sections: [
-                    { page: "os/linux", file: "os/linux.md", id: "os-linux" },
-                    { page: "os/windows", file: "os/windows.md", id: "os-windows" },
+                    { page: "os/linux", file: linuxFile, id: "os-linux" },
+                    { page: "os/windows", file: windowsFile, id: "os-windows" },
                 ],
             },
         });
 
         const composed = await composeAsTocRaw("index");
         expect(composed).not.toBeNull();
-        expect(composed!.filePath).toBe("index.md");
+        expect(composed!.filePath).toBe(indexFile);
 
         const parsed = matter(composed!.raw);
         // host frontmatter preserved + flagged
@@ -83,11 +85,11 @@ describe("composeAsTocRaw", () => {
     });
 
     it("synthesizes frontmatter when the host has no intro file", async () => {
-        write("os/linux.md", "---\ntitle: Linux\n---\n\ncontent\n");
+        const linuxFile = write("os/linux.md", "---\ntitle: Linux\n---\n\ncontent\n");
         setAsTocPages({
             index: {
                 indexFile: "",
-                sections: [{ page: "os/linux", file: "os/linux.md", id: "os-linux" }],
+                sections: [{ page: "os/linux", file: linuxFile, id: "os-linux" }],
             },
         });
 
@@ -99,13 +101,13 @@ describe("composeAsTocRaw", () => {
     });
 
     it("skips sections whose file vanished", async () => {
-        write("a.md", "---\ntitle: A\n---\n\na\n");
+        const aFile = write("a.md", "---\ntitle: A\n---\n\na\n");
         setAsTocPages({
             index: {
                 indexFile: "",
                 sections: [
-                    { page: "a", file: "a.md", id: "a" },
-                    { page: "gone", file: "gone.md", id: "gone" },
+                    { page: "a", file: aFile, id: "a" },
+                    { page: "gone", file: path.join(tmpDir, "gone.md"), id: "gone" },
                 ],
             },
         });
@@ -116,11 +118,11 @@ describe("composeAsTocRaw", () => {
     });
 
     it("normalizes the slug (leading slash / empty → index) and resolves route hosts", async () => {
-        write("docs.md", "---\ntitle: Docs\n---\n\nintro\n");
-        write("s.md", "s content\n");
+        const docsFile = write("docs.md", "---\ntitle: Docs\n---\n\nintro\n");
+        const sFile = write("s.md", "s content\n");
         setAsTocPages(
             {
-                docs: { indexFile: "docs.md", sections: [{ page: "s", file: "s.md", id: "s" }] },
+                docs: { indexFile: docsFile, sections: [{ page: "s", file: sFile, id: "s" }] },
             },
             { s: { host: "docs", id: "s" } }
         );

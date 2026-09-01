@@ -15,21 +15,20 @@ import { collectAsTocPages, mergeAsTocPages, asTocFileMap, sectionIdFor, mapNavi
  * - mapNavigationToPagePathMapping must EXCLUDE those pages (non-routable),
  *   byte-parity with the Rust gate in crates/xyd_settings/src/pagemap.rs.
  *
- * Tests chdir into a tmp workspace so the fs probes (md-wins-over-mdx,
- * missing-file skip) run deterministically.
+ * Tests probe files in a tmp workspace via the walks' explicit `cwd` option
+ * (md-wins-over-mdx, missing-file skip) — deterministic and chdir-free.
  */
 describe("sidebar-as-TOC", () => {
     let tmpDir: string;
-    let prevCwd: string;
 
+    // NO process.chdir here — it is unsupported in vitest worker threads
+    // (xyd-content's package-local vitest 1.x runs the threads pool). The
+    // walks take an explicit cwd instead, matching the Rust port's signature.
     beforeEach(() => {
-        prevCwd = process.cwd();
         tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "xyd-astoc-test-"));
-        process.chdir(tmpDir);
     });
 
     afterEach(() => {
-        process.chdir(prevCwd);
         fs.rmSync(tmpDir, { recursive: true, force: true });
     });
 
@@ -56,7 +55,7 @@ describe("sidebar-as-TOC", () => {
             const res = collectAsTocPages(nav([
                 { group: "OS", asToc: true, pages: ["os/linux", "os/windows"] },
                 { group: "Normal", pages: ["other"] },
-            ]));
+            ]), { cwd: tmpDir });
 
             expect(Object.keys(res.hosts)).toEqual(["index"]);
             expect(res.hosts["index"].indexFile).toBe("");
@@ -74,7 +73,7 @@ describe("sidebar-as-TOC", () => {
 
             const res = collectAsTocPages(nav([
                 { group: "OS", asToc: true, pages: ["os/linux"] },
-            ]));
+            ]), { cwd: tmpDir });
 
             expect(res.hosts["index"].indexFile).toBe("index.md");
         });
@@ -84,7 +83,7 @@ describe("sidebar-as-TOC", () => {
 
             const res = collectAsTocPages(nav([
                 { group: "OS", asToc: true, pages: ["os/linux", "os/missing"] },
-            ]));
+            ]), { cwd: tmpDir });
 
             expect(res.hosts["index"].sections.map(s => s.page)).toEqual(["os/linux"]);
             expect(res.pages["os/missing"]).toBeUndefined();
@@ -99,7 +98,7 @@ describe("sidebar-as-TOC", () => {
                     route: "/docs",
                     pages: [{ group: "Deep", asToc: true, pages: ["docs/deep/a"] }],
                 },
-            ]));
+            ]), { cwd: tmpDir });
 
             expect(Object.keys(res.hosts)).toEqual(["docs"]);
             expect(res.hosts["docs"].indexFile).toBe("docs.md");
@@ -123,7 +122,7 @@ describe("sidebar-as-TOC", () => {
                         },
                     ],
                 },
-            ]));
+            ]), { cwd: tmpDir });
 
             expect(res.hosts["index"].sections.map(s => s.page)).toEqual(["a/x", "a/y"]);
         });
@@ -133,7 +132,7 @@ describe("sidebar-as-TOC", () => {
 
             const res = collectAsTocPages(
                 nav([{ group: "OS", asToc: true, pages: ["pl/os/linux"] }]),
-                { hostPrefix: "pl/" }
+                { hostPrefix: "pl/", cwd: tmpDir }
             );
 
             expect(Object.keys(res.hosts)).toEqual(["pl/index"]);
@@ -147,7 +146,7 @@ describe("sidebar-as-TOC", () => {
                 { group: "OS", asToc: true, pages: ["os/linux"] },
                 { group: "Resources", pages: [] },
                 { group: "Lang", asToc: true, pages: ["lang/python"] },
-            ]));
+            ]), { cwd: tmpDir });
 
             expect(res.hosts["index"].sections.map(s => s.id)).toEqual(["os-linux", "lang-python"]);
         });
@@ -161,7 +160,7 @@ describe("sidebar-as-TOC", () => {
                 { group: "OS", asToc: {}, pages: ["os/linux"] },
                 { group: "Lang", asToc: { indicator: false, breadcrumbs: false }, pages: ["lang/python"] },
                 { group: "Off", asToc: false, pages: ["off/page"] },
-            ]));
+            ]), { cwd: tmpDir });
 
             expect(res.pages["os/linux"]).toEqual({ host: "index", id: "os-linux", indicator: true, breadcrumbs: true });
             expect(res.pages["lang/python"]).toEqual({ host: "index", id: "lang-python", indicator: false, breadcrumbs: false });
@@ -210,7 +209,7 @@ describe("sidebar-as-TOC", () => {
                         { group: "RoutedToc", asToc: true, pages: ["guides/routed"] },
                     ]
                 },
-            ]) as any);
+            ]) as any, tmpDir);
 
             expect(mapping).toEqual({
                 "normal": "normal.md",
