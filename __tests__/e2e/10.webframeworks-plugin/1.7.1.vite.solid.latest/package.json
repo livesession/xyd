@@ -1,0 +1,17 @@
+{
+  "name": "xyd-compat-solid",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "solid-js": "1.9.15"
+  },
+  "devDependencies": {
+    "@xyd-js/vite-plugin": "file:../../../../packages/xyd-vite-plugin",
+    "vite": "8.2.2",
+    "vite-plugin-solid": "2.11.14"
+  }
+}

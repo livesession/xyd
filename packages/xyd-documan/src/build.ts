@@ -175,6 +175,10 @@ export async function build() {
         await viteBuild(ssrConfig);
     } catch (error) {
         console.error('Build failed:', error);  // TODO: better message
+        // exit non-zero — otherwise a failed build looks successful to callers
+        // (CI, deploy tooling, @xyd-js/vite-plugin) since finishBuild's exit(0)
+        // only runs on a completed bundle
+        process.exit(1);
     }
 }
 
@@ -182,8 +186,12 @@ function setupInstallableEnvironmentV2() {
     const symbolicXydNodeModules = path.join(getXydFolderPath(), "node_modules")
     const hostNodeModules = path.join(getHostPath(), "node_modules")
 
-    if (fs.existsSync(symbolicXydNodeModules)) {
-        if (fs.lstatSync(symbolicXydNodeModules).isSymbolicLink()) {
+    // lstat, not existsSync: existsSync FOLLOWS symlinks, so a dangling link
+    // (target cleaned away) reports "absent" and symlinkSync then throws EEXIST
+    let existing: fs.Stats | undefined;
+    try { existing = fs.lstatSync(symbolicXydNodeModules); } catch { /* absent */ }
+    if (existing) {
+        if (existing.isSymbolicLink()) {
             fs.unlinkSync(symbolicXydNodeModules);
         } else {
             fs.rmSync(symbolicXydNodeModules, { recursive: true, force: true });

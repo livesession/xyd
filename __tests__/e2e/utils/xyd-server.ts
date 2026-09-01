@@ -1,20 +1,9 @@
-import {spawn, execSync} from 'child_process';
-import {setTimeout} from 'timers/promises';
+import {spawn} from 'child_process';
 import path from 'path';
-import net from 'node:net';
-import fs, {existsSync, mkdtempSync, rmSync, cpSync} from 'node:fs';
+import {existsSync, mkdtempSync, rmSync, cpSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 
-function getRandomPort(): Promise<number> {
-    return new Promise((resolve, reject) => {
-        const srv = net.createServer();
-        srv.listen(0, () => {
-            const port = (srv.address() as net.AddressInfo).port;
-            srv.close(() => resolve(port));
-        });
-        srv.on('error', reject);
-    });
-}
+import {getRandomPort, resolveXydCommand, waitForServer, type ResolvedCommand} from './resolve-xyd';
 
 export interface XydServerOptions {
     port?: number;
@@ -25,12 +14,6 @@ export interface XydServerOptions {
     mode?: "dev" | "build";
     /** Extra env vars passed to xyd process */
     env?: Record<string, string>;
-}
-
-interface ResolvedCommand {
-    cmd: string;
-    args: string[];
-    env: Record<string, string>;
 }
 
 export class XydServer {
@@ -105,63 +88,8 @@ export class XydServer {
     }
 
     private async resolveXydCommand(): Promise<ResolvedCommand> {
-        const testVersion = process.env.XYD_LOCAL_TEST_VERSION;
-
-        // Priority 1: specific npm version — installed to an isolated directory
-        // so it never leaks into or resolves from the monorepo's node_modules
-        if (testVersion) {
-            const installDir = path.join(tmpdir(), `xyd-isolated-${testVersion}`);
-            const doneMarker = path.join(installDir, '.installed');
-            const lockDir = path.join(installDir, '.installing');
-
-            if (!existsSync(doneMarker)) {
-                fs.mkdirSync(installDir, { recursive: true });
-                let acquiredLock = false;
-                try {
-                    // Atomic lock: only one process can create this directory
-                    fs.mkdirSync(lockDir);
-                    acquiredLock = true;
-                } catch {}
-
-                if (acquiredLock) {
-                    console.log(`Installing xyd-js@${testVersion} to ${installDir}...`);
-                    execSync(`npm install --prefix ${installDir} xyd-js@${testVersion}`, { stdio: 'inherit' });
-                    fs.writeFileSync(doneMarker, '');
-                    fs.rmdirSync(lockDir);
-                } else {
-                    // Another worker is installing — wait for it
-                    console.log(`Waiting for xyd-js@${testVersion} install by another worker...`);
-                    while (!existsSync(doneMarker)) {
-                        execSync('sleep 1');
-                    }
-                }
-            }
-            const xydEntry = path.join(installDir, 'node_modules', 'xyd-js', 'index.js');
-            return { cmd: 'node', args: [xydEntry], env: {} };
-        }
-
-        // Priority 2: monorepo local CLI
-        const monorepoRoot = this.findMonorepoRoot();
-        if (monorepoRoot) {
-            const cliPath = path.join(monorepoRoot, 'packages/xyd-cli/dist/index.js');
-            console.log(`Using monorepo CLI: ${cliPath}`);
-            return {
-                cmd: 'node',
-                args: [cliPath],
-                env: { XYD_DEV_MODE: '1', XYD_NODE_PM: 'pnpm' },
-            };
-        }
-
-        // Priority 3: global xyd
-        return { cmd: 'xyd', args: [], env: {} };
-    }
-
-    private findMonorepoRoot(): string | null {
-        // Walk up from __tests__/e2e/utils/ to repo root
-        const dir = path.resolve(__dirname, '../../..');
-        const cliPath = path.join(dir, 'packages/xyd-cli/dist/index.js');
-        if (existsSync(cliPath)) return dir;
-        return null;
+        // 3-tier resolution shared with the other e2e harnesses — see resolve-xyd.ts
+        return resolveXydCommand();
     }
 
     private async startDev(env: Record<string, string>): Promise<void> {
@@ -218,25 +146,7 @@ export class XydServer {
     }
 
     private async waitForServer(): Promise<void> {
-        const maxWaitTime = 2 * 60 * 1000; // 2 minutes
-        const checkInterval = 5 * 1000; // 5 seconds
-        const startTime = Date.now();
-
-        while (Date.now() - startTime < maxWaitTime) {
-            try {
-                const response = await fetch(`http://localhost:${this.port}`);
-                if (response.ok || response.status === 302) {
-                    console.log(`✅ Server started successfully on port ${this.port}`);
-                    return;
-                }
-            } catch (error) {
-                // Server not ready yet, continue waiting
-            }
-
-            await setTimeout(checkInterval);
-        }
-
-        throw new Error(`Server failed to start on port ${this.port} within 2 minutes`);
+        return waitForServer(this.port);
     }
 
     async stop(): Promise<void> {

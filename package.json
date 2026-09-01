@@ -34,6 +34,8 @@
     "pretest:unit": "pnpm build",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
+    "test:e2e:frameworks": "playwright test __tests__/e2e/10.webframeworks-plugin --workers=1",
+    "test:e2e:frameworks:build": "playwright test __tests__/e2e/10.webframeworks-plugin --workers=1 --grep \"webframeworks build\"",
     "test:e2e:local": "npm_config_registry=http://localhost:4873 playwright test",
     "test:node-support": "playwright test --config=playwright.node-support.config.ts",
     "test:node-support:local": "npm_config_registry=http://localhost:4873 playwright test --config=playwright.node-support.config.ts",
@@ -51,6 +53,7 @@
     "lint-staged": "^15.2.10",
     "nx": "^20.3.2",
     "rimraf": "^3.0.2",
+    "serve": "^14.2.6",
     "ts-json-schema-generator": "^2.3.0",
     "typescript": "^5.6.2",
     "vitest": "^2.1.8"

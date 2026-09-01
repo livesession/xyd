@@ -1,0 +1,18 @@
+{
+  "name": "xyd-compat-next-latest",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "16.3.4",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@xyd-js/next-plugin": "file:../../../../packages/xyd-next-plugin",
+    "@xyd-js/vite-plugin": "file:../../../../packages/xyd-vite-plugin"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "xyd-compat-astro",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build"
+  },
+  "devDependencies": {
+    "@xyd-js/vite-plugin": "file:../../../../packages/xyd-vite-plugin",
+    "astro": "7.2.10"
+  }
+}

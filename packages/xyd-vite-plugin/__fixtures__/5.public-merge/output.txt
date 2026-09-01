@@ -1,0 +1,6 @@
+assets/a.css :: a
+docs/index.html :: <h1>D</h1>
+docs/public/sample.txt :: docs-sample
+index.html :: <h1>H</h1>
+public/host-file.txt :: host-owned
+public/sample.txt :: docs-sample

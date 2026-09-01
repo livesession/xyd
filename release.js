@@ -116,6 +116,8 @@ async function main() {
             '@xyd-js/themes',
             '@xyd-js/ui',
             '@xyd-js/uniform',
+            '@xyd-js/vite-plugin',
+            '@xyd-js/next-plugin',
             '@xyd-js/cli',
             '@xyd-js/mcp',
             '@xyd-js/mcp-server',

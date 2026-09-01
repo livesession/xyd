@@ -5,3 +5,5 @@
 # React Router
 /.react-router/
 /build/
+# vendored @xyd-js/vite-plugin until it is published to npm (root *.tgz rule would hide it)
+!vendor/*.tgz

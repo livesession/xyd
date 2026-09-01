@@ -88,7 +88,10 @@ function renderShell({ settings, bodyHtml, data }: any): string {
       : "") +
     `<script id="__xyd_data" type="application/json">${json}</script>` +
     `<script type="module" src="/_bun/client.js"></script>` +
-    LIVE_RELOAD +
+    // XYD_LIVERELOAD=0: embedding hosts whose proxy can't forward websocket
+    // upgrades (nuxt dev crashes on them, Next rewrites are HTTP-only) disable
+    // the livereload client entirely — pages/styles still proxy fine.
+    (process.env.XYD_LIVERELOAD === "0" ? "" : LIVE_RELOAD) +
     `</body></html>`
   );
 }

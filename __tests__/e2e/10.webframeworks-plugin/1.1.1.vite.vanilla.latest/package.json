@@ -1,0 +1,13 @@
+{
+  "name": "xyd-compat-vanilla-vite-latest",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "@xyd-js/vite-plugin": "file:../../../../packages/xyd-vite-plugin",
+    "vite": "8.2.2"
+  }
+}

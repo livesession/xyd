@@ -1,0 +1,23 @@
+{
+  "name": "xyd-compat-ssr-vue",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "vite build --outDir dist/client",
+    "build:server": "vite build --ssr src/entry-server.js --outDir dist/server",
+    "preview": "node server"
+  },
+  "dependencies": {
+    "compression": "^1.8.1",
+    "express": "^5.2.1",
+    "sirv": "^3.0.2",
+    "vue": "^3"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "6.0.8",
+    "@xyd-js/vite-plugin": "file:../../../../packages/xyd-vite-plugin",
+    "vite": "8.2.2"
+  }
+}

@@ -3,6 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import PluginCritical from "rollup-plugin-critical";
+import xyd from "@xyd-js/vite-plugin";
 
 // Resolved once at build time (Netlify `URL`, else deploy-preview prime URL, else
 // local → xyd.dev). Both the install origin and the canary flag derive from it.
@@ -28,9 +29,19 @@ export default defineConfig({
     __XYD_IS_CANARY__: JSON.stringify(IS_CANARY),
   },
   plugins: [
-    tailwindcss(), 
-    reactRouter(), 
+    tailwindcss(),
+    reactRouter(),
     tsconfigPaths(),
+    // Docs (apps/docs) built + merged into build/client during the same
+    // `react-router build` — gated on XYD_DOCS so plain `npm run build`
+    // (Dockerfile) stays docs-less. Replaces the old build:full cd/bunx/cp chain.
+    xyd({
+      enabled: !!process.env.XYD_DOCS,
+      docsRoot: "../docs",
+      base: "/docs",
+      // Track the published CLI like the old script did (XYD_VERSION overridable).
+      command: ["bunx", `xyd-js@${process.env.XYD_VERSION || "latest"}`],
+    }),
     // Inline critical CSS for faster initial render
     PluginCritical({
       criticalUrl: "http://localhost:3000/",
