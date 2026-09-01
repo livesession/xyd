@@ -5,7 +5,7 @@ import {existsSync, rmSync} from 'node:fs';
 import {findMonorepoRoot, getRandomPort, resolveXydCommand, waitForServer} from './resolve-xyd';
 
 /**
- * Harness for the @xyd-js/vite-plugin COMPAT fixtures (11.vite-plugin-compat):
+ * Harness for the @xyd-js/vite-plugin COMPAT fixtures (10.webframeworks-plugin):
  * unlike the main suite's dependency-less fixtures (which ride the monorepo's
  * hoisted versions), each compat fixture pins its OWN vite/framework versions in
  * package.json and installs them with npm — `@xyd-js/vite-plugin` resolves via a

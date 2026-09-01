@@ -1,0 +1,20 @@
+node_modules/
+package-lock.json
+dist/
+build/
+.react-router/
+.svelte-kit/
+.astro/
+.nuxt/
+.output/
+.next/
+# next dev auto-generates agent guidance files + ts scaffolding inside fixtures
+**/AGENTS.md
+**/CLAUDE.md
+next-env.d.ts
+# @xyd-js/next-plugin generates into public/ (Next serves it at the root)
+**/public/docs/
+**/public/docs.html
+**/public/assets/
+**/public/public/
+**/public/.xyd-docs-manifest.json

@@ -88,7 +88,7 @@ There is deliberately no `npx xyd-js@latest` fallback — a build that silently 
 ## Framework compatibility
 
 Verified across the Vite ecosystem (each in **build and dev**, see the
-`11.vite-plugin-compat` e2e matrix):
+`10.webframeworks-plugin` e2e matrix):
 
 | Host | Notes |
 |---|---|
