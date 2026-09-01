@@ -80,15 +80,13 @@ async function harnessEnv(fixtureDir: string, port: number, portEnvVar: string, 
         // listhen-based dev servers (nuxt) bind `localhost` to a per-run IPv4 OR
         // IPv6 — pin them to IPv4 so getUrl's 127.0.0.1 always connects
         HOST: '127.0.0.1',
-        // Per-fixture xyd host workspace (honored in XYD_DEV_MODE only — the other
-        // CLI tiers are per-docs-project already). Without it every fixture's docs
-        // build shares the monorepo's .xyd/host, and a killed sibling's half-done
-        // install corrupts it for the next build (observed: missing theme css,
-        // silently skipped prerenders). Lives OUTSIDE the fixture (in the suite's
-        // .xyd-hosts/) — inside it, module walk-up would find the FIXTURE's react
-        // next to the host's and crash the docs prerender with a dual-React
-        // useContext error. Kept across runs as a cache.
-        XYD_HOST: path.join(path.dirname(fixtureDir), '.xyd-hosts', path.basename(fixtureDir)),
+        // NOTE the dev-mode docs builds share the monorepo's .xyd/host (an explicit
+        // pnpm workspace member — the only way workspace:* host deps install a real
+        // node_modules). Per-fixture XYD_HOST isolation was tried and reverted:
+        // non-member hosts install hollow (deps hoist to the repo root) and the
+        // docs builds then crash on a dual-React useContext error. The shared
+        // host's corruption modes are covered instead by the graceful stop() below,
+        // the plugin's retry-once, and documan's dangling-symlink fix.
         XYD_E2E_CLI_CMD: JSON.stringify([resolved.cmd, ...resolved.args]),
     };
 }

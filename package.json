@@ -53,6 +53,7 @@
     "lint-staged": "^15.2.10",
     "nx": "^20.3.2",
     "rimraf": "^3.0.2",
+    "serve": "^14.2.6",
     "ts-json-schema-generator": "^2.3.0",
     "typescript": "^5.6.2",
     "vitest": "^2.1.8"
