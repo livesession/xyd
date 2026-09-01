@@ -1,0 +1,17 @@
+import { reactRouter } from "@react-router/dev/vite";
+import { defineConfig } from "vite";
+import xyd from "@xyd-js/vite-plugin";
+
+export default defineConfig({
+    server: process.env.XYD_E2E_HOST_PORT
+        ? { port: Number(process.env.XYD_E2E_HOST_PORT), strictPort: true }
+        : undefined,
+    plugins: [
+        reactRouter(),
+        xyd({
+            docsRoot: "./docs",
+            base: "/docs",
+            command: process.env.XYD_E2E_CLI_CMD ? JSON.parse(process.env.XYD_E2E_CLI_CMD) : undefined,
+        }),
+    ],
+});

@@ -1,0 +1,23 @@
+{
+  "name": "xyd-compat-react-router-latest",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "react-router dev",
+    "build": "react-router build"
+  },
+  "dependencies": {
+    "@react-router/node": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-router": "latest",
+    "isbot": "^5"
+  },
+  "devDependencies": {
+    "@react-router/dev": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@xyd-js/vite-plugin": "file:../../../../packages/xyd-vite-plugin",
+    "vite": "latest"
+  }
+}

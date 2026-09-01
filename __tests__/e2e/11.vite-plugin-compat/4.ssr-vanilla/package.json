@@ -1,0 +1,21 @@
+{
+  "name": "xyd-compat-ssr-vanilla",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "vite build --outDir dist/client",
+    "build:server": "vite build --ssr src/entry-server.js --outDir dist/server",
+    "preview": "node server"
+  },
+  "dependencies": {
+    "compression": "^1.8.1",
+    "express": "^5.2.1",
+    "sirv": "^3.0.2"
+  },
+  "devDependencies": {
+    "@xyd-js/vite-plugin": "file:../../../../packages/xyd-vite-plugin",
+    "vite": "latest"
+  }
+}

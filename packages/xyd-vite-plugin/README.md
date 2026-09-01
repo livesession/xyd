@@ -84,6 +84,20 @@ There is deliberately no `npx xyd-js@latest` fallback — a build that silently 
 | `silent` | `false` | Buffer docs build output; replay the tail only on failure |
 | `verbose` | `false` | Plugin debug logging |
 
+## Custom SSR servers (the Vite SSR guide setup)
+
+Works out of the box in dev — the plugin's proxy lives inside `vite.middlewares`,
+so an express server in `middlewareMode` serves `/docs` before its SSR catch-all.
+
+In production the stock template serves static files with
+`sirv('./dist/client', { extensions: [] })` (exact matches only, so the SSR
+catch-all owns clean URLs). Docs **assets** need nothing (real extensions), but
+extensionless docs **pages** need one extra mount before the catch-all:
+
+```js
+app.use('/docs', sirv('./dist/client/docs', { extensions: ['html'] }))
+```
+
 ## Safety properties
 
 - Merge **conflicts fail the build**: a file that already exists with different content
