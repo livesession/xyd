@@ -5,7 +5,7 @@ import * as path from "node:path";
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 import { resolveLocaleSettings } from "@xyd-js/framework/hydration/locale";
 import { markdownPlugins } from "@xyd-js/content/md";
-import { ContentFS } from "@xyd-js/content";
+import { ContentFS, composeAsTocRaw } from "@xyd-js/content";
 
 import { createRouterStore, RouterProvider } from "@xyd-js/router";
 
@@ -192,10 +192,13 @@ export async function buildPageData(slug: string, opts: { shellOnly?: boolean } 
   const fs = await contentFSFor(s, metadata?.maxTocDepth || s?.theme?.writer?.maxTocDepth || 2);
   const pagePath = globalThis.__xydPagePathMapping[slug];
   if (!pagePath) throw new Error(`No page mapping for slug: ${slug}`);
+  // sidebar-as-TOC host: the page is composed from its asToc groups' section
+  // files (intro + wrapped sections) instead of the mapped single file.
+  const composed = await composeAsTocRaw(slug);
   // Read the file once (compile() would read it again internally); compileContent
   // is exactly what compile() runs after reading, so this is byte-identical.
-  const rawPage = await fs.readRaw(pagePath);
-  const code = await fs.compileContent(rawPage, pagePath);
+  const rawPage = composed ? composed.raw : await fs.readRaw(pagePath);
+  const code = await fs.compileContent(rawPage, composed ? composed.filePath : pagePath);
 
   const baseUrl = s?.integrations?.editLink?.baseUrl;
   const editLink = baseUrl ? `${baseUrl}${pagePath}` : undefined;

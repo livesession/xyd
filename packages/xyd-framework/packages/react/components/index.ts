@@ -18,6 +18,7 @@ export {FwNav} from "./FwNav";
 export {FwNavLinks} from "./FwNavLinks";
 
 export {FwSidebar} from "./FwSidebar";
+export {FwSidebarAsToc, useSidebarAsToc} from "./FwSidebarAsToc";
 
 export {FwSegmentLogoTrailing} from "./FwSegmentLogoTrailing";
 

@@ -741,6 +741,36 @@ export interface Sidebar {
    * The order of the group.
    */
   order?: Order;
+
+  /**
+   * Treat this group's pages as a table of contents instead of real pages.
+   * Their markdown files are NOT routable (no routes, no prerender) — the
+   * content of every page is injected as a section into the enclosing route's
+   * index page, sidebar items scroll to those sections (with scroll-spy active
+   * marking), and the right-hand TOC is hidden on that composed page.
+   *
+   * `true` enables it with defaults; the object form tunes behaviors
+   * (all default to enabled).
+   */
+  asToc?: boolean | SidebarAsTocOptions;
+}
+
+/**
+ * Behavior options for an `asToc` sidebar group (the object form).
+ * Every option defaults to `true` — `asToc: true` ≡ `asToc: {}`.
+ */
+export interface SidebarAsTocOptions {
+  /**
+   * TOC-style visual indicator on the group's sidebar items (the vertical
+   * track line the right-hand TOC uses). Default `true`.
+   */
+  indicator?: boolean;
+
+  /**
+   * Breadcrumbs on the composed host page that follow the section being
+   * read (group name / section title, updated by scroll). Default `true`.
+   */
+  breadcrumbs?: boolean;
 }
 
 type Order = 0 | -1 | { after: string } | { before: string };

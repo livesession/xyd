@@ -11,6 +11,7 @@ import type { Node } from 'mdast'
 import GitHubSlugger from 'github-slugger';
 
 import type { Settings, Sidebar, SidebarRoute } from '@xyd-js/core'
+import { asTocEnabled } from '@xyd-js/core'
 
 import { DocSectionSchema } from './types';
 import { markdownPlugins } from "../"
@@ -245,6 +246,11 @@ function flatPages(
 
         // Type guard to check if it's a Sidebar
         if ("group" in side) {
+            // sidebar-as-TOC group: its pages are sections of the host page,
+            // not standalone pages — the host page indexes their content.
+            if (asTocEnabled((side as Sidebar).asToc)) {
+                return
+            }
             const groupKey = side.group || "";
             if (groups[groupKey]) {
                 const link = groups[groupKey];

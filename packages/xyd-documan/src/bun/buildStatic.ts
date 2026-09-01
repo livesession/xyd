@@ -222,6 +222,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     accessMap: (globalThis as any).__xydAccessMap || {},
     i18n: (globalThis as any).__xydI18n,
     i18nTranslations: (globalThis as any).__xydI18nTranslations,
+    asTocPages: (globalThis as any).__xydAsTocPages,
   });
 
   // 5) PUBLIC assets. Content references public files WITH the `public/` segment

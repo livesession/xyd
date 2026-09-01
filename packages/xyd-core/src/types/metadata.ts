@@ -23,6 +23,14 @@ export interface Metadata<P = void> {
     /** Layout type for the content display */
     layout?: PageLayout
 
+    /**
+     * @internal
+     *
+     * True on a page composed from `asToc: true` sidebar groups — the sidebar
+     * acts as this page's TOC (scroll-spy), so the right-hand TOC is hidden.
+     */
+    asTocHost?: boolean
+
     /** Max depth for table of contents */
     maxTocDepth?: number
 

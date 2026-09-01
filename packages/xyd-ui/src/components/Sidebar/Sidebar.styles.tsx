@@ -21,9 +21,62 @@ export const SidebarHost = css`
             & > * {
                 padding-bottom: 4px;
             }
-            
+
             & + [part="item"] {
                 margin-top: 24px;
+            }
+        }
+
+        /* sidebar-as-TOC groups (asToc + indicator enabled): CONSECUTIVE
+           groups share ONE wrapper — headers included — so a single
+           continuous TOC track line spans them (the right-hand TOC's look).
+           The active section paints its own segment of the track (same
+           tokens as xyd-toc), replacing the sidebar's built-in active mark. */
+        [part="item-group"][data-astoc="true"] {
+            position: relative;
+            display: block;
+            padding-left: 10px;
+            margin-top: 24px;
+
+            /* the wrapper carries the group separation — the first header's
+               own top margin would push the track above it as a stray line */
+            [part="item-header"]:first-child {
+                margin-top: 0;
+            }
+
+            /* sidebar filter matched nothing inside → no items, no track */
+            &:not(:has(li)) {
+                display: none;
+            }
+
+            &::before {
+                content: "";
+                position: absolute;
+                top: 4px;
+                bottom: 4px;
+                left: 0;
+                width: 2px;
+                border-radius: 2px;
+                background-color: var(--xyd-toc-bgcolor);
+            }
+
+            [part="item"] {
+                position: relative;
+            }
+            [part="item"]:has(> * > [part="primary-item"][data-active="true"])::before {
+                content: "";
+                position: absolute;
+                top: 2px;
+                bottom: 2px;
+                left: -10px;
+                width: 2px;
+                border-radius: 2px;
+                background-color: var(--xyd-toc-scroll-bgcolor);
+                transition: top .2s ease, bottom .2s ease;
+            }
+            /* the track replaces the built-in active mark */
+            [part="primary-item"][data-active="true"]::before {
+                display: none;
             }
         }
         [part="scroll-shadow"]::before {

@@ -7,3 +7,5 @@ export * from "./src/types/settings";
 export * from "./src/types/page-api.i";
 
 export * from "./src/i18n/resolver";
+
+export * from "./src/asToc";

@@ -1,4 +1,4 @@
-import { Navigation, Settings, LanguageNavigation, TranslationCatalog } from "@xyd-js/core";
+import { Navigation, Settings, LanguageNavigation, TranslationCatalog, asTocEnabled } from "@xyd-js/core";
 import type { Plugin as VitePlugin } from "vite";
 import { RouteConfigEntry } from "@react-router/dev/routes";
 import type { PageURL, Sidebar, SidebarRoute } from "@xyd-js/core";
@@ -131,8 +131,11 @@ import { cliPreset } from "./presets/cli";
 import type { PluginOutput, Plugin } from "./types";
 import { ensureAndCleanupVirtualFolder } from "./presets/uniform";
 import { settingsNative } from "./native";
+import { collectAsTocPages, mergeAsTocPages, type AsTocPages } from "./asToc";
 
 export { readSettings } from "./presets/docs/settings"
+export { collectAsTocPages, mergeAsTocPages, asTocFileMap, sectionIdFor } from "./asToc"
+export type { AsTocPages, AsTocHost, AsTocSection } from "./asToc"
 
 // S6+ W6: the nav→pagepath walk (the "batched" existsSync-eliminating pass)
 // runs in Rust (crates/xyd_settings) when the native core is present. The
@@ -434,6 +437,11 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
         globalThis.__xydI18nTranslations = loaded
     }
 
+    // sidebar-as-TOC data plane: which pages compose into which host page.
+    // Collected alongside the pagepath walks (per locale in i18n mode) so the
+    // key spaces match; empty ⇒ no asToc groups configured.
+    const asTocPages: AsTocPages = { hosts: {}, pages: {} }
+
     if (settings?.navigation) {
         if (i18n) {
             // Catalog-only mode: when a language entry omits sidebar/tabs/etc.,
@@ -461,9 +469,11 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
                 }
                 const subMapping = resolvePagePathMapping(localeNav)
                 Object.assign(pagePathMapping, subMapping)
+                mergeAsTocPages(asTocPages, collectAsTocPages(localeNav, { hostPrefix: localePrefix }))
             }
         } else {
             pagePathMapping = resolvePagePathMapping(settings?.navigation)
+            mergeAsTocPages(asTocPages, collectAsTocPages(settings?.navigation))
         }
     } else {
         console.warn("No navigation found in settings")
@@ -483,13 +493,25 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
         pagePathMapping["index"] = indexPage
     }
 
+    // sidebar-as-TOC hosts: make every host slug routable. A host without its
+    // own intro file maps to its first section's file — the mapping entry is
+    // what drives prerender/404/sitemap; the page loaders always rebuild the
+    // actual content from __xydAsTocPages.hosts[slug] (composition), so what
+    // the entry points at only affects fallback metadata.
+    globalThis.__xydAsTocPages = Object.keys(asTocPages.hosts).length ? asTocPages : undefined
+    for (const [hostSlug, host] of Object.entries(asTocPages.hosts)) {
+        if (!pagePathMapping[hostSlug]) {
+            pagePathMapping[hostSlug] = host.indexFile || host.sections[0].file
+        }
+    }
+
     return {
         vitePlugins,
         settings,
         routes,
         basePath,
         pagePathMapping,
-        hasIndexPage: !!indexPage
+        hasIndexPage: !!indexPage || !!asTocPages.hosts["index"]
     }
 }
 
@@ -652,7 +674,7 @@ function prefixSidebarPages(sidebar: any[], prefix: string) {
 }
 
 // TODO: in the future better algorithm - we should be .md/.mdx faster than checking fs here
-function mapNavigationToPagePathMapping(navigation: Navigation) {
+export function mapNavigationToPagePathMapping(navigation: Navigation) {
     const mapping: Record<string, string> = {}
 
     function getExistingFilePath(basePath: string): string | null {
@@ -685,6 +707,10 @@ function mapNavigationToPagePathMapping(navigation: Navigation) {
                     mapping[pagePath] = existingPath
                 }
             } else if (typeof page === 'object' && 'pages' in page) {
+                // asToc group: its pages are TOC sections of the host page,
+                // not routable pages — skip the whole subtree (collected
+                // separately by collectAsTocPages).
+                if (asTocEnabled((page as Sidebar).asToc)) continue
                 // Handle nested sidebar
                 processPages(page.pages || [])
             }
@@ -701,6 +727,8 @@ function mapNavigationToPagePathMapping(navigation: Navigation) {
             // Handle SidebarRoute
             for (const item of sidebar.pages) {
                 if (item?.pages) {
+                    // asToc group under a route — sections, not pages.
+                    if (asTocEnabled((item as Sidebar).asToc)) continue
                     processPages(item.pages)
                 } else if (typeof item === 'string') {
                     // Handle direct string pages in SidebarRoute
@@ -711,7 +739,8 @@ function mapNavigationToPagePathMapping(navigation: Navigation) {
                 }
             }
         } else if ('pages' in sidebar) {
-            // Handle Sidebar
+            // Handle Sidebar (top-level asToc group — sections, not pages)
+            if (asTocEnabled((sidebar as Sidebar).asToc)) continue
             processPages(sidebar.pages || [])
         }
     }

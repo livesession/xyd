@@ -14,6 +14,18 @@
 use serde_json::{Map, Value};
 use std::path::Path;
 
+/// `asToc` sidebar groups are sidebar-as-TOC: their pages are sections of the
+/// host page, NOT routable pages — the walk skips the whole subtree (mirrors
+/// the JS gate `asTocEnabled` in @xyd-js/core; the JS-side collector picks the
+/// sections up separately). `true` or an options OBJECT enables (the object
+/// form carries behavior tweaks); `false`/absent/junk disables.
+fn is_as_toc(obj: &Map<String, Value>) -> bool {
+    matches!(
+        obj.get("asToc"),
+        Some(Value::Bool(true)) | Some(Value::Object(_))
+    )
+}
+
 /// Resolve one cwd-relative base path to `base.md` or `base.mdx` (md wins),
 /// returning the RELATIVE path WITH extension, or None. Probes against `cwd`.
 fn existing_file_path(cwd: &Path, base: &str) -> Option<String> {
@@ -58,7 +70,9 @@ impl<'a> Walker<'a> {
                             self.set(page_key, p);
                         }
                     } else if let Some(nested) = obj.get("pages").and_then(|p| p.as_array()) {
-                        self.process_pages(nested);
+                        if !is_as_toc(obj) {
+                            self.process_pages(nested);
+                        }
                     }
                 }
                 _ => {}
@@ -96,7 +110,9 @@ impl<'a> Walker<'a> {
                                         if let Some(nested) =
                                             io.get("pages").and_then(|p| p.as_array())
                                         {
-                                            self.process_pages(nested);
+                                            if !is_as_toc(io) {
+                                                self.process_pages(nested);
+                                            }
                                         }
                                     }
                                     Value::String(s) => {
@@ -111,7 +127,9 @@ impl<'a> Walker<'a> {
                     } else if has_pages {
                         // (c) plain Sidebar group
                         if let Some(pages) = obj.get("pages").and_then(|p| p.as_array()) {
-                            self.process_pages(pages);
+                            if !is_as_toc(obj) {
+                                self.process_pages(pages);
+                            }
                         }
                     }
                 }
