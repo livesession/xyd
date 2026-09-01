@@ -1,0 +1,46 @@
+{
+    "theme": {
+        "name": "poetry",
+        "appearance": {
+            "content": {
+                "breadcrumbs": true
+            }
+        }
+    },
+    "navigation": {
+        "sidebar": [
+            {
+                "group": "Operating Systems",
+                "asToc": true,
+                "pages": [
+                    "operating-systems/linux",
+                    "operating-systems/windows",
+                    "operating-systems/macos"
+                ]
+            },
+            {
+                "group": "Programming Languages",
+                "asToc": {},
+                "pages": [
+                    "programming-languages/python",
+                    "programming-languages/javascript",
+                    "programming-languages/java"
+                ]
+            },
+            {
+                "group": "Tools",
+                "asToc": { "indicator": false },
+                "pages": [
+                    "tools/git"
+                ]
+            },
+            {
+                "group": "Resources",
+                "pages": [
+                    "resources/getting-help",
+                    "resources/faq"
+                ]
+            }
+        ]
+    }
+}

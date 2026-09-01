@@ -3,7 +3,7 @@ import fs from "node:fs";
 
 import { createServer, mergeConfig, searchForWorkspaceRoot, ViteDevServer, Plugin as VitePlugin, PluginOption } from "vite";
 
-import { API, APIFile, Navigation, Settings, SidebarNavigation, } from "@xyd-js/core";
+import { API, APIFile, Navigation, Settings, SidebarNavigation, asTocEnabled } from "@xyd-js/core";
 
 import { appInit, calculateFolderChecksum, commonPostInstallVitePlugins, commonVitePlugins, getAppRoot, getDocsPluginBasePath, getHostPath, getPublicPath, pluginLLMMarkdown, postWorkspaceSetup, preWorkspaceSetup, storeChecksum } from "./utils";
 import { CACHE_FOLDER_PATH, SUPPORTED_SETTINGS_FILES, SUPPORTED_CONTENT_FILES } from "./const";
@@ -729,6 +729,10 @@ function getFirstPageFromNavigation(navigation: Navigation): string | null {
             }
 
             if (typeof page === 'object') {
+                // asToc groups' pages are TOC sections, not routable pages —
+                // never preload them.
+                if (asTocEnabled((page as any).asToc)) continue;
+
                 // Handle SidebarRoute
                 if ('route' in page && page.pages) {
                     const firstPage = extractFirstPage(page.pages);

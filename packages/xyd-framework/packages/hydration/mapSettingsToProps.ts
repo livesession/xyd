@@ -1,6 +1,6 @@
 // server-only
 
-import { Sidebar, MetadataMap, Settings, SidebarRoute, Metadata, PageURL, TranslationCatalog, resolveI18nDeep } from "@xyd-js/core";
+import { Sidebar, MetadataMap, Settings, SidebarRoute, Metadata, PageURL, TranslationCatalog, resolveI18nDeep, asTocEnabled, asTocOptions } from "@xyd-js/core";
 import { pageFrontMatters } from "@xyd-js/content";
 import { IBreadcrumb, INavLinks } from "@xyd-js/ui";
 
@@ -50,9 +50,21 @@ export async function mapSettingsToProps(
         )
     }
 
+    // sidebar-as-TOC: section pages are excluded from the real page mapping
+    // (non-routable), but their titles still come from their own frontmatter —
+    // merge their file map in for the lookup only (routing stays clean).
+    const asTocPages = (globalThis as any).__xydAsTocPages as AsTocPagesLike | undefined
+
     let filteredNav = filterNavigation(effectiveSettings, slug)
     if (!frontmatters) {
-        frontmatters = await pageFrontMatters(filteredNav, pagePathMapping) as MetadataMap
+        let fmMapping = pagePathMapping
+        if (asTocPages) {
+            fmMapping = { ...pagePathMapping }
+            for (const host of Object.values(asTocPages.hosts)) {
+                for (const s of host.sections) fmMapping[s.page] = s.file
+            }
+        }
+        frontmatters = await pageFrontMatters(filteredNav, fmMapping) as MetadataMap
     }
 
     const slugFrontmatter = frontmatters[slug] || null
@@ -114,6 +126,7 @@ export async function mapSettingsToProps(
                 active: false,
                 uniqIndex: uniqIndex++,
                 icon: page.icon,
+                asToc: asTocOptions(page.asToc) || undefined,
                 items,
             }
         }
@@ -145,8 +158,12 @@ export async function mapSettingsToProps(
 
         const meta = frontmatters[pageName]
 
+        // sidebar-as-TOC section: not a routable page — the item links to the
+        // host page + section anchor (scroll target), never triggers navlinks.
+        const asTocEntry = asTocPages?.pages?.[pageName]
+
         // TODO: better data structures - for example flat array of filtered nav
-        if (slugFrontmatter && (slugFrontmatter === meta)) {
+        if (!asTocEntry && slugFrontmatter && (slugFrontmatter === meta)) {
             const nlinks = mapNavToLinks(pageName, currentNav, nav, frontmatters, hiddenPages)
 
             if (nlinks) {
@@ -156,12 +173,17 @@ export async function mapSettingsToProps(
 
         return {
             title,
-            href: safePageLink(pageName),
+            href: asTocEntry
+                ? `${asTocHostHref(asTocEntry.host)}#${asTocEntry.id}`
+                : safePageLink(pageName),
             active: false,
             uniqIndex: uniqIndex++,
             icon: meta?.icon || "",
             sidebarTitle: meta?.sidebarTitle || "",
             url: meta?.url || "",
+            asToc: asTocEntry
+                ? { indicator: asTocEntry.indicator !== false, breadcrumbs: asTocEntry.breadcrumbs !== false }
+                : undefined,
             pageMeta: meta || null,
         }
     }
@@ -176,6 +198,7 @@ export async function mapSettingsToProps(
         return {
             group: nav.group,
             icon: nav?.icon,
+            asToc: asTocOptions(nav.asToc) || undefined,
             items
         } as FwSidebarItemProps
     }
@@ -227,13 +250,35 @@ export async function mapSettingsToProps(
         }
     }
 
+    // sidebar-as-TOC host page: flag the SSR metadata so themes hide the
+    // right-hand TOC without a hydration flash (the composed page's compiled
+    // frontmatter carries the same flag for the post-mount metadata source).
+    const isAsTocHost = !!asTocPages?.hosts?.[slug?.replace(/^\//, "") || "index"]
+
     return {
         groups,
         breadcrumbs,
         navlinks,
         hiddenPages,
-        metadata: slugFrontmatter
+        metadata: isAsTocHost
+            ? { ...(slugFrontmatter || {} as Metadata), asTocHost: true }
+            : slugFrontmatter
     }
+}
+
+// Minimal structural view of globalThis.__xydAsTocPages (owned by
+// @xyd-js/plugin-docs — read through the global to avoid a framework →
+// plugin-docs dependency).
+interface AsTocPagesLike {
+    hosts: Record<string, { indexFile: string, sections: Array<{ page: string, file: string, id: string }> }>
+    pages: Record<string, { host: string, id: string, indicator?: boolean, breadcrumbs?: boolean }>
+}
+
+/** Host slug → the URL it serves at ("index" → "/", "docs" → "/docs"). */
+function asTocHostHref(host: string): string {
+    if (host === "index") return "/"
+    if (host.endsWith("/index")) return safePageLink(host.slice(0, -"/index".length))
+    return safePageLink(host)
 }
 
 function filterNavigation(settings: Settings, slug: string): Sidebar[] {
@@ -370,6 +415,11 @@ function mapNavToLinks(
             })
             return
         }
+        // sidebar-as-TOC group: its pages are sections of the host page, not
+        // navigable routes — never part of the prev/next sequence.
+        if (asTocEnabled(group.asToc)) {
+            return
+        }
         if (group.pages) {
             group.pages.forEach((pageItem, pageIndex) => {
                 let pageName = ""
@@ -378,6 +428,10 @@ function mapNavToLinks(
                 } else if ("virtual" in pageItem) {
                     pageName = pageItem.page
                 } else if ("pages" in pageItem) {
+                    // Nested asToc group → sections, not pages (see above).
+                    if (asTocEnabled((pageItem as Sidebar).asToc)) {
+                        return
+                    }
                     // This is a nested Sidebar, use BFS to resolve all pages
                     const resolvedPages = findResolvedPagesBFS(pageItem)
                     if (resolvedPages.length > 0) {
@@ -472,6 +526,8 @@ function findResolvedPagesBFS(sidebar: Sidebar): string[] {
         } else if ("page" in current && typeof current === "object") {
             resolvedPages.push((current as { page: string }).page)
         } else if ("pages" in current && current.pages) {
+            // asToc subtrees are non-navigable — never resolved as pages.
+            if (asTocEnabled((current as Sidebar).asToc)) continue
             // Add all pages from this nested sidebar to the queue
             queue.push(...current.pages)
         }

@@ -68,7 +68,9 @@ export abstract class Theme {
 
     protected useHideToc() {
         const meta = useMetadata()
-        return meta?.layout === "wide" || meta?.layout === "reader" || meta?.layout === "page"
+        // asTocHost: the sidebar IS the page's TOC (sidebar-as-TOC composed
+        // page) — the right-hand TOC would duplicate it.
+        return meta?.layout === "wide" || meta?.layout === "reader" || meta?.layout === "page" || meta?.asTocHost === true
     }
 
     protected useHideSidebar() {

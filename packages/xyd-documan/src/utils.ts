@@ -660,6 +660,7 @@ export async function appInit(options?: PluginDocsOptions) {
         (globalThis as any).__xydAccessMap = inject.accessMap || {};
         if (inject.i18n) (globalThis as any).__xydI18n = inject.i18n;
         if (inject.i18nTranslations) (globalThis as any).__xydI18nTranslations = inject.i18nTranslations;
+        if (inject.asTocPages) (globalThis as any).__xydAsTocPages = inject.asTocPages;
         return { respPluginDocs: null, resolvedPlugins };
     }
 

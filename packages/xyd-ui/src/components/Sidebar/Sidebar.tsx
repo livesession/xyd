@@ -67,8 +67,8 @@ export interface UISidebarItemProps {
     onClick?: (v: any) => void
 }
 
-UISidebar.ItemGroup = function SidebarItemGroup({ children }: { children: React.ReactNode }) {
-    return <div part="item-group">
+UISidebar.ItemGroup = function SidebarItemGroup({ children, asToc }: { children: React.ReactNode, asToc?: boolean }) {
+    return <div part="item-group" data-astoc={asToc ? "true" : undefined}>
         {children}
     </div>
 }

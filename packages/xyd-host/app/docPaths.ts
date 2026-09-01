@@ -1,4 +1,4 @@
-import {PageURL, Settings, Sidebar, SidebarNavigation} from "@xyd-js/core";
+import {PageURL, Settings, Sidebar, SidebarNavigation, asTocEnabled} from "@xyd-js/core";
 
 export function docPaths(navigation: Settings['navigation']) {
     if (!navigation?.sidebar && !navigation?.languages?.length) return [];
@@ -35,8 +35,9 @@ export function docPaths(navigation: Settings['navigation']) {
             }
         }
 
-        // Process items in the sidebar group
-        if ("pages" in sidebarGroup && sidebarGroup.pages?.length) {
+        // Process items in the sidebar group. asToc groups' pages are TOC
+        // sections of the host page, not prerenderable routes — skip them.
+        if ("pages" in sidebarGroup && sidebarGroup.pages?.length && !asTocEnabled((sidebarGroup as Sidebar).asToc)) {
             processSidebarItems(sidebarGroup.pages);
         }
         });
@@ -58,8 +59,9 @@ export function docPaths(navigation: Settings['navigation']) {
                 }
             }
 
-            // If item has pages, process them
-            if ("pages" in item && item.pages?.length) {
+            // If item has pages, process them (asToc groups excluded — their
+            // pages are sections of the host page, not routes)
+            if ("pages" in item && item.pages?.length && !asTocEnabled((item as Sidebar).asToc)) {
                 item.pages.forEach((page) => {
                     if (typeof page === 'string') {
                         // Add the page path

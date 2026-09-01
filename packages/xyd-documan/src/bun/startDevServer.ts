@@ -463,6 +463,11 @@ function makeRebuild(ctx: {
 function contentTopologyChanged(cwd: string, paths: string[]): boolean {
   const mapping = (globalThis as any).__xydPagePathMapping || {};
   const known = new Set<string>(Object.values(mapping).map((v: any) => path.resolve(cwd, String(v))));
+  // sidebar-as-TOC section files are known content too (they're excluded from
+  // the page mapping) — an edit is a plain content edit, not a topology change.
+  for (const host of Object.values(((globalThis as any).__xydAsTocPages?.hosts || {}) as Record<string, { sections: Array<{ file: string }> }>)) {
+    for (const s of host.sections) known.add(path.resolve(cwd, s.file));
+  }
   for (const p of paths) {
     const abs = path.resolve(cwd, p);
     if (!known.has(abs)) return true; // new/renamed (or path-form mismatch → safe reinit)

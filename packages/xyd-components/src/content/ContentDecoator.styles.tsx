@@ -173,6 +173,20 @@ export default {
             [data-content-element]:not([data-content-element="false"]) {
                 margin-top: var(--space-medium);
             }
+
+            /* sidebar-as-TOC composed sections: joined page bodies each start
+               with their own h1, which has no top margin (it's normally the
+               first element of a page) — the section wrapper provides the
+               separation between joined sections instead. scroll-margin keeps
+               anchor scrolls (sidebar item clicks, #hash landings) from hiding
+               the section heading under the sticky header stack. */
+            [data-astoc-section] {
+                display: block;
+                scroll-margin-top: calc(var(--xyd-header-total-height, 60px) + var(--space-medium));
+            }
+            [data-astoc-section]:not(:first-child) {
+                margin-top: var(--space-2xlarge);
+            }
         }
     `
 }

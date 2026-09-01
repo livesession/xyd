@@ -2,7 +2,7 @@ import path from "node:path";
 
 import { RouteConfigEntry, index } from "@react-router/dev/routes";
 
-import { Settings, SidebarNavigation } from "@xyd-js/core";
+import { Settings, SidebarNavigation, asTocEnabled } from "@xyd-js/core";
 import { layout, route } from "@react-router/dev/routes";
 
 type Route = {
@@ -87,8 +87,11 @@ function extractNestedRoutes(
                 routes.push({ id: routeMatch, path: routeMatch + "/*" });
             }
 
-            // Recursively process nested pages within this route
-            if (item.pages && Array.isArray(item.pages)) {
+            // Recursively process nested pages within this route. asToc
+            // groups' pages are TOC sections of the host page — they must NOT
+            // become routes (non-routable; prerendering them would also trip
+            // React Router's ssr:false loader-export validation).
+            if (item.pages && Array.isArray(item.pages) && !asTocEnabled((item as any).asToc)) {
                 extractNestedRoutes(item.pages as SidebarNavigation, routes, route || parentRoute)
             }
         } else if (!parentRoute) {

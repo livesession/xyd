@@ -1,11 +1,13 @@
 import React, {} from "react";
 import {useLocation} from "react-router";
 
+import {UISidebar} from "@xyd-js/ui";
+
 import {useSidebarGroups} from "../contexts";
 import {useSidebarActive} from "../lib";
 import {trailingSlash} from "../utils";
 
-import {FwSidebarItem, FwSidebarItemElementProps} from "./FwSidebarItem";
+import {FwSidebarItem, FwSidebarItemElementProps, FwSidebarItemProps} from "./FwSidebarItem";
 
 export function useSidebarTree(): [React.ReactElement[], { initialActiveItems: any[] }] {
     const location = useLocation()
@@ -19,16 +21,47 @@ export function useSidebarTree(): [React.ReactElement[], { initialActiveItems: a
 
     // The tree STRUCTURE depends only on the groups — memoize it separately so a
     // changing active href (scroll) doesn't rebuild the whole tree.
+    //
+    // sidebar-as-TOC: CONSECUTIVE asToc groups (with the indicator enabled)
+    // share ONE [data-astoc] wrapper — headers included — so a single
+    // continuous TOC track line spans them (per-group wrappers would draw a
+    // broken line per group). A group with `indicator: false` (or any
+    // non-asToc group) ends the run.
     const sidebarTree = React.useMemo(
-        () =>
-            groups?.map((group, index) => <FwSidebarItem
-                // `index + group.group` is NaN for a groupless group (flat items,
-                // pageless component wrap) → key collisions. Index is stable +
-                // unique here (groups don't reorder).
-                key={`group-${index}-${group.group ?? ""}`}
-                {...group}
-                groupIndex={index}
-            />) || [],
+        () => {
+            const nodes: React.ReactElement[] = []
+            let run: React.ReactElement[] = []
+
+            const flushRun = () => {
+                if (!run.length) return
+                nodes.push(
+                    <UISidebar.ItemGroup asToc key={`astoc-run-${nodes.length}`}>
+                        {run}
+                    </UISidebar.ItemGroup>
+                )
+                run = []
+            }
+
+            groups?.forEach((group, index) => {
+                const el = <FwSidebarItem
+                    // `index + group.group` is NaN for a groupless group (flat items,
+                    // pageless component wrap) → key collisions. Index is stable +
+                    // unique here (groups don't reorder).
+                    key={`group-${index}-${group.group ?? ""}`}
+                    {...group}
+                    groupIndex={index}
+                />
+                if (asTocIndicatorOf(group)) {
+                    run.push(el)
+                } else {
+                    flushRun()
+                    nodes.push(el)
+                }
+            })
+            flushRun()
+
+            return nodes
+        },
         [groups],
     )
 
@@ -58,6 +91,12 @@ export function useSidebarTree(): [React.ReactElement[], { initialActiveItems: a
     }, [groups, effectiveHref])
 
     return [sidebarTree, {initialActiveItems}]
+}
+
+/** asToc group with the TOC track line enabled (`indicator` defaults true). */
+function asTocIndicatorOf(group: FwSidebarItemProps): boolean {
+    return !!group.asToc
+        && (typeof group.asToc !== "object" || group.asToc.indicator !== false)
 }
 
 function recursiveSearch(items: FwSidebarItemElementProps[], href: string, levels: any[] = []) {

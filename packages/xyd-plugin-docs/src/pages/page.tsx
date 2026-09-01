@@ -6,7 +6,7 @@ import { useMemo, useContext, useState, ReactElement, SVGProps, useEffect } from
 import { redirect, ScrollRestoration, useLocation, useNavigation } from "react-router";
 
 import { MetadataMap, Metadata, Settings } from "@xyd-js/core"
-import { ContentFS } from "@xyd-js/content"
+import { ContentFS, composeAsTocRaw, isAsTocSectionPage } from "@xyd-js/content"
 import { markdownPlugins } from "@xyd-js/content/md"
 import { pageMetaLayout } from "@xyd-js/framework";
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
@@ -232,10 +232,24 @@ export async function loader({ request }: { request: any }) {
 
     if (pagePath && !shellOnly) {
         timedebug.compile
-        code = await contentFs.compile(pagePath)
-        rawPage = await contentFs.readRaw(pagePath)
+        // sidebar-as-TOC host: compose the page from its asToc groups'
+        // section files instead of the mapped single file.
+        const composed = await composeAsTocRaw(slug)
+        if (composed) {
+            rawPage = composed.raw
+            code = await contentFs.compileContent(composed.raw, composed.filePath)
+        } else {
+            code = await contentFs.compile(pagePath)
+            rawPage = await contentFs.readRaw(pagePath)
+        }
         timedebug.compileEnd
     } else if (!pagePath) {
+        // sidebar-as-TOC section pages are NOT real pages — a direct visit is
+        // a 404, never a redirect (their content lives on the host page).
+        if (isAsTocSectionPage(slug)) {
+            timedebug.totalEnd
+            throw new Response("Not Found", { status: 404 })
+        }
         const resp = redirectFallback()
         if (resp) {
             timedebug.totalEnd

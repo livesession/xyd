@@ -15,6 +15,7 @@ import { FwWebEditorSidebarTop } from "./FwWebEditorSidebarTop";
 import { FwSidebarMobileHeaderItems } from "./FwSidebarMobileHeaderItems";
 import { FwSidebarFilter } from "./FwSidebarFilter";
 import { FwSidebarComponent } from "./FwSidebarComponent";
+import { FwSidebarAsToc } from "./FwSidebarAsToc";
 import type { FwSidebarItemElementProps, FwSidebarItemProps } from "./FwSidebarItem";
 import { useSidebarTree } from "./FwSidebarTree";
 import { FwLogo } from "./FwLogo";
@@ -78,24 +79,29 @@ export function FwSidebar(props: FwSidebarProps) {
     </>
 
     return <SidebarFilterProvider>
-        <Sidebar
-            footerItems={sidebarFooterAnchors && sidebarFooterAnchors}
-            fixedTop={fixedTop}
-            scrollShadow={appearance?.sidebar?.scrollShadow}
-            scrollTransition={appearance?.sidebar?.scrollTransition}
-            groupCase={appearance?.sidebar?.groupCase}
-            scroll={appearance?.sidebar?.scroll}
-        >
-            <Surface target={SurfaceTarget.SidebarTop} />
+        {/* sidebar-as-TOC: on an asToc host page this drives the sidebar
+            highlight from scroll position and intercepts asToc item clicks;
+            elsewhere it renders children untouched. */}
+        <FwSidebarAsToc>
+            <Sidebar
+                footerItems={sidebarFooterAnchors && sidebarFooterAnchors}
+                fixedTop={fixedTop}
+                scrollShadow={appearance?.sidebar?.scrollShadow}
+                scrollTransition={appearance?.sidebar?.scrollTransition}
+                groupCase={appearance?.sidebar?.groupCase}
+                scroll={appearance?.sidebar?.scroll}
+            >
+                <Surface target={SurfaceTarget.SidebarTop} />
 
-            <FwSidebarTopAnchors />
+                <FwSidebarTopAnchors />
 
-            <FwWebEditorSidebarTop />
+                <FwWebEditorSidebarTop />
 
-            <FwSidebarMobileHeaderItems />
+                <FwSidebarMobileHeaderItems />
 
-            <FwSidebarTabsDropdown />
-        </Sidebar>
+                <FwSidebarTabsDropdown />
+            </Sidebar>
+        </FwSidebarAsToc>
     </SidebarFilterProvider>
 }
 

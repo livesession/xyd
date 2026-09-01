@@ -7,9 +7,18 @@ import { UISidebar } from "@xyd-js/ui";
 
 import { Surface } from "./Surfaces";
 import { FwSidebarComponent } from "./FwSidebarComponent";
+import { useSidebarAsToc } from "./FwSidebarAsToc";
 import { FooSidebarItemProps, useFooSidebar, useSidebarActive } from "../lib";
 import { useSidebarFilter } from "../contexts";
 import { sidebarItemMatchesQuery } from "../utils";
+
+/** Resolved sidebar-as-TOC behavior flags carried on groups + their items. */
+export interface FwSidebarAsTocProps {
+    /** TOC-style vertical track line on the group (default true) */
+    indicator?: boolean
+    /** host-page breadcrumbs follow this group's active section (default true) */
+    breadcrumbs?: boolean
+}
 
 export interface FwSidebarItemProps {
     group: string
@@ -19,6 +28,9 @@ export interface FwSidebarItemProps {
     items: FwSidebarItemElementProps[]
 
     icon?: string
+
+    /** sidebar-as-TOC group — its items scroll to sections of the host page */
+    asToc?: boolean | FwSidebarAsTocProps
 }
 
 export function FwSidebarItem(props: FwSidebarItemProps) {
@@ -33,6 +45,9 @@ export function FwSidebarItem(props: FwSidebarItemProps) {
 
     const icon = props.icon ? <Icon name={props.icon || ""} size={16} /> : null
 
+    // NOTE: sidebar-as-TOC groups are NOT wrapped here — CONSECUTIVE asToc
+    // groups must share ONE TOC track line, so the [data-astoc] wrapper is
+    // applied a level up, in useSidebarTree (which chunks adjacent groups).
     return <>
         {
             props.group && <UISidebar.ItemHeader icon={icon}>
@@ -68,6 +83,7 @@ export function FwSidebarItem(props: FwSidebarItemProps) {
                 items={item.items}
                 active={item.active}
                 icon={item.icon}
+                asToc={item.asToc}
             />
         })}
     </>
@@ -100,6 +116,11 @@ export interface FwSidebarItemElementProps extends FooSidebarItemProps {
 
     /** Props passed to the custom `component`. */
     componentProps?: Record<string, any>
+
+    /** sidebar-as-TOC item — href is `<host>#<section>`; on the host page a
+     *  click scrolls to the section instead of navigating. Object form carries
+     *  the owning group's resolved behavior flags. */
+    asToc?: boolean | FwSidebarAsTocProps
 }
 
 // Whether an injected active href lives anywhere under these items (drives a
@@ -114,6 +135,7 @@ function containsHref(items: FwSidebarItemElementProps[] | undefined, href: stri
 FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
     const { active } = useFooSidebar()
     const { activeHref } = useSidebarActive()
+    const asTocSidebar = useSidebarAsToc()
     const { query } = useSidebarFilter()
     const [isActive, setActive] = active(props)
 
@@ -144,7 +166,14 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
         return null
     }
 
-    function handleClick() {
+    function handleClick(e: React.MouseEvent) {
+        // sidebar-as-TOC item on its host page: scroll to the section instead
+        // of navigating (the provider preventDefaults; off-host it lets the
+        // link navigate to <host>#<section>).
+        if (props.asToc && asTocSidebar.enabled) {
+            asTocSidebar.onItemClick(e, props.href)
+        }
+
         if (!nested) {
             return
         }
@@ -243,6 +272,7 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
                             active={active(item)[0]}
                             icon={item.icon}
                             pageMeta={item.pageMeta}
+                            asToc={item.asToc}
                         />)
                     }
                 </>}
