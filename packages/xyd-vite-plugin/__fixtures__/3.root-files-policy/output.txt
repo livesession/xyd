@@ -1,0 +1,4 @@
+assets/a.css :: a
+docs/index.html :: <h1>D</h1>
+index.html :: <h1>H</h1>
+sitemap.xml :: <urlset/>

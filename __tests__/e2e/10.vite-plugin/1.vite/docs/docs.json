@@ -1,0 +1,11 @@
+{
+    "advanced": {
+        "basename": "/docs"
+    },
+    "navigation": {
+        "sidebar": [
+            "overview",
+            "quickstart"
+        ]
+    }
+}

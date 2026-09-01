@@ -175,6 +175,10 @@ export async function build() {
         await viteBuild(ssrConfig);
     } catch (error) {
         console.error('Build failed:', error);  // TODO: better message
+        // exit non-zero — otherwise a failed build looks successful to callers
+        // (CI, deploy tooling, @xyd-js/vite-plugin) since finishBuild's exit(0)
+        // only runs on a completed bundle
+        process.exit(1);
     }
 }
 
