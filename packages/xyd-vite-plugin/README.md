@@ -8,7 +8,10 @@ The plugin runs `xyd build` for your docs project (in a child process) after you
 build finishes, then merges the static docs output into your build directory:
 
 - `assets/` → merged into your `assets/` (the docs HTML references them as `/assets/*`)
-- the basename page tree (e.g. `docs/`) → mounted at that path
+- the basename page tree (e.g. `docs/`) → mounted at that path; every `<slug>.html`
+  page is also mirrored as `<slug>/index.html`, so extensionless links work on
+  clean-URL hosts (Netlify, `serve`) AND plain static servers (express /
+  `react-router-serve`) via the directory-index convention
 - `public/` (when the docs build emits a root one) → merged file-by-file, never clobbering yours
 
 Build-only: it does nothing during `vite dev`.

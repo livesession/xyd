@@ -71,11 +71,22 @@ export default function xyd(userOptions: XydOptions): Plugin {
         async closeBundle() {
             if (!options.enabled || !state) return;
 
-            // SSR-ness, robust across the classic config and the Vite 6/7 environments API
+            // SSR-ness, robust across the classic config and the Vite 6+ environments API
             const environment = (this as any).environment;
             const isSSR = environment?.config
                 ? environment.config.consumer !== "client"
                 : !!config.build.ssr;
+
+            // The client outDir must come from the CLIENT environment: under the
+            // builder mode (React Router 8 / Vite 8) the whole build runs in ONE
+            // config whose root-level build.outDir is the default ("dist") — only
+            // environments carry the real per-target outDirs. The client env's
+            // closeBundle always fires before the ssr env's, so the value is set
+            // by the time an RR merge (on the final/ssr build) needs it.
+            if (!isSSR) {
+                const outDir = environment?.config?.build?.outDir ?? config.build.outDir;
+                state.clientOutDir = path.resolve(config.root, outDir);
+            }
 
             if (state.merged) {
                 log.debug("docs already merged in this process — skipping");

@@ -2,6 +2,7 @@ assets/host-1.js :: host
 assets/shared-1.css :: shared
 assets/theme-abc.css :: .docs{color:red}
 docs/guides/intro.html :: <h1>Intro</h1>
+docs/guides/intro/index.html :: <h1>Intro</h1>
 docs/index.html :: <h1>Docs Home</h1>
 docs/llms.txt :: llms
 docs/public/logo.svg :: <svg>docs</svg>

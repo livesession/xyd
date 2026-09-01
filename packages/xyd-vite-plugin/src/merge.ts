@@ -177,6 +177,20 @@ export function planMerge(docsClientDir: string, hostOutDir: string, options: Me
         plan.mount = options.base;
     }
 
+    // Pretty-URL portability: xyd emits flat `<slug>.html` pages, which clean-URL
+    // hosts (Netlify, `serve`) map from extensionless links — but express-style
+    // static servers (react-router-serve) don't. Mirror every page as
+    // `<slug>/index.html` too, so `/docs/overview` resolves everywhere via the
+    // universal directory-index convention (express 301s to the trailing slash).
+    const planned = new Set(plan.ops.map((op) => op.dest));
+    for (const op of [...plan.ops]) {
+        if (op.kind !== "page-tree" || !op.dest.endsWith(".html") || path.basename(op.dest) === "index.html") continue;
+        const mirror = path.join(op.dest.slice(0, -".html".length), "index.html");
+        if (planned.has(mirror) || fs.existsSync(mirror)) continue;
+        planned.add(mirror);
+        plan.ops.push({ src: op.src, dest: mirror, kind: "page-tree" });
+    }
+
     return plan;
 }
 
