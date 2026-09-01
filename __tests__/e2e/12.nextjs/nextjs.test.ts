@@ -14,6 +14,39 @@ const FIXTURE = {
     dev: { portEnvVar: "PORT" },
 };
 
+test.describe("next-plugin — dev", () => {
+    let server: CompatServer;
+
+    test.beforeAll(async () => {
+        test.setTimeout(20 * 60 * 1000);
+        server = new CompatServer(FIXTURE);
+        await server.startDev();
+    });
+
+    test.afterAll(async () => {
+        await server?.stop();
+    });
+
+    test("host + docs share one origin in dev", async ({ page }) => {
+        test.setTimeout(6 * 60 * 1000);
+        await page.goto(server.getUrl("/"));
+        await expect(page.locator("#host-marker")).toHaveText("Host Next App");
+
+        // no gate middleware in Next — poll until the spawned xyd dev is warm
+        await expect
+            .poll(async () => (await page.request.get(server.getUrl("/docs/overview"))).status(), {
+                timeout: 5 * 60 * 1000,
+            })
+            .toBe(200);
+
+        await page.goto(server.getUrl("/docs/overview"));
+        await expect(page.locator("h1").first()).toHaveText("Docs Overview");
+
+        const theme = await page.request.get(server.getUrl("/_xyd/theme.css"));
+        expect(theme.status()).toBe(200);
+    });
+});
+
 test.describe("next-plugin — build + start", () => {
     let server: CompatServer;
 
@@ -58,38 +91,5 @@ test.describe("next-plugin — build + start", () => {
         expect(pub.status()).toBe(200);
         const hostPub = await page.request.get(server.getUrl("/host-public.txt"));
         expect(hostPub.status()).toBe(200);
-    });
-});
-
-test.describe("next-plugin — dev", () => {
-    let server: CompatServer;
-
-    test.beforeAll(async () => {
-        test.setTimeout(20 * 60 * 1000);
-        server = new CompatServer(FIXTURE);
-        await server.startDev();
-    });
-
-    test.afterAll(async () => {
-        await server?.stop();
-    });
-
-    test("host + docs share one origin in dev", async ({ page }) => {
-        test.setTimeout(6 * 60 * 1000);
-        await page.goto(server.getUrl("/"));
-        await expect(page.locator("#host-marker")).toHaveText("Host Next App");
-
-        // no gate middleware in Next — poll until the spawned xyd dev is warm
-        await expect
-            .poll(async () => (await page.request.get(server.getUrl("/docs/overview"))).status(), {
-                timeout: 5 * 60 * 1000,
-            })
-            .toBe(200);
-
-        await page.goto(server.getUrl("/docs/overview"));
-        await expect(page.locator("h1").first()).toHaveText("Docs Overview");
-
-        const theme = await page.request.get(server.getUrl("/_xyd/theme.css"));
-        expect(theme.status()).toBe(200);
     });
 });

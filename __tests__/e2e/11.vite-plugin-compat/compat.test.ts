@@ -88,6 +88,33 @@ const MATRIX: Matrix[] = [
 ];
 
 for (const fixture of MATRIX) {
+    test.describe(`compat dev — ${fixture.name}`, () => {
+        let server: CompatServer;
+
+        test.beforeAll(async () => {
+            test.setTimeout(20 * 60 * 1000);
+            server = new CompatServer(fixture);
+            await server.startDev();
+        });
+
+        test.afterAll(async () => {
+            await server?.stop();
+        });
+
+        test("host + docs share one origin in dev", async ({ page }) => {
+            test.setTimeout(6 * 60 * 1000);
+            await page.goto(server.getUrl("/"));
+            await expect(page.locator("#host-marker")).toHaveText(fixture.hostMarker);
+
+            // gated until the spawned xyd dev finishes its cold start
+            await page.goto(server.getUrl("/docs/overview"), { timeout: 5 * 60 * 1000 });
+            await expect(page.locator("h1").first()).toHaveText("Docs Overview");
+
+            const theme = await page.request.get(server.getUrl("/_xyd/theme.css"));
+            expect(theme.status()).toBe(200);
+        });
+    });
+
     test.describe(`compat build — ${fixture.name}`, () => {
         let server: CompatServer;
 
@@ -125,33 +152,6 @@ for (const fixture of MATRIX) {
 
             const pub = await page.request.get(server.getUrl("/docs/public/sample.txt"));
             expect(pub.status()).toBe(200);
-        });
-    });
-
-    test.describe(`compat dev — ${fixture.name}`, () => {
-        let server: CompatServer;
-
-        test.beforeAll(async () => {
-            test.setTimeout(20 * 60 * 1000);
-            server = new CompatServer(fixture);
-            await server.startDev();
-        });
-
-        test.afterAll(async () => {
-            await server?.stop();
-        });
-
-        test("host + docs share one origin in dev", async ({ page }) => {
-            test.setTimeout(6 * 60 * 1000);
-            await page.goto(server.getUrl("/"));
-            await expect(page.locator("#host-marker")).toHaveText(fixture.hostMarker);
-
-            // gated until the spawned xyd dev finishes its cold start
-            await page.goto(server.getUrl("/docs/overview"), { timeout: 5 * 60 * 1000 });
-            await expect(page.locator("h1").first()).toHaveText("Docs Overview");
-
-            const theme = await page.request.get(server.getUrl("/_xyd/theme.css"));
-            expect(theme.status()).toBe(200);
         });
     });
 }
