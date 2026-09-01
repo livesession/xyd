@@ -20,9 +20,14 @@ afterEach(() => {
 });
 
 describe("preValidateBasename", () => {
-    it("errors when docs.json has no advanced.basename", () => {
+    it("errors when docs.json has no advanced.basename AND no base option", () => {
         const dir = docsProject({ navigation: {} });
-        expect(() => preValidateBasename(dir, undefined)).toThrowError(/advanced\.basename/);
+        expect(() => preValidateBasename(dir, undefined)).toThrowError(/base.*option|advanced\.basename/);
+    });
+
+    it("accepts a missing advanced.basename when base supplies the mount (via XYD_BASENAME)", () => {
+        const dir = docsProject({ navigation: {} });
+        expect(() => preValidateBasename(dir, "/docs")).not.toThrow();
     });
 
     it("errors when base does not match advanced.basename", () => {

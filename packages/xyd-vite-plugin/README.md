@@ -40,11 +40,15 @@ export default defineConfig({
 });
 ```
 
-**The docs project must set `advanced.basename`** — that's the mount path, baked into
-every prerendered docs link:
+**The mount path** comes from the plugin's `base` option — it flows into the docs
+build via the `XYD_BASENAME` env var, so the docs settings don't need to declare
+anything. If the docs settings DO set `advanced.basename`, that value wins — and it
+must equal `base` (the basename is baked into every prerendered docs link, so a
+mismatch fails the build instead of silently diverging).
 
 ```json
-{ "advanced": { "basename": "/docs" } }
+// docs.json — no basename needed when the plugin passes base
+{ "navigation": { "sidebar": ["overview"] } }
 ```
 
 ## Which xyd runs?

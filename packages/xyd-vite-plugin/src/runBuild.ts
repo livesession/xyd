@@ -22,6 +22,12 @@ export async function runDocsBuild(
         // docs builds are memory-heavy (two full Vite builds)
         env.NODE_OPTIONS = options.nodeOptions;
     }
+    // The mount path flows into the docs build via XYD_BASENAME, so the docs
+    // settings don't have to duplicate it — a docs-side `advanced.basename`
+    // still wins inside xyd (and a mismatch fails validation here).
+    if (options.base && !env.XYD_BASENAME) {
+        env.XYD_BASENAME = options.base;
+    }
 
     const startedAt = Date.now();
     const tail: string[] = [];

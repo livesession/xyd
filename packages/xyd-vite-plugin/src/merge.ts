@@ -103,7 +103,12 @@ export function planMerge(docsClientDir: string, hostOutDir: string, options: Me
     if (fs.existsSync(path.join(docsClientDir, "index.html"))) {
         throw new XydError(
             `the docs build has NO basename — its pages sit at the output root and would collide with your app.\n` +
-            `  Add to your docs settings:  "advanced": { "basename": "/docs" }`
+            (options.base
+                ? `  \`base: "${options.base}"\` was passed (via XYD_BASENAME) but the resolved xyd CLI ignored it —\n` +
+                  `  upgrade xyd to a version that supports XYD_BASENAME, or add to your docs settings:\n` +
+                  `  "advanced": { "basename": "${options.base}" }`
+                : `  Set the plugin's \`base\` option (e.g. base: "/docs") or add to your docs settings:\n` +
+                  `  "advanced": { "basename": "/docs" }`)
         );
     }
 

@@ -4,9 +4,10 @@ export interface XydOptions {
     /** Path to the docs project (the dir containing docs.json / docs.ts), relative to the Vite root or absolute. Required. */
     docsRoot: string;
     /**
-     * Expected mount path, e.g. "/docs". Must equal `advanced.basename` in the docs settings —
-     * the basename is baked into every prerendered link, so the plugin validates rather than remaps.
-     * Optional: when omitted, the mount is taken from the docs build output.
+     * Mount path, e.g. "/docs". Passed into the docs build via XYD_BASENAME, so the
+     * docs settings don't need to declare `advanced.basename` at all. When the docs
+     * settings DO declare one, it wins — and must equal `base` (the basename is baked
+     * into every prerendered link, so the plugin validates rather than remaps).
      */
     base?: string;
     /** Set to false to turn the plugin into a no-op (e.g. gate docs builds behind an env var). Default true. */

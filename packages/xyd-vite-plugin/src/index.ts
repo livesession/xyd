@@ -138,6 +138,10 @@ function assertDocsProject(absDocsRoot: string): void {
  * Fail fast when the settings are statically readable (docs.json). docs.ts/tsx
  * can't be parsed here — the post-build output-tree validation in merge.ts covers
  * those (the output encodes the basename regardless of settings format).
+ *
+ * The mount path can come from EITHER side: the plugin's `base` option (passed
+ * into the docs build via XYD_BASENAME) or the docs' own `advanced.basename`.
+ * When both are set they must agree.
  */
 export function preValidateBasename(absDocsRoot: string, base: string | undefined): void {
     const settingsPath = path.join(absDocsRoot, "docs.json");
@@ -151,9 +155,10 @@ export function preValidateBasename(absDocsRoot: string, base: string | undefine
     }
     const basename = settings?.advanced?.basename;
     if (!basename) {
+        if (base) return; // the plugin supplies the mount via XYD_BASENAME
         throw new XydError(
-            `${settingsPath} has no \`advanced.basename\` — required to mount the docs under a subpath of your app.\n` +
-            `  Add:  "advanced": { "basename": "/docs" }`
+            `no mount path for the docs — set the plugin's \`base\` option (e.g. base: "/docs")\n` +
+            `  or add to ${settingsPath}:  "advanced": { "basename": "/docs" }`
         );
     }
     if (base && normalizeBase(String(basename)) !== base) {

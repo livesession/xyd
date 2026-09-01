@@ -149,6 +149,15 @@ async function fastServeSetup(currentSettings: Settings | null) {
 }
 
 function postLoadSetup(settings: Settings) {
+    // A 3rd-party build orchestrator (e.g. @xyd-js/vite-plugin) can pass the
+    // mount path via XYD_BASENAME instead of duplicating it in the settings;
+    // an explicit `advanced.basename` in the settings always wins. Injected
+    // BEFORE the data plane so both the native (Rust) and JS preset paths see
+    // it (ensureBasename derives logo/favicon prefixes from it).
+    if (process.env.XYD_BASENAME && !settings?.advanced?.basename) {
+        settings.advanced = { ...settings.advanced, basename: process.env.XYD_BASENAME };
+    }
+
     // S6+ C-S5: the env substitution + sync presets data-plane runs in Rust
     // (crates/xyd_settings::process_settings) when the native core is present;
     // the JS branch below is the byte-identical fidelity reference + fallback.
