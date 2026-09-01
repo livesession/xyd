@@ -13,6 +13,14 @@ export interface XydOptions {
     /** Set to false to turn the plugin into a no-op (e.g. gate docs builds behind an env var). Default true. */
     enabled?: boolean;
     /**
+     * Dev-mode integration: during `vite dev`, spawn `xyd dev` for the docs and
+     * proxy the mount path (+ xyd's /_xyd and /_bun internals, incl. the
+     * livereload websocket) into the SAME origin — app and docs on one URL/port.
+     * The spawned dev defaults to xyd's bun engine (XYD_BUN=1; override via `env`)
+     * whose URL surface is subpath-clean. Default true; false = build-only plugin.
+     */
+    dev?: boolean;
+    /**
      * Full CLI argv WITHOUT the `build` subcommand, e.g. ["node", "/abs/path/to/cli.js"] or
      * ["bunx", "xyd-js@latest"]. A string is whitespace-split. Overrides auto-resolution.
      */
@@ -40,6 +48,7 @@ export interface ResolvedXydOptions {
     docsRoot: string;
     base?: string;
     enabled: boolean;
+    dev: boolean;
     command?: string[];
     env: Record<string, string>;
     nodeOptions: string | false;
@@ -68,6 +77,7 @@ export function normalizeOptions(options: XydOptions): ResolvedXydOptions {
         docsRoot: options.docsRoot,
         base: normalizeBase(options.base),
         enabled: options.enabled !== false,
+        dev: options.dev !== false,
         command: options.command === undefined
             ? undefined
             : Array.isArray(options.command) ? options.command : options.command.split(/\s+/).filter(Boolean),

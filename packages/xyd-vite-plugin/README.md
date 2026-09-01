@@ -14,7 +14,13 @@ build finishes, then merges the static docs output into your build directory:
   `react-router-serve`) via the directory-index convention
 - `public/` (when the docs build emits a root one) → merged file-by-file, never clobbering yours
 
-Build-only: it does nothing during `vite dev`.
+During `vite dev` the plugin spawns `xyd dev` on an internal port and proxies the
+mount path (plus xyd's `/_xyd/*` and `/_bun/*` internals, including the live-reload
+websocket) — **app and docs share one URL and port** in dev too. Requests under the
+mount are held until the docs dev server finishes its cold start. The spawned dev
+uses xyd's bun engine by default (`XYD_BUN=1`, a no-op for the native binary — its
+URL surface is subpath-clean; override via `env`). Set `dev: false` for a
+build-only plugin.
 
 ## Usage
 
@@ -69,6 +75,7 @@ There is deliberately no `npx xyd-js@latest` fallback — a build that silently 
 | `docsRoot` | — (required) | Path to the docs project (the dir with `docs.json`), relative to the Vite root |
 | `base` | from the build output | Expected mount path; validated against `advanced.basename` — mismatch fails the build |
 | `enabled` | `true` | `false` turns the plugin into a no-op (gate docs builds behind an env var) |
+| `dev` | `true` | `false` disables the `vite dev` integration (spawned `xyd dev` + same-origin proxy) |
 | `command` | auto-resolved | Full CLI argv WITHOUT the `build` subcommand |
 | `env` | `{}` | Extra env for the docs build child process |
 | `nodeOptions` | `"--max-old-space-size=8192"` | `NODE_OPTIONS` for the child when unset (docs builds are memory-heavy); `false` disables |

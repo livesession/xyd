@@ -121,3 +121,67 @@ export async function createViteBuildServer(fixtureDir: string, options: ViteBui
     await server.start();
     return server;
 }
+
+/**
+ * Dev-mode harness: runs the fixture's OWN `dev` script (`vite` / `react-router
+ * dev`) with a harness-picked host port (fixture vite.config reads
+ * XYD_E2E_HOST_PORT); the plugin spawns `xyd dev` internally and proxies the
+ * docs — the test talks to ONE origin for both app and docs.
+ *
+ * The child chain is pnpm → vite → xyd, so stop() signals the process GROUP
+ * (detached spawn) — killing just pnpm leaves vite (and the docs dev) running.
+ */
+export class ViteDevServer {
+    private process: any;
+    private port = 0;
+    private readonly fixtureDir: string;
+    private readonly env?: Record<string, string>;
+
+    constructor(fixtureDir: string, options: { env?: Record<string, string> } = {}) {
+        this.fixtureDir = path.resolve(fixtureDir);
+        this.env = options.env;
+    }
+
+    async start(): Promise<void> {
+        ensurePluginBuilt();
+        cleanFixture(this.fixtureDir);
+
+        const resolved = await resolveXydCommand();
+        this.port = await getRandomPort();
+
+        console.log(`Running host dev (pnpm run dev) in ${this.fixtureDir} on :${this.port}...`);
+        this.process = spawn('pnpm', ['run', 'dev'], {
+            cwd: this.fixtureDir,
+            stdio: 'inherit',
+            detached: true, // own process group — stop() signals the whole chain
+            env: {
+                ...process.env,
+                ...resolved.env,
+                ...this.env,
+                XYD_E2E_HOST_PORT: this.port.toString(),
+                XYD_E2E_CLI_CMD: JSON.stringify([resolved.cmd, ...resolved.args]),
+            },
+        });
+
+        await waitForServer(this.port);
+    }
+
+    async stop(): Promise<void> {
+        if (this.process?.pid) {
+            try { process.kill(-this.process.pid, 'SIGTERM'); } catch { /* already gone */ }
+            await new Promise((r) => setTimeout(r, 2000));
+            try { process.kill(-this.process.pid, 'SIGKILL'); } catch { /* already gone */ }
+        }
+        cleanFixture(this.fixtureDir);
+    }
+
+    getUrl(urlPath: string = ''): string {
+        return `http://localhost:${this.port}${urlPath}`;
+    }
+}
+
+export async function createViteDevServer(fixtureDir: string, options: { env?: Record<string, string> } = {}): Promise<ViteDevServer> {
+    const server = new ViteDevServer(fixtureDir, options);
+    await server.start();
+    return server;
+}

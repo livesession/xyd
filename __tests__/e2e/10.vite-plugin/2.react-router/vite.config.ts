@@ -3,6 +3,11 @@ import { defineConfig } from "vite";
 import xyd from "@xyd-js/vite-plugin";
 
 export default defineConfig({
+    // Harness-controlled dev port (engine-agnostic — works for `vite` and
+    // `react-router dev` alike).
+    server: process.env.XYD_E2E_HOST_PORT
+        ? { port: Number(process.env.XYD_E2E_HOST_PORT), strictPort: true }
+        : undefined,
     plugins: [
         reactRouter(),
         xyd({

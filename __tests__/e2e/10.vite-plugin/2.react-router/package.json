@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "react-router build"
+    "build": "react-router build",
+    "dev": "react-router dev"
   }
 }

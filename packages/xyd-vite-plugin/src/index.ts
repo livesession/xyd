@@ -8,6 +8,7 @@ import { normalizeBase, normalizeOptions, XydOptions } from "./options";
 import { mergeDocsBuild } from "./merge";
 import { resolveCli } from "./resolveCli";
 import { runDocsBuild } from "./runBuild";
+import { DocsDevHandle, pickFreePort, spawnDocsDev, XYD_DEV_INTERNAL_PREFIXES } from "./devServer";
 
 export type { XydOptions } from "./options";
 export { mergeDocsBuild, planMerge, executeMerge } from "./merge";
@@ -30,28 +31,100 @@ interface State {
 const states = new Map<string, State>();
 
 /**
- * Build-only Vite plugin: during `vite build` (plain Vite or Vite + React Router 7),
- * runs `xyd build` for a docs project in a child process and merges its static
- * output (`.xyd/build/client/`) into the host app's client outDir.
+ * Vite plugin for embedding xyd docs into a host app (plain Vite or Vite +
+ * React Router):
  *
- * The docs project MUST set `advanced.basename` (e.g. "/docs") — that's the mount
- * path, baked into every prerendered docs link.
+ * - `vite build`: runs `xyd build` for the docs project in a child process and
+ *   merges its static output (`.xyd/build/client/`) into the host client outDir.
+ * - `vite dev`: spawns `xyd dev` on an internal port and proxies the mount path
+ *   (+ xyd's /_xyd + /_bun internals, incl. the livereload websocket) — app and
+ *   docs share one URL/port.
+ *
+ * The mount path comes from `base` (passed to xyd via XYD_BASENAME) or the docs'
+ * own `advanced.basename` — the docs side wins when both are set (must match).
  */
 export default function xyd(userOptions: XydOptions): Plugin {
     const options = normalizeOptions(userOptions);
     const log = createLogger(options.verbose);
     let config: ResolvedConfig;
     let state: State | undefined;
+    let devPort: number | undefined;
+    let devBase: string | undefined;
+    let devHandle: DocsDevHandle | undefined;
+
+    const isDevMode = () => options.enabled && options.dev;
 
     return {
         name: "xyd",
-        apply: "build",
         // closeBundle must run AFTER react-router's own hooks (prerender etc.)
         enforce: "post",
+
+        /** dev: inject the proxy entries BEFORE the server exists (vite's proxy
+         *  config is static) — the target port is picked here, the child spawns
+         *  in configureServer. */
+        async config(userConfig, env) {
+            if (env.command !== "serve" || (env as any).isPreview || !isDevMode()) return;
+
+            const absDocsRoot = path.resolve(userConfig.root ? path.resolve(userConfig.root) : process.cwd(), options.docsRoot);
+            devBase = options.base ?? readSettingsBasename(absDocsRoot);
+            if (!devBase) {
+                throw new XydError(
+                    `dev mode needs the docs mount path — set the plugin's \`base\` option (e.g. base: "/docs")\n` +
+                    `  or \`advanced.basename\` in ${absDocsRoot}/docs.json`
+                );
+            }
+            devPort = await pickFreePort();
+
+            const target = `http://localhost:${devPort}`;
+            const proxy: Record<string, any> = {
+                [devBase]: { target },
+            };
+            for (const prefix of XYD_DEV_INTERNAL_PREFIXES) {
+                // ws: true — /_xyd/livereload is a websocket
+                proxy[prefix] = { target, ws: true };
+            }
+            return { server: { proxy } };
+        },
+
+        /** dev: spawn `xyd dev` + gate proxied requests until it answers. */
+        configureServer(server) {
+            if (!isDevMode() || devPort === undefined || !devBase) return;
+
+            const absDocsRoot = path.resolve(config.root, options.docsRoot);
+            const cli = resolveCli(options.command, config.root);
+            log.info(`docs dev (${cli.source}): ${cli.argv.join(" ")} dev on :${devPort} → proxied at ${devBase}`);
+            devHandle = spawnDocsDev(cli.argv, absDocsRoot, devPort, devBase, options, log);
+            server.httpServer?.once("close", () => devHandle?.stop());
+
+            // Hold proxied requests until the docs dev server is ready (cold starts
+            // install the docs workspace) — registered here (pre-internal), so it
+            // runs before vite's proxy middleware and the proxy never ECONNREFUSEDs.
+            const gated = (url: string) =>
+                url === devBase || url.startsWith(devBase + "/") ||
+                XYD_DEV_INTERNAL_PREFIXES.some((p) => url.startsWith(p));
+            server.middlewares.use((req, res, next) => {
+                if (!req.url || !gated(req.url)) return next();
+                devHandle!.ready.then(
+                    () => next(),
+                    (err) => {
+                        res.statusCode = 502;
+                        res.setHeader("content-type", "text/plain");
+                        res.end(String(err?.message || err));
+                    }
+                );
+            });
+        },
 
         configResolved(resolved) {
             if (!options.enabled) return;
             config = resolved;
+            if (resolved.command !== "build") {
+                // dev: validate the docs project early, skip the build-state machinery
+                const absDocsRoot = path.resolve(resolved.root, options.docsRoot);
+                assertDocsProject(absDocsRoot);
+                preValidateBasename(absDocsRoot, options.base);
+                return;
+            }
 
             const absDocsRoot = path.resolve(resolved.root, options.docsRoot);
             assertDocsProject(absDocsRoot);
@@ -69,7 +142,7 @@ export default function xyd(userOptions: XydOptions): Plugin {
         },
 
         async closeBundle() {
-            if (!options.enabled || !state) return;
+            if (!options.enabled || !state || config.command !== "build") return;
 
             // SSR-ness, robust across the classic config and the Vite 6+ environments API
             const environment = (this as any).environment;
@@ -123,6 +196,17 @@ export default function xyd(userOptions: XydOptions): Plugin {
             );
         },
     };
+}
+
+/** `advanced.basename` from a statically readable docs.json (normalized), else undefined. */
+function readSettingsBasename(absDocsRoot: string): string | undefined {
+    try {
+        const settings = JSON.parse(fs.readFileSync(path.join(absDocsRoot, "docs.json"), "utf-8"));
+        const basename = settings?.advanced?.basename;
+        return basename ? normalizeBase(String(basename)) : undefined;
+    } catch {
+        return undefined;
+    }
 }
 
 function assertDocsProject(absDocsRoot: string): void {
