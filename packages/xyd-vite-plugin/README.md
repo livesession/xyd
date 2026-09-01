@@ -76,6 +76,7 @@ There is deliberately no `npx xyd-js@latest` fallback — a build that silently 
 | `base` | from the build output | Expected mount path; validated against `advanced.basename` — mismatch fails the build |
 | `enabled` | `true` | `false` turns the plugin into a no-op (gate docs builds behind an env var) |
 | `dev` | `true` | `false` disables the `vite dev` integration (spawned `xyd dev` + same-origin proxy) |
+| `outDir` | client build outDir | Override the merge target for adapter frameworks (SvelteKit: `"build"`, Nuxt: `".output/public"`); merge then runs at end of process, after the adapter |
 | `command` | auto-resolved | Full CLI argv WITHOUT the `build` subcommand |
 | `env` | `{}` | Extra env for the docs build child process |
 | `nodeOptions` | `"--max-old-space-size=8192"` | `NODE_OPTIONS` for the child when unset (docs builds are memory-heavy); `false` disables |
@@ -83,6 +84,21 @@ There is deliberately no `npx xyd-js@latest` fallback — a build that silently 
 | `timeoutMs` | `0` (none) | Kill the docs build after N ms and fail |
 | `silent` | `false` | Buffer docs build output; replay the tail only on failure |
 | `verbose` | `false` | Plugin debug logging |
+
+## Framework compatibility
+
+Verified across the Vite ecosystem (each in **build and dev**, see the
+`11.vite-plugin-compat` e2e matrix):
+
+| Host | Notes |
+|---|---|
+| plain Vite (vanilla / vue / solid SPA) | works as-is |
+| React Router 7 & 8 (`ssr` + `prerender`) | works as-is (vite 7 and 8) |
+| Astro | add to `vite.plugins` in `astro.config.mjs` |
+| SvelteKit + adapter-static | set `outDir: "build"` (the adapter assembles the final dir) |
+| Nuxt | add to `vite.plugins` in `nuxt.config.ts` with `outDir: ".output/public"`; also set `ignore: ["docs/**"]` when the docs dir lives inside the app. Docs live-reload is auto-disabled in dev (nuxt's proxy can't forward websocket upgrades) — pages and styles proxy normally |
+| custom SSR servers (Vite SSR guide) | see below |
+| Next.js | not Vite — use [`@xyd-js/next-plugin`](https://www.npmjs.com/package/@xyd-js/next-plugin) |
 
 ## Custom SSR servers (the Vite SSR guide setup)
 

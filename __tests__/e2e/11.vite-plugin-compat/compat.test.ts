@@ -50,6 +50,41 @@ const MATRIX: Matrix[] = [
         build: { serveScript: "preview", serveEnv: { NODE_ENV: "production" } },
         dev: { portEnvVar: "PORT" },
     },
+    {
+        name: "astro latest (static)",
+        dir: path.join(__dirname, "6.astro"),
+        hostMarker: "Host Astro App",
+        build: { outDir: "dist" },
+        dev: {},
+    },
+    {
+        name: "sveltekit latest + adapter-static",
+        dir: path.join(__dirname, "7.sveltekit"),
+        hostMarker: "Host SvelteKit App",
+        build: { outDir: "build" },
+        dev: {},
+    },
+    {
+        name: "solid latest (SPA)",
+        dir: path.join(__dirname, "8.solid"),
+        hostMarker: "Host Solid App",
+        build: { outDir: "dist" },
+        dev: {},
+    },
+    {
+        name: "vue latest (SPA)",
+        dir: path.join(__dirname, "9.vue-spa"),
+        hostMarker: "Host Vue SPA App",
+        build: { outDir: "dist" },
+        dev: {},
+    },
+    {
+        name: "nuxt latest (generate)",
+        dir: path.join(__dirname, "10.nuxt"),
+        hostMarker: "Host Nuxt App",
+        build: { outDir: ".output/public" },
+        dev: { portEnvVar: "PORT" },
+    },
 ];
 
 for (const fixture of MATRIX) {

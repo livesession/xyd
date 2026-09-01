@@ -34,7 +34,13 @@ export interface CompatFixture {
     };
 }
 
-const BUILD_ARTIFACTS = ['dist', 'build', '.react-router', path.join('docs', '.xyd')];
+const BUILD_ARTIFACTS = [
+    'dist', 'build', '.react-router', '.svelte-kit', '.astro', '.nuxt', '.output', '.next',
+    path.join('docs', '.xyd'),
+    // @xyd-js/next-plugin generates into public/ (Next serves it at the root)
+    path.join('public', 'docs'), path.join('public', 'assets'), path.join('public', 'public'),
+    path.join('public', '.xyd-docs-manifest.json'),
+];
 
 function clean(fixtureDir: string): void {
     for (const rel of BUILD_ARTIFACTS) {
@@ -45,10 +51,12 @@ function clean(fixtureDir: string): void {
 function ensurePluginBuilt(): void {
     const root = findMonorepoRoot();
     if (!root) return;
-    const dist = path.join(root, 'packages/xyd-vite-plugin/dist/index.js');
-    if (existsSync(dist)) return;
-    console.log('Building @xyd-js/vite-plugin (dist missing)...');
-    execSync('pnpm --filter @xyd-js/vite-plugin build', {cwd: root, stdio: 'inherit'});
+    for (const pkg of ['xyd-vite-plugin', 'xyd-next-plugin']) {
+        const dist = path.join(root, `packages/${pkg}/dist/index.js`);
+        if (existsSync(dist)) continue;
+        console.log(`Building @xyd-js/${pkg.replace('xyd-', '')} (dist missing)...`);
+        execSync(`pnpm --filter @xyd-js/${pkg.replace('xyd-', '')} build`, {cwd: root, stdio: 'inherit'});
+    }
 }
 
 /** npm install once per fixture (node_modules kept across runs as a cache). */
@@ -69,6 +77,9 @@ async function harnessEnv(port: number, portEnvVar: string, extra?: Record<strin
         ...resolved.env,
         ...extra,
         [portEnvVar]: port.toString(),
+        // listhen-based dev servers (nuxt) bind `localhost` to a per-run IPv4 OR
+        // IPv6 — pin them to IPv4 so getUrl's 127.0.0.1 always connects
+        HOST: '127.0.0.1',
         XYD_E2E_CLI_CMD: JSON.stringify([resolved.cmd, ...resolved.args]),
     };
 }
@@ -143,10 +154,13 @@ export class CompatServer {
             await new Promise((r) => setTimeout(r, 2000));
             try { process.kill(-this.process.pid, 'SIGKILL'); } catch { /* gone */ }
         }
-        clean(this.fixtureDir);
+        // build output is intentionally LEFT on disk for inspection — every run
+        // starts from a clean() in startBuild()/startDev() anyway
     }
 
     getUrl(urlPath: string = ''): string {
-        return `http://localhost:${this.port}${urlPath}`;
+        // 127.0.0.1, not localhost: playwright's apiRequestContext resolves
+        // localhost to ::1 while some dev servers (nuxt) bind IPv4 only
+        return `http://127.0.0.1:${this.port}${urlPath}`;
     }
 }

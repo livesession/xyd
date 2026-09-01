@@ -1,0 +1,41 @@
+{
+  "name": "@xyd-js/next-plugin",
+  "version": "0.1.0-build.0",
+  "description": "Next.js plugin that builds xyd docs during `next build` and serves them under a subpath of your app — with a spawned `xyd dev` + proxy rewrites in `next dev`",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "prebuild": "pnpm clean",
+    "build": "tsup",
+    "test": "vitest",
+    "ci:test": "vitest run"
+  },
+  "keywords": [
+    "xyd",
+    "next",
+    "nextjs",
+    "docs",
+    "documentation"
+  ],
+  "dependencies": {
+    "@xyd-js/vite-plugin": "workspace:*"
+  },
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "tsup": "^8.3.0",
+    "vitest": "^2.1.8"
+  }
+}

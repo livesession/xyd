@@ -13,6 +13,13 @@ export interface XydOptions {
     /** Set to false to turn the plugin into a no-op (e.g. gate docs builds behind an env var). Default true. */
     enabled?: boolean;
     /**
+     * Override where the docs merge lands, relative to the Vite root. By default the
+     * client build's outDir is used — correct for plain Vite and React Router. Set
+     * this for ADAPTER-based frameworks whose final static dir is assembled after
+     * the client build (SvelteKit adapter-static: "build"; Nuxt: ".output/public").
+     */
+    outDir?: string;
+    /**
      * Dev-mode integration: during `vite dev`, spawn `xyd dev` for the docs and
      * proxy the mount path (+ xyd's /_xyd and /_bun internals, incl. the
      * livereload websocket) into the SAME origin — app and docs on one URL/port.
@@ -49,6 +56,7 @@ export interface ResolvedXydOptions {
     base?: string;
     enabled: boolean;
     dev: boolean;
+    outDir?: string;
     command?: string[];
     env: Record<string, string>;
     nodeOptions: string | false;
@@ -78,6 +86,7 @@ export function normalizeOptions(options: XydOptions): ResolvedXydOptions {
         base: normalizeBase(options.base),
         enabled: options.enabled !== false,
         dev: options.dev !== false,
+        outDir: options.outDir,
         command: options.command === undefined
             ? undefined
             : Array.isArray(options.command) ? options.command : options.command.split(/\s+/).filter(Boolean),

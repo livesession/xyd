@@ -1,0 +1,13 @@
+{
+  "name": "xyd-compat-nuxt",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt generate"
+  },
+  "devDependencies": {
+    "@xyd-js/vite-plugin": "file:../../../../packages/xyd-vite-plugin",
+    "nuxt": "4.5.2"
+  }
+}

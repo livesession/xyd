@@ -104,7 +104,8 @@ export class ViteBuildServer {
             this.process.kill('SIGTERM');
             await new Promise((resolve) => this.process.on('close', resolve));
         }
-        cleanFixture(this.fixtureDir);
+        // build output is intentionally LEFT on disk for inspection — every run
+        // starts from a cleanFixture() in start() anyway
     }
 
     getUrl(urlPath: string = ''): string {
@@ -172,7 +173,8 @@ export class ViteDevServer {
             await new Promise((r) => setTimeout(r, 2000));
             try { process.kill(-this.process.pid, 'SIGKILL'); } catch { /* already gone */ }
         }
-        cleanFixture(this.fixtureDir);
+        // build output is intentionally LEFT on disk for inspection — every run
+        // starts from a cleanFixture() in start() anyway
     }
 
     getUrl(urlPath: string = ''): string {

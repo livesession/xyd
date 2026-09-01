@@ -16,8 +16,8 @@
     "vue": "^3"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "latest",
+    "@vitejs/plugin-vue": "6.0.8",
     "@xyd-js/vite-plugin": "file:../../../../packages/xyd-vite-plugin",
-    "vite": "latest"
+    "vite": "8.2.2"
   }
 }

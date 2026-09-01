@@ -16,6 +16,6 @@
   },
   "devDependencies": {
     "@xyd-js/vite-plugin": "file:../../../../packages/xyd-vite-plugin",
-    "vite": "latest"
+    "vite": "8.2.2"
   }
 }

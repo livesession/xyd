@@ -1,1 +1,3 @@
 .react-router/
+dist/
+build/

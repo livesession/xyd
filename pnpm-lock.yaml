@@ -1567,6 +1567,22 @@ importers:
         specifier: ^3.8.2
         version: 3.8.2(@emnapi/runtime@1.9.2)(@types/node@24.12.3)(node-addon-api@7.1.1)
 
+  packages/xyd-next-plugin:
+    dependencies:
+      '@xyd-js/vite-plugin':
+        specifier: workspace:*
+        version: link:../xyd-vite-plugin
+    devDependencies:
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      tsup:
+        specifier: ^8.3.0
+        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@5.9.3)(yaml@2.8.4)
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@24.12.3)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
+
   packages/xyd-openapi:
     dependencies:
       '@apidevtools/json-schema-ref-parser':
