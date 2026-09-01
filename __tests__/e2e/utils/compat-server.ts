@@ -70,7 +70,7 @@ function ensureInstalled(fixtureDir: string): void {
     });
 }
 
-async function harnessEnv(port: number, portEnvVar: string, extra?: Record<string, string>): Promise<NodeJS.ProcessEnv> {
+async function harnessEnv(fixtureDir: string, port: number, portEnvVar: string, extra?: Record<string, string>): Promise<NodeJS.ProcessEnv> {
     const resolved = await resolveXydCommand();
     return {
         ...process.env,
@@ -80,6 +80,15 @@ async function harnessEnv(port: number, portEnvVar: string, extra?: Record<strin
         // listhen-based dev servers (nuxt) bind `localhost` to a per-run IPv4 OR
         // IPv6 — pin them to IPv4 so getUrl's 127.0.0.1 always connects
         HOST: '127.0.0.1',
+        // Per-fixture xyd host workspace (honored in XYD_DEV_MODE only — the other
+        // CLI tiers are per-docs-project already). Without it every fixture's docs
+        // build shares the monorepo's .xyd/host, and a killed sibling's half-done
+        // install corrupts it for the next build (observed: missing theme css,
+        // silently skipped prerenders). Lives OUTSIDE the fixture (in the suite's
+        // .xyd-hosts/) — inside it, module walk-up would find the FIXTURE's react
+        // next to the host's and crash the docs prerender with a dual-React
+        // useContext error. Kept across runs as a cache.
+        XYD_HOST: path.join(path.dirname(fixtureDir), '.xyd-hosts', path.basename(fixtureDir)),
         XYD_E2E_CLI_CMD: JSON.stringify([resolved.cmd, ...resolved.args]),
     };
 }
@@ -102,7 +111,7 @@ export class CompatServer {
         clean(this.fixtureDir);
 
         this.port = await getRandomPort();
-        const env = await harnessEnv(this.port, 'PORT', this.fixture.build.serveEnv);
+        const env = await harnessEnv(this.fixtureDir, this.port, 'PORT', this.fixture.build.serveEnv);
 
         console.log(`Running compat build (npm run build) in ${this.fixtureDir}...`);
         execSync('npm run build', {cwd: this.fixtureDir, stdio: 'inherit', timeout: 10 * 60 * 1000, env});
@@ -135,7 +144,7 @@ export class CompatServer {
 
         this.port = await getRandomPort();
         const portEnvVar = this.fixture.dev.portEnvVar || 'XYD_E2E_HOST_PORT';
-        const env = await harnessEnv(this.port, portEnvVar);
+        const env = await harnessEnv(this.fixtureDir, this.port, portEnvVar);
 
         const script = this.fixture.dev.script || 'dev';
         console.log(`Running compat dev (npm run ${script}) in ${this.fixtureDir} on :${this.port}...`);
@@ -150,9 +159,15 @@ export class CompatServer {
 
     async stop(): Promise<void> {
         if (this.process?.pid) {
-            try { process.kill(-this.process.pid, 'SIGTERM'); } catch { /* gone */ }
-            await new Promise((r) => setTimeout(r, 2000));
-            try { process.kill(-this.process.pid, 'SIGKILL'); } catch { /* gone */ }
+            const pgid = -this.process.pid;
+            try { process.kill(pgid, 'SIGTERM'); } catch { /* gone */ }
+            // give the tree up to 10s to die gracefully (a SIGKILL mid-install
+            // leaves the fixture's xyd host workspace corrupted)
+            for (let i = 0; i < 20; i++) {
+                await new Promise((r) => setTimeout(r, 500));
+                try { process.kill(pgid, 0); } catch { return; } // group gone
+            }
+            try { process.kill(pgid, 'SIGKILL'); } catch { /* gone */ }
         }
         // build output is intentionally LEFT on disk for inspection — every run
         // starts from a clean() in startBuild()/startDev() anyway

@@ -17,6 +17,24 @@ export async function runDocsBuild(
     options: ResolvedXydOptions,
     log: Logger
 ): Promise<void> {
+    try {
+        return await runDocsBuildOnce(argv, docsRoot, options, log);
+    } catch (err: any) {
+        // The docs builder intermittently skips its prerender step (client build
+        // succeeds, zero pages emitted, exit 0) — the structural validation catches
+        // it, and one retry reliably recovers. Genuine breakage fails again.
+        if (!String(err?.message || "").includes("looks broken")) throw err;
+        log.warn(`docs build output invalid (${err.message.split("(")[1]?.split(")")[0] || "?"}) — retrying once`);
+        return await runDocsBuildOnce(argv, docsRoot, options, log);
+    }
+}
+
+async function runDocsBuildOnce(
+    argv: string[],
+    docsRoot: string,
+    options: ResolvedXydOptions,
+    log: Logger
+): Promise<void> {
     const env: NodeJS.ProcessEnv = { ...process.env, ...options.env, NODE_ENV: "production" };
     if (options.nodeOptions !== false && !env.NODE_OPTIONS) {
         // docs builds are memory-heavy (two full Vite builds)

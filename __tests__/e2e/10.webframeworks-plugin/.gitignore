@@ -18,3 +18,4 @@ next-env.d.ts
 **/public/assets/
 **/public/public/
 **/public/.xyd-docs-manifest.json
+.xyd-hosts/
