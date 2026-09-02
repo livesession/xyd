@@ -227,11 +227,66 @@ export function presetsSyncData(settings: Settings) {
     }
 }
 
+/**
+ * Prefix a ROOT-ABSOLUTE asset path with the basename.
+ *
+ * Everything else passes through untouched: an icon-set name ("package"), an
+ * iconify id ("docs:github"), an absolute URL and a data URI are all valid
+ * icon values and none of them is a path this site serves. The
+ * leading-slash test mirrors `isImageSource` in @xyd-js/components/writer,
+ * narrowed to the absolute case — a relative "./logo.svg" has no basename to
+ * anchor to.
+ */
+function basenameAsset(basename: string, value: unknown): any {
+    if (typeof value !== "string" || !value.startsWith("/")) {
+        return value;
+    }
+    return path.join(basename, value);
+}
+
+/**
+ * Prefix every `icon` under `navigation` that is a root-absolute asset path.
+ *
+ * Walked generically rather than per-shape because `icon` appears on
+ * NavigationItem, AnchorHeader and Sidebar, and NavigationItem nests through
+ * both `pages` (sidebar-dropdown groups) and `dropdownMenu.items`. Enumerating
+ * those would silently miss the next place an icon is added.
+ */
+function basenameNavigationIcons(node: any, basename: string) {
+    if (!node || typeof node !== "object") {
+        return;
+    }
+    if (Array.isArray(node)) {
+        for (const item of node) {
+            basenameNavigationIcons(item, basename);
+        }
+        return;
+    }
+    if ("icon" in node) {
+        node.icon = basenameAsset(basename, node.icon);
+    }
+    for (const value of Object.values(node)) {
+        if (value && typeof value === "object") {
+            basenameNavigationIcons(value, basename);
+        }
+    }
+}
+
 function ensureBasename(settings: Settings) {
     const basename = settings?.advanced?.basename;
     if (!basename) {
         return;
     }
+    // Navigation icons were previously left alone, so a docs.json mounted at a
+    // basename had no way to express one: "/tech/astro.svg" resolves at the
+    // server root, which the docs do not own. It happened to work in a static
+    // production build only because buildStatic copies `public/` to BOTH the
+    // client root and the basename — under `xyd dev` the root copy does not
+    // exist and every such icon 404s.
+    //
+    // Done before the theme reads below so it is independent of them.
+    basenameNavigationIcons(settings?.navigation, basename);
+
     if (typeof settings?.theme?.logo === "string") {
         settings.theme.logo = path.join(basename, settings?.theme?.logo);
     }
