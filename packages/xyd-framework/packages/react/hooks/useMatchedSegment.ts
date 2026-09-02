@@ -3,6 +3,7 @@ import { useMatches } from "react-router";
 import { Segment } from "@xyd-js/core";
 
 import { useSettings } from "../contexts";
+import { flattenNavigationPages } from "../utils";
 
 // TODO: better data structures
 export function useMatchedSegment(): Segment | null {
@@ -21,7 +22,8 @@ export function useMatchedSegment(): Segment | null {
         if (matches?.find(m => sanitizeUrl(m.id) === sanitizeUrl(item.route as string))) {
             return true
         }
-        return item.pages?.find?.(page => {
+        // flattened: nested sidebar-dropdown group children match too
+        return flattenNavigationPages(item.pages).find(page => {
             return sanitizeUrl(page.page || "") === sanitizeUrl(lastMatchId || "")
         })
     })

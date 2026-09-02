@@ -971,6 +971,17 @@ export interface NavigationItem {
   dropdownMenu?: NavigationItem[] | DropdownMenu;
 
   /**
+   * Nested navigation items — recursive. Honored ONLY by sidebar-dropdown
+   * surfaces (`navigation.sidebarDropdown` and `appearance: "sidebarDropdown"`
+   * segments): an entry with `pages` (typically without `page`/`href`) renders
+   * as an inline-expandable GROUP row inside the dropdown popover — clicking
+   * it expands its children (indented) within the same popover. `title`,
+   * `icon`, and `description` apply to the group row. Other appearances
+   * (tabs, logoTrailing) ignore nesting.
+   */
+  pages?: NavigationItem[];
+
+  /**
    * How the `dropdownMenu` opens. Defaults to `"hover"`.
    */
   trigger?: "hover" | "click";

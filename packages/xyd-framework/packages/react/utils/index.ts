@@ -37,3 +37,8 @@ export {
     segmentAppearanceKind,
     segmentAppearanceOptions,
 } from "./segmentAppearance"
+
+export {
+    flattenNavigationPages,
+    findActiveNavigationPage,
+} from "./segmentSidebarDropdown"

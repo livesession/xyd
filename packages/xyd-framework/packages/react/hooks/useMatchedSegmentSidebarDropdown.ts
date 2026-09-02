@@ -2,7 +2,7 @@ import { Segment } from "@xyd-js/core";
 import { useLocation } from "react-router";
 
 import { useSettings } from "../contexts";
-import { pageLink, trailingSlash, segmentAppearanceKind } from "../utils";
+import { pageLink, trailingSlash, segmentAppearanceKind, flattenNavigationPages } from "../utils";
 
 /**
  * The `appearance: "sidebarDropdown"` segment scoped to the current route — a
@@ -26,7 +26,8 @@ export function useMatchedSegmentSidebarDropdown(): Segment | null {
         if (segmentAppearanceKind(seg) !== "sidebarDropdown") return false
         if (typeof seg.route === "string" && !pathname.startsWith(pageLink(seg.route))) return false
 
-        const sectionPrefixes = (seg.pages || []).filter(p => typeof p.page === "string")
+        // flattened: nested group children count as member sections too
+        const sectionPrefixes = flattenNavigationPages(seg.pages).filter(p => typeof p.page === "string")
         if (!sectionPrefixes.length) return true
         return sectionPrefixes.some(p => pathname.startsWith(pageLink(p.page as string)))
     }) || null

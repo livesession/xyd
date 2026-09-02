@@ -1,0 +1,41 @@
+{
+    "theme": {
+        "name": "poetry"
+    },
+    "navigation": {
+        "segments": [
+            {
+                "route": "docs",
+                "appearance": "sidebarDropdown",
+                "pages": [
+                    { "title": "Guides", "page": "docs/guides", "href": "docs/guides/index", "icon": "book" },
+                    { "title": "Reference", "page": "docs/reference", "href": "docs/reference/index", "icon": "braces" },
+                    {
+                        "title": "SDKs",
+                        "icon": "package",
+                        "description": "Client libraries",
+                        "pages": [
+                            { "title": "JavaScript SDK", "page": "docs/sdk/js", "href": "docs/sdk/js/index", "icon": "code" },
+                            { "title": "Python SDK", "page": "docs/sdk/py", "href": "docs/sdk/py/index" }
+                        ]
+                    },
+                    {
+                        "title": "Deployment",
+                        "pages": [
+                            { "title": "Docker", "page": "docs/deploy/docker", "href": "docs/deploy/docker/index" },
+                            { "title": "Kubernetes", "page": "docs/deploy/k8s", "href": "docs/deploy/k8s/index" }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "sidebar": [
+            { "route": "/docs/guides", "pages": [{ "group": "Guides", "pages": ["docs/guides/index", "docs/guides/writing"] }] },
+            { "route": "/docs/reference", "pages": [{ "group": "Reference", "pages": ["docs/reference/index"] }] },
+            { "route": "/docs/sdk/js", "pages": [{ "group": "JavaScript SDK", "pages": ["docs/sdk/js/index"] }] },
+            { "route": "/docs/sdk/py", "pages": [{ "group": "Python SDK", "pages": ["docs/sdk/py/index"] }] },
+            { "route": "/docs/deploy/docker", "pages": [{ "group": "Docker", "pages": ["docs/deploy/docker/index"] }] },
+            { "route": "/docs/deploy/k8s", "pages": [{ "group": "Kubernetes", "pages": ["docs/deploy/k8s/index"] }] }
+        ]
+    }
+}
