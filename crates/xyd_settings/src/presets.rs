@@ -143,6 +143,14 @@ fn ensure_basename(settings: &mut Value) {
             let mut out = Map::new();
             out.insert("light".into(), Value::String(path_join(&basename, light)));
             out.insert("dark".into(), Value::String(path_join(&basename, dark)));
+            // Building from a field list drops anything not named here, which
+            // is why a configured `alt` never reached the component on a site
+            // mounted at a basename. `page` is dropped the same way and is NOT
+            // restored here: it changes where the logo links, so it wants its
+            // own change.
+            if let Some(alt) = logo.get("alt") {
+                out.insert("alt".into(), alt.clone());
+            }
             // `href: settings.theme.logo.href` — copied verbatim (undefined omits).
             if let Some(href) = logo.get("href") {
                 out.insert("href".into(), href.clone());

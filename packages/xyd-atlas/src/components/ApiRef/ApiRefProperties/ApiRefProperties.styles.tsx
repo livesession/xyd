@@ -24,6 +24,13 @@ export const ApiRefPropertiesLiHost = css`
     }
 `;
 
+// Valid <ul>/<li> and <dl>/<dt>/<dd> nesting needs one more element in each pair, so
+// whichever element of the pair is not the styled one generates no box and the flex
+// layout stays exactly the same.
+export const ApiRefPropertiesContentsHost = css`
+    display: contents;
+`;
+
 export const ApiRefPropertiesDescriptionHost = css`
     display: flex;
     flex-direction: column;

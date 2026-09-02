@@ -543,6 +543,13 @@ export interface Logo {
   /** Path to the logo in dark mode. For example: `/path/to/logo.svg` */
   dark?: string;
 
+  /**
+   * Alternative text for the logo image. The logo is the only content of the
+   * link to the home page, so this doubles as that link's accessible name.
+   * Defaults to `seo.metatags["og:site_name"]`, then to `"Home"`.
+   */
+  alt?: string;
+
   /** External href to when clicking on the logo */
   href?: string;
 

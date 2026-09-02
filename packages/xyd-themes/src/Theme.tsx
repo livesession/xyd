@@ -263,6 +263,9 @@ export abstract class Theme {
                         props: {
                             theme: "ghost",
                             icon: <IconSocial kind={item.social as any} />,
+                            // Icon-only — no `children`, so the title (falling back to the
+                            // platform) is the button's only accessible name.
+                            "aria-label": item.title || item.social,
                         },
                     })
 
@@ -275,6 +278,8 @@ export abstract class Theme {
                         props: {
                             theme: "ghost",
                             icon: item.icon,
+                            // Icon-only — see the social branch above.
+                            "aria-label": item.title,
                         },
                     })
 

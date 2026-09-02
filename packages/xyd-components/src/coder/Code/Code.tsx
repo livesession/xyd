@@ -103,6 +103,10 @@ Code.Pre = function CodePre(props: {
 
     fixLastToken(codeblock)
 
+    // the <pre> is the element that scrolls, so it's the one that has to be focusable - name it
+    // with the same `meta || lang` the tabs use, otherwise it reads as an unlabelled region
+    const label = codeblock?.meta || codeblock?.lang
+
     let description: React.ReactNode | null = null
     
     if (props.descriptionHead || props.descriptionContent) {
@@ -131,6 +135,9 @@ Code.Pre = function CodePre(props: {
             code={codeblock}
             handlers={handlers}
             ref={codeSampleAnalytics.ref}
+            tabIndex={0}
+            role="region"
+            aria-label={label ? `${label} code block` : "Code block"}
         />
 
         {description}

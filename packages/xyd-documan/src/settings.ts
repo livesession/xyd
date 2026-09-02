@@ -188,9 +188,14 @@ function ensureBasename(settings: Settings) {
       "dark" in settings?.theme?.logo ||
       "href" in settings?.theme?.logo)
   ) {
+    // Rebuilding from a field list drops anything not named here, which is why
+    // a configured `alt` never reached the component on a site mounted at a
+    // basename. `page` is dropped the same way and is NOT restored here: it
+    // changes where the logo links, so it wants its own change.
     settings.theme.logo = {
       light: path.join(basename, settings?.theme?.logo?.light || ""),
       dark: path.join(basename, settings?.theme?.logo?.dark || ""),
+      alt: settings?.theme?.logo?.alt,
       href: settings?.theme?.logo?.href,
     };
   }
