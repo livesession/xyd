@@ -162,6 +162,25 @@ export const DropdownHost = css`
                 background: var(--dark16);
             }
         }
+
+        /* Nested GROUP row (option with \`items\`): a button that expands its
+           children inline. The chevron points right when collapsed, down when
+           expanded (the trigger-scoped rotations above don't apply here). */
+        [part="dropdown-listitem"][data-group="true"] span[part="dropdown-chevron"] {
+            transform: rotate(0deg);
+        }
+        [part="dropdown-listitem"][data-group="true"][aria-expanded="true"] span[part="dropdown-chevron"] {
+            transform: rotate(90deg);
+        }
+
+        /* Inline-expanded children of a group row. The indent lives on the
+           CONTAINER (not per-item padding) so theme listitem-padding
+           overrides — e.g. terrarium's — keep the nesting visible. */
+        [part="dropdown-sublist"] {
+            display: flex;
+            flex-direction: column;
+            padding-left: var(--xyd-sidebar-tabs-dropdown-sublist-indent, 14px);
+        }
     }
 `;
 

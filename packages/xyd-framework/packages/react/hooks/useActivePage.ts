@@ -1,7 +1,7 @@
 import { useMatches } from "react-router";
 
 import { useSettings } from "../contexts";
-import { pageLink } from "../utils";
+import { pageLink, flattenNavigationPages } from "../utils";
 import { useMatchedSubNav } from "./useMatchedSubNav";
 
 export function useActivePage(match: boolean = false) {
@@ -13,7 +13,8 @@ export function useActivePage(match: boolean = false) {
 
     const navigationItems = [
         ...(settings?.navigation?.tabs || []),
-        ...(settings?.navigation?.sidebarDropdown || []),
+        // flattened: nested sidebar-dropdown group children resolve as active
+        ...flattenNavigationPages(settings?.navigation?.sidebarDropdown || []),
         ...(settings?.webeditor?.header || [])
     ]
 

@@ -3,7 +3,7 @@ import React from "react"
 import { useSettings } from "../contexts"
 
 import { Icon } from "@xyd-js/components/writer"
-import { SidebarTabsDropdown, UISidebar } from "@xyd-js/ui"
+import { SidebarTabsDropdown, UISidebar, type SidebarTabsDropdownOption } from "@xyd-js/ui"
 
 import { useActivePage, useActiveSegment, useMatchedSegmentSidebarDropdown } from "../hooks"
 import { NavigationItem } from "@xyd-js/core"
@@ -22,8 +22,10 @@ import { pageLink, segmentAppearanceOptions } from "../utils"
 export function FwSidebarTabsDropdown({ fixed = false }: { fixed?: boolean } = {}) {
     const settings = useSettings()
 
-    const activeSegment = useActiveSegment()
     const matchedSegmentSidebarDropdown = useMatchedSegmentSidebarDropdown()
+    // Resolve active against the DROPDOWN segment's own pages (nested groups
+    // flattened) — a co-routed `tabs` segment must not shadow nested leaves.
+    const activeSegment = useActiveSegment(matchedSegmentSidebarDropdown)
 
     const activePage = useActivePage(true)
 
@@ -66,28 +68,31 @@ function $NavigationItemsSidebarTabs({ items, active }: { items: NavigationItem[
         return null
     }
 
+    // Recursive: an item with nested `pages` becomes a GROUP option (inline-
+    // expandable row in the dropdown); its children map the same way.
+    function toOption(item: NavigationItem): SidebarTabsDropdownOption {
+        let href: string | null = null
 
+        if (typeof item.href === "string") {
+            href = pageLink(item.href)
+        }
+
+        if (!href && typeof item.page === "string") {
+            href = pageLink(item.page)
+        }
+
+        return {
+            label: item.title ?? "",
+            description: item.description,
+            value: item.page || item.href || "",
+            icon: item.icon ? <Icon name={item.icon} size={18} /> : null,
+            href: href,
+            items: item.pages?.length ? item.pages.map(toOption) : undefined,
+        }
+    }
 
     return <SidebarTabsDropdown
-        options={items.map(item => {
-            let href: string | null = null
-
-            if (typeof item.href === "string") {
-                href = pageLink(item.href)
-            }
-
-            if (!href && typeof item.page === "string") {
-                href = pageLink(item.page)
-            }
-
-            return {
-                label: item.title ?? "",
-                description: item.description,
-                value: item.page || item.href || "",
-                icon: item.icon ? <Icon name={item.icon} size={18} /> : null,
-                href: href
-            }
-        })}
+        options={items.map(toOption)}
         value={active || ""}
     />
 }
