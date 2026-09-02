@@ -102,6 +102,9 @@ export interface FwSidebarItemElementProps extends FooSidebarItemProps {
 
     items?: FwSidebarItemElementProps[]
 
+    /** nested group configured `expanded: true` — open on first load (see useSidebarTree) */
+    expanded?: boolean
+
     active?: boolean
 
     url?: string

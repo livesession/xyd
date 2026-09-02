@@ -745,6 +745,16 @@ export interface Sidebar {
   icon?: string;
 
   /**
+   * Open this group on load, even when the reader is on a page outside it.
+   * Sets the INITIAL state only — it is a default, not a lock: the group still
+   * opens by itself when it holds the active page, and a reader who collapses
+   * it keeps it collapsed for as long as they stay on the page (like the rest
+   * of the sidebar's open state, it starts over on the next one).
+   * Only meaningful for a nested group — top-level groups are always open.
+   */
+  expanded?: boolean;
+
+  /**
    * The order of the group.
    */
   order?: Order;

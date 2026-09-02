@@ -126,6 +126,7 @@ export async function mapSettingsToProps(
                 active: false,
                 uniqIndex: uniqIndex++,
                 icon: page.icon,
+                expanded: page.expanded || undefined,
                 asToc: asTocOptions(page.asToc) || undefined,
                 items,
             }
