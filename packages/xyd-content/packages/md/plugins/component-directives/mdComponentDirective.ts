@@ -30,6 +30,8 @@ const supportedDirectives: MarkdownComponentDirectiveMap = {
 
     steps: true,
 
+    "code-tutorial": "CodeTutorialSteps",
+
     "guide-card": "GuideCard",
 
     "code-group": "DirectiveCodeGroup",
@@ -75,6 +77,15 @@ const stepsComponents: MarkdownComponentDirectiveMap = {
 const codeComponents: MarkdownComponentDirectiveMap = {
     "code-group": "DirectiveCodeGroup",
 }
+
+const codeTutorialComponents: MarkdownComponentDirectiveMap = {
+    "code-tutorial": "CodeTutorialSteps",
+}
+
+// The right column of a step is opt-in: everything an author writes is prose unless
+// it is wrapped in `:::aside`. The slot is resolved by `mdCodeTutorial` instead of
+// being listed in `supportedDirectives`, so `aside` only means something in a step.
+const codeTutorialAside = "aside"
 
 const navComponents: MarkdownComponentDirectiveMap = {
     tabs: "Tabs",
@@ -125,6 +136,7 @@ function recreateComponent(
         const isNavLike = navComponents[node.name];
         const isTableLike = tableComponents[node.name];
         const isStepsLike = stepsComponents[node.name];
+        const isCodeTutorialLike = codeTutorialComponents[node.name];
         const isCodeLike = codeComponents[node.name];
 
         if (isNavLike) {
@@ -150,6 +162,19 @@ function recreateComponent(
             );
 
             mdSteps(node, directivesMap, attributes);
+            return;
+        }
+
+        if (isCodeTutorialLike) {
+            componentProps(
+                node,
+                attributes,
+                promises,
+                file,
+                settings,
+            );
+
+            mdCodeTutorial(node, directivesMap, attributes);
             return;
         }
 
@@ -343,6 +368,87 @@ function mdSteps(node: any, directivesMap: MarkdownComponentDirectiveMap, attrib
     Object.assign(node, jsxNode);
 
     return;
+}
+
+// A step is one item of the ordered list, like `:::steps`. Its first paragraph is the
+// title - the same rule `:::tabs` uses for a tab label - everything else is the left
+// column, and a nested `:::aside` moves to the right one. Slots become sub-components
+// so the columns are placed by CSS instead of being partitioned at render time.
+function mdCodeTutorial(node: any, directivesMap: MarkdownComponentDirectiveMap, attributes: any[]) {
+    const componentName = getComponentName(node.name, directivesMap);
+
+    const steps = node.children.map((child: any) => {
+        if (child.type !== "list") {
+            return child
+        }
+
+        return child.children.map((item: any) => {
+            if (item.type !== "listItem") {
+                return
+            }
+
+            let title: any[] = []
+            const body: any[] = []
+            const aside: any[] = []
+
+            for (const block of item.children) {
+                if (block.type === "containerDirective" && block.name === codeTutorialAside) {
+                    // children, not the directive node - `visit` still walks them, so a
+                    // `:::code-group` inside the aside is converted on the way down
+                    aside.push(...block.children)
+                    continue
+                }
+
+                if (!title.length && !body.length && block.type === "paragraph") {
+                    title = block.children
+                    continue
+                }
+
+                body.push(block)
+            }
+
+            const slots: any[] = []
+
+            if (title.length) {
+                slots.push(mdCodeTutorialSlot(`${componentName}.Title`, title))
+            }
+
+            if (body.length) {
+                slots.push(mdCodeTutorialSlot(`${componentName}.Body`, body))
+            }
+
+            if (aside.length) {
+                slots.push(mdCodeTutorialSlot(`${componentName}.Aside`, aside))
+            }
+
+            return {
+                type: 'mdxJsxFlowElement',
+                name: `${componentName}.Step`,
+                attributes: [],
+                children: slots
+            };
+        }).flat();
+    }).flat();
+
+    const jsxNode = {
+        type: 'mdxJsxFlowElement',
+        name: componentName,
+        attributes,
+        children: steps
+    };
+
+    Object.assign(node, jsxNode);
+
+    return;
+}
+
+function mdCodeTutorialSlot(name: string, children: any[]) {
+    return {
+        type: 'mdxJsxFlowElement',
+        name,
+        attributes: [],
+        children
+    };
 }
 
 // TODO: support tsx tables like: [<>`Promise<Reference[]>`</>] ?
