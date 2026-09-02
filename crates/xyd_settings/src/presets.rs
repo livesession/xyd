@@ -7,7 +7,8 @@
 //! deterministic mutations are here:
 //!   - ensureNavigation: webeditor={} , navigation={sidebar:[]} , sidebar=[]
 //!   - theme.head = [] when theme exists and head is empty/absent
-//!   - ensureBasename: prefix theme.logo / theme.favicon with advanced.basename
+//!   - ensureBasename: prefix theme.logo / theme.favicon, and any
+//!     root-absolute navigation `icon`, with advanced.basename
 //!   - diagrams default: `integrations.diagrams === true` → `["mermaid"]`
 
 use serde_json::{Map, Value};
@@ -119,6 +120,10 @@ fn ensure_basename(settings: &mut Value) {
         return;
     };
 
+    // Navigation first: it is independent of `theme`, and a site can declare
+    // icons without one — an early return below must not skip it.
+    basename_navigation_icons(settings, &basename);
+
     let Some(theme) = settings.get_mut("theme").and_then(|t| t.as_object_mut()) else {
         return;
     };
@@ -154,6 +159,47 @@ fn ensure_basename(settings: &mut Value) {
     }
 }
 
+/// Prefix every `icon` under `navigation` that is a ROOT-ABSOLUTE asset path.
+///
+/// Port of `basenameNavigationIcons` in the JS presets. Walked generically
+/// rather than per-shape: `icon` appears on NavigationItem, AnchorHeader and
+/// Sidebar, and NavigationItem nests through both `pages` (sidebar-dropdown
+/// groups) and `dropdownMenu.items`.
+///
+/// Only a leading `/` is rewritten. An icon-set name ("package"), an iconify id
+/// ("docs:github"), an absolute URL and a data URI are all valid icon values and
+/// none of them is a path this site serves.
+fn basename_navigation_icons(settings: &mut Value, basename: &str) {
+    let Some(nav) = settings.get_mut("navigation") else {
+        return;
+    };
+    walk_icons(nav, basename);
+}
+
+fn walk_icons(node: &mut Value, basename: &str) {
+    match node {
+        Value::Array(items) => {
+            for item in items {
+                walk_icons(item, basename);
+            }
+        }
+        Value::Object(obj) => {
+            if let Some(Value::String(icon)) = obj.get("icon") {
+                if icon.starts_with('/') {
+                    let joined = path_join(basename, icon);
+                    obj.insert("icon".into(), Value::String(joined));
+                }
+            }
+            for (_, value) in obj.iter_mut() {
+                if value.is_object() || value.is_array() {
+                    walk_icons(value, basename);
+                }
+            }
+        }
+        _ => {}
+    }
+}
+
 /// JS truthiness for the `!x` guards ensureNavigation uses (objects/arrays are
 /// truthy even when empty; null/undefined/"" are falsy).
 fn truthy(v: &Value) -> bool {
@@ -170,6 +216,67 @@ fn truthy(v: &Value) -> bool {
 mod tests {
     use super::*;
     use serde_json::json;
+
+    #[test]
+    fn basename_prefixes_root_absolute_navigation_icons_only() {
+        let mut settings = json!({
+            "advanced": { "basename": "/docs" },
+            "navigation": {
+                "segments": [{
+                    "pages": [
+                        { "title": "Lucide", "icon": "package" },
+                        { "title": "Iconify", "icon": "docs:github" },
+                        { "title": "Asset", "icon": "/tech/astro.svg" },
+                        { "title": "Remote", "icon": "https://cdn.example/x.svg" },
+                        { "title": "Data", "icon": "data:image/svg+xml;base64,AA" },
+                        {
+                            "title": "Group",
+                            "icon": "/tech/javascript.svg",
+                            "pages": [{ "title": "Nested", "icon": "/tech/react.svg" }]
+                        }
+                    ]
+                }],
+                "anchors": { "header": [{ "title": "GH", "icon": "/tech/go.svg" }] }
+            }
+        });
+        presets(&mut settings);
+
+        let pages = settings["navigation"]["segments"][0]["pages"].clone();
+        assert_eq!(pages[0]["icon"], "package", "icon-set names pass through");
+        assert_eq!(pages[1]["icon"], "docs:github", "iconify ids pass through");
+        assert_eq!(pages[2]["icon"], "/docs/tech/astro.svg");
+        assert_eq!(
+            pages[3]["icon"], "https://cdn.example/x.svg",
+            "absolute URLs pass through"
+        );
+        assert_eq!(
+            pages[4]["icon"], "data:image/svg+xml;base64,AA",
+            "data URIs pass through"
+        );
+        // nesting: a group row AND its children
+        assert_eq!(pages[5]["icon"], "/docs/tech/javascript.svg");
+        assert_eq!(pages[5]["pages"][0]["icon"], "/docs/tech/react.svg");
+        // anchors are walked too
+        assert_eq!(
+            settings["navigation"]["anchors"]["header"][0]["icon"],
+            "/docs/tech/go.svg"
+        );
+    }
+
+    #[test]
+    fn navigation_icons_prefixed_without_a_theme_block() {
+        // The theme reads return early when `theme` is absent; icons must not
+        // be skipped along with them.
+        let mut settings = json!({
+            "advanced": { "basename": "/docs" },
+            "navigation": { "segments": [{ "pages": [{ "icon": "/tech/vue.svg" }] }] }
+        });
+        presets(&mut settings);
+        assert_eq!(
+            settings["navigation"]["segments"][0]["pages"][0]["icon"],
+            "/docs/tech/vue.svg"
+        );
+    }
 
     #[test]
     fn ensure_navigation_defaults() {
