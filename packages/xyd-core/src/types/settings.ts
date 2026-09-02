@@ -734,6 +734,14 @@ export interface Sidebar {
   page?: string;
 
   /**
+   * Label for a `{ page, title }` entry — a page reference with no `group` and no
+   * `pages`. It overrides the page's frontmatter title, and is the only way to
+   * label a route that has no markdown behind it, such as a generated API
+   * reference: without it the sidebar row renders blank.
+   */
+  title?: string;
+
+  /**
    * The relative paths to the markdown files that will serve as pages.
    * Note: groups are recursive, so to add a sub-folder add another group object in the page array.
    */

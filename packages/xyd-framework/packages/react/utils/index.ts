@@ -11,6 +11,10 @@ export {
 } from "./trailingSlash"
 
 export {
+    isRoutePrefix
+} from "./routePrefix"
+
+export {
     resolveDropdownItems,
     resolveDropdownHref,
     dropdownMenuItems,

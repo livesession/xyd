@@ -5,6 +5,7 @@ import { pageFrontMatters } from "@xyd-js/content";
 import { IBreadcrumb, INavLinks } from "@xyd-js/ui";
 
 import { FwSidebarItemProps } from "../react";
+import { isRoutePrefix } from "../react/utils/routePrefix";
 import { resolveLocaleSettings } from "./locale";
 import { resolveBreadcrumbs } from "./breadcrumbs";
 
@@ -114,7 +115,18 @@ export async function mapSettingsToProps(
             }
         }
 
-        if (typeof page !== "string" && !("virtual" in page)) {
+        // `{ page, title }` — a page reference carrying its own label, for a route
+        // with no markdown to take one from. A generated API reference is the case
+        // that needs it: the route exists and renders, but there is no frontmatter,
+        // so the sidebar row came out blank. Distinguished from a group by having
+        // neither `group` nor `pages`.
+        const isTitledPageRef = typeof page !== "string"
+            && !("virtual" in page)
+            && "page" in page
+            && !("pages" in page)
+            && !("group" in page)
+
+        if (typeof page !== "string" && !("virtual" in page) && !isTitledPageRef) {
             const items = page.pages
                 ?.map((p) => mapItems(p, page, nav))
                 ?.filter(Boolean)
@@ -135,7 +147,9 @@ export async function mapSettingsToProps(
         if (typeof page === "string") {
             pageName = page
         } else {
-            pageName = page.page
+            // `Sidebar.page` is optional, so a `{ page, title }` entry widens this
+            // to string | undefined where the virtual-page form did not.
+            pageName = page.page ?? ""
         }
 
         if (hiddenPages[pageName]) {
@@ -143,10 +157,16 @@ export async function mapSettingsToProps(
         }
 
         const matterTitle = frontmatters && frontmatters[pageName] && frontmatters[pageName].title
+        // An explicit `title`/`icon` on the entry wins: they are the only way to
+        // label a route that has no markdown behind it.
+        const explicitTitle = typeof page !== "string" ? (page as any).title : undefined
+        const explicitIcon = typeof page !== "string" ? (page as any).icon : undefined
 
         let title = ""
 
-        if (typeof matterTitle === "string") {
+        if (typeof explicitTitle === "string" && explicitTitle) {
+            title = explicitTitle
+        } else if (typeof matterTitle === "string") {
             title = matterTitle
         } else {
             // @ts-ignore
@@ -179,7 +199,9 @@ export async function mapSettingsToProps(
                 : safePageLink(pageName),
             active: false,
             uniqIndex: uniqIndex++,
-            icon: meta?.icon || "",
+            // Same reason as `title` above: a route with no markdown has no
+            // frontmatter to carry an icon, so the entry has to be able to.
+            icon: explicitIcon || meta?.icon || "",
             sidebarTitle: meta?.sidebarTitle || "",
             url: meta?.url || "",
             asToc: asTocEntry
@@ -297,8 +319,7 @@ function filterNavigation(settings: Settings, slug: string): Sidebar[] {
             const sideMatch = normalizeHref(sidebar.route)
             const normalizeSlug = normalizeHref(slug)
 
-            // TODO: startWith is not enough e.g `/docs/apps/buildISSUE` if `/docs/apps/build`
-            if (normalizeSlug.startsWith(sideMatch)) {
+            if (isRoutePrefix(normalizeSlug, sideMatch)) {
                 if (multiSidebarMatch) {
                     const findByMatchLvl = multiSidebarMatch.route.split("/").length
                     const urlMatchLvl = sideMatch.split("/").length

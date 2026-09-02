@@ -1,6 +1,7 @@
 import type { Segment, NavigationItem } from "@xyd-js/core";
 
 import { resolveDropdownHref, resolveDropdownItems, dropdownMenuItems, type ResolvedDropdownItem } from "./navDropdown";
+import { isRoutePrefix } from "./routePrefix";
 import { pageLink } from "./pageLink";
 import { trailingSlash } from "./trailingSlash";
 
@@ -14,7 +15,7 @@ export function resolveActiveLogoTrailingItem(segment: Segment, pathname: string
     const normalized = trailingSlash(pathname);
 
     return segment.pages?.findLast(
-        page => !!page.page && normalized.startsWith(pageLink(page.page))
+        page => !!page.page && isRoutePrefix(normalized, pageLink(page.page))
     ) || null;
 }
 

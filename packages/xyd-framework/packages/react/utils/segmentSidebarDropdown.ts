@@ -1,5 +1,6 @@
 import type { NavigationItem } from "@xyd-js/core"
 
+import { isRoutePrefix } from "./routePrefix"
 import { pageLink } from "./pageLink"
 import { trailingSlash } from "./trailingSlash"
 
@@ -33,6 +34,6 @@ export function findActiveNavigationPage(
     const normalized = trailingSlash(pathname)
     return flattenNavigationPages(pages).findLast(item => {
         if (typeof item.page !== "string" || !item.page) return false
-        return normalized.startsWith(pageLink(item.page))
+        return isRoutePrefix(normalized, pageLink(item.page))
     }) || null
 }
