@@ -104,10 +104,14 @@ export default {
             h2:first-of-type {
                 margin-top: var(--space-xxlarge);
             }
-            h4 {
-                &[data-kind="muted"] {
-                    margin: 4px 0 32px;
-                }
+            /* Keyed on the data attributes rather than on h4, because the
+               subtitle is lead-in text and now renders as a div — as a real h4
+               directly under the page h1 it read as an h1 -> h4 level skip.
+               Heading emits data-size/data-kind whatever element it renders as,
+               so this matches both forms and the spacing survives the change. */
+            [data-size="4"][data-kind="muted"] {
+                display: block;
+                margin: 4px 0 32px;
             }
             
             ul:not(xyd-tabs ul), ol:not(xyd-tabs ol) {

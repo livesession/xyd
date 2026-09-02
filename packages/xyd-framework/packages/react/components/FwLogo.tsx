@@ -1,6 +1,7 @@
 import React, { isValidElement } from "react";
 import { Link } from "react-router";
 
+import type { Logo } from "@xyd-js/core";
 import {
     useColorScheme
 } from "@xyd-js/components/writer";
@@ -25,8 +26,12 @@ export function FwLogo({ trailing }: { trailing?: boolean } = {}) {
     const colorScheme = clientColorScheme || settings?.theme?.appearance?.colorScheme || "light"
     const logo = settings?.theme?.logo
 
+    // The logo image is the only content of the link to the home page, so it also
+    // carries that link's accessible name — an empty alt would leave it nameless.
+    const defaultAlt = settings?.seo?.metatags?.["og:site_name"] || "Home"
+
     if (typeof logo === "string") {
-        return <$Logo src={logo} trailing={trailing} />
+        return <$Logo src={logo} alt={defaultAlt} trailing={trailing} />
     }
 
     if (isValidElement(logo)) {
@@ -36,18 +41,20 @@ export function FwLogo({ trailing }: { trailing?: boolean } = {}) {
     }
 
     if (typeof logo === "object") {
-        return <$Logo src={logo[colorScheme]} trailing={trailing} />
+        // `isValidElement` above rules the element form out at runtime but does not
+        // narrow it out of the union, hence the cast.
+        return <$Logo src={logo[colorScheme]} alt={(logo as Logo).alt || defaultAlt} trailing={trailing} />
     }
 
     return null
 }
 
-function $Logo({ src, children, trailing }: { src?: string, children?: React.ReactNode, trailing?: boolean }) {
+function $Logo({ src, alt, children, trailing }: { src?: string, alt?: string, children?: React.ReactNode, trailing?: boolean }) {
     const logoLink = useLogoLink()
 
     return <span part="logo">
         <Link to={logoLink}>
-            { src ? <img src={src} /> : children }
+            { src ? <img src={src} alt={alt} /> : children }
         </Link>
         {trailing && <Surface target={SurfaceTarget.LogoTrailing} />}
     </span>

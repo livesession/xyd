@@ -15,6 +15,8 @@ export interface ButtonProps {
     icon?: React.ReactElement | string;
     iconPosition?: "left" | "right";
     href?: string;
+    /** Accessible name — required when the button is icon-only (no `children`). */
+    "aria-label"?: string;
 }
 
 export function Button({
@@ -27,7 +29,8 @@ export function Button({
     disabled = false,
     icon,
     iconPosition = "left",
-    href
+    href,
+    "aria-label": ariaLabel
 }: ButtonProps) {
     let Component = href ? "a" : "button"
 
@@ -56,6 +59,7 @@ export function Button({
             onClick={onClick}
             disabled={disabled}
             aria-disabled={disabled ? "true" : undefined}
+            aria-label={ariaLabel}
             {...hrefProps}
         >
             {icon && iconPosition === "left" && (

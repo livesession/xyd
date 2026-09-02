@@ -111,6 +111,11 @@ export const CodeHost = css`
 
         overflow: auto;
 
+        &:focus-visible {
+            /* codetabs clips its overflow, so an outset ring would be cut off */
+            outline-offset: -2px;
+        }
+
         &[data-size="full"] {
             max-height: 100%;   
         }

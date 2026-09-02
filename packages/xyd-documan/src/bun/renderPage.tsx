@@ -262,15 +262,28 @@ export async function renderRedirectStatic(slug: string): Promise<string | null>
   const child = await firstChildOf(slug);
   if (!child) return null;
   const s = getSettings();
+  const locale = deriveLocale(slug);
   // Prefix the basename so the redirect resolves on a host serving the site under
   // it (e.g. /docs/components/callouts) — parity with the Vite build.
   const base = (s?.advanced?.basename || "").replace(/\/+$/, "");
   const withBase = (p: string) => (base && p.startsWith("/") && p !== base && !p.startsWith(base + "/") ? base + p : p);
   const target = withBase(child);
   const from = withBase("/" + slug) + "/";
+  // A redirect stub is still a served document, so it has to be a well-formed
+  // one: it previously opened `<!doctype html><head>` — no <html> element at
+  // all, though it closed with </html> — which left the page with nowhere to
+  // carry `lang` and no root element for a post-processor to patch.
+  //
+  // The refresh delay is 0, not 2. WCAG 2.2.1 fails a timed refresh (technique
+  // F40) and exempts only an immediate one, and there is nothing on this page
+  // worth pausing to read. The <a> stays as the fallback for a client that
+  // ignores http-equiv.
+  const langAttr = locale ? ` lang="${locale}"` : "";
   return (
-    `<!doctype html>\n<head>\n<title>Redirecting to: ${target}</title>\n` +
-    `<meta http-equiv="refresh" content="2;url=${target}">\n<meta name="robots" content="noindex">\n` +
+    `<!doctype html>\n<html${langAttr}>\n<head>\n<meta charset="utf-8">\n` +
+    `<title>Redirecting to: ${target}</title>\n` +
+    `<link rel="canonical" href="${target}">\n` +
+    `<meta http-equiv="refresh" content="0;url=${target}">\n<meta name="robots" content="noindex">\n` +
     `</head>\n<body>\n\t<a href="${target}">\n    Redirecting from <code>${from}</code> to <code>${target}</code>\n  </a>\n</body>\n</html>\n`
   );
 }

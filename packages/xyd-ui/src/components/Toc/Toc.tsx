@@ -243,13 +243,15 @@ Toc.Item = function TocItem({ children, id, className, depth }: TocItemProps) {
   }, [id, registerActiveItem, unregisterActiveItem]);
 
   return (
-    <xyd-toc-item>
-      <li
-        ref={itemRef}
-        className={`${cn.TocLi} ${className || ""}`}
-        data-active={String(active)}
-        data-depth={depth}
-      >
+    // `[part="list"]` is a `ul`, so the `li` must be its direct child — the
+    // custom element nests inside it instead of wrapping it.
+    <li
+      ref={itemRef}
+      className={`${cn.TocLi} ${className || ""}`}
+      data-active={String(active)}
+      data-depth={depth}
+    >
+      <xyd-toc-item>
         <Link
           part="link"
           to=""
@@ -265,8 +267,8 @@ Toc.Item = function TocItem({ children, id, className, depth }: TocItemProps) {
         >
           {children}
         </Link>
-      </li>
-    </xyd-toc-item>
+      </xyd-toc-item>
+    </li>
   );
 };
 

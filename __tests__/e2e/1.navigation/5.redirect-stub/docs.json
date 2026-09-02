@@ -1,0 +1,18 @@
+{
+    "navigation": {
+        "sidebar": [
+            {
+                "route": "docs",
+                "pages": [
+                    {
+                        "group": "Guides",
+                        "pages": [
+                            "docs/guides/introduction",
+                            "docs/guides/components"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

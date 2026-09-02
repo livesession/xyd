@@ -29,37 +29,64 @@ export function ApiRefProperties({ properties, defaultExpanded }: ApiRefProperti
         const description =
           property.ofProperty?.description || property.description || "";
         const metaInfo = renderMetaInfo(property.meta);
+        const term = propName ? (
+          <PropName property={property} meta={property.meta || []} />
+        ) : null;
 
         return (
-          <atlas-apiref-prop className={cn.ApiRefPropertiesLiHost} key={i}>
-            {propName || propValue ? (
-              <dl className={cn.ApiRefPropertiesDlHost}>
-                <PropName property={property} meta={property.meta || []} />
-                <PropType property={property} />
-                <PropMetaList metas={property.meta || []} />
-              </dl>
-            ) : null}
+          <li className={cn.ApiRefPropertiesLiHost} key={i}>
+            <atlas-apiref-prop className={cn.ApiRefPropertiesContentsHost}>
+              {propName || propValue ? (
+                <PropRow term={term}>
+                  <PropType property={property} />
+                  <PropMetaList metas={property.meta || []} />
+                </PropRow>
+              ) : null}
 
-            {description || metaInfo ? (
-              <atlas-apiref-propdescription className={cn.ApiRefPropertiesDescriptionHost}>
-                <>
-                  <div>{description}</div>
-                  <div>{renderMetaInfo(property.meta)}</div>
-                </>
-              </atlas-apiref-propdescription>
-            ) : null}
+              {description || metaInfo ? (
+                <atlas-apiref-propdescription className={cn.ApiRefPropertiesDescriptionHost}>
+                  <>
+                    <div>{description}</div>
+                    <div>{renderMetaInfo(property.meta)}</div>
+                  </>
+                </atlas-apiref-propdescription>
+              ) : null}
 
-            {propertyProperties?.length > 0 ? (
-              <SubProperties
-                parent={property}
-                properties={propertyProperties}
-                defaultExpanded={defaultExpanded}
-              />
-            ) : null}
-          </atlas-apiref-prop>
+              {propertyProperties?.length > 0 ? (
+                <SubProperties
+                  parent={property}
+                  properties={propertyProperties}
+                  defaultExpanded={defaultExpanded}
+                />
+              ) : null}
+            </atlas-apiref-prop>
+          </li>
         );
       })}
     </ul>
+  );
+}
+
+interface PropRowProps {
+  /** The property name as the row's `<dt>`, or null for the name-less properties
+   * (array items, union members) — a `<dl>` is only valid as `<dt>` + `<dd>`, so those
+   * rows stay a plain container. */
+  term: React.ReactNode;
+  children: React.ReactNode;
+}
+
+function PropRow({ term, children }: PropRowProps) {
+  if (!term) {
+    return <div className={cn.ApiRefPropertiesDlHost}>{children}</div>;
+  }
+
+  // one `<dd>` for the whole description (type + flags): it keeps the list valid even
+  // when none of them renders, and being box-less it does not change the flex row.
+  return (
+    <dl className={cn.ApiRefPropertiesDlHost}>
+      {term}
+      <dd className={cn.ApiRefPropertiesContentsHost}>{children}</dd>
+    </dl>
   );
 }
 
@@ -77,16 +104,16 @@ function PropName(props: PropNameProps) {
   }
 
   return (
-    <atlas-apiref-propname>
-      <dd>
+    <dt className={cn.ApiRefPropertiesContentsHost}>
+      <atlas-apiref-propname>
         <code
           data-parent-choice-type={props.parentChoiceType ? "true" : undefined}
           className={cn.ApiRefPropertiesPropNameCodeHost}
         >
           {value}
         </code>
-      </dd>
-    </atlas-apiref-propname>
+      </atlas-apiref-propname>
+    </dt>
   );
 }
 
@@ -116,11 +143,9 @@ function PropType({ property }: PropTypeProps) {
 
   return (
     <atlas-apiref-proptype>
-      <dd>
-        <code className={cn.ApiRefPropertiesPropTypeCodeHost}>
-          {propSymbol}
-        </code>
-      </dd>
+      <code className={cn.ApiRefPropertiesPropTypeCodeHost}>
+        {propSymbol}
+      </code>
     </atlas-apiref-proptype>
   );
 }
@@ -162,11 +187,9 @@ function PropMeta(props: PropMetaProps) {
 
   return (
     <atlas-apiref-propmeta data-name={props.name} data-value={props.value}>
-      <dd>
-        <code>
-          {props.href ? <a href={props.href}>{valueText}</a> : valueText}
-        </code>
-      </dd>
+      <code>
+        {props.href ? <a href={props.href}>{valueText}</a> : valueText}
+      </code>
     </atlas-apiref-propmeta>
   );
 }
@@ -258,35 +281,39 @@ function SubProperties({ parent, properties, defaultExpanded }: SubPropertiesPro
               const description =
                 prop.ofProperty?.description || prop.description || "";
               const metaInfo = renderMetaInfo(prop.meta);
+              const term = propName ? (
+                <PropName
+                  property={prop}
+                  meta={prop.meta || []}
+                  parentChoiceType={choiceType || !!hasArguments}
+                />
+              ) : null;
 
               return (
-                <atlas-apiref-prop className={cn.ApiRefPropertiesSubPropsLi} key={i}>
-                  {propName || propValue ? (
-                    <dl className={cn.ApiRefPropertiesDlHost}>
-                      <PropName
-                        property={prop}
-                        meta={prop.meta || []}
-                        parentChoiceType={choiceType || !!hasArguments}
-                      />
-                      <PropType property={prop} />
-                      <PropMetaList metas={prop.meta || []} />
-                    </dl>
-                  ) : null}
+                <li className={cn.ApiRefPropertiesSubPropsLi} key={i}>
+                  <atlas-apiref-prop className={cn.ApiRefPropertiesContentsHost}>
+                    {propName || propValue ? (
+                      <PropRow term={term}>
+                        <PropType property={prop} />
+                        <PropMetaList metas={prop.meta || []} />
+                      </PropRow>
+                    ) : null}
 
-                  {description || metaInfo ? (
-                    <atlas-apiref-propdescription
-                      className={cn.ApiRefPropertiesDescriptionHost}
-                    >
-                      <>
-                        <div>{description}</div>
-                        <div>{renderMetaInfo(prop.meta)}</div>
-                      </>
-                    </atlas-apiref-propdescription>
-                  ) : null}
-                  {properties?.length ? (
-                    <SubProperties parent={prop} properties={properties} />
-                  ) : null}
-                </atlas-apiref-prop>
+                    {description || metaInfo ? (
+                      <atlas-apiref-propdescription
+                        className={cn.ApiRefPropertiesDescriptionHost}
+                      >
+                        <>
+                          <div>{description}</div>
+                          <div>{renderMetaInfo(prop.meta)}</div>
+                        </>
+                      </atlas-apiref-propdescription>
+                    ) : null}
+                    {properties?.length ? (
+                      <SubProperties parent={prop} properties={properties} />
+                    ) : null}
+                  </atlas-apiref-prop>
+                </li>
               );
             })}
           </ul>

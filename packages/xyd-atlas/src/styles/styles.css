@@ -10,7 +10,9 @@
         --oas-method-post-color--active: var(--white);
         --oas-method-post-bg--active: #3064e3;
 
-        --oas-method-put-color: #C28C30;
+        /* Same hue/saturation as the original gold, darkened to clear 4.5:1 on
+           white — the badge renders at 12px bold, so it is not large text. */
+        --oas-method-put-color: #8F6723;
         --oas-method-put-bg: rgba(250, 204, 21, .2);
         --oas-method-put-color--active: var(--white);
         --oas-method-put-bg--active: #C28C30;

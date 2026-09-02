@@ -339,7 +339,9 @@ export function writerContent() {
         Subtitle(props) {
             const paragraph = props?.children?.props?.children
 
-            return <Heading size={4} kind="muted" {...props}>
+            // lead-in text, not a section heading - as a real <h4> it sits right under the page
+            // <h1> and reads as an h1 -> h4 level skip
+            return <Heading as="div" size={4} kind="muted" {...props}>
                 {paragraph}
             </Heading>
         },

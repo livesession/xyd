@@ -24,10 +24,31 @@ export function FwLink({children, ...rest}) {
                     search: url.search,
                     hash: url.hash,
                 }
-            } else {
-                return <Anchor as="button">
+            } else if (rest.href.startsWith("#")) {
+                // Same-page anchor. There is no route to resolve, so render a
+                // plain <a> and let the browser do the in-page jump — routing it
+                // through react-router would re-render the page to reach a
+                // heading that is already on screen.
+                //
+                // `as` has to be stripped: Anchor treats it as the element type
+                // to render, and ReactContent's $Link passes FwLink down in it,
+                // so leaving it in place recurses straight back into here.
+                const {as: _as, ...anchorProps} = rest
+                return <Anchor {...anchorProps}>
                     {children}
                 </Anchor>
+            } else {
+                // Anything left is relative ("./foo", "../foo", "foo.md") or a
+                // bare query string. Both used to fall into the button branch
+                // below, which drops the href entirely and renders link-styled
+                // text that goes nowhere. A relative href is still a real link,
+                // so resolve it against the current path at render time.
+                if (!rest.href.startsWith("?")) {
+                    const {as: _as, ...anchorProps} = rest
+                    return <Anchor {...anchorProps}>
+                        {children}
+                    </Anchor>
+                }
 
                 return <Anchor as="button" onClick={() => { // TODO: !!! in the future we should use react-router but it rerenders tha page !!!
                     const url = new URL(window.location.href)
