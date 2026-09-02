@@ -69,7 +69,7 @@ export function useSidebarTree(): [React.ReactElement[], { initialActiveItems: a
     // (cheap: just the path search, not the tree). Feeds FooSidebar, which (in
     // keepExpanded mode) MERGES these in, so scrolling auto-expands the active
     // reference's group.
-    const initialActiveItems = React.useMemo(() => {
+    const routeActiveItems = React.useMemo(() => {
         const items: any[] = []
         groups.forEach((group, groupIndex) => {
             const activeLevels = recursiveSearch(group.items, effectiveHref) || []
@@ -89,6 +89,42 @@ export function useSidebarTree(): [React.ReactElement[], { initialActiveItems: a
         })
         return items
     }, [groups, effectiveHref])
+
+    // Groups configured `expanded: true` open regardless of the route. Purely
+    // structural, so it depends on `groups` alone — an href change (scroll-spy)
+    // can't add or remove one. Same {groupIndex, level, itemIndex} shape the
+    // route search produces, since FwSidebarItem keys its open state by it.
+    const expandedItems = React.useMemo(() => {
+        const items: any[] = []
+
+        function walk(nodes: FwSidebarItemElementProps[] | undefined, groupIndex: number, level: number) {
+            nodes?.forEach((item, itemIndex) => {
+                if (item.expanded) {
+                    items.push({
+                        ...item,
+                        groupIndex: groupIndex,
+                        level: level,
+                        itemIndex: itemIndex,
+                        expandedByDefault: true,
+                    })
+                }
+
+                walk(item.items, groupIndex, level + 1)
+            })
+        }
+
+        groups.forEach((group, groupIndex) => walk(group.items, groupIndex, 0))
+
+        return items
+    }, [groups])
+
+    // Route branch LAST: a group holding the active page always opens, even if
+    // the reader collapsed it earlier (FooSidebar only lets a manual collapse
+    // stick for the `expandedByDefault` seeds).
+    const initialActiveItems = React.useMemo(
+        () => [...expandedItems, ...routeActiveItems],
+        [expandedItems, routeActiveItems],
+    )
 
     return [sidebarTree, {initialActiveItems}]
 }

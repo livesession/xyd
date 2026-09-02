@@ -1,0 +1,49 @@
+{
+    "navigation": {
+        "sidebar": [
+            {
+                "group": "Get Started",
+                "pages": [
+                    "docs/introduction",
+                    "docs/changelog",
+                    {
+                        "group": "Documentation",
+                        "expanded": true,
+                        "pages": [
+                            "docs/documentation/overview",
+                            "docs/documentation/setup"
+                        ]
+                    },
+                    {
+                        "group": "API",
+                        "pages": [
+                            "docs/api/errors"
+                        ]
+                    }
+                ]
+            },
+            {
+                "group": false,
+                "pages": [
+                    "docs/flat/intro",
+                    {
+                        "group": "Nested Docs",
+                        "expanded": true,
+                        "pages": [
+                            "docs/flat/one",
+                            "docs/flat/two"
+                        ]
+                    }
+                ]
+            },
+            {
+                "group": "Sections",
+                "asToc": true,
+                "pages": [
+                    "sections/alpha",
+                    "sections/beta"
+                ]
+            }
+        ]
+    }
+}

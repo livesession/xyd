@@ -1,4 +1,4 @@
-import React, {createContext, useCallback, useContext, useMemo, useState, useEffect} from "react";
+import React, {createContext, useCallback, useContext, useMemo, useRef, useState, useEffect} from "react";
 import {useNavigation} from "react-router";
 
 // TODO: better interface
@@ -23,6 +23,12 @@ const FooSidebarContext = createContext<IFooSidebarContext>({
 
 interface FooSidebarProps {
     children: React.ReactNode,
+    // Items to open on mount and whenever this list is applied again (a
+    // navigation, or a scroll-spy href change). An entry tagged
+    // `expandedByDefault` comes from the group's `expanded: true` config, not
+    // from the route: it is a DEFAULT, so re-applying it must never undo a
+    // collapse the reader made. A route change mounts a fresh sidebar, which
+    // starts from those defaults again.
     initialActiveItems: any[]
     // When true, the open/closed state is never auto-reset: navigation / re-render
     // only OPENS the route branch, never closes what the user opened. Manual
@@ -55,7 +61,10 @@ export function useFooSidebar() {
 // TODO: !!!! REFACTOR !!! !!! nagivation loaders !!!
 function useDefaultBehaviour(initialActiveItems: any[], persist?: boolean) {
     const navigation = useNavigation();
-    const [activeItems, setActiveItems] = useState(() => createItemsMap(initialActiveItems));
+    // Groups the reader collapsed by hand — re-applying the `expanded` defaults
+    // below must not reopen them.
+    const collapsedByUser = useRef(new Set<string>());
+    const [activeItems, setActiveItems] = useState(() => createItemsMap(initialActiveItems, collapsedByUser.current));
 
     useEffect(() => {
         if (persist) {
@@ -63,7 +72,7 @@ function useDefaultBehaviour(initialActiveItems: any[], persist?: boolean) {
             // route-active branch (and only if it adds something, so an empty
             // route match — e.g. the editor — is a no-op, not a collapse).
             setActiveItems(prev => {
-                const initial = createItemsMap(initialActiveItems);
+                const initial = createItemsMap(initialActiveItems, collapsedByUser.current);
                 let changed = false;
                 const next = new Map(prev);
                 initial.forEach((_value, key) => {
@@ -77,7 +86,7 @@ function useDefaultBehaviour(initialActiveItems: any[], persist?: boolean) {
             return;
         }
         if (navigation.state !== 'loading') {
-            setActiveItems(createItemsMap(initialActiveItems));
+            setActiveItems(createItemsMap(initialActiveItems, collapsedByUser.current));
         }
     }, [initialActiveItems, navigation.state, persist]);
 
@@ -87,9 +96,14 @@ function useDefaultBehaviour(initialActiveItems: any[], persist?: boolean) {
     // triggers the re-render (the old redundant `forceUpdate` is gone).
     return useCallback((item: FooSidebarItemProps): [boolean, () => void] => {
         const key = itemId(item);
+        const isOpen = activeItems.get(key) || false;
         return [
-            activeItems.get(key) || false,
+            isOpen,
             () => {
+                // A manual collapse outranks the `expanded` default from here on.
+                if (isOpen) collapsedByUser.current.add(key);
+                else collapsedByUser.current.delete(key);
+
                 setActiveItems(prev => {
                     const newMap = new Map(prev);
                     if (newMap.get(key)) newMap.delete(key);
@@ -107,10 +121,15 @@ function itemId(item: FooSidebarItemProps) {
     return id;
 }
 
-function createItemsMap(items: any[]): Map<string, boolean> {
+function createItemsMap(items: any[], collapsedByUser?: Set<string>): Map<string, boolean> {
     const map = new Map<string, boolean>();
     items.forEach(item => {
         const key = itemId(item);
+        // Only the `expanded` seeds yield to a manual collapse — a group holding
+        // the active page is listed again, unmarked, and always reopens.
+        if (item.expandedByDefault && collapsedByUser?.has(key)) {
+            return;
+        }
         map.set(key, true);
     });
     return map;

@@ -11,6 +11,7 @@ import {
     Blockquote,
     Callout,
     Code,
+    CodeTutorialSteps,
     Details,
     GuideCard,
     Heading,
@@ -87,6 +88,7 @@ export class ReactContent {
             Tabs: NoopComponent,
             GuideCard: NoopComponent,
             Table: NoopComponent,
+            CodeTutorialSteps: NoopComponent,
         }
 
         return {
@@ -108,6 +110,10 @@ NoopComponent.Td = () => null
 NoopComponent.Tr = () => null
 NoopComponent.Th = () => null
 NoopComponent.Cell = () => null
+NoopComponent.Step = () => null
+NoopComponent.Title = () => null
+NoopComponent.Body = () => null
+NoopComponent.Aside = () => null
 
 
 function NoopReactComponent() { // TODO: !!!! in the future refactor but `html-to-jsx-transform` creates <React.Fragment> !!!
@@ -332,6 +338,7 @@ export function writerContent() {
         GuideCard: GuideCardContent,
         Breadcrumbs: BreadcrumbsContent,
         Steps,
+        CodeTutorialSteps,
         Tabs: TabsContent,
         Table,
         Badge,

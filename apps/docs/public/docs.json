@@ -1099,6 +1099,22 @@
           "description": "If `true` then the sidebar will display a scroll shadow.",
           "type": "boolean"
         },
+        "groupCase": {
+          "description": "Letter-casing of sidebar group headers. Defaults to `\"uppercase\"`; set `\"none\"` to render group labels exactly as authored.",
+          "enum": [
+            "none",
+            "uppercase"
+          ],
+          "type": "string"
+        },
+        "scroll": {
+          "description": "Which element scrolls. `\"list\"` (default): only the item list scrolls, below the fixed (pinned) region. `\"sidebar\"`: the WHOLE sidebar scrolls — the scrollbar spans its full height — and the fixed region sticks to the top while items scroll beneath it.",
+          "enum": [
+            "list",
+            "sidebar"
+          ],
+          "type": "string"
+        },
         "scrollShadow": {
           "description": "If `true` then the sidebar will display a scroll shadow.",
           "type": "boolean"
@@ -1306,12 +1322,66 @@
       ],
       "description": "A type that can be used to represent a component-like structure."
     },
+    "ComponentPage": {
+      "additionalProperties": false,
+      "description": "A custom React component rendered AS a sidebar item.\n\n`component` is a path (relative to the docs project, e.g. `\"./components/TryNewVersion\"`) to a module whose DEFAULT export is a function component. It renders inside the framework context, so it may use `@xyd-js/framework/react` hooks; `props` are passed to it. `fixed: true` pins it in the sidebar's fixed region (above the scrollable list).",
+      "properties": {
+        "component": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/ComponentPageImport"
+            }
+          ],
+          "description": "A path to a default-export React component (relative to the docs project), or an object with that path under `import` plus `props` for the component."
+        },
+        "fixed": {
+          "description": "Pin this item in the sidebar's fixed region (stays visible on scroll).",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "component"
+      ],
+      "type": "object"
+    },
+    "ComponentPageImport": {
+      "additionalProperties": false,
+      "description": "Object form of `ComponentPage.component`: an import path plus optional props.",
+      "properties": {
+        "import": {
+          "description": "Path to a default-export React component, relative to the docs project.",
+          "type": "string"
+        },
+        "props": {
+          "description": "Props passed to the component.",
+          "type": "object"
+        }
+      },
+      "required": [
+        "import"
+      ],
+      "type": "object"
+    },
     "Components": {
       "additionalProperties": false,
       "properties": {
         "banner": {
           "$ref": "#/definitions/WebEditorBanner",
           "description": "WebEditor banner configuration"
+        },
+        "filterSidebar": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/FilterSidebar"
+            }
+          ],
+          "description": "Built-in \"filter sidebar\" input that narrows the sidebar tree to matching items. It renders in the sidebar's fixed (pinned) region. `true` uses the default placeholder; pass a  {@link  FilterSidebar }  object to customize the placeholder and scope it to specific routes."
         },
         "footer": {
           "$ref": "#/definitions/WebEditorFooter",
@@ -1383,6 +1453,27 @@
       },
       "type": "object"
     },
+    "DropdownMenu": {
+      "additionalProperties": false,
+      "description": "Object form of  {@link  NavigationItem.dropdownMenu } : the menu items plus menu-level options.",
+      "properties": {
+        "items": {
+          "description": "The menu items.",
+          "items": {
+            "$ref": "#/definitions/NavigationItem"
+          },
+          "type": "array"
+        },
+        "itemsPerColumn": {
+          "description": "Maximum items rendered in ONE COLUMN — overflowing items wrap into additional columns (e.g. `7` renders a 12-item menu as two columns of 7 + 5). Omit for a single column.",
+          "type": "number"
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "type": "object"
+    },
     "EditLink": {
       "additionalProperties": false,
       "properties": {
@@ -1434,6 +1525,24 @@
         "store": {
           "description": "If `true` then virtual pages will not created and generated content will be stored on disk",
           "type": "boolean"
+        }
+      },
+      "type": "object"
+    },
+    "FilterSidebar": {
+      "additionalProperties": false,
+      "description": "Configuration for the built-in sidebar filter input (`components.filterSidebar`).",
+      "properties": {
+        "placeholder": {
+          "description": "Placeholder text for the filter input. Defaults to `\"Filter sidebar\"`.",
+          "type": "string"
+        },
+        "routes": {
+          "description": "Render the filter ONLY on pages whose route is under one of these prefixes (e.g. `[\"terraform/language\"]`). A page matches when its slug starts with a listed prefix. Omit (or leave empty) to show the filter on every page.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
         }
       },
       "type": "object"
@@ -2036,6 +2145,10 @@
       "additionalProperties": false,
       "description": "Logo configuration interface",
       "properties": {
+        "alt": {
+          "description": "Alternative text for the logo image. The logo is the only content of the link to the home page, so this doubles as that link's accessible name. Defaults to `seo.metatags[\"og:site_name\"]`, then to `\"Home\"`.",
+          "type": "string"
+        },
         "dark": {
           "description": "Path to the logo in dark mode. For example: `/path/to/logo.svg`",
           "type": "string"
@@ -2178,16 +2291,27 @@
       "additionalProperties": false,
       "description": "Core interface for navigation items",
       "properties": {
+        "color": {
+          "description": "Accent color (any CSS color) for this item. Used by `logoTrailing` product switchers and accent-aware themes (e.g. `terrarium`) to recolor the UI per product — the active item's `color` is applied as `--theme-color-primary`.",
+          "type": "string"
+        },
         "description": {
           "description": "The navigation item description",
           "type": "string"
         },
         "dropdownMenu": {
-          "description": "Nested navigation rendered as a dropdown menu under this item.\n\nRecursive — a child may itself declare `dropdownMenu` to create submenus (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors and tabs.",
-          "items": {
-            "$ref": "#/definitions/NavigationItem"
-          },
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/NavigationItem"
+              },
+              "type": "array"
+            },
+            {
+              "$ref": "#/definitions/DropdownMenu"
+            }
+          ],
+          "description": "Nested navigation rendered as a dropdown menu under this item.\n\nRecursive — a child may itself declare `dropdownMenu` to create submenus (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors and tabs. Accepts a plain item array, or the object form  {@link  DropdownMenu }  carrying menu-level options (e.g. `{ itemsPerColumn: 7, items: [...] }`)."
         },
         "href": {
           "description": "The navigation href, if set it redirects but does not match based on routing",
@@ -2207,6 +2331,13 @@
         "page": {
           "description": "The navigation page, if set it redirects to the page + matches based on routing",
           "type": "string"
+        },
+        "pages": {
+          "description": "Nested navigation items — recursive. Honored ONLY by sidebar-dropdown surfaces (`navigation.sidebarDropdown` and `appearance: \"sidebarDropdown\"` segments): an entry with `pages` (typically without `page`/`href`) renders as an inline-expandable GROUP row inside the dropdown popover — clicking it expands its children (indented) within the same popover. `title`, `icon`, and `description` apply to the group row. Other appearances (tabs, logoTrailing) ignore nesting.",
+          "items": {
+            "$ref": "#/definitions/NavigationItem"
+          },
+          "type": "array"
         },
         "title": {
           "description": "The navigation item title",
@@ -2233,16 +2364,27 @@
           ],
           "type": "string"
         },
+        "color": {
+          "description": "Accent color (any CSS color) for this item. Used by `logoTrailing` product switchers and accent-aware themes (e.g. `terrarium`) to recolor the UI per product — the active item's `color` is applied as `--theme-color-primary`.",
+          "type": "string"
+        },
         "description": {
           "description": "The navigation item description",
           "type": "string"
         },
         "dropdownMenu": {
-          "description": "Nested navigation rendered as a dropdown menu under this item.\n\nRecursive — a child may itself declare `dropdownMenu` to create submenus (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors and tabs.",
-          "items": {
-            "$ref": "#/definitions/NavigationItem"
-          },
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/NavigationItem"
+              },
+              "type": "array"
+            },
+            {
+              "$ref": "#/definitions/DropdownMenu"
+            }
+          ],
+          "description": "Nested navigation rendered as a dropdown menu under this item.\n\nRecursive — a child may itself declare `dropdownMenu` to create submenus (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors and tabs. Accepts a plain item array, or the object form  {@link  DropdownMenu }  carrying menu-level options (e.g. `{ itemsPerColumn: 7, items: [...] }`)."
         },
         "href": {
           "description": "The navigation href, if set it redirects but does not match based on routing",
@@ -2262,6 +2404,13 @@
         "page": {
           "description": "The navigation page, if set it redirects to the page + matches based on routing",
           "type": "string"
+        },
+        "pages": {
+          "description": "Nested navigation items — recursive. Honored ONLY by sidebar-dropdown surfaces (`navigation.sidebarDropdown` and `appearance: \"sidebarDropdown\"` segments): an entry with `pages` (typically without `page`/`href`) renders as an inline-expandable GROUP row inside the dropdown popover — clicking it expands its children (indented) within the same popover. `title`, `icon`, and `description` apply to the group row. Other appearances (tabs, logoTrailing) ignore nesting.",
+          "items": {
+            "$ref": "#/definitions/NavigationItem"
+          },
+          "type": "array"
         },
         "title": {
           "description": "The navigation item title",
@@ -2284,16 +2433,27 @@
     "NavigationItemSocial": {
       "additionalProperties": false,
       "properties": {
+        "color": {
+          "description": "Accent color (any CSS color) for this item. Used by `logoTrailing` product switchers and accent-aware themes (e.g. `terrarium`) to recolor the UI per product — the active item's `color` is applied as `--theme-color-primary`.",
+          "type": "string"
+        },
         "description": {
           "description": "The navigation item description",
           "type": "string"
         },
         "dropdownMenu": {
-          "description": "Nested navigation rendered as a dropdown menu under this item.\n\nRecursive — a child may itself declare `dropdownMenu` to create submenus (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors and tabs.",
-          "items": {
-            "$ref": "#/definitions/NavigationItem"
-          },
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/NavigationItem"
+              },
+              "type": "array"
+            },
+            {
+              "$ref": "#/definitions/DropdownMenu"
+            }
+          ],
+          "description": "Nested navigation rendered as a dropdown menu under this item.\n\nRecursive — a child may itself declare `dropdownMenu` to create submenus (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors and tabs. Accepts a plain item array, or the object form  {@link  DropdownMenu }  carrying menu-level options (e.g. `{ itemsPerColumn: 7, items: [...] }`)."
         },
         "href": {
           "description": "The navigation href, if set it redirects but does not match based on routing",
@@ -2313,6 +2473,13 @@
         "page": {
           "description": "The navigation page, if set it redirects to the page + matches based on routing",
           "type": "string"
+        },
+        "pages": {
+          "description": "Nested navigation items — recursive. Honored ONLY by sidebar-dropdown surfaces (`navigation.sidebarDropdown` and `appearance: \"sidebarDropdown\"` segments): an entry with `pages` (typically without `page`/`href`) renders as an inline-expandable GROUP row inside the dropdown popover — clicking it expands its children (indented) within the same popover. `title`, `icon`, and `description` apply to the group row. Other appearances (tabs, logoTrailing) ignore nesting.",
+          "items": {
+            "$ref": "#/definitions/NavigationItem"
+          },
+          "type": "array"
         },
         "social": {
           "$ref": "#/definitions/Social"
@@ -2377,6 +2544,9 @@
         },
         {
           "$ref": "#/definitions/Sidebar"
+        },
+        {
+          "$ref": "#/definitions/ComponentPage"
         }
       ],
       "description": "Page URL type"
@@ -2646,8 +2816,30 @@
       "description": "Segment configuration",
       "properties": {
         "appearance": {
-          "$ref": "#/definitions/SegmentAppearance",
-          "description": "Appearance of this segment. See  {@link  SegmentAppearance } ."
+          "anyOf": [
+            {
+              "$ref": "#/definitions/SegmentAppearance"
+            },
+            {
+              "$ref": "#/definitions/SegmentAppearanceConfig"
+            }
+          ],
+          "description": "Appearance of this segment — a  {@link  SegmentAppearance }  string, or the object form  {@link  SegmentAppearanceConfig }  carrying kind-specific options (e.g. `{ kind: \"sidebarDropdown\", options: { fixed: true } }`)."
+        },
+        "component": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/ComponentPageImport"
+            }
+          ],
+          "description": "`logoTrailing` only: a custom component rendered AS this segment's dropdown PANEL (e.g. a rich multi-column product mega-menu), instead of the default `pages` list. A path to a default-export React component (relative to the docs project), or `{ import, props }`. Resolved through the same user-components registry as sidebar `ComponentPage` components, so it may use `@xyd-js/framework/react` hooks; the framework also passes it the active item, the segment, and the resolved `items`."
+        },
+        "iconOnly": {
+          "description": "`logoTrailing` only: render the trigger ICON-ONLY — show the active item's icon at a larger size and hide the trigger title label. Use when the icon is a full wordmark image (logo + product name) so a text label is redundant. Defaults to `false`.",
+          "type": "boolean"
         },
         "pages": {
           "description": "Items within this segment",
@@ -2657,8 +2849,16 @@
           "type": "array"
         },
         "route": {
-          "description": "Route for this segment",
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "const": false,
+              "type": "boolean"
+            }
+          ],
+          "description": "Route this segment is scoped to. When a **string**, the segment only shows under that route prefix (route-scoped). When **omitted or `false`**, the segment is GLOBAL — always visible (e.g. a top-level product switcher). The globalness comes from the absence of a route, NOT from the `appearance`."
         },
         "title": {
           "description": "Title of this segment",
@@ -2674,23 +2874,96 @@
         }
       },
       "required": [
-        "route",
         "pages"
       ],
       "type": "object"
     },
     "SegmentAppearance": {
-      "description": "How a matched  {@link  Segment }  is presented.\n\n- `\"sidebarDropdown\"` — a click dropdown at the top of the sidebar.\n- `\"logoTrailing\"` — a hover product-switcher rendered right after the logo   (wherever the active theme places its logo — header or sidebar). The trigger   shows the active page's title (falling back to the segment `title`), and the   menu is the segment `pages` with a check on the active one.",
+      "description": "How a matched  {@link  Segment }  is presented.\n\n- `\"sidebarDropdown\"` — a click dropdown at the top of the sidebar.\n- `\"logoTrailing\"` — a hover product-switcher rendered right after the logo   (wherever the active theme places its logo — header or sidebar). The trigger   shows the active page's title (falling back to the segment `title`), and the   menu is the segment `pages` with a check on the active one.\n- `\"tabs\"` — a horizontal tab bar in the sub-navigation, scoped to the   segment's `route`. Each `page` is a section: its `page` (a route prefix)   decides which tab is active, and its `href` is the landing page the tab   links to. Use one route-scoped `tabs` segment per product to get   per-product tab bars (e.g. Documentation / API / CLI).",
       "enum": [
         "sidebarDropdown",
-        "logoTrailing"
+        "logoTrailing",
+        "tabs"
       ],
       "type": "string"
+    },
+    "SegmentAppearanceConfig": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/SegmentAppearanceSidebarDropdown"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "logoTrailing",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "tabs",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind"
+          ],
+          "type": "object"
+        }
+      ],
+      "description": "Object form of  {@link  Segment.appearance } : a `kind` (same values as the string form) plus kind-specific `options`. The options shape depends on the kind — currently only `sidebarDropdown` has options."
+    },
+    "SegmentAppearanceSidebarDropdown": {
+      "additionalProperties": false,
+      "description": "`appearance: { kind: \"sidebarDropdown\", options }`",
+      "properties": {
+        "kind": {
+          "const": "sidebarDropdown",
+          "type": "string"
+        },
+        "options": {
+          "additionalProperties": false,
+          "properties": {
+            "fixed": {
+              "description": "Render the section switcher in the sidebar's FIXED (pinned) region — it stays visible while the item list scrolls. Defaults to `false` (rendered at the top of the scrollable list).",
+              "type": "boolean"
+            }
+          },
+          "type": "object"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "type": "object"
     },
     "Sidebar": {
       "additionalProperties": false,
       "description": "Sidebar configuration",
       "properties": {
+        "asToc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "$ref": "#/definitions/SidebarAsTocOptions"
+            }
+          ],
+          "description": "Treat this group's pages as a table of contents instead of real pages. Their markdown files are NOT routable (no routes, no prerender) — the content of every page is injected as a section into the enclosing route's index page, sidebar items scroll to those sections (with scroll-spy active marking), and the right-hand TOC is hidden on that composed page.\n\n`true` enables it with defaults; the object form tunes behaviors (all default to enabled)."
+        },
+        "expanded": {
+          "description": "Open this group on load, even when the reader is on a page outside it. Sets the INITIAL state only — it is a default, not a lock: the group still opens by itself when it holds the active page, and a reader who collapses it keeps it collapsed for as long as they stay on the page (like the rest of the sidebar's open state, it starts over on the next one). Only meaningful for a nested group — top-level groups are always open.",
+          "type": "boolean"
+        },
         "group": {
           "anyOf": [
             {
@@ -2754,6 +3027,21 @@
             "$ref": "#/definitions/PageURL"
           },
           "type": "array"
+        }
+      },
+      "type": "object"
+    },
+    "SidebarAsTocOptions": {
+      "additionalProperties": false,
+      "description": "Behavior options for an `asToc` sidebar group (the object form). Every option defaults to `true` — `asToc: true` ≡ `asToc: {}`.",
+      "properties": {
+        "breadcrumbs": {
+          "description": "Breadcrumbs on the composed host page that follow the section being read (group name / section title, updated by scroll). Default `true`.",
+          "type": "boolean"
+        },
+        "indicator": {
+          "description": "TOC-style visual indicator on the group's sidebar items (the vertical track line the right-hand TOC uses). Default `true`.",
+          "type": "boolean"
         }
       },
       "type": "object"
@@ -2980,7 +3268,8 @@
         "opener",
         "picasso",
         "gusto",
-        "solar"
+        "solar",
+        "terrarium"
       ],
       "type": "string"
     },
@@ -3182,6 +3471,10 @@
       "additionalProperties": false,
       "description": "WebEditor header configuration",
       "properties": {
+        "color": {
+          "description": "Accent color (any CSS color) for this item. Used by `logoTrailing` product switchers and accent-aware themes (e.g. `terrarium`) to recolor the UI per product — the active item's `color` is applied as `--theme-color-primary`.",
+          "type": "string"
+        },
         "component": {
           "description": "The component type, e.g. \"Button\", \"Card\", etc.",
           "type": "string"
@@ -3195,11 +3488,18 @@
           "type": "boolean"
         },
         "dropdownMenu": {
-          "description": "Nested navigation rendered as a dropdown menu under this item.\n\nRecursive — a child may itself declare `dropdownMenu` to create submenus (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors and tabs.",
-          "items": {
-            "$ref": "#/definitions/NavigationItem"
-          },
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/NavigationItem"
+              },
+              "type": "array"
+            },
+            {
+              "$ref": "#/definitions/DropdownMenu"
+            }
+          ],
+          "description": "Nested navigation rendered as a dropdown menu under this item.\n\nRecursive — a child may itself declare `dropdownMenu` to create submenus (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors and tabs. Accepts a plain item array, or the object form  {@link  DropdownMenu }  carrying menu-level options (e.g. `{ itemsPerColumn: 7, items: [...] }`)."
         },
         "float": {
           "description": "Float the header to the right",
@@ -3232,6 +3532,13 @@
           "description": "The navigation page, if set it redirects to the page + matches based on routing",
           "type": "string"
         },
+        "pages": {
+          "description": "Nested navigation items — recursive. Honored ONLY by sidebar-dropdown surfaces (`navigation.sidebarDropdown` and `appearance: \"sidebarDropdown\"` segments): an entry with `pages` (typically without `page`/`href`) renders as an inline-expandable GROUP row inside the dropdown popover — clicking it expands its children (indented) within the same popover. `title`, `icon`, and `description` apply to the group row. Other appearances (tabs, logoTrailing) ignore nesting.",
+          "items": {
+            "$ref": "#/definitions/NavigationItem"
+          },
+          "type": "array"
+        },
         "props": {
           "description": "The component's children, which can be a string, an array of strings, or an array of JSONComponent objects.",
           "type": "object"
@@ -3255,6 +3562,10 @@
       "additionalProperties": false,
       "description": "WebEditor navigation item configuration",
       "properties": {
+        "color": {
+          "description": "Accent color (any CSS color) for this item. Used by `logoTrailing` product switchers and accent-aware themes (e.g. `terrarium`) to recolor the UI per product — the active item's `color` is applied as `--theme-color-primary`.",
+          "type": "string"
+        },
         "component": {
           "description": "The component type, e.g. \"Button\", \"Card\", etc.",
           "type": "string"
@@ -3268,11 +3579,18 @@
           "type": "boolean"
         },
         "dropdownMenu": {
-          "description": "Nested navigation rendered as a dropdown menu under this item.\n\nRecursive — a child may itself declare `dropdownMenu` to create submenus (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors and tabs.",
-          "items": {
-            "$ref": "#/definitions/NavigationItem"
-          },
-          "type": "array"
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/definitions/NavigationItem"
+              },
+              "type": "array"
+            },
+            {
+              "$ref": "#/definitions/DropdownMenu"
+            }
+          ],
+          "description": "Nested navigation rendered as a dropdown menu under this item.\n\nRecursive — a child may itself declare `dropdownMenu` to create submenus (e.g. `api → [Browser SDK, REST API, GraphQL]`). Supported on header anchors and tabs. Accepts a plain item array, or the object form  {@link  DropdownMenu }  carrying menu-level options (e.g. `{ itemsPerColumn: 7, items: [...] }`)."
         },
         "href": {
           "description": "The navigation href, if set it redirects but does not match based on routing",
@@ -3296,6 +3614,13 @@
         "page": {
           "description": "The navigation page, if set it redirects to the page + matches based on routing",
           "type": "string"
+        },
+        "pages": {
+          "description": "Nested navigation items — recursive. Honored ONLY by sidebar-dropdown surfaces (`navigation.sidebarDropdown` and `appearance: \"sidebarDropdown\"` segments): an entry with `pages` (typically without `page`/`href`) renders as an inline-expandable GROUP row inside the dropdown popover — clicking it expands its children (indented) within the same popover. `title`, `icon`, and `description` apply to the group row. Other appearances (tabs, logoTrailing) ignore nesting.",
+          "items": {
+            "$ref": "#/definitions/NavigationItem"
+          },
+          "type": "array"
         },
         "props": {
           "description": "The component's children, which can be a string, an array of strings, or an array of JSONComponent objects.",

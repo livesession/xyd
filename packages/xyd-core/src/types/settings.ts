@@ -734,6 +734,14 @@ export interface Sidebar {
   page?: string;
 
   /**
+   * Label for a `{ page, title }` entry — a page reference with no `group` and no
+   * `pages`. It overrides the page's frontmatter title, and is the only way to
+   * label a route that has no markdown behind it, such as a generated API
+   * reference: without it the sidebar row renders blank.
+   */
+  title?: string;
+
+  /**
    * The relative paths to the markdown files that will serve as pages.
    * Note: groups are recursive, so to add a sub-folder add another group object in the page array.
    */
@@ -743,6 +751,16 @@ export interface Sidebar {
    * The icon of the group.
    */
   icon?: string;
+
+  /**
+   * Open this group on load, even when the reader is on a page outside it.
+   * Sets the INITIAL state only — it is a default, not a lock: the group still
+   * opens by itself when it holds the active page, and a reader who collapses
+   * it keeps it collapsed for as long as they stay on the page (like the rest
+   * of the sidebar's open state, it starts over on the next one).
+   * Only meaningful for a nested group — top-level groups are always open.
+   */
+  expanded?: boolean;
 
   /**
    * The order of the group.
