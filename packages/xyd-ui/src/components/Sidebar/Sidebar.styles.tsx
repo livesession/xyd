@@ -132,6 +132,12 @@ export const SidebarHost = css`
             height: auto;
         }
 
+        [part="item-separator"] {
+            border-top: 1px solid var(--xyd-sidebar-divider-color);
+            margin: 12px 0;
+            list-style: none;
+        }
+
         [part="footer"] {
             padding: var(--xyd-sidebar-padding);
             border-top: 1px solid var(--xyd-sidebar-divider-color);

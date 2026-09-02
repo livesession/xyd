@@ -137,6 +137,18 @@ export interface UISidebarItemHeaderProps {
     icon?: React.ReactNode;
 }
 
+/**
+ * Boundary between two sidebar groups where the second has no header.
+ *
+ * A themed divider is normally drawn above a group header, so a group with
+ * `group: false` — used to get a heading-less sidebar — produced no visual break
+ * at all and its items ran into the previous group's. Presentational: the break
+ * is already conveyed by the grouping to anything that reads structure.
+ */
+UISidebar.ItemSeparator = function SidebarItemSeparator() {
+    return <li part="item-separator" role="presentation" />
+}
+
 UISidebar.ItemHeader = function SidebarItemHeader({ children, icon }: UISidebarItemHeaderProps) {
     return <li part="item-header" className={cn.ItemHeaderHost}>
         {icon}

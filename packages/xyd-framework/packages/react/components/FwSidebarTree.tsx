@@ -55,6 +55,12 @@ export function useSidebarTree(): [React.ReactElement[], { initialActiveItems: a
                     run.push(el)
                 } else {
                     flushRun()
+                    // A group with no header draws no divider of its own — themes
+                    // hang that off the header — so consecutive headerless groups
+                    // ran together as one flat list. Mark the boundary explicitly.
+                    if (nodes.length && !group.group) {
+                        nodes.push(<UISidebar.ItemSeparator key={`separator-${index}`} />)
+                    }
                     nodes.push(el)
                 }
             })
