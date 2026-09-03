@@ -200,7 +200,15 @@ function useSidebarScrollTransition(
             if (listRef.current) {
                 const activeElement = listRef.current.querySelector('[data-active="true"]');
                 if (activeElement) {
-                    const container = listRef.current;
+                    // Resolve the element that ACTUALLY scrolls rather than trusting the
+                    // ref we were handed. With scroll="sidebar" that is the host — but the
+                    // stylesheet hands the scroll to [part="list"] whenever a pinned region
+                    // is present, and centering against a box with no overflow is a silent
+                    // no-op: the active row just never comes into view on a deep link.
+                    const root = listRef.current as HTMLElement;
+                    const container: HTMLElement = root.scrollHeight > root.clientHeight
+                        ? root
+                        : ((root.querySelector('[part="list"]') as HTMLElement | null) ?? root);
                     const containerRect = container.getBoundingClientRect();
                     const elementRect = activeElement.getBoundingClientRect();
                     

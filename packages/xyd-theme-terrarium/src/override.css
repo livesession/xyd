@@ -134,13 +134,17 @@
         margin-left: 14px;
     }
 
-    /* Gap between the pinned fixed region (filter / fixed components) and the
-       list. The blank space lives in the FIXED region's own bottom padding so it
-       stays put while the list scrolls under it (a list `padding-top` scrolls
-       away, letting the scrolled items touch the input). The list itself starts
-       flush. */
+    /* Gap between the pinned fixed region (filter / fixed components) and the list.
+       The blank space lives in the FIXED region's own bottom padding, not a list
+       `padding-top`: the list scrolls, so padding there would travel with it.
+
+       8px, matching the region's top: the base now closes the region with a
+       border-bottom and confines the scroll to the list, so this no longer has to
+       hold open enough room to keep scrolled items off the filter input — the
+       border does that, and 12px on top of the first row's own padding read as a
+       gap roughly twice the one above the controls. */
     xyd-sidebar [part="fixed"]:not(:empty) {
-        padding-bottom: 12px;
+        padding-bottom: 8px;
     }
     xyd-sidebar [part="fixed"]:not(:empty) + [part="list"] {
         padding-top: 0;
