@@ -353,4 +353,44 @@
         color: var(--color-text);
         border-bottom-color: var(--color-primary);
     }
+
+    /* The subheader row (a route-scoped segment with no appearance). Terrarium reads
+       the two rows as one header: the sub tabs centre under the nav tabs above, and
+       the row closes with the same hairline xyd-nav uses. Square + flush, because a
+       0.5rem radius and a 3px gap would break that bottom line at both ends. */
+    xyd-subnav {
+        margin-top: 0;
+        border-radius: 0;
+        border-bottom: 1px solid var(--terrarium-border);
+    }
+    /* auto margins, not justify-content: the host is overflow:auto, and centring it
+       that way makes the leading items unreachable once the row scrolls. Auto margins
+       collapse to 0 exactly when the free space runs out. */
+    xyd-subnav [part="list"] {
+        margin-inline: auto;
+    }
+    /* The nav tab above already marks itself active with an underline. Repeating that
+       immediately below reads as two competing rules for one location, so the
+       subheader marks its active tab the way the sidebar does — a pill.
+
+       The horizontal padding MOVES from the item to the link rather than being added
+       to it: the pill has to hug its label, and leaving both would double the gap
+       between tabs. Zeroing it on every item also restores the symmetry the base
+       breaks on :first-of-type (flush-left alignment), which a centred row needs. */
+    xyd-subnav xyd-subnav-item {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    xyd-subnav xyd-subnav-item [part="link"] {
+        height: auto;
+        padding: 5px var(--xyd-nav-item-padding);
+        border-radius: var(--xyd-border-radius-small, 4px);
+    }
+    xyd-subnav xyd-subnav-item[data-state="active"] [part="link"] {
+        background: var(--terrarium-subnav-active-bg);
+    }
+    /* drop the base underline (@layer themes beats its @layer defaults rule) */
+    xyd-subnav xyd-subnav-item[data-state="active"] [part="link"]::after {
+        content: none;
+    }
 }

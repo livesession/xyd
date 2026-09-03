@@ -60,6 +60,18 @@
     --xyd-sidebar-item-bgcolor--active-mark: var(--color-primary);
 }
 
+/* Subheader — the row keeps the base grey band; the active pill is a step darker
+   than it. Not --terrarium-active-bg (#f5f5f5): the row is #f9f9f9, so the sidebar's
+   pill colour lands four values away and vanishes. */
+:root {
+    --terrarium-subnav-active-bg: #ebebee;
+
+    /* Sub tabs read at the same weight as the nav tabs above them, rather than the
+       base's lighter --dark48. Tracks --xyd-nav-item-color so the two rows stay in
+       step if the nav colour moves. */
+    --xyd-subnav-item-color: var(--xyd-nav-item-color);
+}
+
 /* TOC */
 :root {
     --xyd-toc-item-color: var(--text-tertiary);          /* #656a76 */
@@ -92,6 +104,8 @@
 
     --terrarium-border: #ffffff1a;
     --terrarium-active-bg: #1c1c1f;
+    /* row is #2d2d2d here, so a step darker still reads */
+    --terrarium-subnav-active-bg: #1c1c1f;
     --terrarium-link: #5b9bff;
     /* On dark, hover BRIGHTENS the link (mixing toward black would hide it). */
     --xyd-anchor-color--hover: color-mix(in srgb, var(--terrarium-link) 78%, white);
