@@ -118,12 +118,21 @@ export const SidebarHost = css`
         }
 
         /* Pinned region above the scrollable list — stays visible while the list
-           scrolls (flex:none so it doesn't shrink; the list flex-shrinks around it). */
+           scrolls (flex:none so it doesn't shrink; the list flex-shrinks around it).
+
+           Its own top/bottom override --xyd-sidebar-padding (shared with the list):
+           the controls sat tight under the header, while the space below them ran on
+           into the first row's own padding and read as a gap twice the size. The rule
+           closes the region so it is legible as pinned rather than as the first item. */
         [part="fixed"] {
             flex: none;
             padding: var(--xyd-sidebar-padding);
+            padding-top: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--xyd-sidebar-divider-color);
         }
-        /* collapse when there's no pinned content (no filter / surface / fixed items) */
+        /* collapse when there's no pinned content (no filter / surface / fixed items);
+           takes the border with it, so an empty region leaves no stray line */
         [part="fixed"]:empty {
             display: none;
         }
@@ -144,6 +153,14 @@ export const SidebarHost = css`
             padding-top: 24px;
         }
 
+        /* Clear space UNDER the pinned region's border, before the first row. It has
+           to be a margin: the list is the scroll container, so a padding-top would
+           scroll away with the content and let rows ride up against the border.
+           A margin sits outside the scrollport and holds. */
+        [part="fixed"]:not(:empty) + [part="list"] {
+            margin-top: 12px;
+        }
+
         /* scroll="sidebar": the WHOLE sidebar scrolls (scrollbar spans its full
            height); the fixed region sticks to the top and items pass beneath it. */
         &[data-scroll="sidebar"] {
@@ -159,6 +176,33 @@ export const SidebarHost = css`
         &[data-scroll="sidebar"] [part="list"] {
             overflow: visible;
             height: auto;
+        }
+
+        /* ...but a pinned region changes what that mode should mean. Scrolling the
+           whole sidebar puts the scrollbar across the pinned region too, so it spans
+           height that never moves and stops indicating what actually scrolls — the
+           region only LOOKS pinned because it is stuck. Confine the scroll to the
+           list: the scrollbar then measures exactly the part that travels, and the
+           pinned region is genuinely outside it. */
+        &[data-scroll="sidebar"]:has([part="fixed"]:not(:empty)) {
+            overflow: hidden;
+        }
+        &[data-scroll="sidebar"]:has([part="fixed"]:not(:empty)) [part="fixed"] {
+            position: static;
+        }
+        &[data-scroll="sidebar"]:has([part="fixed"]:not(:empty)) [part="list"] {
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: auto;
+            flex: 1 1 auto;
+            min-height: 0;
+        }
+        /* The host no longer scrolls, so a footer left to size itself (bottom
+           anchors, content-based min-height:auto) could push past the hidden
+           overflow and become unreachable. flex:none keeps it at its natural size
+           and lets the list absorb the squeeze instead. */
+        &[data-scroll="sidebar"]:has([part="fixed"]:not(:empty)) [part="footer"] {
+            flex: none;
         }
 
         [part="item-separator"] {

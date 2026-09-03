@@ -175,9 +175,14 @@ export async function mapSettingsToProps(
         const explicitTitle = typeof page !== "string" ? (page as any).title : undefined
         const explicitIcon = typeof page !== "string" ? (page as any).icon : undefined
 
+        // One predicate, used both to pick the label and to decide whether it
+        // outranks a frontmatter sidebarTitle below — a non-string `title` must not
+        // suppress the sidebarTitle it is not replacing.
+        const hasExplicitTitle = typeof explicitTitle === "string" && !!explicitTitle
+
         let title = ""
 
-        if (typeof explicitTitle === "string" && explicitTitle) {
+        if (hasExplicitTitle) {
             title = explicitTitle
         } else if (typeof matterTitle === "string") {
             title = matterTitle
@@ -215,7 +220,11 @@ export async function mapSettingsToProps(
             // Same reason as `title` above: a route with no markdown has no
             // frontmatter to carry an icon, so the entry has to be able to.
             icon: explicitIcon || meta?.icon || "",
-            sidebarTitle: meta?.sidebarTitle || "",
+            // The renderer resolves `sidebarTitle || title`, so a frontmatter
+            // sidebarTitle would silently outrank the entry's explicit title. An
+            // explicit title IS the sidebar label — it has to win here, or a page
+            // listed from two trees can never be labelled differently in each.
+            sidebarTitle: hasExplicitTitle ? "" : (meta?.sidebarTitle || ""),
             url: meta?.url || "",
             asToc: asTocEntry
                 ? { indicator: asTocEntry.indicator !== false, breadcrumbs: asTocEntry.breadcrumbs !== false }

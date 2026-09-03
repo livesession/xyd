@@ -134,13 +134,17 @@
         margin-left: 14px;
     }
 
-    /* Gap between the pinned fixed region (filter / fixed components) and the
-       list. The blank space lives in the FIXED region's own bottom padding so it
-       stays put while the list scrolls under it (a list `padding-top` scrolls
-       away, letting the scrolled items touch the input). The list itself starts
-       flush. */
+    /* Gap between the pinned fixed region (filter / fixed components) and the list.
+       The blank space lives in the FIXED region's own bottom padding, not a list
+       `padding-top`: the list scrolls, so padding there would travel with it.
+
+       8px, matching the region's top: the base now closes the region with a
+       border-bottom and confines the scroll to the list, so this no longer has to
+       hold open enough room to keep scrolled items off the filter input — the
+       border does that, and 12px on top of the first row's own padding read as a
+       gap roughly twice the one above the controls. */
     xyd-sidebar [part="fixed"]:not(:empty) {
-        padding-bottom: 12px;
+        padding-bottom: 8px;
     }
     xyd-sidebar [part="fixed"]:not(:empty) + [part="list"] {
         padding-top: 0;
@@ -327,9 +331,12 @@
         border-radius: 0;
         border-bottom: 2px solid transparent;
     }
+    /* --color-text, not --terrarium-black: the raw palette constant is a single
+       value, and dark mode paints --color-bg with it, so an active tab written in
+       it disappears into the page. --color-text is identical in light and flips. */
     [part="nav-center"] xyd-nav-item[data-state="active"] {
         background: transparent;
-        color: var(--terrarium-black);
+        color: var(--color-text);
         border-bottom-color: var(--color-primary);
     }
 
@@ -347,7 +354,47 @@
         border-bottom: 2px solid transparent;
     }
     [part="nav-center"] [part="dropdown-trigger"][data-active] {
-        color: var(--terrarium-black);
+        color: var(--color-text);
         border-bottom-color: var(--color-primary);
+    }
+
+    /* The subheader row (a route-scoped segment with no appearance). Terrarium reads
+       the two rows as one header: the sub tabs centre under the nav tabs above, and
+       the row closes with the same hairline xyd-nav uses. Square + flush, because a
+       0.5rem radius and a 3px gap would break that bottom line at both ends. */
+    xyd-subnav {
+        margin-top: 0;
+        border-radius: 0;
+        border-bottom: 1px solid var(--terrarium-border);
+    }
+    /* auto margins, not justify-content: the host is overflow:auto, and centring it
+       that way makes the leading items unreachable once the row scrolls. Auto margins
+       collapse to 0 exactly when the free space runs out. */
+    xyd-subnav [part="list"] {
+        margin-inline: auto;
+    }
+    /* The nav tab above already marks itself active with an underline. Repeating that
+       immediately below reads as two competing rules for one location, so the
+       subheader marks its active tab the way the sidebar does — a pill.
+
+       The horizontal padding MOVES from the item to the link rather than being added
+       to it: the pill has to hug its label, and leaving both would double the gap
+       between tabs. Zeroing it on every item also restores the symmetry the base
+       breaks on :first-of-type (flush-left alignment), which a centred row needs. */
+    xyd-subnav xyd-subnav-item {
+        padding-left: 0;
+        padding-right: 0;
+    }
+    xyd-subnav xyd-subnav-item [part="link"] {
+        height: auto;
+        padding: 5px var(--xyd-nav-item-padding);
+        border-radius: var(--xyd-border-radius-small, 4px);
+    }
+    xyd-subnav xyd-subnav-item[data-state="active"] [part="link"] {
+        background: var(--terrarium-subnav-active-bg);
+    }
+    /* drop the base underline (@layer themes beats its @layer defaults rule) */
+    xyd-subnav xyd-subnav-item[data-state="active"] [part="link"]::after {
+        content: none;
     }
 }
