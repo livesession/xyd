@@ -249,11 +249,14 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
                         itemIndex={index}
                         key={index + item.href}
                         title={item.title}
+                        sidebarTitle={item.sidebarTitle}
                         href={item.href}
                         items={item.items}
                         active={active(item)[0]}
                         icon={item.icon}
+                        url={item.url}
                         pageMeta={item.pageMeta}
+                        asToc={item.asToc}
                     />)
                 }
             </>
@@ -270,10 +273,12 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
                             itemIndex={index}
                             key={index + item.href}
                             title={item.title}
+                            sidebarTitle={item.sidebarTitle}
                             href={item.href}
                             items={item.items}
                             active={active(item)[0]}
                             icon={item.icon}
+                            url={item.url}
                             pageMeta={item.pageMeta}
                             asToc={item.asToc}
                         />)
