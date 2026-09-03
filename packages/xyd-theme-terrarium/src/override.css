@@ -327,9 +327,12 @@
         border-radius: 0;
         border-bottom: 2px solid transparent;
     }
+    /* --color-text, not --terrarium-black: the raw palette constant is a single
+       value, and dark mode paints --color-bg with it, so an active tab written in
+       it disappears into the page. --color-text is identical in light and flips. */
     [part="nav-center"] xyd-nav-item[data-state="active"] {
         background: transparent;
-        color: var(--terrarium-black);
+        color: var(--color-text);
         border-bottom-color: var(--color-primary);
     }
 
@@ -347,7 +350,7 @@
         border-bottom: 2px solid transparent;
     }
     [part="nav-center"] [part="dropdown-trigger"][data-active] {
-        color: var(--terrarium-black);
+        color: var(--color-text);
         border-bottom-color: var(--color-primary);
     }
 }
