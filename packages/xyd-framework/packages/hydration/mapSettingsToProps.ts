@@ -66,6 +66,19 @@ export async function mapSettingsToProps(
             }
         }
         frontmatters = await pageFrontMatters(filteredNav, fmMapping) as MetadataMap
+
+        // An asToc HOST is implied by the route, not declared as a page, so the
+        // walk above never reaches it and its own frontmatter was dropped —
+        // `layout`, `icon`, `maxTocDepth` and the SEO fields were all inert on
+        // exactly the pages most likely to set them. Load it directly.
+        for (const [hostSlug, host] of Object.entries(asTocPages?.hosts || {})) {
+            if (!host.indexFile || frontmatters[hostSlug]) continue
+            const hostMatter = await pageFrontMatters(
+                [{ pages: [hostSlug] }] as Sidebar[],
+                { ...fmMapping, [hostSlug]: host.indexFile },
+            ) as MetadataMap
+            if (hostMatter[hostSlug]) frontmatters[hostSlug] = hostMatter[hostSlug]
+        }
     }
 
     const slugFrontmatter = frontmatters[slug] || null
