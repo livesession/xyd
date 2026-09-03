@@ -27,6 +27,13 @@ export const SidebarHost = css`
             }
         }
 
+        /* An asToc wrapper that FOLLOWS real content owes it separation. */
+        [part="item"] + [part="item-group"][data-astoc="true"],
+        [part="item-header"] + [part="item-group"][data-astoc="true"],
+        [part="item-group"] + [part="item-group"][data-astoc="true"] {
+            margin-top: 24px;
+        }
+
         /* sidebar-as-TOC groups (asToc + indicator enabled): CONSECUTIVE
            groups share ONE wrapper — headers included — so a single
            continuous TOC track line spans them (the right-hand TOC's look).
@@ -36,11 +43,24 @@ export const SidebarHost = css`
             position: relative;
             display: block;
             padding-left: 10px;
-            margin-top: 24px;
+            /* Separation is owed only to something ABOVE. A leading zero-height
+               wrapper means :first-child cannot be relied on here, so the margin
+               is applied by adjacency instead — otherwise an asToc page's first
+               row sat 24px lower than a heading-less or named-group one, and the
+               list visibly jumped when moving between them. */
+            margin-top: 0;
 
             /* the wrapper carries the group separation — the first header's
                own top margin would push the track above it as a stray line */
             [part="item-header"]:first-child {
+                margin-top: 0;
+            }
+
+            /* ...and separation is only owed to something ABOVE. As the list's
+               first child there is nothing to separate from, so the 24px reads
+               as a stray top offset — which is why an asToc page's first item
+               sat lower than a heading-less or named-group one. */
+            &:first-child {
                 margin-top: 0;
             }
 
@@ -113,6 +133,15 @@ export const SidebarHost = css`
             overflow-x: hidden;
             height: 100%;
             padding: var(--xyd-sidebar-padding);
+        }
+
+        /* With a pinned region above, its own bottom padding is the clear space
+           over the first row. With no pinned region the list is flush against
+           the top of the sidebar and the first row reads as cramped, so the list
+           supplies that space itself — 24px, the same separation the sidebar
+           already uses between groups. */
+        [part="fixed"]:empty + [part="list"] {
+            padding-top: 24px;
         }
 
         /* scroll="sidebar": the WHOLE sidebar scrolls (scrollbar spans its full
