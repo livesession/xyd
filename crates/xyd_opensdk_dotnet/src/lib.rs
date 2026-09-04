@@ -123,10 +123,24 @@ pub(crate) fn csproj_file(
         cur.as_str().filter(|s| !s.is_empty()).map(str::to_string)
     };
     let version = get_str(&["version"]).unwrap_or_else(|| "0.0.0".to_string());
+    // `major.0.0.0` — the stable assembly-version policy. Assembly-version
+    // parts are UInt16, so deriving them from <Version> breaks for large
+    // segments (a `0.0.<timestamp>` release scheme fails pack with CS7034).
+    let assembly_version = {
+        let digits: String = version.chars().take_while(|c| c.is_ascii_digit()).collect();
+        let major: u64 = if digits.is_empty() {
+            0
+        } else {
+            digits.parse::<u64>().map(|v| v.min(65535)).unwrap_or(65535)
+        };
+        format!("{major}.0.0.0")
+    };
     let mut pkg: Vec<String> = vec![
         "    <IsPackable>true</IsPackable>".to_string(),
         format!("    <PackageId>{}</PackageId>", escape_xml(sdk)),
         format!("    <Version>{}</Version>", escape_xml(&version)),
+        format!("    <AssemblyVersion>{assembly_version}</AssemblyVersion>"),
+        format!("    <FileVersion>{assembly_version}</FileVersion>"),
     ];
     if let Some(name) = get_str(&["contact", "name"]) {
         pkg.push(format!("    <Authors>{}</Authors>", escape_xml(&name)));

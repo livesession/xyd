@@ -12,6 +12,8 @@
     <IsPackable>true</IsPackable>
     <PackageId>ExtensionsDemo</PackageId>
     <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
     <Description>Exercises x-open-sdk-* naming extensions.</Description>
   </PropertyGroup>
 

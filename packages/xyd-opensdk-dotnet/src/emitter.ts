@@ -46,12 +46,24 @@ function xmlEscape(s: string): string {
  * `spec.info` so `dotnet pack` produces a publishable `.nupkg`. Identity comes
  * from the OpenAPI `info` or an sdk.json `publish` override.
  */
+/** `major.0.0.0` from a version string — the stable assembly-version policy.
+ * Assembly-version parts are UInt16, so deriving them from <Version> breaks
+ * for large segments (a `0.0.<timestamp>` release scheme fails `dotnet pack`
+ * with CS7034); the full package version stays on <Version>. */
+function assemblyVersion(version: string): string {
+  const digits = /^\d+/.exec(version)?.[0] ?? '';
+  const major = digits === '' ? 0 : Math.min(Number(digits), 65535);
+  return `${major}.0.0.0`;
+}
+
 function csprojFile(sdk: string, namespaceName: string, targetFramework: string, spec: OpensdkSpecJson): string {
   const info = spec.info;
   const pkg: string[] = [
     '    <IsPackable>true</IsPackable>',
     `    <PackageId>${xmlEscape(sdk)}</PackageId>`,
     `    <Version>${xmlEscape(info.version || '0.0.0')}</Version>`,
+    `    <AssemblyVersion>${assemblyVersion(info.version || '0.0.0')}</AssemblyVersion>`,
+    `    <FileVersion>${assemblyVersion(info.version || '0.0.0')}</FileVersion>`,
   ];
   if (info.contact?.name) pkg.push(`    <Authors>${xmlEscape(info.contact.name)}</Authors>`);
   if (info.description) pkg.push(`    <Description>${xmlEscape(info.description)}</Description>`);
