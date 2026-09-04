@@ -178,19 +178,23 @@ export const SidebarHost = css`
             height: auto;
         }
 
-        /* ...but a pinned region changes what that mode should mean. Scrolling the
-           whole sidebar puts the scrollbar across the pinned region too, so it spans
-           height that never moves and stops indicating what actually scrolls — the
-           region only LOOKS pinned because it is stuck. Confine the scroll to the
-           list: the scrollbar then measures exactly the part that travels, and the
-           pinned region is genuinely outside it. */
-        &[data-scroll="sidebar"]:has([part="fixed"]:not(:empty)) {
+        /* ...but anything pinned above or below the list changes what that mode
+           should mean. Scrolling the whole sidebar drags the pinned region and the
+           footer along with it: the scrollbar spans height that never moves, so it
+           stops indicating what actually scrolls, and a footer ends up below the
+           fold on exactly the long trees where it is hardest to find. The region
+           only LOOKS pinned because it is stuck.
+
+           So whenever there is a fixed region OR a footer, confine the scroll to
+           the list. The scrollbar then measures exactly the part that travels, and
+           both edges stay put — which is the point of putting something there. */
+        &[data-scroll="sidebar"]:is(:has([part="fixed"]:not(:empty)), :has([part="footer"])) {
             overflow: hidden;
         }
-        &[data-scroll="sidebar"]:has([part="fixed"]:not(:empty)) [part="fixed"] {
+        &[data-scroll="sidebar"]:is(:has([part="fixed"]:not(:empty)), :has([part="footer"])) [part="fixed"] {
             position: static;
         }
-        &[data-scroll="sidebar"]:has([part="fixed"]:not(:empty)) [part="list"] {
+        &[data-scroll="sidebar"]:is(:has([part="fixed"]:not(:empty)), :has([part="footer"])) [part="list"] {
             overflow-y: auto;
             overflow-x: hidden;
             height: auto;
@@ -201,7 +205,7 @@ export const SidebarHost = css`
            anchors, content-based min-height:auto) could push past the hidden
            overflow and become unreachable. flex:none keeps it at its natural size
            and lets the list absorb the squeeze instead. */
-        &[data-scroll="sidebar"]:has([part="fixed"]:not(:empty)) [part="footer"] {
+        &[data-scroll="sidebar"]:is(:has([part="fixed"]:not(:empty)), :has([part="footer"])) [part="footer"] {
             flex: none;
         }
 
@@ -212,6 +216,15 @@ export const SidebarHost = css`
         }
 
         [part="footer"] {
+            /* Pin to the bottom of the column. Without this the footer just
+               follows the last row, so where it lands depends on how tall the
+               list happens to be — and, because the confined-scroll branch above
+               makes the list grow, on whether the sidebar has a pinned region at
+               all. A short tree left it floating mid-sidebar above hundreds of
+               pixels of nothing, while a long one looked correct. The margin
+               collapses to zero once the list fills the space, so the scrolling
+               case is unchanged. */
+            margin-top: auto;
             padding: var(--xyd-sidebar-padding);
             border-top: 1px solid var(--xyd-sidebar-divider-color);
 
