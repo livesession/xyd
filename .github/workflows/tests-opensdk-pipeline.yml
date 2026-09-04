@@ -279,7 +279,14 @@ jobs:
       timeout-minutes: 10
       run: |
         npm i -g verdaccio
-        verdaccio --config packages/xyd-opensdk-ci/e2e/publish/verdaccio-config.yaml &> /tmp/verdaccio.log &
+        # The committed config is the docker-compose one — its storage path
+        # (/verdaccio/storage) is a container path the runner user cannot
+        # create, so publishes 500 while ping/proxy (no writes) look healthy.
+        # Point storage at a runner-writable dir.
+        mkdir -p /tmp/verdaccio-storage
+        sed 's|^storage:.*|storage: /tmp/verdaccio-storage|' \
+          packages/xyd-opensdk-ci/e2e/publish/verdaccio-config.yaml > /tmp/verdaccio-config.yaml
+        verdaccio --config /tmp/verdaccio-config.yaml &> /tmp/verdaccio.log &
         python3 -m pip install pypiserver twine build
         mkdir -p /tmp/pypi-packages
         pypi-server run -P . -a . -p 8081 /tmp/pypi-packages &> /tmp/pypiserver.log &
