@@ -62,11 +62,15 @@ const SdkLanguageContext = createContext<{
     setLanguage: (lang: string) => void;
 } | null>(null)
 
-export function SdkLanguageProvider({ defaultLanguage, storageKey, children }: {
+export function SdkLanguageProvider({ defaultLanguage, storageKey, languages, children }: {
     defaultLanguage?: string,
     /** When set, the chosen language is persisted (client-side) under this
      * localStorage key, so it sticks across reloads / operations. */
     storageKey?: string,
+    /** Allow-list for the RESTORED value: a persisted language no longer in
+     * this list (config changed / another site's key) is ignored and the
+     * default stays. Omit to accept any saved value. */
+    languages?: string[],
     children: ReactNode
 }) {
     const [language, setLanguageState] = useState(defaultLanguage || "go")
@@ -76,7 +80,7 @@ export function SdkLanguageProvider({ defaultLanguage, storageKey, children }: {
     useEffect(() => {
         if (!storageKey || typeof localStorage === "undefined") return
         const saved = localStorage.getItem(storageKey)
-        if (saved) setLanguageState(saved)
+        if (saved && (!languages || languages.includes(saved))) setLanguageState(saved)
     }, [storageKey])
 
     const setLanguage = useCallback((lang: string) => {

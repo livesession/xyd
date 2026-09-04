@@ -89,13 +89,13 @@ function enriched(): Reference[] {
 }
 
 describe('opensdk-uniform: attachSdkExamples', () => {
-  it('rewrites the request codeblock to ONE switcher — 6 SDK tabs + curl, SDK first', () => {
+  it('rewrites the request codeblock to ONE switcher — curl first (the raw-HTTP default), then 6 SDK tabs', () => {
     const [createRef] = enriched();
     const tabs = createRef.examples.groups[0].examples[0].codeblock.tabs;
-    expect(tabs).toHaveLength(SDK_LANGS.length + 1); // 6 SDK + curl
-    expect(tabs.slice(0, SDK_LANGS.length).map((t) => t.language)).toEqual(SDK_LANGS.map((l) => l.language));
-    expect(tabs[tabs.length - 1].language).toBe('shell'); // curl last
-    for (const t of tabs.slice(0, SDK_LANGS.length)) expect(t.code.length).toBeGreaterThan(0);
+    expect(tabs).toHaveLength(SDK_LANGS.length + 1); // curl + 6 SDK
+    expect(tabs[0].language).toBe('shell'); // curl FIRST — the switcher opens on the raw-HTTP view
+    expect(tabs.slice(1).map((t) => t.language)).toEqual(SDK_LANGS.map((l) => l.language));
+    for (const t of tabs.slice(1)) expect(t.code.length).toBeGreaterThan(0);
   });
 
   it('fills body properties with realistic values (enum first-value) through the full pipeline', () => {

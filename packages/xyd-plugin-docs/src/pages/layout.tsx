@@ -17,10 +17,11 @@ import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 import { resolveLocaleSettings } from "@xyd-js/framework/hydration/locale";
 
 import type { Metadata, MetadataMap, Settings, Theme as ThemeSettings } from "@xyd-js/core";
+import { resolveApiSdkConfig, API_SDK_LANGUAGES, API_SDK_HTTP_LANGUAGE } from "@xyd-js/core";
 import type { INavLinks, IBreadcrumb } from "@xyd-js/ui";
 import { Framework, FwLink, FwLogo, FwLocaleSwitcher, FwSegmentLogoTrailing, useSettings, type FwSidebarItemProps, type IFrameworkI18n } from "@xyd-js/framework/react";
 import { ReactContent } from "@xyd-js/components/content";
-import { Atlas, AtlasContext, type VariantToggleConfig } from "@xyd-js/atlas";
+import { Atlas, AtlasContext, SdkLanguageProvider, type VariantToggleConfig } from "@xyd-js/atlas";
 import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
 
 import { Surfaces, SurfaceTarget, pageMetaLayout } from "@xyd-js/framework";
@@ -331,11 +332,29 @@ export default function Layout() {
     }
     let atlasVariantToggles: VariantToggleConfig[] = [];
 
+    // SDK-native docs: the uniform preset stamps `metadata.sdkLanguages` for
+    // sdk-enabled sources (`sdk` config or a spec-carried x-sdk) — the layout
+    // cannot inspect the spec, so the frontmatter is the signal. Fallback:
+    // match `metadata.openapi` ("<abs spec path>#<region>") against
+    // `api.openapi[..].sdk` — covers hand-authored composed pages. When
+    // enabled, the page gets the page-wide language switcher (SDK types +
+    // signatures + usage samples, with the raw-HTTP/cURL view as "shell").
+    let sdkCfg: { languages: string[]; defaultLanguage: string } | null = null
+    const metaSdkLangs = loaderData.metadata?.sdkLanguages
+    if (Array.isArray(metaSdkLangs) && metaSdkLangs.length) {
+        sdkCfg = { languages: metaSdkLangs, defaultLanguage: API_SDK_HTTP_LANGUAGE }
+    } else if (typeof loaderData.metadata?.openapi === "string") {
+        const raw = loaderData.metadata.openapi
+        const hashAt = raw.indexOf("#")
+        sdkCfg = resolveApiSdkConfig(settings?.api?.openapi, hashAt === -1 ? raw : raw.slice(0, hashAt))
+    }
+
     // TODO: BETTER HANDLE THAT
     if (loaderData.metadata?.openapi) {
         atlasVariantToggles = [
             { key: "status", defaultValue: "200" },
-            { key: "contentType", defaultValue: "application/json" }
+            { key: "contentType", defaultValue: "application/json" },
+            ...(sdkCfg ? [{ key: "sdkLang", defaultValue: sdkCfg.defaultLanguage }] : [])
         ];
     } else {
         atlasVariantToggles = [
@@ -397,17 +416,33 @@ export default function Layout() {
                                 Link: FwLink,
                                 syntaxHighlight: settings?.theme?.coder?.syntaxHighlight || null,
                                 baseMatch: lastMatchId || "",
-                                variantToggles: atlasVariantToggles
+                                variantToggles: atlasVariantToggles,
+                                ...(sdkCfg ? {
+                                    // 7 switcher entries (6 SDKs + cURL) don't fit a tab
+                                    // row — the dropdown is the apitoolchain-proven UI.
+                                    codeSample: { languageSwitcher: "dropdown" as const, languageIcons: true },
+                                    sdkTypes: {
+                                        enabled: true,
+                                        languages: sdkCfg.languages.map(id =>
+                                            API_SDK_LANGUAGES.find(l => l.language === id)
+                                                ?? { language: id, title: id }),
+                                        defaultLanguage: sdkCfg.defaultLanguage,
+                                    },
+                                } : {})
                             }}
                         >
                             <CoderProvider lines={settings?.theme?.coder?.lines} scroll={settings?.theme?.coder?.scroll}>
-                                <BaseThemeLayout>
-                                    <PageContext value={{ theme }}>
-                                        <PostLayout>
-                                            <Outlet />
-                                        </PostLayout>
-                                    </PageContext>
-                                </BaseThemeLayout>
+                                {/* SDK pages only: mounting the provider unconditionally would
+                                    flip every CodeSample site-wide into controlled mode. */}
+                                <MaybeSdkLanguage sdkCfg={sdkCfg}>
+                                    <BaseThemeLayout>
+                                        <PageContext value={{ theme }}>
+                                            <PostLayout>
+                                                <Outlet />
+                                            </PostLayout>
+                                        </PageContext>
+                                    </BaseThemeLayout>
+                                </MaybeSdkLanguage>
                             </CoderProvider>
                         </AtlasContext>
                     </Framework>
@@ -428,6 +463,25 @@ export default function Layout() {
     }
 
     return <>{appTree}</>
+}
+
+/** Wraps SDK-enabled API pages in the page-wide language provider (choice
+ *  persisted; the allow-list drops a stored language the config no longer
+ *  offers). Non-sdk pages render children untouched. */
+function MaybeSdkLanguage({ sdkCfg, children }: {
+    sdkCfg: { languages: string[]; defaultLanguage: string } | null,
+    children: React.ReactNode,
+}) {
+    if (!sdkCfg) {
+        return <>{children}</>
+    }
+    return <SdkLanguageProvider
+        defaultLanguage={sdkCfg.defaultLanguage}
+        storageKey="xyd:sdk-language"
+        languages={[...sdkCfg.languages, "shell", "curl"]}
+    >
+        {children}
+    </SdkLanguageProvider>
 }
 
 function PostLayout({ children }: { children: React.ReactNode }) {

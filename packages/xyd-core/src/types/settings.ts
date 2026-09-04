@@ -1346,7 +1346,35 @@ export type APIFileAdvanced = {
 
   /** Preset-specific rendering options (e.g. CLI). */
   options?: APIFileOptions;
+
+  /**
+   * SDK-native reference docs (OpenAPI sources only). Generates per-language
+   * SDK types, method signatures, and usage samples at BUILD time via the
+   * OpenSDK toolchain, with the raw-HTTP (cURL) view kept as a first-class
+   * entry in the page-wide language switcher. `true` enables all languages;
+   * the object form restricts them. Ignored for graphql/cli/mcp sources.
+   */
+  sdk?: boolean | APISdkConfig;
 };
+
+/** One of the SDK languages the OpenSDK toolchain can emit docs for. */
+export type APISdkLanguage =
+  | "go"
+  | "python"
+  | "typescript"
+  | "ruby"
+  | "java"
+  | "csharp";
+
+/** Object form of {@link APIFileAdvanced.sdk}. */
+export interface APISdkConfig {
+  /**
+   * Restrict the SDK languages shown in the switcher. Unknown ids are
+   * ignored; the rendered order always follows the canonical SDK order
+   * (go, python, typescript, ruby, java, csharp). Empty/omitted → all.
+   */
+  languages?: APISdkLanguage[];
+}
 
 /**
  * Preset-specific rendering options for an API source.

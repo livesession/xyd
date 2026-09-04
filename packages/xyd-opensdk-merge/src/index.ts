@@ -21,7 +21,11 @@ interface Diff3MergePatch {
 // Load jsdiff via createRequire (native CJS require) rather than a static import:
 // `diff`'s `exports.import` .mjs entry trips vitest's SSR transform in this
 // workspace, and the CJS build is what a node-target package wants anyway.
-const jsdiff = createRequire(import.meta.url)('diff') as {
+// LAZY (first merge3 call), not at module load: a createRequire call is
+// invisible to bundlers, so an eager load breaks any bundled consumer that
+// imports this package's barrel without ever merging — e.g. the compiled xyd
+// binary loading @xyd-js/opensdk-framework for the docs SDK enrichment.
+interface JsDiff {
   merge(mine: unknown, theirs: unknown, base: string): Diff3MergePatch
   structuredPatch(
     oldFileName: string,
@@ -32,6 +36,13 @@ const jsdiff = createRequire(import.meta.url)('diff') as {
     newHeader: string,
     options: { context: number },
   ): unknown
+}
+let _jsdiff: JsDiff | undefined
+function jsdiff(): JsDiff {
+  if (!_jsdiff) {
+    _jsdiff = createRequire(import.meta.url)('diff') as JsDiff
+  }
+  return _jsdiff
 }
 
 /** Marker labels for a conflict block: `<<<<<<< ours` … `>>>>>>> theirs`. */
@@ -130,9 +141,10 @@ export function merge3(base: string, ours: string, theirs: string, opts: Merge3O
   // overlapping default context lines. jsdiff's `merge` reconciles the two.
   const nl = (s: string) => (s.endsWith('\n') ? s : `${s}\n`)
   const bb = nl(b)
-  const patch = jsdiff.merge(
-    jsdiff.structuredPatch('', '', bb, nl(o), '', '', { context: 0 }),
-    jsdiff.structuredPatch('', '', bb, nl(t), '', '', { context: 0 }),
+  const jd = jsdiff()
+  const patch = jd.merge(
+    jd.structuredPatch('', '', bb, nl(o), '', '', { context: 0 }),
+    jd.structuredPatch('', '', bb, nl(t), '', '', { context: 0 }),
     bb,
   )
   const baseLines = bb.split('\n')

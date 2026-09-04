@@ -261,6 +261,18 @@ async function processUniformFile(
                     regions: regions.map(region => region.name)
                 });
 
+                // SDK-native docs: the enrichment hook (installed by documan's
+                // appInit when an openapi source enables `sdk`) attaches
+                // per-language SDK types/signatures/usage samples, keeping the
+                // REST view as the raw-HTTP flavor. Consumed via globalThis so
+                // xyd-content never depends on the opensdk packages.
+                const sdkEnrich = (globalThis as any).__xydUniformSdkEnrich;
+                if (sdkEnrich) {
+                    try {
+                        await sdkEnrich(references, resolvedFilePath);
+                    } catch { /* best-effort — REST view untouched */ }
+                }
+
                 return references;
             }
 

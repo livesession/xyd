@@ -1,0 +1,15 @@
+{
+    "theme": {
+        "name": "poetry"
+    },
+    "navigation": {
+        "sidebar": []
+    },
+    "api": {
+        "openapi": [
+            { "source": "../../../__fixtures__/openapi/basic.yaml", "route": "docs/api", "sdk": true },
+            { "source": "../../../__fixtures__/openapi/basic2.yaml", "route": "docs/plain" },
+            { "source": "../../../__fixtures__/openapi/basic.xsdk.yaml", "route": "docs/xsdk" }
+        ]
+    }
+}

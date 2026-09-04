@@ -1990,10 +1990,19 @@ importers:
       '@xyd-js/opensdk-rust':
         specifier: workspace:*
         version: link:../xyd-opensdk-rust
+      '@xyd-js/opensdk-uniform':
+        specifier: workspace:*
+        version: link:../xyd-opensdk-uniform
       commander:
         specifier: ^13.1.0
         version: 13.1.0
+      js-yaml:
+        specifier: ^4.1.0
+        version: 4.3.1
     devDependencies:
+      '@types/js-yaml':
+        specifier: ^4.0.9
+        version: 4.0.9
       '@types/node':
         specifier: ^20.9.0
         version: 20.9.0
@@ -2383,6 +2392,9 @@ importers:
       '@xyd-js/uniform':
         specifier: workspace:*
         version: link:../xyd-uniform
+      js-yaml:
+        specifier: ^4.1.0
+        version: 4.1.1
     devDependencies:
       '@types/js-yaml':
         specifier: ^4.0.9
@@ -2396,9 +2408,6 @@ importers:
       '@xyd-js/opensdk-ci':
         specifier: workspace:*
         version: link:../xyd-opensdk-ci
-      js-yaml:
-        specifier: ^4.1.0
-        version: 4.1.1
       openapi-types:
         specifier: ^12.1.3
         version: 12.1.3
@@ -2555,6 +2564,9 @@ importers:
       '@xyd-js/opencli':
         specifier: workspace:*
         version: link:../xyd-opencli
+      '@xyd-js/opensdk-uniform':
+        specifier: workspace:*
+        version: link:../xyd-opensdk-uniform
       '@xyd-js/sources':
         specifier: workspace:*
         version: link:../xyd-sources
@@ -18829,7 +18841,7 @@ snapshots:
     dependencies:
       '@jsdevtools/ono': 7.1.3
       '@types/json-schema': 7.0.15
-      js-yaml: 4.1.1
+      js-yaml: 4.3.1
 
   '@apidevtools/json-schema-ref-parser@13.0.5':
     dependencies:
@@ -20975,7 +20987,7 @@ snapshots:
       '@langchain/openai': 1.4.5(@langchain/core@1.1.45(@opentelemetry/api@1.8.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))(ws@8.20.0)
       '@langchain/textsplitters': 1.0.1(@langchain/core@1.1.45(@opentelemetry/api@1.8.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))
       handlebars: 4.7.9
-      js-yaml: 4.1.1
+      js-yaml: 4.3.1
       jsonpointer: 5.0.1
       openapi-types: 12.1.3
       yaml: 2.8.4
@@ -20996,7 +21008,7 @@ snapshots:
       '@langchain/openai': 1.4.5(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))(ws@8.20.0)
       '@langchain/textsplitters': 1.0.1(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))
       handlebars: 4.7.9
-      js-yaml: 4.1.1
+      js-yaml: 4.3.1
       jsonpointer: 5.0.1
       openapi-types: 12.1.3
       yaml: 2.8.4
@@ -21021,7 +21033,7 @@ snapshots:
       binary-extensions: 2.3.0
       flat: 5.0.2
       ibm-cloud-sdk-core: 5.4.14
-      js-yaml: 4.1.1
+      js-yaml: 4.3.1
       langsmith: 0.6.3(@opentelemetry/api@1.8.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)
       math-expression-evaluator: 2.0.7
       openai: 6.37.0(ws@8.20.0)(zod@3.25.76)
@@ -21052,7 +21064,7 @@ snapshots:
       binary-extensions: 2.3.0
       flat: 5.0.2
       ibm-cloud-sdk-core: 5.4.14
-      js-yaml: 4.1.1
+      js-yaml: 4.3.1
       langsmith: 0.6.3(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)
       math-expression-evaluator: 2.0.7
       openai: 6.37.0(ws@8.20.0)(zod@3.25.76)
@@ -21860,7 +21872,7 @@ snapshots:
       hot-shots: 10.2.1
       indent-string: 5.0.0
       is-plain-obj: 4.1.0
-      js-yaml: 4.1.1
+      js-yaml: 4.3.1
       keep-func-props: 4.0.1
       locate-path: 7.2.0
       log-process-errors: 8.0.0
@@ -21932,7 +21944,7 @@ snapshots:
       find-up: 6.3.0
       indent-string: 5.0.0
       is-plain-obj: 4.1.0
-      js-yaml: 4.1.1
+      js-yaml: 4.3.1
       map-obj: 5.0.2
       netlify: 13.2.0
       node-fetch: 3.3.2
@@ -25679,6 +25691,14 @@ snapshots:
       magic-string: 0.30.21
     optionalDependencies:
       vite: 5.4.21(@types/node@20.9.0)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
+
+  '@vitest/mocker@2.1.9(vite@5.4.21(@types/node@24.12.3)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1))':
+    dependencies:
+      '@vitest/spy': 2.1.9
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      vite: 5.4.21(@types/node@24.12.3)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
 
   '@vitest/pretty-format@2.0.5':
     dependencies:
@@ -30546,7 +30566,7 @@ snapshots:
       cli-color: 2.0.4
       glob: 10.5.0
       is-glob: 4.0.3
-      js-yaml: 4.1.1
+      js-yaml: 4.3.1
       lodash: 4.18.1
       minimist: 1.2.8
       mkdirp: 3.0.1
@@ -36662,7 +36682,7 @@ snapshots:
   vitest@2.1.9(@types/node@24.12.3)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1):
     dependencies:
       '@vitest/expect': 2.1.9
-      '@vitest/mocker': 2.1.9(vite@5.4.21(@types/node@20.9.0)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1))
+      '@vitest/mocker': 2.1.9(vite@5.4.21(@types/node@24.12.3)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1))
       '@vitest/pretty-format': 2.1.9
       '@vitest/runner': 2.1.9
       '@vitest/snapshot': 2.1.9

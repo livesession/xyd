@@ -19,6 +19,7 @@ import { parseCommand } from './parse';
 import { applyConfig } from './plugin-loader';
 import { detectChain } from '@xyd-js/opensdk-chain';
 import { publishCommand } from './publish';
+import { xsdkCommand } from './xsdk';
 import { runChain } from './run';
 
 function handleError(err: unknown): never {
@@ -77,6 +78,21 @@ export async function main(argv: string[] = process.argv): Promise<void> {
           grouping: opts.grouping,
           sdk: config?.sdk,
         });
+      } catch (err) {
+        handleError(err);
+      }
+    });
+
+  program
+    .command('xsdk')
+    .description('Embed x-sdk SDK docs (signatures, types, usage samples) into an OpenAPI spec — for CI/CD pipelines that ship a docs-ready spec')
+    .requiredOption('--spec <path>', 'Path to the OpenAPI spec (yaml/json)')
+    .option('--output <path>', 'Write the enriched spec to a file instead of stdout')
+    .option('--langs <ids>', 'Comma-separated SDK language ids (default: all six)', (v: string) =>
+      v.split(',').map((x) => x.trim()).filter(Boolean))
+    .action(async (opts) => {
+      try {
+        await xsdkCommand({ spec: opts.spec, output: opts.output, langs: opts.langs });
       } catch (err) {
         handleError(err);
       }

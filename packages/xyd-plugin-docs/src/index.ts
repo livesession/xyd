@@ -134,6 +134,7 @@ import { settingsNative } from "./native";
 import { collectAsTocPages, mergeAsTocPages, type AsTocPages } from "./asToc";
 
 export { readSettings } from "./presets/docs/settings"
+export { setupUniformSdkEnrichment } from "./presets/uniform/sdkEnrich"
 export { collectAsTocPages, mergeAsTocPages, asTocFileMap, sectionIdFor } from "./asToc"
 export type { AsTocPages, AsTocHost, AsTocSection } from "./asToc"
 

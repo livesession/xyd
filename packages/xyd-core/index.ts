@@ -9,3 +9,5 @@ export * from "./src/types/page-api.i";
 export * from "./src/i18n/resolver";
 
 export * from "./src/asToc";
+
+export * from "./src/api-sdk";

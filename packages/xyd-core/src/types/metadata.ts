@@ -85,6 +85,16 @@ export interface Metadata<P = void> {
     /**
      * @internal
      *
+     * SDK language ids this page's API docs render with — stamped by the
+     * uniform preset for sdk-enabled sources (`api.openapi[..].sdk` or a
+     * spec-carried `x-sdk`); the client layouts read it back (they cannot
+     * inspect the spec). Also settable by hand on composed pages.
+     */
+    sdkLanguages?: string[]
+
+    /**
+     * @internal
+     *
      * used for mcp references
      */
     mcp?: string
