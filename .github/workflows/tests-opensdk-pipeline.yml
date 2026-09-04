@@ -291,6 +291,10 @@ jobs:
         mkdir -p /tmp/pypi-packages
         pypi-server run -P . -a . -p 8081 /tmp/pypi-packages &> /tmp/pypiserver.log &
         gem install gemstash --no-document
+        # gemstash validates push keys against its authorization DB — authorize
+        # the ruby publisher's throwaway key ('opensdk', its no-creds fallback)
+        # so the anonymous e2e push is accepted.
+        gemstash authorize push --key opensdk
         # gemstash 2.8+ pulls puma >= 5, which dropped daemon mode — `gemstash
         # start` now blocks in the foreground, hanging this step until the job
         # deadline. Run it foreground explicitly and background it ourselves
