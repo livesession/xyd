@@ -227,6 +227,22 @@ function $Definitions({
     let argDefinition: Definition | undefined
     let definitions = reference?.definitions || []
 
+    // sidebar-as-language SDK flavors (keepRest enrichment): REST definitions
+    // tagged `sdkFlavor: http` coexist with SDK-type definitions (`sdkLang`
+    // variants). The active page-wide language decides which set renders —
+    // an SDK language shows the SDK Parameters/Returns; anything else (the
+    // raw-HTTP/cURL entry, or a stale stored value) shows the REST view.
+    // Gated on http-flagged defs existing so legacy runtime enrichment
+    // (REST defs REPLACED — apitoolchain) keeps its current behavior.
+    const defsSdkTypes = useSdkTypes();
+    const defsSdkLang = useSdkLanguage();
+    const isHttpDef = (d: Definition) => !!d.meta?.some(m => m.name === "sdkFlavor" && m.value === "http")
+    const isSdkDef = (d: Definition) => !!d.variants?.some(v => v.meta?.some(m => m.name === "sdkLang"))
+    if (defsSdkTypes?.enabled && defsSdkLang && definitions.some(isHttpDef)) {
+        const httpMode = !defsSdkTypes.languages?.some(l => l.language === defsSdkLang.language)
+        definitions = definitions.filter(d => httpMode ? !isSdkDef(d) : !isHttpDef(d))
+    }
+
     if (reference?.category === ReferenceCategory.GRAPHQL) {
         const gqlDefinitions: Definition[] = []
 
@@ -341,12 +357,16 @@ function $VariantsProvider({ definition, children }: {
         variantToggles.forEach(toggle => {
             initial[toggle.key] = toggle.defaultValue;
         });
-        if (sdkLang) initial.sdkLang = sdkLang.language;
+        // Only definitions whose variants actually carry `sdkLang` follow the
+        // page-wide language — injecting it unconditionally would make plain
+        // status/contentType variants (e.g. keepRest REST responses) unmatchable,
+        // freezing their selects on variants[0].
+        if (sdkLang && variantMetas["sdkLang"]) initial.sdkLang = sdkLang.language;
         return initial;
     });
 
     useEffect(() => {
-        if (!sdkLang) return;
+        if (!sdkLang || !variantMetas["sdkLang"]) return;
         setSelectedValues(prev => prev.sdkLang === sdkLang.language ? prev : { ...prev, sdkLang: sdkLang.language });
     }, [sdkLang?.language]);
 

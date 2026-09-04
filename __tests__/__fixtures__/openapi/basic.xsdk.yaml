@@ -1,0 +1,399 @@
+openapi: 3.0.0
+info:
+  title: Todo API
+  version: 1.0.0
+  description: A simple API for managing todos
+servers:
+  - url: http://localhost:3000
+    description: Development server
+paths:
+  /todos:
+    get:
+      summary: Get all todos
+      description: Retrieve a list of all todos
+      responses:
+        '200':
+          description: A list of todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+      x-sdk:
+        go:
+          usage: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/todoapi\"\n\t\"github.com/example/todoapi/option\"\n)\n\nfunc main() {\n\tclient := todoapi.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Todos.List(context.TODO())\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n"
+          signature: client.Todos.List(ctx) ([]Todo, error)
+          types:
+            request:
+              fields: []
+            response:
+              typeName: '[]Todo'
+              langType: '[]Todo'
+        python:
+          usage: |
+            import os
+
+            from todo_api import Client
+
+            client = Client(
+                api_key=os.environ.get("TODO_API_API_KEY"),
+            )
+
+            result = client.todos.list()
+            print(result)
+          signature: client.todos.list() -> list[Todo]
+          types:
+            request:
+              fields: []
+            response:
+              typeName: list[Todo]
+              langType: list[Todo]
+    post:
+      summary: Create a new todo
+      description: Create a new todo item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoInput'
+      responses:
+        '201':
+          description: Todo created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+      x-sdk:
+        go:
+          usage: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/todoapi\"\n\t\"github.com/example/todoapi/option\"\n\t\"github.com/example/todoapi/packages/param\"\n)\n\nfunc main() {\n\tclient := todoapi.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Todos.New(\n\t\tcontext.TODO(),\n\t\ttodoapi.TodoNewParams{\n\t\t\tTitle: \"string\",\n\t\t\tCompleted: param.NewOpt[bool](true),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n"
+          signature: client.Todos.New(ctx, body) (*Todo, error)
+          types:
+            request:
+              typeName: TodoNewParams
+              argName: body
+              fields:
+                - name: Title
+                  langType: string
+                  required: true
+                  description: The title of the todo
+                - name: Completed
+                  langType: param.Opt[bool]
+                  required: false
+                  description: Whether the todo is completed
+            response:
+              typeName: Todo
+              fields:
+                - name: ID
+                  langType: string
+                  required: true
+                  description: The unique identifier for the todo
+                - name: Title
+                  langType: string
+                  required: true
+                  description: The title of the todo
+                - name: Completed
+                  langType: bool
+                  required: true
+                  description: Whether the todo is completed
+                - name: CreatedAt
+                  langType: string
+                  required: true
+                  description: When the todo was created
+        python:
+          usage: |
+            import os
+
+            from todo_api import Client
+
+            client = Client(
+                api_key=os.environ.get("TODO_API_API_KEY"),
+            )
+
+            result = client.todos.create(title="string", completed=True)
+            print(result)
+          signature: client.todos.create(title, completed=...) -> Todo
+          types:
+            request:
+              fields:
+                - name: title
+                  langType: str
+                  required: true
+                  description: The title of the todo
+                - name: completed
+                  langType: Optional[bool]
+                  required: false
+                  description: Whether the todo is completed
+            response:
+              typeName: Todo
+              fields:
+                - name: id
+                  langType: str
+                  required: true
+                  description: The unique identifier for the todo
+                - name: title
+                  langType: str
+                  required: true
+                  description: The title of the todo
+                - name: completed
+                  langType: bool
+                  required: true
+                  description: Whether the todo is completed
+                - name: created_at
+                  langType: str
+                  required: true
+                  description: When the todo was created
+  /todos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Todo ID
+    get:
+      summary: Get a todo by ID
+      description: Retrieve a specific todo by its ID
+      responses:
+        '200':
+          description: Todo found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          description: Todo not found
+      x-sdk:
+        go:
+          usage: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/todoapi\"\n\t\"github.com/example/todoapi/option\"\n)\n\nfunc main() {\n\tclient := todoapi.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Todos.Get(context.TODO(), \"id\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n"
+          signature: client.Todos.Get(ctx, id) (*Todo, error)
+          types:
+            request:
+              fields: []
+            response:
+              typeName: Todo
+              fields:
+                - name: ID
+                  langType: string
+                  required: true
+                  description: The unique identifier for the todo
+                - name: Title
+                  langType: string
+                  required: true
+                  description: The title of the todo
+                - name: Completed
+                  langType: bool
+                  required: true
+                  description: Whether the todo is completed
+                - name: CreatedAt
+                  langType: string
+                  required: true
+                  description: When the todo was created
+        python:
+          usage: |
+            import os
+
+            from todo_api import Client
+
+            client = Client(
+                api_key=os.environ.get("TODO_API_API_KEY"),
+            )
+
+            result = client.todos.retrieve("id")
+            print(result)
+          signature: client.todos.retrieve(id) -> Todo
+          types:
+            request:
+              fields: []
+            response:
+              typeName: Todo
+              fields:
+                - name: id
+                  langType: str
+                  required: true
+                  description: The unique identifier for the todo
+                - name: title
+                  langType: str
+                  required: true
+                  description: The title of the todo
+                - name: completed
+                  langType: bool
+                  required: true
+                  description: Whether the todo is completed
+                - name: created_at
+                  langType: str
+                  required: true
+                  description: When the todo was created
+    put:
+      summary: Update a todo
+      description: Update an existing todo by its ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoInput'
+      responses:
+        '200':
+          description: Todo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          description: Todo not found
+      x-sdk:
+        go:
+          usage: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/todoapi\"\n\t\"github.com/example/todoapi/option\"\n\t\"github.com/example/todoapi/packages/param\"\n)\n\nfunc main() {\n\tclient := todoapi.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Todos.Update(\n\t\tcontext.TODO(),\n\t\t\"id\",\n\t\ttodoapi.TodoUpdateParams{\n\t\t\tTitle: \"string\",\n\t\t\tCompleted: param.NewOpt[bool](true),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n"
+          signature: client.Todos.Update(ctx, id, body) (*Todo, error)
+          types:
+            request:
+              typeName: TodoUpdateParams
+              argName: body
+              fields:
+                - name: Title
+                  langType: string
+                  required: true
+                  description: The title of the todo
+                - name: Completed
+                  langType: param.Opt[bool]
+                  required: false
+                  description: Whether the todo is completed
+            response:
+              typeName: Todo
+              fields:
+                - name: ID
+                  langType: string
+                  required: true
+                  description: The unique identifier for the todo
+                - name: Title
+                  langType: string
+                  required: true
+                  description: The title of the todo
+                - name: Completed
+                  langType: bool
+                  required: true
+                  description: Whether the todo is completed
+                - name: CreatedAt
+                  langType: string
+                  required: true
+                  description: When the todo was created
+        python:
+          usage: |
+            import os
+
+            from todo_api import Client
+
+            client = Client(
+                api_key=os.environ.get("TODO_API_API_KEY"),
+            )
+
+            result = client.todos.update("id", title="string", completed=True)
+            print(result)
+          signature: client.todos.update(id, title, completed=...) -> Todo
+          types:
+            request:
+              fields:
+                - name: title
+                  langType: str
+                  required: true
+                  description: The title of the todo
+                - name: completed
+                  langType: Optional[bool]
+                  required: false
+                  description: Whether the todo is completed
+            response:
+              typeName: Todo
+              fields:
+                - name: id
+                  langType: str
+                  required: true
+                  description: The unique identifier for the todo
+                - name: title
+                  langType: str
+                  required: true
+                  description: The title of the todo
+                - name: completed
+                  langType: bool
+                  required: true
+                  description: Whether the todo is completed
+                - name: created_at
+                  langType: str
+                  required: true
+                  description: When the todo was created
+    delete:
+      summary: Delete a todo
+      description: Delete a todo by its ID
+      responses:
+        '204':
+          description: Todo deleted successfully
+        '404':
+          description: Todo not found
+      x-sdk:
+        go:
+          usage: "package main\n\nimport (\n\t\"context\"\n\n\t\"github.com/example/todoapi\"\n\t\"github.com/example/todoapi/option\"\n)\n\nfunc main() {\n\tclient := todoapi.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\terr := client.Todos.Delete(context.TODO(), \"id\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n}\n"
+          signature: client.Todos.Delete(ctx, id) error
+          types:
+            request:
+              fields: []
+            response:
+              langType: error
+              note: no response body
+        python:
+          usage: |
+            import os
+
+            from todo_api import Client
+
+            client = Client(
+                api_key=os.environ.get("TODO_API_API_KEY"),
+            )
+
+            client.todos.delete("id")
+          signature: client.todos.delete(id) -> None
+          types:
+            request:
+              fields: []
+            response:
+              langType: None
+              note: no response body
+components:
+  schemas:
+    Todo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The unique identifier for the todo
+        title:
+          type: string
+          description: The title of the todo
+        completed:
+          type: boolean
+          description: Whether the todo is completed
+        createdAt:
+          type: string
+          format: date-time
+          description: When the todo was created
+      required:
+        - id
+        - title
+        - completed
+        - createdAt
+    TodoInput:
+      type: object
+      properties:
+        title:
+          type: string
+          description: The title of the todo
+        completed:
+          type: boolean
+          description: Whether the todo is completed
+      required:
+        - title
+x-sdk:
+  languages:
+    - go
+    - python

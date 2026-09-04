@@ -23,18 +23,19 @@
     "ci:test": "vitest run"
   },
   "dependencies": {
-    "@xyd-js/openapi": "workspace:*",
-    "@xyd-js/opencli": "workspace:*",
+    "@code-hike/lighter": "^1.0.3",
+    "@xyd-js/cli-sdk": "workspace:*",
     "@xyd-js/gql": "workspace:*",
     "@xyd-js/mcp-uniform": "workspace:*",
-    "@xyd-js/uniform": "workspace:*",
+    "@xyd-js/native": "workspace:*",
+    "@xyd-js/openapi": "workspace:*",
+    "@xyd-js/opencli": "workspace:*",
+    "@xyd-js/opensdk-uniform": "workspace:*",
     "@xyd-js/sources": "workspace:*",
-    "@xyd-js/cli-sdk": "workspace:*",
+    "@xyd-js/uniform": "workspace:*",
     "codehike": "^1.0.3",
-    "@code-hike/lighter": "^1.0.3",
     "dotenv": "^16.4.7",
-    "gray-matter": "^4.0.3",
-    "@xyd-js/native": "workspace:*"
+    "gray-matter": "^4.0.3"
   },
   "peerDependencies": {
     "@xyd-js/framework": "workspace:*",

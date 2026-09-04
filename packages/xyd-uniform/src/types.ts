@@ -30,8 +30,12 @@ export interface Reference<
 export type DefinitionOpenAPIMeta = Meta<"contentType" | "required" | "definitionDescription">;
 export type DefinitionTypeDocMeta = Meta<"type">;
 export type DefinitionGraphqlMeta = Meta<"type" | "graphqlName">;
+/** `sdkFlavor: "http"` — a REST definition kept alongside SDK-type definitions
+ *  (opensdk-uniform keepRest mode); Atlas shows it for the raw-HTTP/cURL entry
+ *  of the language switcher instead of the SDK types. */
+export type DefinitionSdkFlavorMeta = Meta<"sdkFlavor">;
 
-export type DefinitionMeta = DefinitionOpenAPIMeta | DefinitionTypeDocMeta | DefinitionGraphqlMeta
+export type DefinitionMeta = DefinitionOpenAPIMeta | DefinitionTypeDocMeta | DefinitionGraphqlMeta | DefinitionSdkFlavorMeta
 
 export type SymbolDef = {
     id?: string | string[];
@@ -179,6 +183,12 @@ export interface CodeBlockTab {
 
     // context of the generation method e.g openapi or graphql
     context?: ExampleContext;
+
+    /** Tab IDENTITY for the language switcher (`meta || language` is the tab
+     *  value downstream). SDK-generated tabs set it to the language id so the
+     *  page-wide language selection stores ids ("python"), never display
+     *  titles ("Python"). Unset → consumers fall back to the title. */
+    meta?: string;
 
     // TODO: highlighted code
     highlighted?: HighlightedCode;

@@ -31,8 +31,9 @@ services:
   gemstash:
     image: ruby:3.3
     working_dir: /gemstash
-    # gemstash is bundler's gem server; /private accepts `gem push`.
-    command: sh -c "gem install gemstash --no-document && gemstash start --no-daemonize"
+    # gemstash is bundler's gem server; /private accepts `gem push` from keys
+    # in its authorization DB — authorize the ruby publisher's throwaway key.
+    command: sh -c "gem install gemstash --no-document && gemstash authorize push --key opensdk && gemstash start --no-daemonize"
     ports: ['9292:9292']
     healthcheck:
       test: ['CMD-SHELL', "ruby -e \"require 'net/http'; Net::HTTP.get(URI('http://localhost:9292/'))\""]

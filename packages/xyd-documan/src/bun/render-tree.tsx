@@ -7,7 +7,8 @@ import { ReactContent } from "@xyd-js/components/content";
 import { IconProvider } from "@xyd-js/components/writer";
 import { CoderProvider } from "@xyd-js/components/coder";
 import { SearchButton } from "@xyd-js/components/system";
-import { Atlas, AtlasContext } from "@xyd-js/atlas";
+import { Atlas, AtlasContext, SdkLanguageProvider } from "@xyd-js/atlas";
+import { resolveApiSdkConfig, API_SDK_LANGUAGES, API_SDK_HTTP_LANGUAGE } from "@xyd-js/core";
 import AtlasXydPlugin from "@xyd-js/atlas/xydPlugin";
 import { Composer } from "@xyd-js/composer";
 import { Analytics, useAnalytics } from "@xyd-js/analytics";
@@ -269,6 +270,25 @@ function PluginPageRenderer({ route }: { route: string }) {
   return Provider ? <Provider>{inner}</Provider> : <>{inner}</>;
 }
 
+/** SDK pages only — an unconditional provider would flip every CodeSample
+ *  site-wide into controlled mode. Persisted choice, allow-listed against the
+ *  configured languages (+ the raw-HTTP entries). */
+function MaybeSdkLanguage({ sdkCfg, children }: {
+  sdkCfg: { languages: string[]; defaultLanguage: string } | null;
+  children: React.ReactNode;
+}) {
+  if (!sdkCfg) return <>{children}</>;
+  return (
+    <SdkLanguageProvider
+      defaultLanguage={sdkCfg.defaultLanguage}
+      storageKey="xyd:sdk-language"
+      languages={[...sdkCfg.languages, "shell", "curl"]}
+    >
+      {children}
+    </SdkLanguageProvider>
+  );
+}
+
 export function ShellProviders() {
   const loaderData = useLoaderData();
   // Plugin page (login/auth callback) short-circuits the docs render tree.
@@ -279,7 +299,34 @@ export function ShellProviders() {
   const locale = loaderData.locale;
   const effectiveSettings = locale ? resolveLocaleSettings(settings, locale) : settings;
   const { Layout } = state.theme;
-  const variantToggles = [{ key: "symbolName", defaultValue: "" }];
+
+  // SDK-native docs (`api.openapi[..].sdk`): metadata.openapi is
+  // "<abs spec path>#<region>" — strip the region, resolve the per-source sdk
+  // config, and mirror the vite layout's wiring (toggles + sdkTypes context +
+  // the page-wide language provider). Non-sdk pages keep the exact current
+  // shape. resolveApiSdkConfig is pure string work — browser-safe, this tree
+  // runs on the client too.
+  let sdkCfg: { languages: string[]; defaultLanguage: string } | null = null;
+  // Preferred signal: the preset-stamped frontmatter (covers `sdk` config AND
+  // spec-carried x-sdk). Fallback: config matching, for composed pages.
+  const metaSdkLangs = (loaderData.metadata as any)?.sdkLanguages;
+  const openapiMeta = (loaderData.metadata as any)?.openapi;
+  if (Array.isArray(metaSdkLangs) && metaSdkLangs.length) {
+    sdkCfg = { languages: metaSdkLangs, defaultLanguage: API_SDK_HTTP_LANGUAGE };
+  } else if (typeof openapiMeta === "string") {
+    const hashAt = openapiMeta.indexOf("#");
+    sdkCfg = resolveApiSdkConfig(
+      settings?.api?.openapi,
+      hashAt === -1 ? openapiMeta : openapiMeta.slice(0, hashAt),
+    );
+  }
+  const variantToggles = sdkCfg
+    ? [
+        { key: "status", defaultValue: "200" },
+        { key: "contentType", defaultValue: "application/json" },
+        { key: "sdkLang", defaultValue: sdkCfg.defaultLanguage },
+      ]
+    : [{ key: "symbolName", defaultValue: "" }];
   // Site banner (components.banner.content) — compiled server-side into
   // loaderData.bannerContentCode by buildPageData and serialized to the client, so
   // this instantiates identically in SSR and hydration (parity with the Vite
@@ -316,15 +363,30 @@ export function ShellProviders() {
                 syntaxHighlight: settings.theme?.coder?.syntaxHighlight || null,
                 baseMatch: "",
                 variantToggles,
+                ...(sdkCfg
+                  ? {
+                      // 7 entries (6 SDKs + cURL) → dropdown, the apitoolchain UI.
+                      codeSample: { languageSwitcher: "dropdown", languageIcons: true },
+                      sdkTypes: {
+                        enabled: true,
+                        languages: sdkCfg.languages.map((id) =>
+                          API_SDK_LANGUAGES.find((l) => l.language === id)
+                            ?? { language: id, title: id }),
+                        defaultLanguage: sdkCfg.defaultLanguage,
+                      },
+                    }
+                  : {}),
               } as any
             }
           >
             <CoderProvider lines={effectiveSettings?.theme?.coder?.lines} scroll={effectiveSettings?.theme?.coder?.scroll}>
-              <Layout>
-                {/* Key on slug so FrameworkPage remounts per page (its setMetadata
-                    runs on empty deps) → title/nav-active/TOC refresh on client nav. */}
-                <DocsBody key={loaderData.slug} />
-              </Layout>
+              <MaybeSdkLanguage sdkCfg={sdkCfg}>
+                <Layout>
+                  {/* Key on slug so FrameworkPage remounts per page (its setMetadata
+                      runs on empty deps) → title/nav-active/TOC refresh on client nav. */}
+                  <DocsBody key={loaderData.slug} />
+                </Layout>
+              </MaybeSdkLanguage>
             </CoderProvider>
           </AtlasContext>
         </Framework>

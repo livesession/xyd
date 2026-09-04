@@ -6,8 +6,10 @@ import { type EmitterPublishOptions, firstFile, runCommand } from '@xyd-js/opens
 
 /**
  * Publish the generated Ruby SDK: `gem build` then `gem push` to the host. Modern
- * rubygems reads the api key from GEM_HOST_API_KEY (gem servers like gemstash
- * accept any key; rubygems.org requires a real one).
+ * rubygems reads the api key from GEM_HOST_API_KEY (local gem servers accept
+ * whatever key their setup authorized — the e2e registries authorize the
+ * 'opensdk' fallback below via `gemstash authorize`; rubygems.org requires a
+ * real one).
  */
 export function publishRuby(dir: string, opts: EmitterPublishOptions = {}): void {
   const gemspec = firstFile(dir, /\.gemspec$/);

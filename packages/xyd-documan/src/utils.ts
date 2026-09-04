@@ -28,6 +28,7 @@ import { IconSet } from "@iconify/tools";
 import {
     readSettings,
     pluginDocs,
+    setupUniformSdkEnrichment,
     type PluginDocsOptions,
     PluginOutput,
 } from "@xyd-js/plugin-docs";
@@ -642,6 +643,11 @@ export async function appInit(options?: PluginDocsOptions) {
         globalThis.__xydUserComponentsSERVER =
             cloneComponentsPreservingReferences(componentPlugins);
     }
+
+    // SDK-native docs (`api.openapi[..].sdk`): install the reference-enrichment
+    // hook BEFORE the worker early-return below — prerender workers compile MDX
+    // in their own heap and must enrich identically to the main thread.
+    setupUniformSdkEnrichment(preloadSettings);
 
     // Worker mode (prerender pool): loadPlugins above already rebuilt the
     // non-serializable render functions (markdown plugins, components, hooks) in

@@ -298,7 +298,13 @@ export class Composer {
                             const highlighted = await highlight({
                                 value: tab.code,
                                 lang: tab.language,
-                                meta: tab.title,
+                                // `meta` is the tab IDENTITY (`meta || lang` is the
+                                // switcher value): an explicit `tab.meta` wins (SDK
+                                // tabs set it to the language id so the page-wide
+                                // language switcher stores ids, not titles); tabs
+                                // without one keep title-identity (x-codeSamples /
+                                // CLI multi-examples of the same language).
+                                meta: String(tab.meta ?? tab.title ?? ""),
                             }, themeSettings?.coder?.syntaxHighlight || "github-dark")
 
                             tab.highlighted = highlighted

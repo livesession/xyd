@@ -3,6 +3,8 @@
 // opensdk.config.{ts,js,mjs} plugin bundle can register more.
 export { main, registerBuiltinEmitters } from './cli/index';
 export { parseCommand } from './cli/parse';
+export { xsdkCommand } from './cli/xsdk';
+export type { XsdkCommandOptions } from './cli/xsdk';
 export { generateCommand, generateTargets, loadIR } from './cli/generate';
 // CLI output targets: the OpenCLI pipeline (openapi2opencli → opencli2go/rust)
 // surfaced as go-cli / rust-cli pseudo-language target ids.

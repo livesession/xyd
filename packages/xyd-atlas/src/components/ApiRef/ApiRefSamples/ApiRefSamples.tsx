@@ -172,7 +172,7 @@ function createCodeblocks(example: Example): CodeThemeBlockProps[] {
         ({
           value: String(tab.code || ""),
           lang: String(tab.language || ""),
-          meta: String(tab.context || ""),
+          meta: String(tab.meta ?? tab.context ?? ""),
           highlighted: tab.highlighted,
         }) as CodeThemeBlockProps
     ) || []

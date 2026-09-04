@@ -17,7 +17,7 @@ import {
     APIFile,
     Sidebar,
     SidebarRoute,
-    Metadata
+    Metadata,
 } from "@xyd-js/core";
 import uniform, {
     pluginNavigation,
@@ -32,6 +32,7 @@ import { uniformPluginXDocsSidebar } from "@xyd-js/openapi";
 import { Preset, PresetData } from "../../types";
 
 import { fusedNative } from "./native";
+import { sourceSdkLanguages } from "./sdkEnrich";
 
 import { VIRTUAL_CONTENT_FOLDER } from "../../const";
 import { getHostPath } from "../../utils";
@@ -219,12 +220,23 @@ async function uniformResolver(
     // frontmatter stringify, fs writes, sidebar wiring) stays below, shared
     // with the JS pipeline.
     const globalUniformPlugins = globalThis.__xydUserUniformVitePlugins || []
+    // SDK-native docs (sdk config OR a spec-carried x-sdk): resolved per-FILE
+    // so plain sources on the same site keep the fused native fast path. Also
+    // stamped into every generated page's frontmatter below — the client
+    // layouts read it back (they cannot inspect the spec).
+    const absApiFileForSdk = apiFile.startsWith("http")
+        ? apiFile
+        : path.join(process.cwd(), apiFile)
+    const sdkLanguages = uniformType === "openapi"
+        ? await sourceSdkLanguages(settings, absApiFileForSdk)
+        : null
     const useFused = uniformType === "openapi"
         && !apiFile.startsWith("http")
         && !!fusedNative?.uniformOasPages
         // Prior JS-path runs push uniformPluginXDocsSidebar into the GLOBAL
         // array; only genuinely user-supplied plugins force the JS path.
         && globalUniformPlugins.filter((p: unknown) => p !== uniformPluginXDocsSidebar).length === 0
+        && !sdkLanguages
 
     let uniformWithNavigation: {
         references: Reference[] | null;
@@ -306,6 +318,22 @@ async function uniformResolver(
             pageFrontMatter: Record<string, any>;
         };
     };
+
+    // SDK-native docs: enrich the boot references too, so anything consuming
+    // them here (user uniform plugins, future search/llms passes) sees the
+    // same shape pages render with. Pages themselves re-resolve + enrich in
+    // processUniformFunctionCall — this is consistency, not a requirement.
+    if (uniformType === "openapi" && uniformWithNavigation.references) {
+        const sdkEnrich = (globalThis as any).__xydUniformSdkEnrich;
+        if (sdkEnrich) {
+            const abs = resolvedApiFile.startsWith("http")
+                ? resolvedApiFile
+                : path.join(process.cwd(), resolvedApiFile);
+            try {
+                await sdkEnrich(uniformWithNavigation.references, abs);
+            } catch { /* best-effort */ }
+        }
+    }
     }
 
     let pageLevels = {}
@@ -492,6 +520,10 @@ async function uniformResolver(
                 case "cli":
                     meta.cli = `${resolvedApiFile}#${region}`
                     break
+            }
+
+            if (uniformType === "openapi" && sdkLanguages?.length) {
+                meta.sdkLanguages = sdkLanguages
             }
 
             let composedContent = ""
