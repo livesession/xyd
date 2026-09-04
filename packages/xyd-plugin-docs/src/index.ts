@@ -412,6 +412,11 @@ export async function pluginDocs(options?: PluginDocsOptions): Promise<PluginOut
 
     let pagePathMapping: Record<string, string> = {}
 
+    // `{ page, source }` sugar → the `{ virtual, page }` form BEFORE anything
+    // walks navigation (i18n inheritance/prefixing, the JS/Rust pagemaps, the
+    // client settings) — downstream only ever sees the long-supported shape.
+    normalizeSourcePages(settings?.navigation)
+
     // Derive i18n state once. Subsequent steps (path mapping, route generation,
     // sitemap, prehydration) read from globalThis.__xydI18n.
     const i18n = deriveI18n(settings)
@@ -641,7 +646,41 @@ export function inheritTopLevelNavigation(settings: Settings) {
 // reference, virtual page, and SidebarRoute.route. Mutates in place. Called
 // once at boot for non-default locales so that downstream code (path
 // mapping, route generation, sidebar rendering) all share one key space.
-function prefixSidebarPages(sidebar: any[], prefix: string) {
+/**
+ * Normalize `{ page, source }` sidebar entries (the user-facing sugar for a
+ * page whose URL differs from its file path) into the `{ virtual, page }`
+ * form the whole engine already understands — JS + Rust pagemaps, sidebar
+ * rendering, docPaths, search, i18n prefixing. Mutates in place; extra props
+ * (`title`, …) are preserved. Idempotent — normalized entries have no
+ * `source` left. Exported for tests.
+ */
+export function normalizeSourcePages(navigation?: Navigation | null) {
+    if (!navigation) return
+
+    const normalizeEntry = (entry: any) => {
+        if (!entry || typeof entry !== "object") return
+        if (Array.isArray(entry.pages)) {
+            for (const child of entry.pages) normalizeEntry(child)
+            return
+        }
+        if (
+            typeof entry.page === "string" &&
+            typeof entry.source === "string" &&
+            !("virtual" in entry) &&
+            !("component" in entry)
+        ) {
+            entry.virtual = entry.source
+            delete entry.source
+        }
+    }
+
+    for (const item of navigation.sidebar || []) normalizeEntry(item)
+    for (const lang of navigation.languages || []) {
+        for (const item of lang.sidebar || []) normalizeEntry(item)
+    }
+}
+
+export function prefixSidebarPages(sidebar: any[], prefix: string) {
     for (const item of sidebar) {
         if (typeof item === "string") continue // top-level handled below
         if (!item || typeof item !== "object") continue
@@ -727,20 +766,10 @@ export function mapNavigationToPagePathMapping(navigation: Navigation, cwd?: str
             sidebarFlatOnly = true
             break
         } else if ('pages' in sidebar && "route" in sidebar) {
-            // Handle SidebarRoute
-            for (const item of sidebar.pages) {
-                if (item?.pages) {
-                    // asToc group under a route — sections, not pages.
-                    if (asTocEnabled((item as Sidebar).asToc)) continue
-                    processPages(item.pages)
-                } else if (typeof item === 'string') {
-                    // Handle direct string pages in SidebarRoute
-                    const existingPath = getExistingFilePath(item)
-                    if (existingPath) {
-                        mapping[item] = existingPath
-                    }
-                }
-            }
+            // Handle SidebarRoute — items are regular pages: strings, groups
+            // (asToc-gated inside processPages), and virtual/source leaves
+            // (URL ≠ file path) directly under the route.
+            processPages(sidebar.pages as PageURL[])
         } else if ('pages' in sidebar) {
             // Handle Sidebar (top-level asToc group — sections, not pages)
             if (asTocEnabled((sidebar as Sidebar).asToc)) continue

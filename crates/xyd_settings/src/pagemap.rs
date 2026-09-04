@@ -100,29 +100,12 @@ impl<'a> Walker<'a> {
                     let has_pages = obj.contains_key("pages");
                     let has_route = obj.contains_key("route");
                     if has_pages && has_route {
-                        // (b) SidebarRoute: for each item — nested pages recurse,
-                        // bare strings resolve directly; a direct virtual object
-                        // is NOT handled (the JS asymmetry — preserved).
+                        // (b) SidebarRoute: items are regular pages — strings,
+                        // groups (asToc-gated in process_pages), and virtual/
+                        // source leaves (URL ≠ file path) directly under the
+                        // route. Mirrors the JS walker exactly.
                         if let Some(items) = obj.get("pages").and_then(|p| p.as_array()) {
-                            for item in items {
-                                match item {
-                                    Value::Object(io) if io.contains_key("pages") => {
-                                        if let Some(nested) =
-                                            io.get("pages").and_then(|p| p.as_array())
-                                        {
-                                            if !is_as_toc(io) {
-                                                self.process_pages(nested);
-                                            }
-                                        }
-                                    }
-                                    Value::String(s) => {
-                                        if let Some(p) = existing_file_path(self.cwd, s) {
-                                            self.set(s, p);
-                                        }
-                                    }
-                                    _ => {}
-                                }
-                            }
+                            self.process_pages(items);
                         }
                     } else if has_pages {
                         // (c) plain Sidebar group

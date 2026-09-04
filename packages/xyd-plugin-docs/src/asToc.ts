@@ -111,8 +111,17 @@ export function collectAsTocPages(
                 result.pages[page] = { host: hostSlug, id, ...opts };
             } else if (page && typeof page === "object" && "pages" in page) {
                 collectGroup((page as Sidebar).pages, hostSlug, opts);
+            } else if (page && typeof page === "object" && "virtual" in page && (page as any).page) {
+                // A virtual/source page (URL ≠ file path) composes like a
+                // string page — file from `virtual`, section id from `page`.
+                const p = page as { virtual: string; page: string };
+                const file = existingFilePath(p.virtual);
+                if (!file) continue;
+                const id = sectionIdFor(p.page);
+                hostFor(hostSlug).sections.push({ page: p.page, file, id });
+                result.pages[p.page] = { host: hostSlug, id, ...opts };
             }
-            // virtual/component entries: not composable — ignored (v1)
+            // component entries: not composable — ignored (v1)
         }
     }
 
