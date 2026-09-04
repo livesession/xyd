@@ -26,6 +26,19 @@ export function resolveDropdownIcons(items: ResolvedDropdownItem[], size = 16): 
 }
 
 /**
+ * Same resolution for a single icon — the dropdown TRIGGER's own icon, which took
+ * the raw string and so rendered nothing for a named icon: the string reaches
+ * xyd-ui's `Icon`, and that bundle carries its own empty icon set (the populated
+ * one lives in the app's instance). Only image sources survived the trip, which is
+ * why an SVG path worked on a trigger and `"book-open"` silently did not.
+ */
+export function resolveTriggerIcon(icon: NavigationItem["icon"], size = 16) {
+    return typeof icon === "string" && !isImageSource(icon)
+        ? <Icon name={icon} size={size} />
+        : icon;
+}
+
+/**
  * Renders a nav item that carries `dropdownMenu` as a {@link Nav.Dropdown} — the
  * shared render path for header anchors (`FwHeaderItem`) and tabs (`FwSubNav`).
  * Passes `FwLink` so leaf links route through the framework's router-agnostic link
@@ -36,7 +49,7 @@ export function FwNavDropdown({ item, active }: { item: NavigationItem; active?:
     return (
         <Nav.Dropdown
             title={item.title}
-            icon={item.icon}
+            icon={resolveTriggerIcon(item.icon)}
             trigger={item.trigger}
             active={active}
             items={resolveDropdownIcons(resolveDropdownItems(dropdownMenuItems(item.dropdownMenu)))}

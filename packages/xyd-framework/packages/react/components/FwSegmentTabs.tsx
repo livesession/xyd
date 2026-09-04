@@ -15,10 +15,16 @@ import { FwNavDropdown } from "./FwNavDropdown";
  * prefixes the current path; each tab links to its `href` (falling back to
  * `page`). Pure rendering — the caller supplies the matched segment.
  */
-export function FwSegmentTabs({ segment }: { segment: Segment }) {
+export function FwSegmentTabs({ segment, float }: { segment: Segment; float?: "right" }) {
     const location = useLocation();
 
     const pathname = trailingSlash(location.pathname);
+    // The same segment renders twice — once per surface — so each pass takes only
+    // the tabs belonging to it. Active state is computed from the WHOLE segment
+    // below, not from this slice, so a floated tab still wins the Radix value.
+    const pages = segment.pages?.filter((p) =>
+        float === "right" ? p.float === "right" : p.float !== "right",
+    );
     // Radix Tabs `value` (the selected/underlined tab) comes ONLY from PLAIN tabs
     // whose own `page` prefixes the path. A `dropdownMenu` tab has no `page`/value —
     // it carries its own active state via the `active` prop (true when any child
@@ -29,9 +35,13 @@ export function FwSegmentTabs({ segment }: { segment: Segment }) {
     const isDropdownActive = (p: (typeof segment.pages)[number]) =>
         dropdownMenuItems(p.dropdownMenu).some((c) => !!c.page && pathname.startsWith(pageLink(c.page)));
 
+    if (!pages?.length) {
+        return null;
+    }
+
     return (
         <Nav.Tabs value={activePage?.page || ""}>
-            {segment.pages?.map((p, i) => {
+            {pages.map((p, i) => {
                 // A tab that carries `dropdownMenu` becomes a hover dropdown (the
                 // HashiCorp "Documentation ▾" pattern): each entry links to a section
                 // that has its own route-scoped sidebar.

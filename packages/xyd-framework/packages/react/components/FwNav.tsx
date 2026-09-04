@@ -51,6 +51,10 @@ export function FwNav() {
             </> : null
         }
         rightSurface={<>
+            {/* Tabs that opted out of the center with `float: "right"`. FIRST in this
+                surface: search is itself a right-floated header item, and sitting
+                before it is the whole point of floating a tab. */}
+            {tabsInCenter ? <FwSegmentTabs segment={tabsSegment!} float="right" /> : null}
             {
                 Header?.right?.length
                     ? <Nav.Tabs

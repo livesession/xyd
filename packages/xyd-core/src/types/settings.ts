@@ -996,6 +996,18 @@ export interface NavigationItem {
   dropdownMenu?: NavigationItem[] | DropdownMenu;
 
   /**
+   * Render this item on the RIGHT of the header rather than with its siblings,
+   * before the search box — for a tab that is a reference you look things up in
+   * rather than a stop in the reading order (e.g. an API reference).
+   *
+   * Honored only by the `tabs` appearance, and there only for `"right"` — the
+   * union matches {@link WebEditorHeader}, which intersects this type and already
+   * carries both values. The item keeps everything a centered tab has, including
+   * `dropdownMenu` and route-prefix active highlighting.
+   */
+  float?: "right" | "center";
+
+  /**
    * Nested navigation items — recursive. Honored ONLY by sidebar-dropdown
    * surfaces (`navigation.sidebarDropdown` and `appearance: "sidebarDropdown"`
    * segments): an entry with `pages` (typically without `page`/`href`) renders
