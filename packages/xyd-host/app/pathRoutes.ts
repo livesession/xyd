@@ -93,6 +93,11 @@ function extractNestedRoutes(
             // React Router's ssr:false loader-export validation).
             if (item.pages && Array.isArray(item.pages) && !asTocEnabled((item as any).asToc)) {
                 extractNestedRoutes(item.pages as SidebarNavigation, routes, route || parentRoute)
+            } else if (!parentRoute && !('route' in item) && 'page' in item && typeof (item as any).page === "string" && (item as any).page) {
+                // Top-level flat leaf OBJECT (a virtual/source page outside any
+                // SidebarRoute) — routed exactly like a top-level string page.
+                const page = (item as any).page.startsWith("/") ? (item as any).page : `/${(item as any).page}`;
+                routes.push({ id: page, path: page });
             }
         } else if (!parentRoute) {
             const page = item.startsWith("/") ? item : `/${item}`;

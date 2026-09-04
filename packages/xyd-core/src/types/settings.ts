@@ -830,7 +830,32 @@ export interface ComponentPageImport {
 /**
  * Page URL type
  */
-export type PageURL = string | VirtualPage | Sidebar | ComponentPage;
+export type PageURL = string | VirtualPage | SourcePage | Sidebar | ComponentPage;
+
+/**
+ * A page whose URL differs from its markdown file path.
+ *
+ * Sugar for the {@link VirtualPage} object form — normalized at boot
+ * (`{ page, source }` → `{ virtual: source, page }`), so the whole engine
+ * only ever sees the virtual shape. Use it when several files should share a
+ * URL scheme, e.g. per-framework variants:
+ *
+ * ```json
+ * { "page": "docs/angular/logs", "source": "docs/logs.angular" }
+ * { "page": "docs/bun/logs",     "source": "docs/logs.bun" }
+ * ```
+ */
+export interface SourcePage {
+  /** The URL the page serves at. */
+  page: string;
+
+  /** The markdown file path, extension-less — like a string page entry
+   * (`docs/logs.angular` → `docs/logs.angular.md`/`.mdx`). */
+  source: string;
+
+  /** Optional sidebar label override. */
+  title?: string;
+}
 
 /**
  * @internal

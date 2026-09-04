@@ -1,0 +1,26 @@
+{
+    "theme": {
+        "name": "poetry"
+    },
+    "navigation": {
+        "sidebar": [
+            {
+                "route": "docs",
+                "pages": [
+                    {
+                        "group": "Get Started",
+                        "pages": ["docs/index"]
+                    },
+                    {
+                        "group": "Logs",
+                        "pages": [
+                            { "page": "docs/angular/logs", "source": "docs/logs.angular" },
+                            { "page": "docs/bun/logs", "source": "docs/logs.bun" },
+                            { "virtual": "docs/logs.node", "page": "docs/node/logs" }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}
