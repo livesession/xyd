@@ -276,6 +276,7 @@ jobs:
     # /Go use throwaway file feeds. Locally the same flow runs in Docker via
     # packages/xyd-opensdk-ci/e2e/publish/run-publish-e2e.sh.
     - name: Start local registries (verdaccio / pypiserver / gemstash)
+      timeout-minutes: 10
       run: |
         npm i -g verdaccio
         verdaccio --config packages/xyd-opensdk-ci/e2e/publish/verdaccio-config.yaml &> /tmp/verdaccio.log &
@@ -283,9 +284,19 @@ jobs:
         mkdir -p /tmp/pypi-packages
         pypi-server run -P . -a . -p 8081 /tmp/pypi-packages &> /tmp/pypiserver.log &
         gem install gemstash --no-document
-        gemstash start &> /tmp/gemstash.log || true
-        for url in http://localhost:4873/-/ping http://localhost:8081/ http://localhost:9292/; do
-          for i in $(seq 1 30); do curl -sf "$url" >/dev/null 2>&1 && break; sleep 2; done
+        # gemstash 2.8+ pulls puma >= 5, which dropped daemon mode — `gemstash
+        # start` now blocks in the foreground, hanging this step until the job
+        # deadline. Run it foreground explicitly and background it ourselves
+        # (same as the docker-compose mirror of this flow).
+        gemstash start --no-daemonize &> /tmp/gemstash.log &
+        for url in http://localhost:4873/-/ping http://localhost:8081/ http://localhost:9292/health; do
+          ok=""
+          for i in $(seq 1 30); do curl -sf "$url" >/dev/null 2>&1 && ok=1 && break; sleep 2; done
+          if [ -z "$ok" ]; then
+            echo "::error::registry did not come up: $url"
+            tail -n 50 /tmp/verdaccio.log /tmp/pypiserver.log /tmp/gemstash.log || true
+            exit 1
+          fi
         done
         {
           echo "PUBLISH_NPM_REGISTRY=http://localhost:4873"
