@@ -139,7 +139,10 @@ export async function mapSettingsToProps(
             && !("pages" in page)
             && !("group" in page)
 
-        if (typeof page !== "string" && !("virtual" in page) && !isTitledPageRef) {
+        // `source` pages ({ page, source }) are normalized to { virtual, page }
+        // at boot (plugin-docs normalizeSourcePages) — excluding them here is
+        // for the TYPE narrowing (required `source` key), not a runtime path.
+        if (typeof page !== "string" && !("virtual" in page) && !("source" in page) && !isTitledPageRef) {
             const items = page.pages
                 ?.map((p) => mapItems(p, page, nav))
                 ?.filter(Boolean)
