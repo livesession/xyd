@@ -36,6 +36,17 @@ export const DropdownHost = css`
                 font-weight: var(--xyd-font-weight-semibold, 600);
                 color: var(--xyd-nav-item-color--active);
             }
+
+            /* The trigger's own icon. Left unstyled the span stays a block and its
+               inline <svg> sits on the TEXT BASELINE, landing the glyph a couple of
+               pixels above the label's optical centre. The trigger being a centered
+               flex row does not help: it centers the span, not the baseline-aligned
+               box inside it. Menu items already get this, in DropdownList below. */
+            [part="dropdown-icon"] {
+                flex: none;
+                display: inline-flex;
+                align-items: center;
+            }
         }
 
         [part="dropdown-chevron"] {
