@@ -76,6 +76,7 @@ describe("mapNavigationToPagePathMapping with virtual/source pages", () => {
         try {
             fs.mkdirSync(path.join(dir, "docs"), { recursive: true });
             fs.writeFileSync(path.join(dir, "docs", "logs.angular.md"), "# Angular logs\n");
+            fs.writeFileSync(path.join(dir, "docs", "titled.md"), "# Titled\n");
 
             const nav: Navigation = {
                 sidebar: [{
@@ -83,6 +84,8 @@ describe("mapNavigationToPagePathMapping with virtual/source pages", () => {
                     pages: [
                         { page: "docs/angular/logs", source: "docs/logs.angular" },
                         { page: "docs/missing/logs", source: "docs/logs.missing" },
+                        { page: "docs/titled", title: "T" },
+                        { page: "docs/ghost", title: "G" },
                     ],
                 } as any],
             };
@@ -92,6 +95,10 @@ describe("mapNavigationToPagePathMapping with virtual/source pages", () => {
             expect(mapping["docs/angular/logs"]).toBe("docs/logs.angular.md");
             expect(mapping["docs/missing/logs"]).toBeUndefined(); // no file → no entry
             expect(mapping["docs/logs.angular"]).toBeUndefined(); // the FILE path is not a URL
+            // titled-ref-style leaf with a REAL file maps like a string entry;
+            // one without a file (uniform-generated ref) stays unmapped
+            expect(mapping["docs/titled"]).toBe("docs/titled.md");
+            expect(mapping["docs/ghost"]).toBeUndefined();
         } finally {
             fs.rmSync(dir, { recursive: true, force: true });
         }

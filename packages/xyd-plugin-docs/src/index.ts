@@ -680,6 +680,17 @@ export function normalizeSourcePages(navigation?: Navigation | null) {
     }
 }
 
+function prefixContextControlPages(controls: any[], prefix: string) {
+    for (const control of controls) {
+        if (!control || typeof control !== "object") continue
+        if (control.type === "content-version" && Array.isArray(control.options?.versions)) {
+            for (const v of control.options.versions) {
+                if (v && typeof v.page === "string") v.page = `${prefix}${v.page}`
+            }
+        }
+    }
+}
+
 export function prefixSidebarPages(sidebar: any[], prefix: string) {
     for (const item of sidebar) {
         if (typeof item === "string") continue // top-level handled below
@@ -701,6 +712,11 @@ export function prefixSidebarPages(sidebar: any[], prefix: string) {
                         if (p.page) p.page = `${prefix}${p.page}`
                     } else if ("pages" in p) {
                         prefixSidebarPages([p], prefix) // nested Sidebar/SidebarRoute
+                    }
+                    // content-version context controls point at page URLs —
+                    // they live in the same locale, prefix them too.
+                    if (Array.isArray((p as any).contextControls)) {
+                        prefixContextControlPages((p as any).contextControls, prefix)
                     }
                 }
             }
@@ -745,6 +761,16 @@ export function mapNavigationToPagePathMapping(navigation: Navigation, cwd?: str
                 const virtualPath = page.virtual
                 const pagePath = page.page
                 const existingPath = getExistingFilePath(virtualPath)
+                if (existingPath) {
+                    mapping[pagePath] = existingPath
+                }
+            } else if (typeof page === 'object' && 'page' in page && typeof (page as any).page === 'string' && !('pages' in page)) {
+                // Titled-ref-style leaf ({ page, title?, contextControls? }):
+                // when a real markdown file sits at `page`, map it like a
+                // string entry (uniform-generated titled refs have no file —
+                // the probe misses and nothing changes for them).
+                const pagePath = (page as any).page
+                const existingPath = getExistingFilePath(pagePath)
                 if (existingPath) {
                     mapping[pagePath] = existingPath
                 }

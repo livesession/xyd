@@ -1,6 +1,8 @@
 import { renderToString } from "react-dom/server";
 import React from "react";
 import * as path from "node:path";
+import { contentVersionValue, isContentVersionSwap, resolveContentVersionSwap, resolveContextControls } from "@xyd-js/core";
+import * as fs from "node:fs";
 
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
 import { resolveLocaleSettings } from "@xyd-js/framework/hydration/locale";
@@ -167,7 +169,26 @@ async function contentFSFor(s: any, maxDepth: number): Promise<ContentFS> {
   return p;
 }
 
-export async function buildPageData(slug: string, opts: { shellOnly?: boolean } = {}) {
+/** Same-URL content-version swap: which variant (and which markdown source)
+ * should this request render? Resolved from the sidebar-declared swap-mode
+ * control + the request's query string; sources are probed on disk like
+ * pagemap entries. null → no swap control on this page. */
+export function resolveSwapOpts(slug: string, search: string): { variantSource?: string; contentVersionValue?: string } | null {
+  const swap = resolveContentVersionSwap(getSettings(), null, slug, search.replace(/^\?/, ""));
+  if (!swap) return null;
+  let variantSource: string | undefined;
+  if (swap.source) {
+    for (const ext of [".md", ".mdx"]) {
+      if (fs.existsSync(path.join(process.cwd(), swap.source + ext))) {
+        variantSource = swap.source + ext;
+        break;
+      }
+    }
+  }
+  return { variantSource, contentVersionValue: swap.value };
+}
+
+export async function buildPageData(slug: string, opts: { shellOnly?: boolean; variantSource?: string; contentVersionValue?: string } = {}) {
   slug = slug || "index";
   const s = getSettings();
   const locale = deriveLocale(slug);
@@ -190,11 +211,13 @@ export async function buildPageData(slug: string, opts: { shellOnly?: boolean } 
   }
 
   const fs = await contentFSFor(s, metadata?.maxTocDepth || s?.theme?.writer?.maxTocDepth || 2);
-  const pagePath = globalThis.__xydPagePathMapping[slug];
+  // Same-URL content-version swap: the selected variant's source replaces the
+  // page's own file (the URL pathname never changes).
+  const pagePath = opts.variantSource || globalThis.__xydPagePathMapping[slug];
   if (!pagePath) throw new Error(`No page mapping for slug: ${slug}`);
   // sidebar-as-TOC host: the page is composed from its asToc groups' section
   // files (intro + wrapped sections) instead of the mapped single file.
-  const composed = await composeAsTocRaw(slug);
+  const composed = opts.variantSource ? null : await composeAsTocRaw(slug);
   // Read the file once (compile() would read it again internally); compileContent
   // is exactly what compile() runs after reading, so this is byte-identical.
   const rawPage = composed ? composed.raw : await fs.readRaw(pagePath);
@@ -212,6 +235,11 @@ export async function buildPageData(slug: string, opts: { shellOnly?: boolean } 
   return {
     sidebarGroups, breadcrumbs, navlinks, slug, locale, code, metadata, rawPage, editLink, canPassComponents, shellOnly: false,
     bannerContentCode: bannerCode,
+    // marker for the client: which content-version this payload carries (swap
+    // pages only) — a static host serves the DEFAULT payload for every query,
+    // so the client compares this against the URL's param and fetches the
+    // emitted variant JSON on mismatch.
+    contentVersion: opts.contentVersionValue,
   };
 }
 
@@ -295,7 +323,7 @@ export async function renderPage(slug: string, search: string = "", cookieHeader
   // an empty shell — its MDX is never compiled into the HTML. Uses the request
   // cookie so an authenticated user gets the full server-rendered content.
   const shellOnly = resolveShellOnly(slug, cookieHeader);
-  const loaderData = await buildPageData(slug, { shellOnly });
+  const loaderData = await buildPageData(slug, { shellOnly, ...(resolveSwapOpts(slug, search) || {}) });
   const pathname = slugToPathname(slug); // index → "/" so home active-state hydrates
   const routeId = matchRoute(pathname, s?.navigation);
 
@@ -442,10 +470,41 @@ function renderStaticShell({ settings, bodyHtml, data }: any): string {
 /** Build-time per-slug render. Mirrors renderPage() but uses the static shell and
  *  a caller-supplied shellOnly (protected pages). `renderToString` (not
  *  renderToStaticMarkup) so bootClient's hydrateRoot matches. */
+/** Static-build emission for same-URL content versions: every variant payload
+ * for a slug — `{ "<value>": {loaderData, routeId} }` for versions carrying a
+ * `source`. The build writes them as `<slug>.cv~<value>.json`, which the
+ * client fetches when a static host serves the default payload for a
+ * variant-selecting query string. null → no swap control on this page. */
+export async function contentVersionDataStatic(slug: string): Promise<Record<string, unknown> | null> {
+  const s = getSettings();
+  const control = resolveContextControls(s, null, slug).find(
+    (c) => c.type === "content-version" && isContentVersionSwap(c as any),
+  ) as { options: { versions: { source?: string; title: string; value?: string }[] } } | undefined;
+  if (!control) return null;
+
+  const routeId = matchRoute(slugToPathname(slug), s?.navigation);
+  const out: Record<string, unknown> = {};
+  for (const v of control.options.versions) {
+    if (!v.source) continue;
+    let variantSource: string | undefined;
+    for (const ext of [".md", ".mdx"]) {
+      if (fs.existsSync(path.join(process.cwd(), v.source + ext))) {
+        variantSource = v.source + ext;
+        break;
+      }
+    }
+    if (!variantSource) continue;
+    const value = contentVersionValue(v as any);
+    const loaderData = await buildPageData(slug, { variantSource, contentVersionValue: value });
+    out[value] = stripReactElements({ loaderData, routeId });
+  }
+  return Object.keys(out).length ? out : null;
+}
+
 export async function renderPageStatic(slug: string, opts: { shellOnly?: boolean; asRootIndex?: boolean } = {}): Promise<string> {
   slug = slug || "index";
   const s = getSettings();
-  const loaderData = await buildPageData(slug, opts);
+  const loaderData = await buildPageData(slug, { ...opts, ...(resolveSwapOpts(slug, "") || {}) });
   // Root fallback (a site with no explicit index page): index.html carries the
   // FIRST page's content but is served at "/". SSR + client must agree on the
   // router location or useLocation-driven active-state hydrates differently →
@@ -688,7 +747,8 @@ export function start(ThemeCtor: any) {
         try {
           const st = getSettings();
           const shellOnly = resolveShellOnly(dslug, req.headers.get("cookie"));
-          const loaderData = await buildPageData(dslug, { shellOnly });
+          const dsearch = url.searchParams.get("search") || "";
+          const loaderData = await buildPageData(dslug, { shellOnly, ...(resolveSwapOpts(dslug, dsearch) || {}) });
           // stripReactElements is mandatory — metadata/sidebarGroups can't cross JSON otherwise.
           return Response.json(stripReactElements({ loaderData, routeId: matchRoute(slugToPathname(dslug), st?.navigation) }));
         } catch (e: any) {

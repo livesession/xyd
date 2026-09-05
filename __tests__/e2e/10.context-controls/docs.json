@@ -1,0 +1,97 @@
+{
+    "theme": {
+        "name": "poetry"
+    },
+    "components": {
+        "contextControls": [
+            "copy"
+        ]
+    },
+    "navigation": {
+        "sidebar": [
+            {
+                "route": "docs",
+                "pages": [
+                    {
+                        "group": "Pages",
+                        "pages": [
+                            "docs/plain",
+                            {
+                                "page": "docs/angular/logs",
+                                "source": "docs/logs.angular"
+                            },
+                            {
+                                "page": "docs/bun/logs",
+                                "source": "docs/logs.bun"
+                            },
+                            {
+                                "page": "docs/actions",
+                                "title": "Actions",
+                                "contextControls": [
+                                    {
+                                        "type": "dropdown",
+                                        "appearance": "header",
+                                        "options": {
+                                            "controls": [
+                                                "copy",
+                                                "chatgpt",
+                                                "claude",
+                                                "view-markdown"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "type": "mcp",
+                                        "appearance": "toc-bottom",
+                                        "options": {
+                                            "url": "https://mcp.example.dev/sse"
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "page": "docs/custom",
+                                "title": "Custom",
+                                "contextControls": [
+                                    {
+                                        "type": "custom",
+                                        "appearance": "header",
+                                        "component": {
+                                            "import": "./components/Hello",
+                                            "props": {
+                                                "who": "context-controls"
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            {
+                                "page": "docs/logs",
+                                "title": "Logs",
+                                "contextControls": [
+                                    {
+                                        "type": "content-version",
+                                        "appearance": "toc-top",
+                                        "options": {
+                                            "queryParam": "runtime",
+                                            "versions": [
+                                                {
+                                                    "title": "Default"
+                                                },
+                                                {
+                                                    "title": "Bun",
+                                                    "source": "docs/swap.bun",
+                                                    "value": "bun"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

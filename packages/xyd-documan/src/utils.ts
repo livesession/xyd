@@ -610,10 +610,20 @@ export async function appInit(options?: PluginDocsOptions) {
                     });
                 }
             };
+            // `{ type: "custom", component }` context controls — same registry.
+            const registerContextControlComponents = (controls: any) => {
+                if (!Array.isArray(controls)) return;
+                for (const control of controls) {
+                    if (control && typeof control === "object" && control.type === "custom") {
+                        registerComponent(control.component);
+                    }
+                }
+            };
             const collectSidebarComponents = (pages: any[]) => {
                 for (const p of pages || []) {
                     if (!p || typeof p !== "object") continue;
                     registerComponent((p as any).component);
+                    registerContextControlComponents((p as any).contextControls);
                     if (Array.isArray((p as any).pages)) collectSidebarComponents((p as any).pages);
                 }
             };
@@ -632,6 +642,8 @@ export async function appInit(options?: PluginDocsOptions) {
             for (const lang of ((preloadSettings?.navigation as any)?.languages) || []) {
                 walkNav(lang);
             }
+            // Global page context controls (components.contextControls).
+            registerContextControlComponents((preloadSettings as any)?.components?.contextControls);
             (globalThis as any).__xydSidebarComponentPaths = componentPaths;
         }
 
