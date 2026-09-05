@@ -69,6 +69,13 @@ export function docPaths(navigation: Settings['navigation']) {
                     } else {
                         if ("virtual" in page) {
                             paths.push(`/${page.page}`);
+                        } else if ("page" in page && typeof (page as any).page === "string" && !("pages" in page)) {
+                            // Titled-ref-style leaf ({ page, title?,
+                            // contextControls? }) — a routable page; with
+                            // ssr:false, RR only runs loaders for paths in
+                            // this prerender list, so skipping it serves a
+                            // bare shell with no loader data.
+                            paths.push(`/${(page as any).page}`);
                         } else {
                             // Recursively process nested pages
                             processSidebarItems([page]);

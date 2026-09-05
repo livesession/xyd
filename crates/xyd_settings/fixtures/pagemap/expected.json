@@ -3,5 +3,6 @@
   "content/docs/setup": "content/docs/setup.mdx",
   "content/docs/api/users": "content/docs/api/users.md",
   "content/guides/welcome": "content/guides/welcome.md",
-  "guides/angular/logs": "content/guides/logs.angular.md"
+  "guides/angular/logs": "content/guides/logs.angular.md",
+  "content/guides/titled": "content/guides/titled.md"
 }

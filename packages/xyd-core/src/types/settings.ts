@@ -1,4 +1,5 @@
 import * as React from "react";
+import type { ContextControls } from "./context-controls";
 
 import type { Theme as SyntaxHighlight } from "@code-hike/lighter";
 import type { UserConfig as ViteUserConfig } from "vite";
@@ -855,6 +856,9 @@ export interface SourcePage {
 
   /** Optional sidebar label override. */
   title?: string;
+
+  /** Page context controls for THIS page (replaces the global set). */
+  contextControls?: ContextControls;
 }
 
 /**
@@ -885,6 +889,9 @@ export type VirtualPage =
 
       /** The template to use for the page */
       templates?: string | string[];
+
+      /** Page context controls for THIS page (replaces the global set). */
+      contextControls?: ContextControls;
     };
 
 /**
@@ -1122,6 +1129,16 @@ export interface Components {
    * WebEditor banner configuration
    */
   banner?: WebEditorBanner;
+
+  /**
+   * Global page context controls — contextual page actions (copy page,
+   * view markdown, ChatGPT/Claude, MCP), a content-version switcher,
+   * dropdown grouping, or custom components — rendered on every page at
+   * their `appearance` slot (`header` | `toc-top` | `toc-bottom`). A page
+   * can override or opt out via frontmatter `contextControls:` or its
+   * sidebar entry (`{ page, contextControls }`).
+   */
+  contextControls?: ContextControls;
 
   /**
    * WebEditor footer configuration

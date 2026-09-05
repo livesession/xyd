@@ -5,7 +5,8 @@ import { jsx, jsxs } from "react/jsx-runtime";
 import { useMemo, useContext, useState, ReactElement, SVGProps, useEffect } from "react";
 import { redirect, ScrollRestoration, useLocation, useNavigation } from "react-router";
 
-import { MetadataMap, Metadata, Settings } from "@xyd-js/core"
+import { MetadataMap, Metadata, Settings, resolveContentVersionSwap } from "@xyd-js/core"
+import fsSync from "node:fs";
 import { ContentFS, composeAsTocRaw, isAsTocSectionPage } from "@xyd-js/content"
 import { markdownPlugins } from "@xyd-js/content/md"
 import { pageMetaLayout } from "@xyd-js/framework";
@@ -23,6 +24,16 @@ const { settings, userHooks } = virtualSettings as Settings
 import { PageContext } from "./context";
 import { SUPPORTED_META_TAGS } from "./metatags";
 import { useAnalytics } from "@xyd-js/analytics";
+
+/** Probe `<base>.md`/`<base>.mdx` on disk (cwd-relative, like the pagemap). */
+function getExistingContentFilePath(base: string): string | null {
+    for (const ext of [".md", ".mdx"]) {
+        try {
+            if (fsSync.existsSync(path.join(process.cwd(), base + ext))) return base + ext
+        } catch { /* fs unavailable → no swap */ }
+    }
+    return null
+}
 
 function getPathname(url: string, basename?: string): { slug: string, locale: string } {
     // In i18n mode, the slug for non-default locales already contains the
@@ -118,6 +129,18 @@ class timedebugLoader {
     }
 }
 
+// Same-URL content-version swap: a search-only change selects a different
+// variant of THIS page — the loader must rerun to compile it (React Router
+// otherwise skips revalidation for same-path navigations here).
+export function shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate }: {
+    currentUrl: URL, nextUrl: URL, defaultShouldRevalidate: boolean
+}) {
+    if (currentUrl.pathname === nextUrl.pathname && currentUrl.search !== nextUrl.search) {
+        return true
+    }
+    return defaultShouldRevalidate
+}
+
 export async function loader({ request }: { request: any }) {
     if (!globalThis.__xydPagePathMapping) {
         throw new Error("PagePathMapping not found")
@@ -200,6 +223,23 @@ export async function loader({ request }: { request: any }) {
     )
 
     let pagePath = globalThis.__xydPagePathMapping[slug]
+
+    // Same-URL content-version swap: a swap-mode content-version control on
+    // this page selects a DIFFERENT markdown source via the (configurable)
+    // query param — compile that instead; the URL pathname never changes and
+    // deep links render the variant server-side.
+    {
+        const swap = resolveContentVersionSwap(
+            settings,
+            null,
+            slug,
+            (() => { try { return new URL(request.url).searchParams } catch { return undefined } })(),
+        )
+        if (swap?.source) {
+            const variantPath = getExistingContentFilePath(swap.source)
+            if (variantPath) pagePath = variantPath
+        }
+    }
 
     // SSR page exclusion: skip content compilation for protected pages.
     // Uses globalThis.__xydAccessMap directly (set by the access control plugin)

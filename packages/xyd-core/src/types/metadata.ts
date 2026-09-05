@@ -83,6 +83,12 @@ export interface Metadata<P = void> {
     openapi?: string
 
     /**
+     * Page context controls for this page — REPLACES the global
+     * `components.contextControls` set (an empty array opts the page out).
+     */
+    contextControls?: import("./context-controls").ContextControls
+
+    /**
      * @internal
      *
      * SDK language ids this page's API docs render with — stamped by the

@@ -43,6 +43,7 @@ import {
     FwBreadcrumbs,
     useEditLink,
     useActiveLogoTrailingItem,
+    FwContextControls,
 } from "@xyd-js/framework/react";
 
 import { Theme } from "./Theme";
@@ -245,6 +246,8 @@ export class BaseTheme extends Theme {
             <ContentDecorator metaComponent={meta?.component || undefined}>
                 <$Breadcrumbs />
 
+                <FwContextControls appearance="header" />
+
                 {children}
             </ContentDecorator>
 
@@ -291,6 +294,7 @@ export class BaseTheme extends Theme {
                             }} />
                         </div>
                         {copyPageElement}
+                        <FwContextControls appearance="header" />
                     </div>
 
                     <div part="secondary-content">
@@ -305,15 +309,16 @@ export class BaseTheme extends Theme {
     protected ContentNav() {
         const { TocTop, TocBottom } = this
 
-        // TODO: toc top and bottom in the future
         return <>
             {/* <TocTop /> */}
+            <FwContextControls appearance="toc-top" />
 
             <div>
                 <FwToc />
             </div>
 
             <TocBottom />
+            <FwContextControls appearance="toc-bottom" />
         </>
     }
 

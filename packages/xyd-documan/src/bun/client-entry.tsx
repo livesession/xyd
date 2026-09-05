@@ -1,6 +1,7 @@
 import React from "react";
 import { hydrateRoot } from "react-dom/client";
 import { createRouterStore, RouterProvider } from "@xyd-js/router";
+import { resolveContentVersionSwap } from "@xyd-js/core";
 
 import { seedGlobals, ShellProviders, slugToPathname } from "./render-tree";
 import { registerFederatedModules } from "./federationRegistry";
@@ -69,7 +70,9 @@ export async function bootClient(ThemeCtor: any) {
     // SPA navigation works on static deploys too (no full reload, base preserved).
     let r: Response | null = null;
     try {
-      r = await fetch(`/_xyd/data?slug=${encodeURIComponent(slug)}`, { signal });
+      // `search` rides along for same-URL content-version swaps — the dev
+      // server compiles the selected variant's source per request.
+      r = await fetch(`/_xyd/data?slug=${encodeURIComponent(slug)}&search=${encodeURIComponent(url.search)}`, { signal });
     } catch {
       r = null;
     }
@@ -86,6 +89,20 @@ export async function bootClient(ThemeCtor: any) {
       loaderData = pageData.loaderData;
       routeId = pageData.routeId;
     }
+    // STATIC hosts serve the DEFAULT variant payload for every query string —
+    // when the URL's (configurable) content-version param selects another
+    // variant, fetch the build-emitted variant JSON and use it instead.
+    try {
+      const swap = resolveContentVersionSwap(settings, null, slug, url.search.replace(/^\?/, ""));
+      if (swap && loaderData?.contentVersion !== swap.value && swap.source) {
+        const vr = await fetch(`${basename || ""}/${slug}.cv~${encodeURIComponent(swap.value)}.json`, { signal });
+        if (vr.ok) {
+          const variant = await vr.json();
+          loaderData = variant.loaderData ?? loaderData;
+          routeId = variant.routeId ?? routeId;
+        }
+      }
+    } catch { /* best-effort — default content stays */ }
     if (!signal?.aborted) {
       document.title =
         loaderData?.metadata?.seoTitle || loaderData?.metadata?.title || settings?.seo?.title || "xyd";
@@ -94,6 +111,22 @@ export async function bootClient(ThemeCtor: any) {
   };
 
   const w = new URL(window.location.href);
+
+  // Deep-linked content version on a STATIC host: the served payload is the
+  // DEFAULT variant — when the URL's (configurable) param selects another,
+  // patch in the build-emitted variant payload BEFORE hydration (dev/SSR
+  // servers already rendered the right variant, so this only runs on static).
+  try {
+    const swap = resolveContentVersionSwap(settings, null, data.slug, w.search.replace(/^\?/, ""));
+    if (swap && swap.source && data.loaderData?.contentVersion !== swap.value) {
+      const vr = await fetch(`${basename || ""}/${data.slug}.cv~${encodeURIComponent(swap.value)}.json`);
+      if (vr.ok) {
+        const variant = await vr.json();
+        if (variant?.loaderData) data.loaderData = variant.loaderData;
+      }
+    }
+  } catch { /* best-effort — the default variant stays */ }
+
   const store = createRouterStore({
     location: { pathname: stripBase(w.pathname), search: w.search, hash: w.hash },
     matches: [{ id: data.routeId, pathname: slugToPathname(data.slug), params: {}, data: data.loaderData }],
@@ -107,4 +140,5 @@ export async function bootClient(ThemeCtor: any) {
       <ShellProviders />
     </RouterProvider>
   );
+
 }

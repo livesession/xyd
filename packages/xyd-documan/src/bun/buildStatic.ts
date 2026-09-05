@@ -177,11 +177,12 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     const serverBundle: string = await buildBundle(
       "buildserver",
       `import Theme from "${themePkg}";\n${pluginPagesEntrySrc()}${sidebarComponentsEntrySrc()}` +
-        `import { renderPageStatic, seedForBuild, buildPageData, renderPluginPageStatic, renderRedirectStatic } from "./renderPage";\n` +
+        `import { renderPageStatic, seedForBuild, buildPageData, renderPluginPageStatic, renderRedirectStatic, contentVersionDataStatic } from "./renderPage";\n` +
         `globalThis.__xydSeedForBuild = () => seedForBuild(Theme);\n` +
         `globalThis.__xydRenderStatic = (slug, opts) => renderPageStatic(slug, opts);\n` +
         `globalThis.__xydRenderPluginStatic = (route) => renderPluginPageStatic(route);\n` +
         `globalThis.__xydRenderRedirect = (slug) => renderRedirectStatic(slug);\n` +
+        `globalThis.__xydContentVersionData = (slug) => contentVersionDataStatic(slug);\n` +
         `globalThis.__xydCompileContent = (slug) => buildPageData(slug, { shellOnly: false }).then((d) => d.code || "");\n`,
       "bun",
       ["typedoc", "@xyd-js/sources", "shiki", "vscode-oniguruma", "vscode-textmate"]
@@ -336,6 +337,32 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   emitSitemap(clientDir, settings, accessMap, slugs);
   emitRobots(clientDir, settings);
   emitRawRouteFiles(clientDir); // /llms.txt + raw .md (already protected-filtered at appInit)
+
+  // Same-URL content versions: emit each variant's page payload as
+  // <slug>.cv~<value>.json (basename-nested like the raw md files) — a static
+  // host serves the default HTML for any query string, so the client swaps in
+  // these payloads when the (configurable) version param selects a variant.
+  {
+    const cvData = (globalThis as any).__xydContentVersionData;
+    if (cvData) {
+      const cvBase = ((globalThis as any).__xydSettings?.advanced?.basename || "").replace(/^\/+|\/+$/g, "");
+      let cv = 0;
+      for (const slug of slugs) {
+        try {
+          const variants = await cvData(slug);
+          if (!variants) continue;
+          for (const [value, payload] of Object.entries(variants)) {
+            const rel = `${slug}.cv~${value}.json`;
+            const abs = path.join(clientDir, cvBase ? path.join(cvBase, rel) : rel);
+            fs.mkdirSync(path.dirname(abs), { recursive: true });
+            fs.writeFileSync(abs, JSON.stringify(payload));
+            cv++;
+          }
+        } catch { /* best-effort — the page still serves its default variant */ }
+      }
+      if (cv) console.error(`[build] content-version variants → ${cv}`);
+    }
+  }
 
   // 7b) PUBLIC at ROOT (Vite parity). Vite's publicDir serves public/ contents at
   // the SITE ROOT, and dev's serveStatic resolves both /file and /public/file — so

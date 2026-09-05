@@ -69,6 +69,15 @@ impl<'a> Walker<'a> {
                         if let Some(p) = existing_file_path(self.cwd, virtual_path) {
                             self.set(page_key, p);
                         }
+                    } else if let (Some(slug), false) = (
+                        obj.get("page").and_then(|v| v.as_str()),
+                        obj.contains_key("pages"),
+                    ) {
+                        // Titled-ref-style leaf ({ page, title?, contextControls? }):
+                        // map it like a string entry when a real file exists.
+                        if let Some(p) = existing_file_path(self.cwd, slug) {
+                            self.set(slug, p);
+                        }
                     } else if let Some(nested) = obj.get("pages").and_then(|p| p.as_array()) {
                         if !is_as_toc(obj) {
                             self.process_pages(nested);
