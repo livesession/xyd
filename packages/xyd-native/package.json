@@ -25,8 +25,8 @@
   },
   "scripts": {
     "//": "build:native (NOT build) so the default `pnpm build` fan-out skips it until Rust is wired into CI and this package is consumed (plan S5).",
-    "build:native": "napi build --platform --release",
-    "build:native:debug": "napi build --platform",
+    "build:native": "node ../../scripts/ensure-xwrite.mjs && napi build --platform --release",
+    "build:native:debug": "node ../../scripts/ensure-xwrite.mjs && napi build --platform",
     "test": "pnpm build:native && node -e \"const n=require('./index.js'); if(n.classify('docs.json')!=='settings')throw new Error('classify broken'); console.log('ok:', n.hello('xyd'))\""
   },
   "devDependencies": {

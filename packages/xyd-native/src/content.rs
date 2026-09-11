@@ -1,5 +1,5 @@
-//! Content-compile napi surface. Thin adapter over `xyd_mdx` — all logic lives
-//! in the pure crate (`crates/xyd_mdx`).
+//! Content-compile napi surface. Thin adapter over `xwrite_mdx` — all logic lives
+//! in the pure crate (`xwrite/crates/xwrite_mdx`).
 
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
@@ -20,6 +20,6 @@ pub fn compile_mdx(
     settings_json: String,
     base_dir: Option<String>,
 ) -> Result<String> {
-    let out = xyd_mdx::compile_mdx(&source, &settings_json, base_dir.as_deref().unwrap_or(""));
-    serde_json::to_string(&out).map_err(|e| Error::from_reason(format!("[xyd_mdx] serialize: {e}")))
+    let out = xwrite_mdx::compile_mdx(&source, &settings_json, base_dir.as_deref().unwrap_or(""));
+    serde_json::to_string(&out).map_err(|e| Error::from_reason(format!("[xwrite_mdx] serialize: {e}")))
 }

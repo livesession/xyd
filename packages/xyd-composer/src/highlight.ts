@@ -1,5 +1,5 @@
 // Native syntax-highlight dispatch (H5). Routes the build-time highlight() call
-// through @xyd-js/native (crates/xyd_highlight) when the addon is present —
+// through @xyd-js/native (xwrite/crates/xwrite_highlight) when the addon is present —
 // byte-identical to codehike/code (H4-proven) — and falls back to codehike when
 // it is absent or XYD_NATIVE=0 (loader in ./native).
 import { highlight as codehikeHighlight } from "codehike/code";

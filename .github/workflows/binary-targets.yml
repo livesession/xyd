@@ -14,6 +14,12 @@ on:
     branches: [ master, canary ]
     paths:
       - 'crates/**'
+      # The submodule GITLINK. A change INSIDE xwrite appears in this repo as a
+      # modification of the path `xwrite` itself (mode 160000), NOT as
+      # `xwrite/**` — there are no parent-tracked files under it, so `xwrite/**`
+      # would never match and the native gate would silently skip.
+      - 'xwrite'
+      - '.gitmodules'
       - 'packages/xyd-native/**'
       - 'packages/xyd-cli/**'
       - 'packages/xyd-documan/**'
@@ -24,6 +30,12 @@ on:
     branches: [ master, canary ]
     paths:
       - 'crates/**'
+      # The submodule GITLINK. A change INSIDE xwrite appears in this repo as a
+      # modification of the path `xwrite` itself (mode 160000), NOT as
+      # `xwrite/**` — there are no parent-tracked files under it, so `xwrite/**`
+      # would never match and the native gate would silently skip.
+      - 'xwrite'
+      - '.gitmodules'
       - 'packages/xyd-native/**'
       - 'packages/xyd-cli/**'
       - 'packages/xyd-documan/**'
@@ -60,7 +72,10 @@ jobs:
             cli:
               - 'crates/xyd_cli/**'
               - 'crates/Cargo.toml'
-              - 'crates/Cargo.lock'
+              # xyd_cli compiles against the submodule's markdown fork, so a
+              # gitlink bump changes the binary. `xwrite`, not `xwrite/**`.
+              - 'xwrite'
+              - '.gitmodules'
               - '.github/workflows/build-native-binaries.yml'
               - '.github/workflows/binary-targets.yml'
 

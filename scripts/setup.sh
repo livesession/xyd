@@ -1,8 +1,13 @@
 #!/bin/bash
 set -e
 
-# Public submodule
+# Public submodules
 git submodule update --init examples
+
+# xwrite — the content engine (frontmatter/highlight/math/mdx + the vendored
+# markdown/mdxjs forks). NOT optional: crates/xyd_cli and packages/xyd-native
+# path-depend on it, so without it cargo cannot load the workspace at all.
+git submodule update --init xwrite
 
 # Private repo (not a submodule — requires access to xyd-js/.research)
 if [ ! -d .research ]; then

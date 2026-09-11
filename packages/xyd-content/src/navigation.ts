@@ -111,7 +111,7 @@ export async function pageFrontMatters(navigation: Sidebar[], pagePathMapping: {
 }
 
 // resolveJobs fills `frontmatters[pageName]` for each job. The native fast path
-// (crates/xyd_frontmatter) parses the YAML frontmatter blocks in one batch —
+// (xwrite/crates/xwrite_frontmatter) parses the YAML frontmatter blocks in one batch —
 // replacing the per-page @mdx-js/mdx compile — with a per-filePath+mtime memo
 // so the N mapSettingsToProps calls in a build don't re-parse. Files the fast
 // path defers (a YAML-1.1-vs-1.2 scalar divergence) or that it can't classify

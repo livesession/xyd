@@ -47,6 +47,12 @@ jobs:
             target: aarch64-unknown-linux-gnu
     steps:
       - uses: actions/checkout@v4
+        # The Rust build path-deps the `xwrite` submodule (crates/xyd_cli ->
+        # third-party/markdown-fork, packages/xyd-native -> crates/xwrite_*), so
+        # without this `cargo metadata` cannot even load the workspace. NOT
+        # `recursive`: `examples` has nested submodules nothing here needs.
+        with:
+          submodules: true
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -70,7 +76,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             packages/xyd-native/target
-          key: ${{ runner.os }}-${{ matrix.target }}-cargo-release-${{ hashFiles('crates/**/Cargo.toml', 'packages/xyd-native/Cargo.toml') }}
+          key: ${{ runner.os }}-${{ matrix.target }}-cargo-release-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'packages/xyd-native/Cargo.toml') }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.target }}-cargo-release-
 
