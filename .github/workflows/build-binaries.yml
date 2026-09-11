@@ -39,6 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          submodules: true
           ref: ${{ inputs.ref }}
 
       - name: Setup pnpm
@@ -79,7 +80,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             packages/xyd-native/target
-          key: ${{ runner.os }}-${{ runner.arch }}-cargo-native-${{ hashFiles('crates/**/Cargo.toml', 'packages/xyd-native/Cargo.toml') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-cargo-native-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'packages/xyd-native/Cargo.toml') }}
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-cargo-native-
 

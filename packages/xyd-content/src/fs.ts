@@ -32,7 +32,7 @@ export class ContentFS {
 
     public async compileContent(content: string, filePath?: string): Promise<string> {
         // Rust-first fast path (Track C): prose, `:::` directives, and the
-        // `@include`/`@changelog` `@`-functions compile in Rust (crates/xyd_mdx)
+        // `@include`/`@changelog` `@`-functions compile in Rust (xwrite/crates/xwrite_mdx)
         // to the same function-body string this method returns. Pages still owned
         // by the JS chain (`@uniform`/`@importCode`, math, mermaid/graphviz,
         // `component:`/`uniform:` frontmatter, or any raw MDX JSX/expression) come

@@ -27,7 +27,12 @@ percent-encoding = "2"
 # migrateme S3: parse Mintlify MDX to an mdast tree. The vendored fork is the repo's own
 # markdown-rs (MDX-aware); depend on it DIRECTLY (not xyd_mdx, which drags in swc) to keep
 # the CLI build fast. serde: lets the transform inspect the AST as JSON in tests.
-markdown = { path = "../xyd_mdx/vendor/markdown-fork", features = ["serde"] }
+# The fork is now vendored in the `xwrite` submodule
+# (xwrite/third-party/markdown-fork). Depend on it DIRECTLY rather than on
+# xwrite_mdx, which would drag in swc and slow the CLI build. Being outside
+# crates/, it is an ordinary dependency, not a workspace member — see the
+# note in crates/Cargo.toml.
+markdown = { path = "../../xwrite/third-party/markdown-fork", features = ["serde"] }
 # S4: content-hash the embedded engine to key its extract dir. Only referenced
 # under cfg(xyd_has_embedded_engine) in src/v0/engine.rs; unused (no compile
 # cost beyond building the crate) in the fast, non-embedded dev build.

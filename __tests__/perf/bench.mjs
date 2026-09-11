@@ -24,7 +24,7 @@ const REPO = join(__dirname, "..", "..");
 // The mdx-parity corpus ships its own HTML normalizer. Resolved dynamically (and
 // overridable via MDX_PARITY_ROOT) so the corpus can live outside this repo.
 const MDX_PARITY_ROOT = process.env.MDX_PARITY_ROOT
-    || join(REPO, "packages", "xyd-content", "__fixtures__", "mdx-parity");
+    || join(REPO, "xwrite", "crates", "xwrite_mdx", "tests", "fixtures", "mdx-parity");
 const { normalizeHtml } = await import(
     pathToFileURL(join(MDX_PARITY_ROOT, "_harness", "render.mjs")).href
 );

@@ -14,6 +14,12 @@ on:
     branches: [ master, canary ]
     paths:
       - 'crates/**'
+      # The submodule GITLINK. A change INSIDE xwrite appears in this repo as a
+      # modification of the path `xwrite` itself (mode 160000), NOT as
+      # `xwrite/**` — there are no parent-tracked files under it, so `xwrite/**`
+      # would never match and the native gate would silently skip.
+      - 'xwrite'
+      - '.gitmodules'
       - 'packages/xyd-native/**'
       - 'packages/xyd-gql/**'
       - 'packages/xyd-openapi/**'
@@ -33,6 +39,12 @@ on:
     branches: [ master, canary ]
     paths:
       - 'crates/**'
+      # The submodule GITLINK. A change INSIDE xwrite appears in this repo as a
+      # modification of the path `xwrite` itself (mode 160000), NOT as
+      # `xwrite/**` — there are no parent-tracked files under it, so `xwrite/**`
+      # would never match and the native gate would silently skip.
+      - 'xwrite'
+      - '.gitmodules'
       - 'packages/xyd-native/**'
       - 'packages/xyd-gql/**'
       - 'packages/xyd-openapi/**'
@@ -56,6 +68,12 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        # The Rust build path-deps the `xwrite` submodule (crates/xyd_cli ->
+        # third-party/markdown-fork, packages/xyd-native -> crates/xwrite_*), so
+        # without this `cargo metadata` cannot even load the workspace. NOT
+        # `recursive`: `examples` has nested submodules nothing here needs.
+        with:
+          submodules: true
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -69,7 +87,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             crates/target
-          key: ${{ runner.os }}-cargo-crates-${{ hashFiles('crates/**/Cargo.toml') }}
+          key: ${{ runner.os }}-cargo-crates-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml') }}
           restore-keys: |
             ${{ runner.os }}-cargo-crates-
 
@@ -112,6 +130,62 @@ jobs:
         working-directory: crates
         run: cargo test --workspace
 
+  # The content engine lives in the `xwrite` submodule now, so its ~336 tests
+  # (incl. the 241 in the vendored markdown/mdxjs forks) are no longer part of
+  # `cargo test --workspace` above. Run them here so a single xyd PR gate still
+  # covers the engine. This DOES duplicate xwrite's own CI, deliberately: it is
+  # the only thing that catches a gitlink bump which is green standalone but red
+  # under xyd's toolchain/feature unification.
+  xwrite:
+    name: xwrite (content engine, from the submodule)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Setup cargo cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            xwrite/target
+          key: ${{ runner.os }}-cargo-xwrite-${{ hashFiles('xwrite/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-xwrite-
+
+      - name: fmt
+        working-directory: xwrite
+        run: cargo fmt --all -- --check
+
+      - name: clippy
+        working-directory: xwrite
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.12.0
+
+      # Install from INSIDE xwrite. Installing at the xyd root would let the mdx
+      # harness resolve react from xyd's hoisted node_modules, making the gate
+      # pass here and fail in a standalone xwrite clone.
+      - name: Install xwrite's JS harness deps
+        working-directory: xwrite
+        run: npm ci
+
+      - name: test (mdx parity + highlight goldens + math equivalence + forks)
+        working-directory: xwrite
+        env:
+          XWRITE_REQUIRE_PARITY: "1"
+        run: cargo test --workspace
+
   # CLI-mode e2e smokes: generate a real SDK per language from the shared
   # x-cli fixtures, compile/run it against the recording CLI
   # (xyd_opensdk_cli_common's xyd-recording-cli), and diff the ACTUAL argv the
@@ -123,6 +197,12 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        # The Rust build path-deps the `xwrite` submodule (crates/xyd_cli ->
+        # third-party/markdown-fork, packages/xyd-native -> crates/xwrite_*), so
+        # without this `cargo metadata` cannot even load the workspace. NOT
+        # `recursive`: `examples` has nested submodules nothing here needs.
+        with:
+          submodules: true
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
@@ -134,7 +214,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             crates/target
-          key: ${{ runner.os }}-cargo-crates-${{ hashFiles('crates/**/Cargo.toml') }}
+          key: ${{ runner.os }}-cargo-crates-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml') }}
           restore-keys: |
             ${{ runner.os }}-cargo-crates-
 
@@ -173,6 +253,12 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        # The Rust build path-deps the `xwrite` submodule (crates/xyd_cli ->
+        # third-party/markdown-fork, packages/xyd-native -> crates/xwrite_*), so
+        # without this `cargo metadata` cannot even load the workspace. NOT
+        # `recursive`: `examples` has nested submodules nothing here needs.
+        with:
+          submodules: true
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -215,7 +301,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             packages/xyd-native/target
-          key: ${{ runner.os }}-cargo-native-debug-${{ hashFiles('crates/**/Cargo.toml', 'packages/xyd-native/Cargo.toml') }}
+          key: ${{ runner.os }}-cargo-native-debug-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'packages/xyd-native/Cargo.toml') }}
           restore-keys: |
             ${{ runner.os }}-cargo-native-debug-
 

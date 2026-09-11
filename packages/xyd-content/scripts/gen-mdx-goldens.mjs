@@ -1,6 +1,7 @@
 // gen-mdx-goldens.mjs — JS-owned COMPLIANCE HARNESS for the Rust content engine
-// (Track C). Regenerates the two-oracle goldens for every fixture in
-// packages/xyd-content/__fixtures__/mdx-parity/ from the LIVE JS pipeline
+// (Track C). Regenerates the two-oracle goldens for every fixture in the
+// xwrite submodule (xwrite/crates/xwrite_mdx/tests/fixtures/mdx-parity/) from
+// the LIVE JS pipeline
 // (@xyd-js/content). The committed goldens are the oracle; this script only
 // (re)produces them.
 //
@@ -71,7 +72,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 // live outside this package (the Rust content engine owns the consuming gate).
 const ROOT = process.env.MDX_PARITY_ROOT
     ? path.resolve(process.env.MDX_PARITY_ROOT)
-    : path.resolve(__dirname, "..", "__fixtures__", "mdx-parity");
+    : path.resolve(__dirname, "..", "..", "..", "xwrite",
+                   "crates", "xwrite_mdx", "tests", "fixtures", "mdx-parity");
 
 if (!existsSync(ROOT)) {
     console.error(`mdx-parity corpus not found: ${ROOT}`);

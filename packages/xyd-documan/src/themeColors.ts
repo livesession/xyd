@@ -1,5 +1,5 @@
 // Native getThemeColors dispatch (H5). Routes the build-time getThemeColors()
-// call through @xyd-js/native (crates/xyd_highlight) when the addon is present
+// call through @xyd-js/native (xwrite/crates/xwrite_highlight) when the addon is present
 // and falls back to @code-hike/lighter when it is absent or XYD_NATIVE=0
 // (loader in ./native).
 import { getThemeColors as lighterGetThemeColors } from "@code-hike/lighter";

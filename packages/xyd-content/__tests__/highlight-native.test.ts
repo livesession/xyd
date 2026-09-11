@@ -3,7 +3,7 @@
 // and once with `XYD_NATIVE=0` (codehike fallback). Both must produce the SAME
 // codehike-shaped `HighlightedCode`, proving the shim dispatches correctly and
 // the Rust engine matches codehike at the call-site boundary. (Full byte-exact
-// parity across 54 cells lives in `crates/xyd_highlight`'s cargo tests; this
+// parity across 54 cells lives in `xwrite/crates/xwrite_highlight`'s cargo tests; this
 // asserts the JS shim wiring + both paths agree on representative output.)
 import { describe, expect, it } from "vitest";
 

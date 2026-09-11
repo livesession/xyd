@@ -1,5 +1,5 @@
 // Usage: node scripts/frontmatter-dual-run-gate.mjs <content-dir>
-// Validates crates/xyd_frontmatter's frontmatter_batch against the JS
+// Validates xwrite/crates/xwrite_frontmatter's frontmatter_batch against the JS
 // getFrontmatter (MDX compile) over a real content corpus. Exit 1 on any
 // value mismatch. Proven 0-mismatch across apps/docs (84), e2e nav/writing
 // (19), and 625 generated OpenAPI virtual pages.

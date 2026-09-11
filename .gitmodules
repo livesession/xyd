@@ -1,3 +1,6 @@
 [submodule "examples"]
 	path = examples
 	url = https://github.com/xyd-js/examples
+[submodule "xwrite"]
+	path = xwrite
+	url = https://github.com/livesession/xwrite

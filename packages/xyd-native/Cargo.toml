@@ -22,10 +22,7 @@ xyd_openapi2opensdk = { path = "../../crates/xyd_openapi2opensdk" }
 xyd_openapi2opencli = { path = "../../crates/xyd_openapi2opencli" }
 xyd_uniform = { path = "../../crates/xyd_uniform" }
 xyd_mcp_uniform = { path = "../../crates/xyd_mcp_uniform" }
-xyd_frontmatter = { path = "../../crates/xyd_frontmatter" }
 xyd_settings = { path = "../../crates/xyd_settings" }
-xyd_highlight = { path = "../../crates/xyd_highlight" }
-xyd_mdx = { path = "../../crates/xyd_mdx" }
 # S6+ W7 codegen generators (opencli + opensdk emitters)
 xyd_opencli2go = { path = "../../crates/xyd_opencli2go" }
 xyd_opencli2rust = { path = "../../crates/xyd_opencli2rust" }
@@ -36,6 +33,13 @@ xyd_opensdk_ruby = { path = "../../crates/xyd_opensdk_ruby" }
 xyd_opensdk_java = { path = "../../crates/xyd_opensdk_java" }
 xyd_opensdk_dotnet = { path = "../../crates/xyd_opensdk_dotnet" }
 xyd_opensdk_rust = { path = "../../crates/xyd_opensdk_rust" }
+
+# ── content engine (the pinned `xwrite` submodule at <repo>/xwrite) ──────────
+# github.com/livesession/xwrite. xwrite_math arrives transitively via
+# xwrite_mdx; xwrite_highlight_wasm is wasm-only and never referenced here.
+xwrite_frontmatter = { path = "../../xwrite/crates/xwrite_frontmatter" }
+xwrite_highlight = { path = "../../xwrite/crates/xwrite_highlight" }
+xwrite_mdx = { path = "../../xwrite/crates/xwrite_mdx" }
 
 [build-dependencies]
 napi-build = "2"
