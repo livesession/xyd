@@ -23,6 +23,10 @@
 //   # optional: restrict to matching fixtures
 //   MDX_BUILD_FIXTURES=1 node scripts/gen-mdx-goldens.mjs --filter prose
 //
+//   # optional: point at a corpus living outside this package (the Rust
+//   # content engine owns the gate that consumes these goldens).
+//   MDX_PARITY_ROOT=/path/to/mdx-parity node scripts/gen-mdx-goldens.mjs
+//
 // IDEMPOTENCY PROOF: run once with MDX_BUILD_FIXTURES=1, then run again in
 // verify mode (no env) — it must report 0 drift. (Run twice with the env set
 // and `git status` shows no change.)
@@ -32,7 +36,7 @@
 import { promises as fs } from "node:fs";
 import { existsSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import crypto from "node:crypto";
 
 // --- silence the pipeline's console.time* plugin-timing chatter -------------
@@ -41,8 +45,10 @@ for (const k of ["time", "timeEnd", "timeLog"]) console[k] = () => {};
 import { markdownPlugins } from "@xyd-js/content/md";
 import { ContentFS } from "@xyd-js/content";
 import { Composer } from "@xyd-js/composer";
-import { normalize } from "../__fixtures__/mdx-parity/_harness/normalize.mjs";
-import { renderOracle, requiredComponents } from "../__fixtures__/mdx-parity/_harness/render.mjs";
+// NOTE: `_harness/{normalize,render}.mjs` are imported DYNAMICALLY below, after
+// ROOT is resolved — a static import can't take a runtime path, and the corpus
+// location is configurable (MDX_PARITY_ROOT) so the goldens can live outside
+// this package.
 
 // --- register the composer meta-components (atlas/home/bloghome/firstslide) ---
 // The `mdMeta` terminal remark transform (packages/.../plugins/meta/mdMeta.ts)
@@ -60,7 +66,23 @@ import { renderOracle, requiredComponents } from "../__fixtures__/mdx-parity/_ha
 new Composer();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const ROOT = path.resolve(__dirname, "..", "__fixtures__", "mdx-parity");
+
+// The mdx-parity corpus. Overridable with MDX_PARITY_ROOT so the goldens can
+// live outside this package (the Rust content engine owns the consuming gate).
+const ROOT = process.env.MDX_PARITY_ROOT
+    ? path.resolve(process.env.MDX_PARITY_ROOT)
+    : path.resolve(__dirname, "..", "__fixtures__", "mdx-parity");
+
+if (!existsSync(ROOT)) {
+    console.error(`mdx-parity corpus not found: ${ROOT}`);
+    console.error(`Set MDX_PARITY_ROOT to the corpus directory.`);
+    process.exit(1);
+}
+
+// The harness ships INSIDE the corpus, so it is resolved from ROOT too.
+const harness = (file) => pathToFileURL(path.join(ROOT, "_harness", file)).href;
+const { normalize } = await import(harness("normalize.mjs"));
+const { renderOracle, requiredComponents } = await import(harness("render.mjs"));
 const WRITE = process.env.MDX_BUILD_FIXTURES === "1" || process.env.MDX_BUILD_FIXTURES === "true";
 const filterIdx = process.argv.indexOf("--filter");
 const FILTER = filterIdx !== -1 ? process.argv[filterIdx + 1] : null;

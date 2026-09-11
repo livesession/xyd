@@ -16,12 +16,18 @@
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, rmSync, readdirSync, statSync, cpSync, writeFileSync, readFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { CONFIGS, BASELINE, BASE_ENV, COMPAT_PAIRS } from "./configs.mjs";
-import { normalizeHtml } from "../../packages/xyd-content/__fixtures__/mdx-parity/_harness/render.mjs";
-
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO = join(__dirname, "..", "..");
+
+// The mdx-parity corpus ships its own HTML normalizer. Resolved dynamically (and
+// overridable via MDX_PARITY_ROOT) so the corpus can live outside this repo.
+const MDX_PARITY_ROOT = process.env.MDX_PARITY_ROOT
+    || join(REPO, "packages", "xyd-content", "__fixtures__", "mdx-parity");
+const { normalizeHtml } = await import(
+    pathToFileURL(join(MDX_PARITY_ROOT, "_harness", "render.mjs")).href
+);
 const APP = join(REPO, "apps", "docs");
 const CLI = join(REPO, "packages", "xyd-cli", "dist", "index.js");
 const TARGET = join(__dirname, "target");
