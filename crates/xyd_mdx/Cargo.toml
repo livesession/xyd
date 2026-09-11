@@ -32,6 +32,3 @@ xyd_highlight = { path = "../xyd_highlight" }
 # Rust-first replacement for the remark-math + rehype-katex JS step. Pure (no JS
 # engine). `src/math.rs` maps its parsed MathML tree onto mdxjs hast.
 xyd_math = { path = "../xyd_math" }
-
-[dev-dependencies]
-xyd_parity = { path = "../xyd_parity" }

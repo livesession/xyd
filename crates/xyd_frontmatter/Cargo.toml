@@ -9,6 +9,3 @@ description = "Frontmatter fast path — YAML frontmatter batch extraction (Rust
 serde = { workspace = true }
 serde_json = { workspace = true }
 serde_yaml = "0.9"
-
-[dev-dependencies]
-xyd_parity = { path = "../xyd_parity" }
