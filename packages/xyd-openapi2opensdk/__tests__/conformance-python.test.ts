@@ -11,7 +11,7 @@ const ORACLE_DIR = path.join(__dirname, '../oracle');
 const SURFACE = path.join(ORACLE_DIR, 'python-surface.json');
 const FLOOR = path.join(ORACLE_DIR, 'python-coverage.floor.json');
 const REPORT = path.join(ORACLE_DIR, 'python-coverage.report.json');
-const OPENAPI = path.join(__dirname, '../../xyd-openapi2opencli/oracle/openai-openapi.yaml');
+const OPENAPI = path.join(ORACLE_DIR, 'openai-openapi.yaml');
 
 const REPO = 'openai/openai-python';
 const REFRESH = process.env.SDK_ORACLE_REFRESH === '1';

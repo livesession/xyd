@@ -12,8 +12,11 @@ const SURFACE = path.join(ORACLE_DIR, 'surface.json');
 const FLOOR = path.join(ORACLE_DIR, 'coverage.floor.json');
 const ALLOWLIST = path.join(ORACLE_DIR, 'allowlist.json');
 const REPORT = path.join(ORACLE_DIR, 'coverage.report.json');
-// The OpenAI OpenAPI spec vendored alongside the CLI oracle (same source of truth).
-const OPENAPI = path.join(__dirname, '../../xyd-openapi2opencli/oracle/openai-openapi.yaml');
+// This package's OWN oracle archive. It previously read the openapi2opencli
+// copy, but tests-opensdk-pipeline.yml decrypts only this package's oracle, so
+// that path was always sealed here (openai-fields.test.ts already proves the
+// spec is in THIS archive). Self-contained also survives the repo extraction.
+const OPENAPI = path.join(ORACLE_DIR, 'openai-openapi.yaml');
 
 const REPO = 'openai/openai-go';
 const REFRESH = process.env.SDK_ORACLE_REFRESH === '1';
