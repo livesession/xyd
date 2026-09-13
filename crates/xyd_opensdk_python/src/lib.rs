@@ -153,3 +153,11 @@ fn any_paginated(spec: &Value) -> bool {
 pub fn generate_resources_py(spec: &Value) -> String {
     with_py_header(&resources_py(spec))
 }
+
+/// This crate as plain data, for a Rust-side dispatcher and the A2 docs surface.
+///
+/// Additive only: no call site today, and the two docs slots are `None` until A2
+/// implements them. See `xyd_opensdk_core::emitter` for why this is a data
+/// descriptor rather than a trait.
+pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
+    xyd_opensdk_core::emitter::EmitterFns::new("python", generate_python);

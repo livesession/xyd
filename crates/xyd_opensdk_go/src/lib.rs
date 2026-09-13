@@ -145,3 +145,11 @@ pub fn generate_go(spec: &Value) -> std::collections::BTreeMap<String, String> {
 
     files
 }
+
+/// This crate as plain data, for a Rust-side dispatcher and the A2 docs surface.
+///
+/// Additive only: no call site today, and the two docs slots are `None` until A2
+/// implements them. See `xyd_opensdk_core::emitter` for why this is a data
+/// descriptor rather than a trait.
+pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
+    xyd_opensdk_core::emitter::EmitterFns::new("go", generate_go);

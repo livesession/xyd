@@ -145,3 +145,11 @@ fn generate_from_spec(spec: &Spec, spec_json: &serde_json::Value) -> BTreeMap<St
 pub(crate) fn with_file_header(rel_path: &str, content: String) -> String {
     xyd_opensdk_core::header::with_file_header(rel_path, content)
 }
+
+/// This crate as plain data, for a Rust-side dispatcher and the A2 docs surface.
+///
+/// Additive only: no call site today, and the two docs slots are `None` until A2
+/// implements them. See `xyd_opensdk_core::emitter` for why this is a data
+/// descriptor rather than a trait.
+pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
+    xyd_opensdk_core::emitter::EmitterFns::new("node", generate_node);
