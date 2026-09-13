@@ -1,0 +1,83 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects"
+  ],
+  "action": "list",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.admin.organization.projects.list({ limit: 20, after: \"after\", include_archived: false });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.admin.organization.projects.list(query?): Promise<CursorPage<Project>>",
+    "request": {
+      "typeName": "AdminOrganizationProjectListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "number",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "after",
+          "langType": "string",
+          "required": false,
+          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+        },
+        {
+          "name": "include_archived",
+          "langType": "boolean",
+          "required": false,
+          "description": "If `true` returns all projects including those that have been `archived`. Archived projects are not included by default."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Project",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "object",
+          "langType": "\"organization.project\"",
+          "required": true,
+          "description": "The object type, which is always `organization.project`"
+        },
+        {
+          "name": "name",
+          "langType": "string | null",
+          "required": false,
+          "description": "The name of the project. This appears in reporting."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the project was created."
+        },
+        {
+          "name": "archived_at",
+          "langType": "number | null",
+          "required": false
+        },
+        {
+          "name": "status",
+          "langType": "string | null",
+          "required": false,
+          "description": "`active` or `archived`"
+        },
+        {
+          "name": "external_key_id",
+          "langType": "string | null",
+          "required": false,
+          "description": "The external key associated with the project."
+        }
+      ]
+    }
+  }
+}

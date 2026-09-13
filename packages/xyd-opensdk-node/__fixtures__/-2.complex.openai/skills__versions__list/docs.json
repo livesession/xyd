@@ -1,0 +1,84 @@
+{
+  "chain": [
+    "skills",
+    "versions"
+  ],
+  "action": "list",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.skills.versions.list(\"skill_123\", { limit: 1, order: \"asc\", after: \"skillver_123\" });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.skills.versions.list(skillId, query?): Promise<CursorPage<SkillVersionResource>>",
+    "request": {
+      "typeName": "SkillVersionListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "number",
+          "required": false,
+          "description": "Number of versions to retrieve."
+        },
+        {
+          "name": "order",
+          "langType": "OrderEnum",
+          "required": false,
+          "description": "Sort order of results by version number.",
+          "refTypeName": "OrderEnum"
+        },
+        {
+          "name": "after",
+          "langType": "string",
+          "required": false,
+          "description": "The skill version ID to start after."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "SkillVersionResource",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"skill.version\"",
+          "required": true,
+          "description": "The object type, which is `skill.version`."
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "Unique identifier for the skill version."
+        },
+        {
+          "name": "skill_id",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the skill for this version."
+        },
+        {
+          "name": "version",
+          "langType": "string",
+          "required": true,
+          "description": "Version number for this skill."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "Unix timestamp (seconds) for when the version was created."
+        },
+        {
+          "name": "name",
+          "langType": "string",
+          "required": true,
+          "description": "Name of the skill version."
+        },
+        {
+          "name": "description",
+          "langType": "string",
+          "required": true,
+          "description": "Description of the skill version."
+        }
+      ]
+    }
+  }
+}

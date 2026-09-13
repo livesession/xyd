@@ -1,0 +1,78 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "certificates"
+  ],
+  "action": "list",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.admin.organization.projects.certificates.list(\"project_id\", limit: 20, after: \"after\", order: \"asc\")\npp result\n",
+  "typeReference": {
+    "signature": "client.admin.organization.projects.certificates.list(project_id, limit: nil, after: nil, order: nil) -> Page<Models::OrganizationProjectCertificate>",
+    "request": {
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "Integer",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "after",
+          "langType": "String",
+          "required": false,
+          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+        },
+        {
+          "name": "order",
+          "langType": "Models::AdminOrganizationProjectsCertificatesListOrder",
+          "required": false,
+          "description": "Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc` for descending order.\n",
+          "refTypeName": "AdminOrganizationProjectsCertificatesListOrder"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Page<Models::OrganizationProjectCertificate>",
+      "note": "paginated (Page)",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The object type, which is always `organization.project.certificate`."
+        },
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "langType": "String",
+          "required": true,
+          "description": "The name of the certificate."
+        },
+        {
+          "name": "created_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the certificate was uploaded."
+        },
+        {
+          "name": "certificate_details",
+          "langType": "Models::OrganizationProjectCertificateCertificateDetails",
+          "required": true,
+          "refTypeName": "OrganizationProjectCertificateCertificateDetails"
+        },
+        {
+          "name": "active",
+          "langType": "Boolean",
+          "required": true,
+          "description": "Whether the certificate is currently active at the project level."
+        }
+      ]
+    }
+  }
+}

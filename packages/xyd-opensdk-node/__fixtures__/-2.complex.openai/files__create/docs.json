@@ -1,0 +1,98 @@
+{
+  "chain": [
+    "files"
+  ],
+  "action": "create",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.files.create({ file: new Uint8Array([1, 2, 3]), purpose: \"assistants\", expires_after: { anchor: \"created_at\", seconds: 1 } });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.files.create(body): Promise<OpenAiFile>",
+    "request": {
+      "typeName": "FileCreateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "file",
+          "langType": "Uint8Array | Blob",
+          "required": true,
+          "description": "The File object (not file name) to be uploaded.\n"
+        },
+        {
+          "name": "purpose",
+          "langType": "CreateFileRequestPurpose",
+          "required": true,
+          "description": "The intended purpose of the uploaded file. One of:\n- `assistants`: Used in the Assistants API\n- `batch`: Used in the Batch API\n- `fine-tune`: Used for fine-tuning\n- `vision`: Images used for vision fine-tuning\n- `user_data`: Flexible file type for any purpose\n- `evals`: Used for eval data sets\n",
+          "refTypeName": "CreateFileRequestPurpose"
+        },
+        {
+          "name": "expires_after",
+          "langType": "FileExpirationAfter",
+          "required": false,
+          "refTypeName": "FileExpirationAfter"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "OpenAiFile",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "The file identifier, which can be referenced in the API endpoints."
+        },
+        {
+          "name": "bytes",
+          "langType": "number",
+          "required": true,
+          "description": "The size of the file, in bytes."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the file was created."
+        },
+        {
+          "name": "expires_at",
+          "langType": "number",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the file will expire."
+        },
+        {
+          "name": "filename",
+          "langType": "string",
+          "required": true,
+          "description": "The name of the file."
+        },
+        {
+          "name": "object",
+          "langType": "\"file\"",
+          "required": true,
+          "description": "The object type, which is always `file`."
+        },
+        {
+          "name": "purpose",
+          "langType": "OpenAiFilePurpose",
+          "required": true,
+          "description": "The intended purpose of the file. Supported values are `assistants`, `assistants_output`, `batch`, `batch_output`, `fine-tune`, `fine-tune-results`, `vision`, and `user_data`.",
+          "refTypeName": "OpenAiFilePurpose"
+        },
+        {
+          "name": "status",
+          "langType": "OpenAiFileStatus",
+          "required": true,
+          "description": "Deprecated. The current status of the file, which can be either `uploaded`, `processed`, or `error`.",
+          "deprecated": true,
+          "refTypeName": "OpenAiFileStatus"
+        },
+        {
+          "name": "status_details",
+          "langType": "string",
+          "required": false,
+          "description": "Deprecated. For details on why a fine-tuning training file failed validation, see the `error` field on `fine_tuning.job`.",
+          "deprecated": true
+        }
+      ]
+    }
+  }
+}

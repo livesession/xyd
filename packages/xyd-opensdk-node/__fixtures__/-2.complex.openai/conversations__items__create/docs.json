@@ -1,0 +1,34 @@
+{
+  "chain": [
+    "conversations",
+    "items"
+  ],
+  "action": "create",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.conversations.items.create(\"conv_123\", { items: [{ role: \"user\", content: \"string\", phase: \"commentary\", type: \"message\" }], include: [\"file_search_call.results\"] });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.conversations.items.create(conversationId, params): Promise<CursorPage<ConversationItem>>",
+    "request": {
+      "typeName": "ConversationItemCreateParams",
+      "argName": "params",
+      "fields": [
+        {
+          "name": "items",
+          "langType": "InputItem[]",
+          "required": true,
+          "description": "The items to add to the conversation. You may add up to 20 items at a time.\n"
+        },
+        {
+          "name": "include",
+          "langType": "IncludeEnum[]",
+          "required": false,
+          "description": "Additional fields to include in the response. See the `include`\nparameter for [listing Conversation items above](/docs/api-reference/conversations/list-items#conversations_list_items-include) for more information.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ConversationItem",
+      "langType": "ConversationItem",
+      "note": "paginated (CursorPage)"
+    }
+  }
+}

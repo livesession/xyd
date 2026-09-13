@@ -1,0 +1,105 @@
+{
+  "chain": [
+    "evals",
+    "runs"
+  ],
+  "action": "cancel",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.evals.runs.cancel(\"eval_id\", \"run_id\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.evals.runs.cancel(evalId, runId): Promise<EvalRun>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "EvalRun",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"eval.run\"",
+          "required": true,
+          "description": "The type of the object. Always \"eval.run\"."
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "Unique identifier for the evaluation run."
+        },
+        {
+          "name": "eval_id",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier of the associated evaluation."
+        },
+        {
+          "name": "status",
+          "langType": "string",
+          "required": true,
+          "description": "The status of the evaluation run."
+        },
+        {
+          "name": "model",
+          "langType": "string",
+          "required": true,
+          "description": "The model that is evaluated, if applicable."
+        },
+        {
+          "name": "name",
+          "langType": "string",
+          "required": true,
+          "description": "The name of the evaluation run."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the evaluation run was created."
+        },
+        {
+          "name": "report_url",
+          "langType": "string",
+          "required": true,
+          "description": "The URL to the rendered evaluation run report on the UI dashboard."
+        },
+        {
+          "name": "result_counts",
+          "langType": "EvalRunResultCounts",
+          "required": true,
+          "description": "Counters summarizing the outcomes of the evaluation run.",
+          "refTypeName": "EvalRunResultCounts"
+        },
+        {
+          "name": "per_model_usage",
+          "langType": "EvalRunPerModelUsageItem[]",
+          "required": true,
+          "description": "Usage statistics for each model during the evaluation run."
+        },
+        {
+          "name": "per_testing_criteria_results",
+          "langType": "EvalRunPerTestingCriteriaResultsItem[]",
+          "required": true,
+          "description": "Results per testing criteria applied during the evaluation run."
+        },
+        {
+          "name": "data_source",
+          "langType": "EvalRunDataSource",
+          "required": true,
+          "description": "Information about the run's data source.",
+          "refTypeName": "EvalRunDataSource"
+        },
+        {
+          "name": "metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        },
+        {
+          "name": "error",
+          "langType": "EvalApiError",
+          "required": true,
+          "refTypeName": "EvalApiError"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "chain": [
+    "containers"
+  ],
+  "action": "retrieve",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.containers.retrieve(\"container_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.containers.retrieve(container_id) -> Models::ContainerResource",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::ContainerResource",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "Unique identifier for the container."
+        },
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The type of this object."
+        },
+        {
+          "name": "name",
+          "langType": "String",
+          "required": true,
+          "description": "Name of the container."
+        },
+        {
+          "name": "created_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the container was created."
+        },
+        {
+          "name": "status",
+          "langType": "String",
+          "required": true,
+          "description": "Status of the container (e.g., active, deleted)."
+        },
+        {
+          "name": "last_active_at",
+          "langType": "Integer",
+          "required": false,
+          "description": "Unix timestamp (in seconds) when the container was last active."
+        },
+        {
+          "name": "expires_after",
+          "langType": "Models::ContainerResourceExpiresAfter",
+          "required": false,
+          "description": "The container will expire after this time period.\nThe anchor is the reference point for the expiration.\nThe minutes is the number of minutes after the anchor before the container expires.\n",
+          "refTypeName": "ContainerResourceExpiresAfter"
+        },
+        {
+          "name": "memory_limit",
+          "langType": "Models::ContainerResourceMemoryLimit",
+          "required": false,
+          "description": "The memory limit configured for the container.",
+          "refTypeName": "ContainerResourceMemoryLimit"
+        },
+        {
+          "name": "network_policy",
+          "langType": "Models::ContainerResourceNetworkPolicy",
+          "required": false,
+          "description": "Network access policy for the container.",
+          "refTypeName": "ContainerResourceNetworkPolicy"
+        }
+      ]
+    }
+  }
+}

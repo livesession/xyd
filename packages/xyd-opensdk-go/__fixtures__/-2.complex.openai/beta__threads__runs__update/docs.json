@@ -1,0 +1,195 @@
+{
+  "chain": [
+    "beta",
+    "threads",
+    "runs"
+  ],
+  "action": "update",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Beta.Threads.Runs.Update(\n\t\tcontext.TODO(),\n\t\t\"thread_id\",\n\t\t\"run_id\",\n\t\topenai.BetaThreadRunUpdateParams{\n\t\t\tMetadata: map[string]string{\"key\": \"string\"},\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Beta.Threads.Runs.Update(ctx, threadID, runID, body) (*RunObject, error)",
+    "request": {
+      "typeName": "BetaThreadRunUpdateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "Metadata",
+          "langType": "Metadata",
+          "required": false,
+          "refTypeName": "Metadata"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "RunObject",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always `thread.run`."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was created."
+        },
+        {
+          "name": "ThreadID",
+          "langType": "string",
+          "required": true,
+          "description": "The ID of the [thread](/docs/api-reference/threads) that was executed on as a part of this run."
+        },
+        {
+          "name": "AssistantID",
+          "langType": "string",
+          "required": true,
+          "description": "The ID of the [assistant](/docs/api-reference/assistants) used for execution of this run."
+        },
+        {
+          "name": "Status",
+          "langType": "RunObjectStatus",
+          "required": true,
+          "description": "The status of the run, which can be either `queued`, `in_progress`, `requires_action`, `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`.",
+          "refTypeName": "RunObjectStatus"
+        },
+        {
+          "name": "RequiredAction",
+          "langType": "RunObjectRequiredAction",
+          "required": true,
+          "description": "Details on the action required to continue the run. Will be `null` if no action is required.",
+          "refTypeName": "RunObjectRequiredAction"
+        },
+        {
+          "name": "LastError",
+          "langType": "RunObjectLastError",
+          "required": true,
+          "description": "The last error associated with this run. Will be `null` if there are no errors.",
+          "refTypeName": "RunObjectLastError"
+        },
+        {
+          "name": "ExpiresAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run will expire."
+        },
+        {
+          "name": "StartedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was started."
+        },
+        {
+          "name": "CancelledAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was cancelled."
+        },
+        {
+          "name": "FailedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run failed."
+        },
+        {
+          "name": "CompletedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was completed."
+        },
+        {
+          "name": "IncompleteDetails",
+          "langType": "RunObjectIncompleteDetails",
+          "required": true,
+          "description": "Details on why the run is incomplete. Will be `null` if the run is not incomplete.",
+          "refTypeName": "RunObjectIncompleteDetails"
+        },
+        {
+          "name": "Model",
+          "langType": "string",
+          "required": true,
+          "description": "The model that the [assistant](/docs/api-reference/assistants) used for this run."
+        },
+        {
+          "name": "Instructions",
+          "langType": "string",
+          "required": true,
+          "description": "The instructions that the [assistant](/docs/api-reference/assistants) used for this run."
+        },
+        {
+          "name": "Tools",
+          "langType": "[]RunObjectToolsItem",
+          "required": true,
+          "description": "The list of tools that the [assistant](/docs/api-reference/assistants) used for this run."
+        },
+        {
+          "name": "Metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        },
+        {
+          "name": "Usage",
+          "langType": "RunCompletionUsage",
+          "required": true,
+          "refTypeName": "RunCompletionUsage"
+        },
+        {
+          "name": "Temperature",
+          "langType": "float64",
+          "required": false,
+          "description": "The sampling temperature used for this run. If not set, defaults to 1."
+        },
+        {
+          "name": "TopP",
+          "langType": "float64",
+          "required": false,
+          "description": "The nucleus sampling value used for this run. If not set, defaults to 1."
+        },
+        {
+          "name": "MaxPromptTokens",
+          "langType": "int64",
+          "required": true,
+          "description": "The maximum number of prompt tokens specified to have been used over the course of the run.\n"
+        },
+        {
+          "name": "MaxCompletionTokens",
+          "langType": "int64",
+          "required": true,
+          "description": "The maximum number of completion tokens specified to have been used over the course of the run.\n"
+        },
+        {
+          "name": "TruncationStrategy",
+          "langType": "TruncationObject",
+          "required": true,
+          "refTypeName": "TruncationObject"
+        },
+        {
+          "name": "ToolChoice",
+          "langType": "AssistantsAPIToolChoiceOption",
+          "required": true,
+          "refTypeName": "AssistantsApiToolChoiceOption"
+        },
+        {
+          "name": "ParallelToolCalls",
+          "langType": "ParallelToolCalls",
+          "required": true,
+          "refTypeName": "ParallelToolCalls"
+        },
+        {
+          "name": "ResponseFormat",
+          "langType": "AssistantsAPIResponseFormatOption",
+          "required": true,
+          "refTypeName": "AssistantsApiResponseFormatOption"
+        }
+      ]
+    }
+  }
+}

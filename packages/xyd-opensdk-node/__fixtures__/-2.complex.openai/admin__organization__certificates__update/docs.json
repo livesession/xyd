@@ -1,0 +1,66 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "certificates"
+  ],
+  "action": "update",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.admin.organization.certificates.update(\"certificate_id\", { name: \"string\" });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.admin.organization.certificates.update(certificateId, body): Promise<Certificate>",
+    "request": {
+      "typeName": "AdminOrganizationCertificateUpdateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "name",
+          "langType": "string",
+          "required": false,
+          "description": "The updated name for the certificate"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Certificate",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "CertificateObject",
+          "required": true,
+          "description": "The object type.\n\n- If creating, updating, or getting a specific certificate, the object type is `certificate`.\n- If listing, activating, or deactivating certificates for the organization, the object type is `organization.certificate`.\n- If listing, activating, or deactivating certificates for a project, the object type is `organization.project.certificate`.\n",
+          "refTypeName": "CertificateObject"
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "langType": "string | null",
+          "required": true,
+          "description": "The name of the certificate."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the certificate was uploaded."
+        },
+        {
+          "name": "certificate_details",
+          "langType": "CertificateCertificateDetails",
+          "required": true,
+          "refTypeName": "CertificateCertificateDetails"
+        },
+        {
+          "name": "active",
+          "langType": "boolean",
+          "required": false,
+          "description": "Whether the certificate is currently active at the specified scope. Not returned when getting details for a specific certificate."
+        }
+      ]
+    }
+  }
+}

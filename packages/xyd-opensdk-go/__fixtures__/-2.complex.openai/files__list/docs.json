@@ -1,0 +1,105 @@
+{
+  "chain": [
+    "files"
+  ],
+  "action": "list",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Files.List(\n\t\tcontext.TODO(),\n\t\topenai.FileListParams{\n\t\t\tPurpose: param.NewOpt[string](\"purpose\"),\n\t\t\tLimit: param.NewOpt[int64](10000),\n\t\t\tOrder: param.NewOpt[openai.FilesListOrder](openai.FilesListOrderAsc),\n\t\t\tAfter: param.NewOpt[string](\"after\"),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Files.List(ctx, query) (*pagination.CursorPage[OpenAiFile], error)",
+    "request": {
+      "typeName": "FileListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "Purpose",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "Only return files with the given purpose."
+        },
+        {
+          "name": "Limit",
+          "langType": "param.Opt[int64]",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between 1 and 10,000, and the default is 10,000.\n"
+        },
+        {
+          "name": "Order",
+          "langType": "param.Opt[FilesListOrder]",
+          "required": false,
+          "description": "Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc` for descending order.\n",
+          "refTypeName": "FilesListOrder"
+        },
+        {
+          "name": "After",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "OpenAiFile",
+      "note": "paginated (pagination.CursorPage)",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The file identifier, which can be referenced in the API endpoints."
+        },
+        {
+          "name": "Bytes",
+          "langType": "int64",
+          "required": true,
+          "description": "The size of the file, in bytes."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the file was created."
+        },
+        {
+          "name": "ExpiresAt",
+          "langType": "int64",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the file will expire."
+        },
+        {
+          "name": "Filename",
+          "langType": "string",
+          "required": true,
+          "description": "The name of the file."
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always `file`."
+        },
+        {
+          "name": "Purpose",
+          "langType": "OpenAiFilePurpose",
+          "required": true,
+          "description": "The intended purpose of the file. Supported values are `assistants`, `assistants_output`, `batch`, `batch_output`, `fine-tune`, `fine-tune-results`, `vision`, and `user_data`.",
+          "refTypeName": "OpenAiFilePurpose"
+        },
+        {
+          "name": "Status",
+          "langType": "OpenAiFileStatus",
+          "required": true,
+          "description": "Deprecated. The current status of the file, which can be either `uploaded`, `processed`, or `error`.",
+          "deprecated": true,
+          "refTypeName": "OpenAiFileStatus"
+        },
+        {
+          "name": "StatusDetails",
+          "langType": "string",
+          "required": false,
+          "description": "Deprecated. For details on why a fine-tuning training file failed validation, see the `error` field on `fine_tuning.job`.",
+          "deprecated": true
+        }
+      ]
+    }
+  }
+}

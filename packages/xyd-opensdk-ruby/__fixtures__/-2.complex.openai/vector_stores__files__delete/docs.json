@@ -1,0 +1,34 @@
+{
+  "chain": [
+    "vector-stores",
+    "files"
+  ],
+  "action": "delete",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.vector_stores.files.delete(\"vector_store_id\", \"file_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.vector_stores.files.delete(vector_store_id, file_id) -> Models::DeleteVectorStoreFileResponse",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::DeleteVectorStoreFileResponse",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "Boolean",
+          "required": true
+        },
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true
+        }
+      ]
+    }
+  }
+}

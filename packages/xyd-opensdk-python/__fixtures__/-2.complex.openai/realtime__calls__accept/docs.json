@@ -1,0 +1,108 @@
+{
+  "chain": [
+    "realtime",
+    "calls"
+  ],
+  "action": "accept",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nclient.realtime.calls.accept(\"call_id\", type=\"realtime\", output_modalities=[\"audio\"], model=\"string\", instructions=\"string\", audio={\"input\": {\"format\": {\"type\": \"audio/pcm\", \"rate\": 24000}, \"transcription\": {\"model\": \"string\", \"language\": \"string\", \"prompt\": \"string\", \"delay\": \"minimal\"}, \"noise_reduction\": {\"type\": \"near_field\"}, \"turn_detection\": {\"type\": \"server_vad\", \"threshold\": 1, \"prefix_padding_ms\": 1, \"silence_duration_ms\": 1, \"create_response\": True, \"interrupt_response\": True, \"idle_timeout_ms\": 1}}, \"output\": {\"format\": {\"type\": \"audio/pcm\", \"rate\": 24000}, \"voice\": \"string\", \"speed\": 1}}, include=[\"item.input_audio_transcription.logprobs\"], tracing=\"auto\", tools=[{\"type\": \"function\", \"name\": \"string\", \"description\": \"string\", \"parameters\": {\"key\": None}}], tool_choice=\"none\", parallel_tool_calls=True, reasoning={\"effort\": \"minimal\"}, max_output_tokens=1, truncation=\"auto\", prompt={\"id\": \"string\", \"version\": \"string\", \"variables\": {\"key\": \"string\"}})\n",
+  "typeReference": {
+    "signature": "client.realtime.calls.accept(call_id, type, output_modalities=..., model=..., instructions=..., audio=..., include=..., tracing=..., tools=..., tool_choice=..., parallel_tool_calls=..., reasoning=..., max_output_tokens=..., truncation=..., prompt=...) -> None",
+    "request": {
+      "fields": [
+        {
+          "name": "type",
+          "langType": "str",
+          "required": true,
+          "description": "The type of session to create. Always `realtime` for the Realtime API.\n"
+        },
+        {
+          "name": "output_modalities",
+          "langType": "Optional[list[RealtimeSessionCreateRequestGaOutputModalitiesItem]]",
+          "required": false,
+          "description": "The set of modalities the model can respond with. It defaults to `[\"audio\"]`, indicating\nthat the model will respond with audio plus a transcript. `[\"text\"]` can be used to make\nthe model respond with text only. It is not possible to request both `text` and `audio` at the same time.\n"
+        },
+        {
+          "name": "model",
+          "langType": "Optional[RealtimeSessionCreateRequestGaModel]",
+          "required": false,
+          "description": "The Realtime model used for this session.\n",
+          "refTypeName": "RealtimeSessionCreateRequestGaModel"
+        },
+        {
+          "name": "instructions",
+          "langType": "Optional[str]",
+          "required": false,
+          "description": "The default system instructions (i.e. system message) prepended to model calls. This field allows the client to guide the model on desired responses. The model can be instructed on response content and format, (e.g. \"be extremely succinct\", \"act friendly\", \"here are examples of good responses\") and on audio behavior (e.g. \"talk quickly\", \"inject emotion into your voice\", \"laugh frequently\"). The instructions are not guaranteed to be followed by the model, but they provide guidance to the model on the desired behavior.\n\nNote that the server sets default instructions which will be used if this field is not set and are visible in the `session.created` event at the start of the session.\n"
+        },
+        {
+          "name": "audio",
+          "langType": "Optional[RealtimeSessionCreateRequestGaAudio]",
+          "required": false,
+          "description": "Configuration for input and output audio.\n",
+          "refTypeName": "RealtimeSessionCreateRequestGaAudio"
+        },
+        {
+          "name": "include",
+          "langType": "Optional[list[str]]",
+          "required": false,
+          "description": "Additional fields to include in server outputs.\n\n`item.input_audio_transcription.logprobs`: Include logprobs for input audio transcription.\n"
+        },
+        {
+          "name": "tracing",
+          "langType": "Optional[RealtimeSessionCreateRequestGaTracing]",
+          "required": false,
+          "description": "Realtime API can write session traces to the [Traces Dashboard](https://platform.openai.com/logs?api=traces). Set to null to disable tracing. Once\ntracing is enabled for a session, the configuration cannot be modified.\n\n`auto` will create a trace for the session with default values for the\nworkflow name, group id, and metadata.\n",
+          "refTypeName": "RealtimeSessionCreateRequestGaTracing"
+        },
+        {
+          "name": "tools",
+          "langType": "Optional[list[RealtimeSessionCreateRequestGaToolsItem]]",
+          "required": false,
+          "description": "Tools available to the model."
+        },
+        {
+          "name": "tool_choice",
+          "langType": "Optional[RealtimeSessionCreateRequestGaToolChoice]",
+          "required": false,
+          "description": "How the model chooses tools. Provide one of the string modes or force a specific\nfunction/MCP tool.\n",
+          "refTypeName": "RealtimeSessionCreateRequestGaToolChoice"
+        },
+        {
+          "name": "parallel_tool_calls",
+          "langType": "Optional[bool]",
+          "required": false,
+          "description": "Whether the model may call multiple tools in parallel. Only supported by\nreasoning Realtime models such as `gpt-realtime-2`.\n"
+        },
+        {
+          "name": "reasoning",
+          "langType": "Optional[RealtimeReasoning]",
+          "required": false,
+          "refTypeName": "RealtimeReasoning"
+        },
+        {
+          "name": "max_output_tokens",
+          "langType": "Optional[RealtimeSessionCreateRequestGaMaxOutputTokens]",
+          "required": false,
+          "description": "Maximum number of output tokens for a single assistant response,\ninclusive of tool calls. Provide an integer between 1 and 4096 to\nlimit output tokens, or `inf` for the maximum available tokens for a\ngiven model. Defaults to `inf`.\n",
+          "refTypeName": "RealtimeSessionCreateRequestGaMaxOutputTokens"
+        },
+        {
+          "name": "truncation",
+          "langType": "Optional[RealtimeTruncation]",
+          "required": false,
+          "refTypeName": "RealtimeTruncation"
+        },
+        {
+          "name": "prompt",
+          "langType": "Optional[Prompt]",
+          "required": false,
+          "refTypeName": "Prompt"
+        }
+      ]
+    },
+    "response": {
+      "langType": "None",
+      "note": "no response body"
+    }
+  }
+}

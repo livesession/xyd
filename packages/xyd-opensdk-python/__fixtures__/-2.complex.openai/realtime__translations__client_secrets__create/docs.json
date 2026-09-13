@@ -1,0 +1,52 @@
+{
+  "chain": [
+    "realtime",
+    "translations",
+    "client-secrets"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.realtime.translations.client_secrets.create(session={\"model\": \"string\", \"audio\": {\"input\": {\"transcription\": {\"model\": \"string\"}, \"noise_reduction\": {\"type\": \"near_field\"}}, \"output\": {\"language\": \"string\"}}}, expires_after={\"anchor\": \"created_at\", \"seconds\": 600})\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.realtime.translations.client_secrets.create(expires_after=..., session) -> RealtimeTranslationClientSecretCreateResponse",
+    "request": {
+      "fields": [
+        {
+          "name": "expires_after",
+          "langType": "Optional[RealtimeTranslationClientSecretCreateRequestExpiresAfter]",
+          "required": false,
+          "description": "Configuration for the client secret expiration. Expiration refers to the time after which\na client secret will no longer be valid for creating sessions. The session itself may\ncontinue after that time once started. A secret can be used to create multiple sessions\nuntil it expires.\n",
+          "refTypeName": "RealtimeTranslationClientSecretCreateRequestExpiresAfter"
+        },
+        {
+          "name": "session",
+          "langType": "RealtimeTranslationSessionCreateRequest",
+          "required": true,
+          "refTypeName": "RealtimeTranslationSessionCreateRequest"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "RealtimeTranslationClientSecretCreateResponse",
+      "fields": [
+        {
+          "name": "value",
+          "langType": "str",
+          "required": true,
+          "description": "The generated client secret value."
+        },
+        {
+          "name": "expires_at",
+          "langType": "int",
+          "required": true,
+          "description": "Expiration timestamp for the client secret, in seconds since epoch."
+        },
+        {
+          "name": "session",
+          "langType": "RealtimeTranslationSession",
+          "required": true,
+          "refTypeName": "RealtimeTranslationSession"
+        }
+      ]
+    }
+  }
+}

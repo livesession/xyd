@@ -1,0 +1,73 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "admin-api-keys"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.admin.organization.admin_api_keys.create(name=\"string\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.admin.organization.admin_api_keys.create(name) -> AdminApiKeyCreateResponse",
+    "request": {
+      "fields": [
+        {
+          "name": "name",
+          "langType": "str",
+          "required": true
+        }
+      ]
+    },
+    "response": {
+      "typeName": "AdminApiKeyCreateResponse",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `organization.admin_api_key`"
+        },
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "langType": "Optional[str]",
+          "required": false,
+          "description": "The name of the API key"
+        },
+        {
+          "name": "redacted_value",
+          "langType": "str",
+          "required": true,
+          "description": "The redacted value of the API key"
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the API key was created"
+        },
+        {
+          "name": "last_used_at",
+          "langType": "Optional[int]",
+          "required": false
+        },
+        {
+          "name": "owner",
+          "langType": "AdminApiKeyCreateResponseOwner",
+          "required": true,
+          "refTypeName": "AdminApiKeyCreateResponseOwner"
+        },
+        {
+          "name": "value",
+          "langType": "str",
+          "required": true,
+          "description": "The value of the API key. Only shown on create."
+        }
+      ]
+    }
+  }
+}

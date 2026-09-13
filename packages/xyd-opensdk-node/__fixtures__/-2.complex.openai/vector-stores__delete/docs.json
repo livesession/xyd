@@ -1,0 +1,33 @@
+{
+  "chain": [
+    "vector-stores"
+  ],
+  "action": "delete",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.vectorStores.delete(\"vector_store_id\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.vectorStores.delete(vectorStoreId): Promise<DeleteVectorStoreResponse>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "DeleteVectorStoreResponse",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "boolean",
+          "required": true
+        },
+        {
+          "name": "object",
+          "langType": "\"vector_store.deleted\"",
+          "required": true
+        }
+      ]
+    }
+  }
+}

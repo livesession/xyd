@@ -1,0 +1,133 @@
+{
+  "chain": [
+    "evals",
+    "runs"
+  ],
+  "action": "list",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.evals.runs.list(\"eval_id\", after=\"after\", limit=20, order=\"asc\", status=\"queued\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.evals.runs.list(eval_id, after=..., limit=..., order=..., status=...) -> CursorPage[EvalRun]",
+    "request": {
+      "fields": [
+        {
+          "name": "after",
+          "langType": "Optional[str]",
+          "required": false,
+          "description": "Identifier for the last run from the previous pagination request."
+        },
+        {
+          "name": "limit",
+          "langType": "Optional[int]",
+          "required": false,
+          "description": "Number of runs to retrieve."
+        },
+        {
+          "name": "order",
+          "langType": "Optional[EvalsRunsListOrder]",
+          "required": false,
+          "description": "Sort order for runs by timestamp. Use `asc` for ascending order or `desc` for descending order. Defaults to `asc`.",
+          "refTypeName": "EvalsRunsListOrder"
+        },
+        {
+          "name": "status",
+          "langType": "Optional[EvalsRunsListStatus]",
+          "required": false,
+          "description": "Filter runs by status. One of `queued` | `in_progress` | `failed` | `completed` | `canceled`.",
+          "refTypeName": "EvalsRunsListStatus"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "CursorPage[EvalRun]",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The type of the object. Always \"eval.run\"."
+        },
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "Unique identifier for the evaluation run."
+        },
+        {
+          "name": "eval_id",
+          "langType": "str",
+          "required": true,
+          "description": "The identifier of the associated evaluation."
+        },
+        {
+          "name": "status",
+          "langType": "str",
+          "required": true,
+          "description": "The status of the evaluation run."
+        },
+        {
+          "name": "model",
+          "langType": "str",
+          "required": true,
+          "description": "The model that is evaluated, if applicable."
+        },
+        {
+          "name": "name",
+          "langType": "str",
+          "required": true,
+          "description": "The name of the evaluation run."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the evaluation run was created."
+        },
+        {
+          "name": "report_url",
+          "langType": "str",
+          "required": true,
+          "description": "The URL to the rendered evaluation run report on the UI dashboard."
+        },
+        {
+          "name": "result_counts",
+          "langType": "EvalRunResultCounts",
+          "required": true,
+          "description": "Counters summarizing the outcomes of the evaluation run.",
+          "refTypeName": "EvalRunResultCounts"
+        },
+        {
+          "name": "per_model_usage",
+          "langType": "list[EvalRunPerModelUsageItem]",
+          "required": true,
+          "description": "Usage statistics for each model during the evaluation run."
+        },
+        {
+          "name": "per_testing_criteria_results",
+          "langType": "list[EvalRunPerTestingCriteriaResultsItem]",
+          "required": true,
+          "description": "Results per testing criteria applied during the evaluation run."
+        },
+        {
+          "name": "data_source",
+          "langType": "EvalRunDataSource",
+          "required": true,
+          "description": "Information about the run's data source.",
+          "refTypeName": "EvalRunDataSource"
+        },
+        {
+          "name": "metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        },
+        {
+          "name": "error",
+          "langType": "EvalApiError",
+          "required": true,
+          "refTypeName": "EvalApiError"
+        }
+      ]
+    }
+  }
+}

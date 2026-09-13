@@ -1,0 +1,38 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "groups"
+  ],
+  "action": "delete",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.admin.organization.groups.delete(\"group_id\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.admin.organization.groups.delete(groupId): Promise<GroupDeletedResource>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "GroupDeletedResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"group.deleted\"",
+          "required": true,
+          "description": "Always `group.deleted`."
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the deleted group."
+        },
+        {
+          "name": "deleted",
+          "langType": "boolean",
+          "required": true,
+          "description": "Whether the group was deleted."
+        }
+      ]
+    }
+  }
+}

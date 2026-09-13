@@ -1,0 +1,18 @@
+{
+  "chain": [
+    "skills",
+    "versions"
+  ],
+  "action": "content",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.skills.versions.content(\"skill_123\", \"version\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.skills.versions.content(skill_id, version) -> str",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "str",
+      "langType": "str"
+    }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "chain": [
+    "skills",
+    "versions"
+  ],
+  "action": "delete",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.skills.versions.delete(\"skill_123\", \"version\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.skills.versions.delete(skillId, version): Promise<DeletedSkillVersionResource>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "DeletedSkillVersionResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"skill.version.deleted\"",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "boolean",
+          "required": true
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "version",
+          "langType": "string",
+          "required": true,
+          "description": "The deleted skill version."
+        }
+      ]
+    }
+  }
+}

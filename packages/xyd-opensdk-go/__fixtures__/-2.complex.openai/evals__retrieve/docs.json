@@ -1,0 +1,61 @@
+{
+  "chain": [
+    "evals"
+  ],
+  "action": "retrieve",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Evals.Get(context.TODO(), \"eval_id\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Evals.Get(ctx, evalID) (*Eval, error)",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Eval",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type."
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "Unique identifier for the evaluation."
+        },
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": true,
+          "description": "The name of the evaluation."
+        },
+        {
+          "name": "DataSourceConfig",
+          "langType": "EvalDataSourceConfig",
+          "required": true,
+          "description": "Configuration of data sources used in runs of the evaluation.",
+          "refTypeName": "EvalDataSourceConfig"
+        },
+        {
+          "name": "TestingCriteria",
+          "langType": "[]EvalTestingCriteriaItem",
+          "required": true,
+          "description": "A list of testing criteria."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the eval was created."
+        },
+        {
+          "name": "Metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        }
+      ]
+    }
+  }
+}

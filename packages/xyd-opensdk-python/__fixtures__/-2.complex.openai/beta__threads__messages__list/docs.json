@@ -1,0 +1,134 @@
+{
+  "chain": [
+    "beta",
+    "threads",
+    "messages"
+  ],
+  "action": "list",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.beta.threads.messages.list(\"thread_id\", limit=20, order=\"asc\", after=\"after\", before=\"before\", run_id=\"run_id\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.beta.threads.messages.list(thread_id, limit=..., order=..., after=..., before=..., run_id=...) -> CursorPage[MessageObject]",
+    "request": {
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "Optional[int]",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "order",
+          "langType": "Optional[BetaThreadsMessagesListOrder]",
+          "required": false,
+          "description": "Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc` for descending order.\n",
+          "refTypeName": "BetaThreadsMessagesListOrder"
+        },
+        {
+          "name": "after",
+          "langType": "Optional[str]",
+          "required": false,
+          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+        },
+        {
+          "name": "before",
+          "langType": "Optional[str]",
+          "required": false,
+          "description": "A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.\n"
+        },
+        {
+          "name": "run_id",
+          "langType": "Optional[str]",
+          "required": false,
+          "description": "Filter messages by the run ID that generated them.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "CursorPage[MessageObject]",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `thread.message`."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the message was created."
+        },
+        {
+          "name": "thread_id",
+          "langType": "str",
+          "required": true,
+          "description": "The [thread](/docs/api-reference/threads) ID that this message belongs to."
+        },
+        {
+          "name": "status",
+          "langType": "MessageObjectStatus",
+          "required": true,
+          "description": "The status of the message, which can be either `in_progress`, `incomplete`, or `completed`.",
+          "refTypeName": "MessageObjectStatus"
+        },
+        {
+          "name": "incomplete_details",
+          "langType": "Optional[MessageObjectIncompleteDetails]",
+          "required": true,
+          "refTypeName": "MessageObjectIncompleteDetails"
+        },
+        {
+          "name": "completed_at",
+          "langType": "Optional[int]",
+          "required": true
+        },
+        {
+          "name": "incomplete_at",
+          "langType": "Optional[int]",
+          "required": true
+        },
+        {
+          "name": "role",
+          "langType": "MessageObjectRole",
+          "required": true,
+          "description": "The entity that produced the message. One of `user` or `assistant`.",
+          "refTypeName": "MessageObjectRole"
+        },
+        {
+          "name": "content",
+          "langType": "list[MessageObjectContentItem]",
+          "required": true,
+          "description": "The content of the message in array of text and/or images."
+        },
+        {
+          "name": "assistant_id",
+          "langType": "Optional[str]",
+          "required": true
+        },
+        {
+          "name": "run_id",
+          "langType": "Optional[str]",
+          "required": true
+        },
+        {
+          "name": "attachments",
+          "langType": "Optional[list[MessageObjectAttachmentsItem]]",
+          "required": true
+        },
+        {
+          "name": "metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        }
+      ]
+    }
+  }
+}

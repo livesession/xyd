@@ -1,0 +1,36 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "api-keys"
+  ],
+  "action": "delete",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.admin.organization.projects.api_keys.delete(\"project_id\", \"api_key_id\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.admin.organization.projects.api_keys.delete(project_id, api_key_id) -> ProjectApiKeyDeleteResponse",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "ProjectApiKeyDeleteResponse",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true
+        },
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "bool",
+          "required": true
+        }
+      ]
+    }
+  }
+}

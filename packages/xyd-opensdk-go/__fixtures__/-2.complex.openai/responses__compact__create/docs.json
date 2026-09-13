@@ -1,0 +1,91 @@
+{
+  "chain": [
+    "responses",
+    "compact"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Responses.Compact.New(\n\t\tcontext.TODO(),\n\t\topenai.ResponseCompactNewParams{\n\t\t\tModel: \"string\",\n\t\t\tInput: \"string\",\n\t\t\tPreviousResponseID: param.NewOpt[string](\"string\"),\n\t\t\tInstructions: param.NewOpt[string](\"string\"),\n\t\t\tPromptCacheKey: param.NewOpt[string](\"string\"),\n\t\t\tPromptCacheRetention: openai.PromptCacheRetentionEnumInMemory,\n\t\t\tServiceTier: openai.ServiceTierEnumAuto,\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Responses.Compact.New(ctx, body) (*CompactResource, error)",
+    "request": {
+      "typeName": "ResponseCompactNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "Model",
+          "langType": "ModelIdsCompaction",
+          "required": true,
+          "refTypeName": "ModelIdsCompaction"
+        },
+        {
+          "name": "Input",
+          "langType": "CompactResponseMethodPublicBodyInput",
+          "required": false,
+          "refTypeName": "CompactResponseMethodPublicBodyInput"
+        },
+        {
+          "name": "PreviousResponseID",
+          "langType": "param.Opt[string]",
+          "required": false
+        },
+        {
+          "name": "Instructions",
+          "langType": "param.Opt[string]",
+          "required": false
+        },
+        {
+          "name": "PromptCacheKey",
+          "langType": "param.Opt[string]",
+          "required": false
+        },
+        {
+          "name": "PromptCacheRetention",
+          "langType": "PromptCacheRetentionEnum",
+          "required": false,
+          "refTypeName": "PromptCacheRetentionEnum"
+        },
+        {
+          "name": "ServiceTier",
+          "langType": "ServiceTierEnum",
+          "required": false,
+          "refTypeName": "ServiceTierEnum"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "CompactResource",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The unique identifier for the compacted response."
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type. Always `response.compaction`."
+        },
+        {
+          "name": "Output",
+          "langType": "[]ItemField",
+          "required": true,
+          "description": "The compacted list of output items."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the compacted conversation was created."
+        },
+        {
+          "name": "Usage",
+          "langType": "ResponseUsage",
+          "required": true,
+          "refTypeName": "ResponseUsage"
+        }
+      ]
+    }
+  }
+}

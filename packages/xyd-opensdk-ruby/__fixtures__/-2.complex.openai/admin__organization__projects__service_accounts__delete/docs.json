@@ -1,0 +1,36 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "service-accounts"
+  ],
+  "action": "delete",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.admin.organization.projects.service_accounts.delete(\"project_id\", \"service_account_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.admin.organization.projects.service_accounts.delete(project_id, service_account_id) -> Models::ProjectServiceAccountDeleteResponse",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::ProjectServiceAccountDeleteResponse",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true
+        },
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "Boolean",
+          "required": true
+        }
+      ]
+    }
+  }
+}

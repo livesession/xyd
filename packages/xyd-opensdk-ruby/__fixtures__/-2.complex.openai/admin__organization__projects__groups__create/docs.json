@@ -1,0 +1,70 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "groups"
+  ],
+  "action": "create",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.admin.organization.projects.groups.create(\"project_id\", group_id: \"string\", role: \"string\")\npp result\n",
+  "typeReference": {
+    "signature": "client.admin.organization.projects.groups.create(project_id, group_id:, role:) -> Models::ProjectGroup",
+    "request": {
+      "fields": [
+        {
+          "name": "group_id",
+          "langType": "String",
+          "required": true,
+          "description": "Identifier of the group to add to the project."
+        },
+        {
+          "name": "role",
+          "langType": "String",
+          "required": true,
+          "description": "Identifier of the project role to grant to the group."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Models::ProjectGroup",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "Always `project.group`."
+        },
+        {
+          "name": "project_id",
+          "langType": "String",
+          "required": true,
+          "description": "Identifier of the project."
+        },
+        {
+          "name": "group_id",
+          "langType": "String",
+          "required": true,
+          "description": "Identifier of the group that has access to the project."
+        },
+        {
+          "name": "group_name",
+          "langType": "String",
+          "required": true,
+          "description": "Display name of the group."
+        },
+        {
+          "name": "group_type",
+          "langType": "String",
+          "required": true,
+          "description": "The type of the group."
+        },
+        {
+          "name": "created_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the group was granted project access."
+        }
+      ]
+    }
+  }
+}

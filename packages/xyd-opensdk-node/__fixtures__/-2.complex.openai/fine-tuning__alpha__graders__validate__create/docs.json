@@ -1,0 +1,38 @@
+{
+  "chain": [
+    "fine-tuning",
+    "alpha",
+    "graders",
+    "validate"
+  ],
+  "action": "create",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.fineTuning.alpha.graders.validate.create({ grader: { type: \"string_check\", name: \"string\", input: \"string\", reference: \"string\", operation: \"eq\" } });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.fineTuning.alpha.graders.validate.create(body): Promise<ValidateGraderResponse>",
+    "request": {
+      "typeName": "FineTuningAlphaGraderValidateCreateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "grader",
+          "langType": "ValidateGraderRequestGrader",
+          "required": true,
+          "description": "The grader used for the fine-tuning job.",
+          "refTypeName": "ValidateGraderRequestGrader"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ValidateGraderResponse",
+      "fields": [
+        {
+          "name": "grader",
+          "langType": "ValidateGraderRequestGrader",
+          "required": false,
+          "description": "The grader used for the fine-tuning job.",
+          "refTypeName": "ValidateGraderRequestGrader"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "chain": [
+    "skills"
+  ],
+  "action": "content",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.skills.content(\"skill_123\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.skills.content(skillId): Promise<string>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "string",
+      "langType": "string"
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "groups"
+  ],
+  "action": "list",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.admin.organization.projects.groups.list(\"project_id\", limit=20, after=\"after\", order=\"asc\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.admin.organization.projects.groups.list(project_id, limit=..., after=..., order=...) -> CursorPage[ProjectGroup]",
+    "request": {
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "Optional[int]",
+          "required": false,
+          "description": "A limit on the number of project groups to return. Defaults to 20."
+        },
+        {
+          "name": "after",
+          "langType": "Optional[str]",
+          "required": false,
+          "description": "Cursor for pagination. Provide the ID of the last group from the previous response to fetch the next page."
+        },
+        {
+          "name": "order",
+          "langType": "Optional[AdminOrganizationProjectsGroupsListOrder]",
+          "required": false,
+          "description": "Sort order for the returned groups.",
+          "refTypeName": "AdminOrganizationProjectsGroupsListOrder"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "CursorPage[ProjectGroup]",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "Always `project.group`."
+        },
+        {
+          "name": "project_id",
+          "langType": "str",
+          "required": true,
+          "description": "Identifier of the project."
+        },
+        {
+          "name": "group_id",
+          "langType": "str",
+          "required": true,
+          "description": "Identifier of the group that has access to the project."
+        },
+        {
+          "name": "group_name",
+          "langType": "str",
+          "required": true,
+          "description": "Display name of the group."
+        },
+        {
+          "name": "group_type",
+          "langType": "str",
+          "required": true,
+          "description": "The type of the group."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the group was granted project access."
+        }
+      ]
+    }
+  }
+}

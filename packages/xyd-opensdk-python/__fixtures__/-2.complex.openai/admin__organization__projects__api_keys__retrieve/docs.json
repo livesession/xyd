@@ -1,0 +1,63 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "api-keys"
+  ],
+  "action": "retrieve",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.admin.organization.projects.api_keys.retrieve(\"project_id\", \"api_key_id\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.admin.organization.projects.api_keys.retrieve(project_id, api_key_id) -> ProjectApiKey",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "ProjectApiKey",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `organization.project.api_key`"
+        },
+        {
+          "name": "redacted_value",
+          "langType": "str",
+          "required": true,
+          "description": "The redacted value of the API key"
+        },
+        {
+          "name": "name",
+          "langType": "str",
+          "required": true,
+          "description": "The name of the API key"
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the API key was created"
+        },
+        {
+          "name": "last_used_at",
+          "langType": "Optional[int]",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the API key was last used."
+        },
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "owner",
+          "langType": "ProjectApiKeyOwner",
+          "required": true,
+          "refTypeName": "ProjectApiKeyOwner"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "chain": [
+    "responses",
+    "input-items"
+  ],
+  "action": "list",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.responses.inputItems.list(\"response_id\", { limit: 20, order: \"asc\", after: \"after\", include: [\"file_search_call.results\"] });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.responses.inputItems.list(responseId, query?): Promise<CursorPage<ItemResource>>",
+    "request": {
+      "typeName": "ResponseInputItemListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "number",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between\n1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "order",
+          "langType": "ResponsesInputItemsListOrder",
+          "required": false,
+          "description": "The order to return the input items in. Default is `desc`.\n- `asc`: Return the input items in ascending order.\n- `desc`: Return the input items in descending order.\n",
+          "refTypeName": "ResponsesInputItemsListOrder"
+        },
+        {
+          "name": "after",
+          "langType": "string",
+          "required": false,
+          "description": "An item ID to list items after, used in pagination.\n"
+        },
+        {
+          "name": "include",
+          "langType": "IncludeEnum[]",
+          "required": false,
+          "description": "Additional fields to include in the response. See the `include`\nparameter for Response creation above for more information.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ItemResource",
+      "langType": "ItemResource",
+      "note": "paginated (CursorPage)"
+    }
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "chain": [
+    "evals",
+    "runs",
+    "output-items"
+  ],
+  "action": "retrieve",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Evals.Runs.OutputItems.Get(context.TODO(), \"eval_id\", \"run_id\", \"output_item_id\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Evals.Runs.OutputItems.Get(ctx, evalID, runID, outputItemID) (*EvalRunOutputItem, error)",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "EvalRunOutputItem",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The type of the object. Always \"eval.run.output_item\"."
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "Unique identifier for the evaluation run output item."
+        },
+        {
+          "name": "RunID",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier of the evaluation run associated with this output item."
+        },
+        {
+          "name": "EvalID",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier of the evaluation group."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the evaluation run was created."
+        },
+        {
+          "name": "Status",
+          "langType": "string",
+          "required": true,
+          "description": "The status of the evaluation run."
+        },
+        {
+          "name": "DatasourceItemID",
+          "langType": "int64",
+          "required": true,
+          "description": "The identifier for the data source item."
+        },
+        {
+          "name": "DatasourceItem",
+          "langType": "map[string]any",
+          "required": true,
+          "description": "Details of the input data source item."
+        },
+        {
+          "name": "Results",
+          "langType": "[]EvalRunOutputItemResult",
+          "required": true,
+          "description": "A list of grader results for this output item."
+        },
+        {
+          "name": "Sample",
+          "langType": "EvalRunOutputItemSample",
+          "required": true,
+          "description": "A sample containing the input and output of the evaluation run.",
+          "refTypeName": "EvalRunOutputItemSample"
+        }
+      ]
+    }
+  }
+}

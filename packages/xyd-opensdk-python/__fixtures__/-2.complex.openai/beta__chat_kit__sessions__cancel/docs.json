@@ -1,0 +1,80 @@
+{
+  "chain": [
+    "beta",
+    "chat-kit",
+    "sessions"
+  ],
+  "action": "cancel",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.beta.chat_kit.sessions.cancel(\"cksess_123\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.beta.chat_kit.sessions.cancel(session_id) -> ChatSessionResource",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "ChatSessionResource",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "Identifier for the ChatKit session."
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "Type discriminator that is always `chatkit.session`."
+        },
+        {
+          "name": "expires_at",
+          "langType": "int",
+          "required": true,
+          "description": "Unix timestamp (in seconds) for when the session expires."
+        },
+        {
+          "name": "client_secret",
+          "langType": "str",
+          "required": true,
+          "description": "Ephemeral client secret that authenticates session requests."
+        },
+        {
+          "name": "workflow",
+          "langType": "ChatkitWorkflow",
+          "required": true,
+          "refTypeName": "ChatkitWorkflow"
+        },
+        {
+          "name": "user",
+          "langType": "str",
+          "required": true,
+          "description": "User identifier associated with the session."
+        },
+        {
+          "name": "rate_limits",
+          "langType": "ChatSessionRateLimits",
+          "required": true,
+          "refTypeName": "ChatSessionRateLimits"
+        },
+        {
+          "name": "max_requests_per_1_minute",
+          "langType": "int",
+          "required": true,
+          "description": "Convenience copy of the per-minute request limit."
+        },
+        {
+          "name": "status",
+          "langType": "ChatSessionStatus",
+          "required": true,
+          "refTypeName": "ChatSessionStatus"
+        },
+        {
+          "name": "chatkit_configuration",
+          "langType": "ChatSessionChatkitConfiguration",
+          "required": true,
+          "refTypeName": "ChatSessionChatkitConfiguration"
+        }
+      ]
+    }
+  }
+}

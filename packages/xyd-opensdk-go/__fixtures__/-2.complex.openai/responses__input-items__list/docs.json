@@ -1,0 +1,47 @@
+{
+  "chain": [
+    "responses",
+    "input-items"
+  ],
+  "action": "list",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Responses.InputItems.List(\n\t\tcontext.TODO(),\n\t\t\"response_id\",\n\t\topenai.ResponseInputItemListParams{\n\t\t\tLimit: param.NewOpt[int64](20),\n\t\t\tOrder: param.NewOpt[openai.ResponsesInputItemsListOrder](openai.ResponsesInputItemsListOrderAsc),\n\t\t\tAfter: param.NewOpt[string](\"after\"),\n\t\t\tInclude: []openai.IncludeEnum{openai.IncludeEnumFileSearchCallResults},\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Responses.InputItems.List(ctx, responseID, query) (*pagination.CursorPage[ItemResource], error)",
+    "request": {
+      "typeName": "ResponseInputItemListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "Limit",
+          "langType": "param.Opt[int64]",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between\n1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "Order",
+          "langType": "param.Opt[ResponsesInputItemsListOrder]",
+          "required": false,
+          "description": "The order to return the input items in. Default is `desc`.\n- `asc`: Return the input items in ascending order.\n- `desc`: Return the input items in descending order.\n",
+          "refTypeName": "ResponsesInputItemsListOrder"
+        },
+        {
+          "name": "After",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "An item ID to list items after, used in pagination.\n"
+        },
+        {
+          "name": "Include",
+          "langType": "[]IncludeEnum",
+          "required": false,
+          "description": "Additional fields to include in the response. See the `include`\nparameter for Response creation above for more information.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ItemResource",
+      "langType": "ItemResource",
+      "note": "paginated (pagination.CursorPage)"
+    }
+  }
+}

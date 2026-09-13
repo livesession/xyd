@@ -1,0 +1,67 @@
+{
+  "chain": [
+    "skills"
+  ],
+  "action": "update",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.skills.update(\"skill_123\", default_version=\"string\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.skills.update(skill_id, default_version) -> SkillResource",
+    "request": {
+      "fields": [
+        {
+          "name": "default_version",
+          "langType": "str",
+          "required": true,
+          "description": "The skill version number to set as default."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "SkillResource",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "Unique identifier for the skill."
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is `skill`."
+        },
+        {
+          "name": "name",
+          "langType": "str",
+          "required": true,
+          "description": "Name of the skill."
+        },
+        {
+          "name": "description",
+          "langType": "str",
+          "required": true,
+          "description": "Description of the skill."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "Unix timestamp (seconds) for when the skill was created."
+        },
+        {
+          "name": "default_version",
+          "langType": "str",
+          "required": true,
+          "description": "Default version for the skill."
+        },
+        {
+          "name": "latest_version",
+          "langType": "str",
+          "required": true,
+          "description": "Latest version for the skill."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "chain": [
+    "evals"
+  ],
+  "action": "delete",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.evals.delete(\"eval_id\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.evals.delete(evalId): Promise<EvalsDeleteResponse>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "EvalsDeleteResponse",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "boolean",
+          "required": true
+        },
+        {
+          "name": "eval_id",
+          "langType": "string",
+          "required": true
+        }
+      ]
+    }
+  }
+}

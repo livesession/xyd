@@ -1,0 +1,34 @@
+{
+  "chain": [
+    "beta",
+    "assistants"
+  ],
+  "action": "delete",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Beta.Assistants.Delete(context.TODO(), \"assistant_id\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Beta.Assistants.Delete(ctx, assistantID) (*DeleteAssistantResponse, error)",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "DeleteAssistantResponse",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "Deleted",
+          "langType": "bool",
+          "required": true
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true
+        }
+      ]
+    }
+  }
+}

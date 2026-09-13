@@ -1,0 +1,79 @@
+{
+  "chain": [
+    "fine-tuning",
+    "jobs",
+    "checkpoints"
+  ],
+  "action": "list",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.fineTuning.jobs.checkpoints.list(\"ft-AF1WoRqd3aJAHsqc9NY7iL8F\", { after: \"after\", limit: 10 });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.fineTuning.jobs.checkpoints.list(fineTuningJobId, query?): Promise<CursorPage<FineTuningJobCheckpoint>>",
+    "request": {
+      "typeName": "FineTuningJobCheckpointListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "after",
+          "langType": "string",
+          "required": false,
+          "description": "Identifier for the last checkpoint ID from the previous pagination request."
+        },
+        {
+          "name": "limit",
+          "langType": "number",
+          "required": false,
+          "description": "Number of checkpoints to retrieve."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "FineTuningJobCheckpoint",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "The checkpoint identifier, which can be referenced in the API endpoints."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the checkpoint was created."
+        },
+        {
+          "name": "fine_tuned_model_checkpoint",
+          "langType": "string",
+          "required": true,
+          "description": "The name of the fine-tuned checkpoint model that is created."
+        },
+        {
+          "name": "step_number",
+          "langType": "number",
+          "required": true,
+          "description": "The step number that the checkpoint was created at."
+        },
+        {
+          "name": "metrics",
+          "langType": "FineTuningJobCheckpointMetrics",
+          "required": true,
+          "description": "Metrics at the step number during the fine-tuning job.",
+          "refTypeName": "FineTuningJobCheckpointMetrics"
+        },
+        {
+          "name": "fine_tuning_job_id",
+          "langType": "string",
+          "required": true,
+          "description": "The name of the fine-tuning job that this checkpoint was created from."
+        },
+        {
+          "name": "object",
+          "langType": "\"fine_tuning.job.checkpoint\"",
+          "required": true,
+          "description": "The object type, which is always \"fine_tuning.job.checkpoint\"."
+        }
+      ]
+    }
+  }
+}

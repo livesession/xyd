@@ -1,0 +1,138 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "users"
+  ],
+  "action": "list",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.admin.organization.users.list(limit: 20, after: \"after\", emails: [\"string\"])\npp result\n",
+  "typeReference": {
+    "signature": "client.admin.organization.users.list(limit: nil, after: nil, emails: nil) -> Page<Models::User>",
+    "request": {
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "Integer",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "after",
+          "langType": "String",
+          "required": false,
+          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+        },
+        {
+          "name": "emails",
+          "langType": "Array<String>",
+          "required": false,
+          "description": "Filter by the email address of users."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Page<Models::User>",
+      "note": "paginated (Page)",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The object type, which is always `organization.user`"
+        },
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "langType": "String",
+          "required": false,
+          "description": "The name of the user"
+        },
+        {
+          "name": "email",
+          "langType": "String",
+          "required": false,
+          "description": "The email address of the user"
+        },
+        {
+          "name": "role",
+          "langType": "String",
+          "required": false,
+          "description": "`owner` or `reader`"
+        },
+        {
+          "name": "added_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the user was added."
+        },
+        {
+          "name": "is_default",
+          "langType": "Boolean",
+          "required": false,
+          "description": "Whether this is the organization's default user."
+        },
+        {
+          "name": "created",
+          "langType": "Integer",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the user was created."
+        },
+        {
+          "name": "user",
+          "langType": "Models::UserUser",
+          "required": false,
+          "description": "Nested user details.",
+          "refTypeName": "UserUser"
+        },
+        {
+          "name": "is_service_account",
+          "langType": "Boolean",
+          "required": false,
+          "description": "Whether the user is a service account."
+        },
+        {
+          "name": "is_scale_tier_authorized_purchaser",
+          "langType": "Boolean",
+          "required": false,
+          "description": "Whether the user is an authorized purchaser for Scale Tier."
+        },
+        {
+          "name": "is_scim_managed",
+          "langType": "Boolean",
+          "required": false,
+          "description": "Whether the user is managed through SCIM."
+        },
+        {
+          "name": "api_key_last_used_at",
+          "langType": "Integer",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of the user's last API key usage."
+        },
+        {
+          "name": "technical_level",
+          "langType": "String",
+          "required": false,
+          "description": "The technical level metadata for the user."
+        },
+        {
+          "name": "developer_persona",
+          "langType": "String",
+          "required": false,
+          "description": "The developer persona metadata for the user."
+        },
+        {
+          "name": "projects",
+          "langType": "Models::UserProjects",
+          "required": false,
+          "description": "Projects associated with the user, if included.",
+          "refTypeName": "UserProjects"
+        }
+      ]
+    }
+  }
+}

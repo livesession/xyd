@@ -1,0 +1,33 @@
+{
+  "chain": [
+    "models"
+  ],
+  "action": "delete",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.models.delete(\"ft:gpt-4o-mini:acemeco:suffix:abc123\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.models.delete(model): Promise<DeleteModelResponse>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "DeleteModelResponse",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "boolean",
+          "required": true
+        },
+        {
+          "name": "object",
+          "langType": "string",
+          "required": true
+        }
+      ]
+    }
+  }
+}

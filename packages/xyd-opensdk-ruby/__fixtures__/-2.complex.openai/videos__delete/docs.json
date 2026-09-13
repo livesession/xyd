@@ -1,0 +1,36 @@
+{
+  "chain": [
+    "videos"
+  ],
+  "action": "delete",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.videos.delete(\"video_123\")\npp result\n",
+  "typeReference": {
+    "signature": "client.videos.delete(video_id) -> Models::DeletedVideoResource",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::DeletedVideoResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The object type that signals the deletion response."
+        },
+        {
+          "name": "deleted",
+          "langType": "Boolean",
+          "required": true,
+          "description": "Indicates that the video resource was deleted."
+        },
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "Identifier of the deleted video."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "chain": [
+    "projects",
+    "roles"
+  ],
+  "action": "create",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.projects.roles.create(\"project_id\", role_name: \"string\", permissions: [\"string\"], description: \"string\")\npp result\n",
+  "typeReference": {
+    "signature": "client.projects.roles.create(project_id, role_name:, permissions:, description: nil) -> Models::Role",
+    "request": {
+      "fields": [
+        {
+          "name": "role_name",
+          "langType": "String",
+          "required": true,
+          "description": "Unique name for the role."
+        },
+        {
+          "name": "permissions",
+          "langType": "Array<String>",
+          "required": true,
+          "description": "Permissions to grant to the role."
+        },
+        {
+          "name": "description",
+          "langType": "String",
+          "required": false,
+          "description": "Optional description of the role."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Models::Role",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "Always `role`."
+        },
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "Identifier for the role."
+        },
+        {
+          "name": "name",
+          "langType": "String",
+          "required": true,
+          "description": "Unique name for the role."
+        },
+        {
+          "name": "description",
+          "langType": "String",
+          "required": true,
+          "description": "Optional description of the role."
+        },
+        {
+          "name": "permissions",
+          "langType": "Array<String>",
+          "required": true,
+          "description": "Permissions granted by the role."
+        },
+        {
+          "name": "resource_type",
+          "langType": "String",
+          "required": true,
+          "description": "Resource type the role is bound to (for example `api.organization` or `api.project`)."
+        },
+        {
+          "name": "predefined_role",
+          "langType": "Boolean",
+          "required": true,
+          "description": "Whether the role is predefined and managed by OpenAI."
+        }
+      ]
+    }
+  }
+}

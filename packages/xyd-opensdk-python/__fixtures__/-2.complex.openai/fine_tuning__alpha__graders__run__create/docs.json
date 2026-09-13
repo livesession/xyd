@@ -1,0 +1,62 @@
+{
+  "chain": [
+    "fine-tuning",
+    "alpha",
+    "graders",
+    "run"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.fine_tuning.alpha.graders.run.create(grader={\"type\": \"string_check\", \"name\": \"string\", \"input\": \"string\", \"reference\": \"string\", \"operation\": \"eq\"}, model_sample=\"string\", item={\"key\": None})\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.fine_tuning.alpha.graders.run.create(grader, item=..., model_sample) -> RunGraderResponse",
+    "request": {
+      "fields": [
+        {
+          "name": "grader",
+          "langType": "RunGraderRequestGrader",
+          "required": true,
+          "description": "The grader used for the fine-tuning job.",
+          "refTypeName": "RunGraderRequestGrader"
+        },
+        {
+          "name": "item",
+          "langType": "Optional[dict[str, Any]]",
+          "required": false,
+          "description": "The dataset item provided to the grader. This will be used to populate \nthe `item` namespace. See [the guide](/docs/guides/graders) for more details. \n"
+        },
+        {
+          "name": "model_sample",
+          "langType": "str",
+          "required": true,
+          "description": "The model sample to be evaluated. This value will be used to populate \nthe `sample` namespace. See [the guide](/docs/guides/graders) for more details.\nThe `output_json` variable will be populated if the model sample is a \nvalid JSON string.\n \n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "RunGraderResponse",
+      "fields": [
+        {
+          "name": "reward",
+          "langType": "float",
+          "required": true
+        },
+        {
+          "name": "metadata",
+          "langType": "RunGraderResponseMetadata",
+          "required": true,
+          "refTypeName": "RunGraderResponseMetadata"
+        },
+        {
+          "name": "sub_rewards",
+          "langType": "dict[str, Any]",
+          "required": true
+        },
+        {
+          "name": "model_grader_token_usage_per_model",
+          "langType": "dict[str, Any]",
+          "required": true
+        }
+      ]
+    }
+  }
+}

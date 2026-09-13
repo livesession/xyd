@@ -1,0 +1,34 @@
+{
+  "chain": [
+    "beta",
+    "assistants"
+  ],
+  "action": "delete",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.beta.assistants.delete(\"assistant_id\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.beta.assistants.delete(assistantId): Promise<DeleteAssistantResponse>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "DeleteAssistantResponse",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "boolean",
+          "required": true
+        },
+        {
+          "name": "object",
+          "langType": "\"assistant.deleted\"",
+          "required": true
+        }
+      ]
+    }
+  }
+}

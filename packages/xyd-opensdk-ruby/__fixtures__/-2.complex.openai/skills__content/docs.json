@@ -1,0 +1,17 @@
+{
+  "chain": [
+    "skills"
+  ],
+  "action": "content",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.skills.content(\"skill_123\")\npp result\n",
+  "typeReference": {
+    "signature": "client.skills.content(skill_id) -> String",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "String",
+      "langType": "String"
+    }
+  }
+}

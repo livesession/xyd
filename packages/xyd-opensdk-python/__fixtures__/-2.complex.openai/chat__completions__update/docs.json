@@ -1,0 +1,75 @@
+{
+  "chain": [
+    "chat",
+    "completions"
+  ],
+  "action": "update",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.chat.completions.update(\"completion_id\", metadata={\"key\": \"string\"})\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.chat.completions.update(completion_id, metadata) -> CreateChatCompletionResponse",
+    "request": {
+      "fields": [
+        {
+          "name": "metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "CreateChatCompletionResponse",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "A unique identifier for the chat completion."
+        },
+        {
+          "name": "choices",
+          "langType": "list[CreateChatCompletionResponseChoicesItem]",
+          "required": true,
+          "description": "A list of chat completion choices. Can be more than one if `n` is greater than 1."
+        },
+        {
+          "name": "created",
+          "langType": "int",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the chat completion was created."
+        },
+        {
+          "name": "model",
+          "langType": "str",
+          "required": true,
+          "description": "The model used for the chat completion."
+        },
+        {
+          "name": "service_tier",
+          "langType": "ServiceTier",
+          "required": false,
+          "refTypeName": "ServiceTier"
+        },
+        {
+          "name": "system_fingerprint",
+          "langType": "str",
+          "required": false,
+          "description": "This fingerprint represents the backend configuration that the model runs with.\n\nCan be used in conjunction with the `seed` request parameter to understand when backend changes have been made that might impact determinism.\n",
+          "deprecated": true
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `chat.completion`."
+        },
+        {
+          "name": "usage",
+          "langType": "CompletionUsage",
+          "required": false,
+          "refTypeName": "CompletionUsage"
+        }
+      ]
+    }
+  }
+}

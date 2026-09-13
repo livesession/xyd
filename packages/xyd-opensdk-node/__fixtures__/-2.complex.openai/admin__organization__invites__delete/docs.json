@@ -1,0 +1,36 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "invites"
+  ],
+  "action": "delete",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.admin.organization.invites.delete(\"invite_id\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.admin.organization.invites.delete(inviteId): Promise<InviteDeleteResponse>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "InviteDeleteResponse",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"organization.invite.deleted\"",
+          "required": true,
+          "description": "The object type, which is always `organization.invite.deleted`"
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "boolean",
+          "required": true
+        }
+      ]
+    }
+  }
+}

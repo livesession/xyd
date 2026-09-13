@@ -1,0 +1,32 @@
+{
+  "chain": [
+    "projects",
+    "groups",
+    "roles"
+  ],
+  "action": "delete",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.projects.groups.roles.delete(\"project_id\", \"group_id\", \"role_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.projects.groups.roles.delete(project_id, group_id, role_id) -> Models::DeletedRoleAssignmentResource",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::DeletedRoleAssignmentResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "Identifier for the deleted assignment, such as `group.role.deleted` or `user.role.deleted`."
+        },
+        {
+          "name": "deleted",
+          "langType": "Boolean",
+          "required": true,
+          "description": "Whether the assignment was removed."
+        }
+      ]
+    }
+  }
+}

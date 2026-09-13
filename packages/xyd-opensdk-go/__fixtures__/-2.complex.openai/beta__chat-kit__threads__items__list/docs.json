@@ -1,0 +1,49 @@
+{
+  "chain": [
+    "beta",
+    "chat-kit",
+    "threads",
+    "items"
+  ],
+  "action": "list",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Beta.ChatKit.Threads.Items.List(\n\t\tcontext.TODO(),\n\t\t\"cthr_123\",\n\t\topenai.BetaChatKitThreadItemListParams{\n\t\t\tLimit: param.NewOpt[int64](1),\n\t\t\tOrder: param.NewOpt[openai.OrderEnum](openai.OrderEnumAsc),\n\t\t\tAfter: param.NewOpt[string](\"after\"),\n\t\t\tBefore: param.NewOpt[string](\"before\"),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Beta.ChatKit.Threads.Items.List(ctx, threadID, query) (*pagination.CursorPage[ThreadItem], error)",
+    "request": {
+      "typeName": "BetaChatKitThreadItemListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "Limit",
+          "langType": "param.Opt[int64]",
+          "required": false,
+          "description": "Maximum number of thread items to return. Defaults to 20."
+        },
+        {
+          "name": "Order",
+          "langType": "param.Opt[OrderEnum]",
+          "required": false,
+          "description": "Sort order for results by creation time. Defaults to `desc`.",
+          "refTypeName": "OrderEnum"
+        },
+        {
+          "name": "After",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "List items created after this thread item ID. Defaults to null for the first page."
+        },
+        {
+          "name": "Before",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "List items created before this thread item ID. Defaults to null for the newest results."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ThreadItem",
+      "langType": "ThreadItem",
+      "note": "paginated (pagination.CursorPage)"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "invites"
+  ],
+  "action": "delete",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Admin.Organization.Invites.Delete(context.TODO(), \"invite_id\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Admin.Organization.Invites.Delete(ctx, inviteID) (*InviteDeleteResponse, error)",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "InviteDeleteResponse",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always `organization.invite.deleted`"
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "Deleted",
+          "langType": "bool",
+          "required": true
+        }
+      ]
+    }
+  }
+}

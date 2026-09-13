@@ -1,0 +1,64 @@
+{
+  "chain": [
+    "beta",
+    "threads"
+  ],
+  "action": "update",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.beta.threads.update(\"thread_id\", { tool_resources: { code_interpreter: { file_ids: [\"string\"] }, file_search: { vector_store_ids: [\"string\"] } }, metadata: { key: \"string\" } });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.beta.threads.update(threadId, body): Promise<ThreadObject>",
+    "request": {
+      "typeName": "BetaThreadUpdateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "tool_resources",
+          "langType": "ModifyThreadRequestToolResources | null",
+          "required": false,
+          "refTypeName": "ModifyThreadRequestToolResources"
+        },
+        {
+          "name": "metadata",
+          "langType": "Metadata",
+          "required": false,
+          "refTypeName": "Metadata"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ThreadObject",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "object",
+          "langType": "\"thread\"",
+          "required": true,
+          "description": "The object type, which is always `thread`."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the thread was created."
+        },
+        {
+          "name": "tool_resources",
+          "langType": "ModifyThreadRequestToolResources | null",
+          "required": true,
+          "refTypeName": "ModifyThreadRequestToolResources"
+        },
+        {
+          "name": "metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "service-accounts"
+  ],
+  "action": "delete",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Admin.Organization.Projects.ServiceAccounts.Delete(context.TODO(), \"project_id\", \"service_account_id\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Admin.Organization.Projects.ServiceAccounts.Delete(ctx, projectID, serviceAccountID) (*ProjectServiceAccountDeleteResponse, error)",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "ProjectServiceAccountDeleteResponse",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "Deleted",
+          "langType": "bool",
+          "required": true
+        }
+      ]
+    }
+  }
+}

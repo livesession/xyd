@@ -1,0 +1,17 @@
+{
+  "chain": [
+    "catalog"
+  ],
+  "action": "browse",
+  "usage": "require \"extensions_demo\"\n\nclient = ExtensionsDemo::Client.new(api_key: ENV[\"EXTENSIONS_DEMO_API_KEY\"])\n\nresult = client.catalog.browse\npp result\n",
+  "typeReference": {
+    "signature": "client.catalog.browse() -> Array<Models::Thing>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Array<Models::Thing>",
+      "langType": "Array<Models::Thing>"
+    }
+  }
+}

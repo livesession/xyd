@@ -1,0 +1,84 @@
+{
+  "chain": [
+    "containers",
+    "files"
+  ],
+  "action": "list",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.containers.files.list(\"container_id\", { limit: 20, order: \"asc\", after: \"after\" });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.containers.files.list(containerId, query?): Promise<CursorPage<ContainerFileResource>>",
+    "request": {
+      "typeName": "ContainerFileListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "number",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "order",
+          "langType": "ContainersFilesListOrder",
+          "required": false,
+          "description": "Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc` for descending order.\n",
+          "refTypeName": "ContainersFilesListOrder"
+        },
+        {
+          "name": "after",
+          "langType": "string",
+          "required": false,
+          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ContainerFileResource",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "Unique identifier for the file."
+        },
+        {
+          "name": "object",
+          "langType": "string",
+          "required": true,
+          "description": "The type of this object (`container.file`)."
+        },
+        {
+          "name": "container_id",
+          "langType": "string",
+          "required": true,
+          "description": "The container this file belongs to."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the file was created."
+        },
+        {
+          "name": "bytes",
+          "langType": "number",
+          "required": true,
+          "description": "Size of the file in bytes."
+        },
+        {
+          "name": "path",
+          "langType": "string",
+          "required": true,
+          "description": "Path of the file in the container."
+        },
+        {
+          "name": "source",
+          "langType": "string",
+          "required": true,
+          "description": "Source of the file (e.g., `user`, `assistant`)."
+        }
+      ]
+    }
+  }
+}

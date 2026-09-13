@@ -1,0 +1,123 @@
+{
+  "chain": [
+    "vector-stores"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.VectorStores.New(\n\t\tcontext.TODO(),\n\t\topenai.VectorStoreNewParams{\n\t\t\tFileIds: []string{\"string\"},\n\t\t\tName: param.NewOpt[string](\"string\"),\n\t\t\tDescription: param.NewOpt[string](\"string\"),\n\t\t\tExpiresAfter: openai.VectorStoreExpirationAfter{Anchor: \"last_active_at\", Days: 1},\n\t\t\tChunkingStrategy: openai.AutoChunkingStrategyRequestParam{Type: \"auto\"},\n\t\t\tMetadata: map[string]string{\"key\": \"string\"},\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.VectorStores.New(ctx, body) (*VectorStoreObject, error)",
+    "request": {
+      "typeName": "VectorStoreNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "FileIds",
+          "langType": "[]string",
+          "required": false,
+          "description": "A list of [File](/docs/api-reference/files) IDs that the vector store should use. Useful for tools like `file_search` that can access files."
+        },
+        {
+          "name": "Name",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "The name of the vector store."
+        },
+        {
+          "name": "Description",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "A description for the vector store. Can be used to describe the vector store's purpose."
+        },
+        {
+          "name": "ExpiresAfter",
+          "langType": "VectorStoreExpirationAfter",
+          "required": false,
+          "refTypeName": "VectorStoreExpirationAfter"
+        },
+        {
+          "name": "ChunkingStrategy",
+          "langType": "CreateVectorStoreRequestChunkingStrategy",
+          "required": false,
+          "description": "The chunking strategy used to chunk the file(s). If not set, will use the `auto` strategy. Only applicable if `file_ids` is non-empty.",
+          "refTypeName": "CreateVectorStoreRequestChunkingStrategy"
+        },
+        {
+          "name": "Metadata",
+          "langType": "Metadata",
+          "required": false,
+          "refTypeName": "Metadata"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "VectorStoreObject",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always `vector_store`."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the vector store was created."
+        },
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": true,
+          "description": "The name of the vector store."
+        },
+        {
+          "name": "UsageBytes",
+          "langType": "int64",
+          "required": true,
+          "description": "The total number of bytes used by the files in the vector store."
+        },
+        {
+          "name": "FileCounts",
+          "langType": "VectorStoreObjectFileCounts",
+          "required": true,
+          "refTypeName": "VectorStoreObjectFileCounts"
+        },
+        {
+          "name": "Status",
+          "langType": "VectorStoreObjectStatus",
+          "required": true,
+          "description": "The status of the vector store, which can be either `expired`, `in_progress`, or `completed`. A status of `completed` indicates that the vector store is ready for use.",
+          "refTypeName": "VectorStoreObjectStatus"
+        },
+        {
+          "name": "ExpiresAfter",
+          "langType": "VectorStoreExpirationAfter",
+          "required": false,
+          "refTypeName": "VectorStoreExpirationAfter"
+        },
+        {
+          "name": "ExpiresAt",
+          "langType": "int64",
+          "required": false
+        },
+        {
+          "name": "LastActiveAt",
+          "langType": "int64",
+          "required": true
+        },
+        {
+          "name": "Metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        }
+      ]
+    }
+  }
+}

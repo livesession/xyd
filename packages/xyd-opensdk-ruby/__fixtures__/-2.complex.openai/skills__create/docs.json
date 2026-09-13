@@ -1,0 +1,67 @@
+{
+  "chain": [
+    "skills"
+  ],
+  "action": "create",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.skills.create(files: [StringIO.new(\"Example data\")])\npp result\n",
+  "typeReference": {
+    "signature": "client.skills.create(files:) -> Models::SkillResource",
+    "request": {
+      "fields": [
+        {
+          "name": "files",
+          "langType": "Models::CreateSkillBodyFiles",
+          "required": true,
+          "refTypeName": "CreateSkillBodyFiles"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Models::SkillResource",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "Unique identifier for the skill."
+        },
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The object type, which is `skill`."
+        },
+        {
+          "name": "name",
+          "langType": "String",
+          "required": true,
+          "description": "Name of the skill."
+        },
+        {
+          "name": "description",
+          "langType": "String",
+          "required": true,
+          "description": "Description of the skill."
+        },
+        {
+          "name": "created_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "Unix timestamp (seconds) for when the skill was created."
+        },
+        {
+          "name": "default_version",
+          "langType": "String",
+          "required": true,
+          "description": "Default version for the skill."
+        },
+        {
+          "name": "latest_version",
+          "langType": "String",
+          "required": true,
+          "description": "Latest version for the skill."
+        }
+      ]
+    }
+  }
+}

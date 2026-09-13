@@ -1,0 +1,40 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "certificates",
+    "activate"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Admin.Organization.Certificates.Activate.New(\n\t\tcontext.TODO(),\n\t\topenai.AdminOrganizationCertificateActivateNewParams{\n\t\t\tCertificateIds: []string{\"string\"},\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Admin.Organization.Certificates.Activate.New(ctx, body) (*OrganizationCertificateActivationResponse, error)",
+    "request": {
+      "typeName": "AdminOrganizationCertificateActivateNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "CertificateIds",
+          "langType": "[]string",
+          "required": true
+        }
+      ]
+    },
+    "response": {
+      "typeName": "OrganizationCertificateActivationResponse",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The organization certificate activation result type."
+        },
+        {
+          "name": "Data",
+          "langType": "[]OrganizationCertificate",
+          "required": true
+        }
+      ]
+    }
+  }
+}

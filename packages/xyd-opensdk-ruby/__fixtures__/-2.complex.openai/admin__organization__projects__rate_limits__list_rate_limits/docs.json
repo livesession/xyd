@@ -1,0 +1,95 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "rate-limits"
+  ],
+  "action": "list-rate-limits",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.admin.organization.projects.rate_limits.list_rate_limits(\"project_id\", limit: 100, after: \"after\", before: \"before\")\npp result\n",
+  "typeReference": {
+    "signature": "client.admin.organization.projects.rate_limits.list_rate_limits(project_id, limit: nil, after: nil, before: nil) -> Page<Models::ProjectRateLimit>",
+    "request": {
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "Integer",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. The default is 100.\n"
+        },
+        {
+          "name": "after",
+          "langType": "String",
+          "required": false,
+          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+        },
+        {
+          "name": "before",
+          "langType": "String",
+          "required": false,
+          "description": "A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, beginning with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Page<Models::ProjectRateLimit>",
+      "note": "paginated (Page)",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The object type, which is always `project.rate_limit`"
+        },
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "model",
+          "langType": "String",
+          "required": true,
+          "description": "The model this rate limit applies to."
+        },
+        {
+          "name": "max_requests_per_1_minute",
+          "langType": "Integer",
+          "required": true,
+          "description": "The maximum requests per minute."
+        },
+        {
+          "name": "max_tokens_per_1_minute",
+          "langType": "Integer",
+          "required": true,
+          "description": "The maximum tokens per minute."
+        },
+        {
+          "name": "max_images_per_1_minute",
+          "langType": "Integer",
+          "required": false,
+          "description": "The maximum images per minute. Only present for relevant models."
+        },
+        {
+          "name": "max_audio_megabytes_per_1_minute",
+          "langType": "Integer",
+          "required": false,
+          "description": "The maximum audio megabytes per minute. Only present for relevant models."
+        },
+        {
+          "name": "max_requests_per_1_day",
+          "langType": "Integer",
+          "required": false,
+          "description": "The maximum requests per day. Only present for relevant models."
+        },
+        {
+          "name": "batch_1_day_max_input_tokens",
+          "langType": "Integer",
+          "required": false,
+          "description": "The maximum batch input tokens per day. Only present for relevant models."
+        }
+      ]
+    }
+  }
+}

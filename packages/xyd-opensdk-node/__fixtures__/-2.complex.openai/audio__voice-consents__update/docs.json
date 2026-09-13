@@ -1,0 +1,58 @@
+{
+  "chain": [
+    "audio",
+    "voice-consents"
+  ],
+  "action": "update",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.audio.voiceConsents.update(\"consent_id\", { name: \"string\" });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.audio.voiceConsents.update(consentId, body): Promise<VoiceConsentResource>",
+    "request": {
+      "typeName": "AudioVoiceConsentUpdateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "name",
+          "langType": "string",
+          "required": true,
+          "description": "The updated label for this consent recording."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "VoiceConsentResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"audio.voice_consent\"",
+          "required": true,
+          "description": "The object type, which is always `audio.voice_consent`."
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "The consent recording identifier."
+        },
+        {
+          "name": "name",
+          "langType": "string",
+          "required": true,
+          "description": "The label provided when the consent recording was uploaded."
+        },
+        {
+          "name": "language",
+          "langType": "string",
+          "required": true,
+          "description": "The BCP 47 language tag for the consent phrase (for example, `en-US`)."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the consent recording was created."
+        }
+      ]
+    }
+  }
+}

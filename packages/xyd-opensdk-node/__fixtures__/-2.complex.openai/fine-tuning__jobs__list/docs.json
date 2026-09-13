@@ -1,0 +1,151 @@
+{
+  "chain": [
+    "fine-tuning",
+    "jobs"
+  ],
+  "action": "list",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.fineTuning.jobs.list({ after: \"after\", limit: 20, metadata: { key: \"string\" } });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.fineTuning.jobs.list(query?): Promise<CursorPage<FineTuningJob>>",
+    "request": {
+      "typeName": "FineTuningJobListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "after",
+          "langType": "string",
+          "required": false,
+          "description": "Identifier for the last job from the previous pagination request."
+        },
+        {
+          "name": "limit",
+          "langType": "number",
+          "required": false,
+          "description": "Number of fine-tuning jobs to retrieve."
+        },
+        {
+          "name": "metadata",
+          "langType": "Record<string, string> | null",
+          "required": false,
+          "description": "Optional metadata filter. To filter, use the syntax `metadata[k]=v`. Alternatively, set `metadata=null` to indicate no metadata.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "FineTuningJob",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "The object identifier, which can be referenced in the API endpoints."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the fine-tuning job was created."
+        },
+        {
+          "name": "error",
+          "langType": "FineTuningJobError | null",
+          "required": true,
+          "refTypeName": "FineTuningJobError"
+        },
+        {
+          "name": "fine_tuned_model",
+          "langType": "string | null",
+          "required": true
+        },
+        {
+          "name": "finished_at",
+          "langType": "number | null",
+          "required": true
+        },
+        {
+          "name": "hyperparameters",
+          "langType": "FineTuningJobHyperparameters",
+          "required": true,
+          "description": "The hyperparameters used for the fine-tuning job. This value will only be returned when running `supervised` jobs.",
+          "refTypeName": "FineTuningJobHyperparameters"
+        },
+        {
+          "name": "model",
+          "langType": "string",
+          "required": true,
+          "description": "The base model that is being fine-tuned."
+        },
+        {
+          "name": "object",
+          "langType": "\"fine_tuning.job\"",
+          "required": true,
+          "description": "The object type, which is always \"fine_tuning.job\"."
+        },
+        {
+          "name": "organization_id",
+          "langType": "string",
+          "required": true,
+          "description": "The organization that owns the fine-tuning job."
+        },
+        {
+          "name": "result_files",
+          "langType": "string[]",
+          "required": true,
+          "description": "The compiled results file ID(s) for the fine-tuning job. You can retrieve the results with the [Files API](/docs/api-reference/files/retrieve-contents)."
+        },
+        {
+          "name": "status",
+          "langType": "FineTuningJobStatus",
+          "required": true,
+          "description": "The current status of the fine-tuning job, which can be either `validating_files`, `queued`, `running`, `succeeded`, `failed`, or `cancelled`.",
+          "refTypeName": "FineTuningJobStatus"
+        },
+        {
+          "name": "trained_tokens",
+          "langType": "number | null",
+          "required": true
+        },
+        {
+          "name": "training_file",
+          "langType": "string",
+          "required": true,
+          "description": "The file ID used for training. You can retrieve the training data with the [Files API](/docs/api-reference/files/retrieve-contents)."
+        },
+        {
+          "name": "validation_file",
+          "langType": "string | null",
+          "required": true
+        },
+        {
+          "name": "integrations",
+          "langType": "FineTuningIntegration[] | null",
+          "required": false
+        },
+        {
+          "name": "seed",
+          "langType": "number",
+          "required": true,
+          "description": "The seed used for the fine-tuning job."
+        },
+        {
+          "name": "estimated_finish",
+          "langType": "number | null",
+          "required": false
+        },
+        {
+          "name": "method",
+          "langType": "FineTuneMethod",
+          "required": false,
+          "refTypeName": "FineTuneMethod"
+        },
+        {
+          "name": "metadata",
+          "langType": "Metadata",
+          "required": false,
+          "refTypeName": "Metadata"
+        }
+      ]
+    }
+  }
+}

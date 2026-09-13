@@ -1,0 +1,112 @@
+{
+  "chain": [
+    "vector-stores"
+  ],
+  "action": "list",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.VectorStores.List(\n\t\tcontext.TODO(),\n\t\topenai.VectorStoreListParams{\n\t\t\tLimit: param.NewOpt[int64](20),\n\t\t\tOrder: param.NewOpt[openai.VectorStoresListOrder](openai.VectorStoresListOrderAsc),\n\t\t\tAfter: param.NewOpt[string](\"after\"),\n\t\t\tBefore: param.NewOpt[string](\"before\"),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.VectorStores.List(ctx, query) (*pagination.CursorPage[VectorStoreObject], error)",
+    "request": {
+      "typeName": "VectorStoreListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "Limit",
+          "langType": "param.Opt[int64]",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "Order",
+          "langType": "param.Opt[VectorStoresListOrder]",
+          "required": false,
+          "description": "Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc` for descending order.\n",
+          "refTypeName": "VectorStoresListOrder"
+        },
+        {
+          "name": "After",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+        },
+        {
+          "name": "Before",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "VectorStoreObject",
+      "note": "paginated (pagination.CursorPage)",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always `vector_store`."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the vector store was created."
+        },
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": true,
+          "description": "The name of the vector store."
+        },
+        {
+          "name": "UsageBytes",
+          "langType": "int64",
+          "required": true,
+          "description": "The total number of bytes used by the files in the vector store."
+        },
+        {
+          "name": "FileCounts",
+          "langType": "VectorStoreObjectFileCounts",
+          "required": true,
+          "refTypeName": "VectorStoreObjectFileCounts"
+        },
+        {
+          "name": "Status",
+          "langType": "VectorStoreObjectStatus",
+          "required": true,
+          "description": "The status of the vector store, which can be either `expired`, `in_progress`, or `completed`. A status of `completed` indicates that the vector store is ready for use.",
+          "refTypeName": "VectorStoreObjectStatus"
+        },
+        {
+          "name": "ExpiresAfter",
+          "langType": "VectorStoreExpirationAfter",
+          "required": false,
+          "refTypeName": "VectorStoreExpirationAfter"
+        },
+        {
+          "name": "ExpiresAt",
+          "langType": "int64",
+          "required": false
+        },
+        {
+          "name": "LastActiveAt",
+          "langType": "int64",
+          "required": true
+        },
+        {
+          "name": "Metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        }
+      ]
+    }
+  }
+}

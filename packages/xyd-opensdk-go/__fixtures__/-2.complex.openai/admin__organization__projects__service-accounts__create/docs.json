@@ -1,0 +1,62 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "service-accounts"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Admin.Organization.Projects.ServiceAccounts.New(\n\t\tcontext.TODO(),\n\t\t\"project_id\",\n\t\topenai.AdminOrganizationProjectServiceAccountNewParams{\n\t\t\tName: \"string\",\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Admin.Organization.Projects.ServiceAccounts.New(ctx, projectID, body) (*ProjectServiceAccountCreateResponse, error)",
+    "request": {
+      "typeName": "AdminOrganizationProjectServiceAccountNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": true,
+          "description": "The name of the service account being created."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ProjectServiceAccountCreateResponse",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "Role",
+          "langType": "string",
+          "required": true,
+          "description": "Service accounts can only have one role of type `member`"
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true
+        },
+        {
+          "name": "APIKey",
+          "langType": "ProjectServiceAccountAPIKey",
+          "required": true,
+          "refTypeName": "ProjectServiceAccountApiKey"
+        }
+      ]
+    }
+  }
+}

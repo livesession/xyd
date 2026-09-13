@@ -1,0 +1,73 @@
+{
+  "chain": [
+    "fine-tuning",
+    "checkpoints",
+    "permissions"
+  ],
+  "action": "list",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.fineTuning.checkpoints.permissions.list(\"ft-AF1WoRqd3aJAHsqc9NY7iL8F\", { project_id: \"project_id\", after: \"after\", limit: 10, order: \"ascending\" });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.fineTuning.checkpoints.permissions.list(fineTunedModelCheckpoint, query?): Promise<CursorPage<FineTuningCheckpointPermission>>",
+    "request": {
+      "typeName": "FineTuningCheckpointPermissionListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "project_id",
+          "langType": "string",
+          "required": false,
+          "description": "The ID of the project to get permissions for."
+        },
+        {
+          "name": "after",
+          "langType": "string",
+          "required": false,
+          "description": "Identifier for the last permission ID from the previous pagination request."
+        },
+        {
+          "name": "limit",
+          "langType": "number",
+          "required": false,
+          "description": "Number of permissions to retrieve."
+        },
+        {
+          "name": "order",
+          "langType": "FineTuningCheckpointsPermissionsListOrder",
+          "required": false,
+          "description": "The order in which to retrieve permissions.",
+          "refTypeName": "FineTuningCheckpointsPermissionsListOrder"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "FineTuningCheckpointPermission",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "The permission identifier, which can be referenced in the API endpoints."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the permission was created."
+        },
+        {
+          "name": "project_id",
+          "langType": "string",
+          "required": true,
+          "description": "The project identifier that the permission is for."
+        },
+        {
+          "name": "object",
+          "langType": "\"checkpoint.permission\"",
+          "required": true,
+          "description": "The object type, which is always \"checkpoint.permission\"."
+        }
+      ]
+    }
+  }
+}

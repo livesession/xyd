@@ -1,0 +1,36 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "users"
+  ],
+  "action": "delete",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.admin.organization.projects.users.delete(\"project_id\", \"user_id\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.admin.organization.projects.users.delete(projectId, userId): Promise<ProjectUserDeleteResponse>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "ProjectUserDeleteResponse",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"organization.project.user.deleted\"",
+          "required": true
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "boolean",
+          "required": true
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "chain": [
+    "videos"
+  ],
+  "action": "download-content",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.videos.download_content(\"video_123\", variant=\"video\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.videos.download_content(video_id, variant=...) -> str",
+    "request": {
+      "fields": [
+        {
+          "name": "variant",
+          "langType": "Optional[VideoContentVariant]",
+          "required": false,
+          "description": "Which downloadable asset to return. Defaults to the MP4 video.",
+          "refTypeName": "VideoContentVariant"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "str",
+      "langType": "str"
+    }
+  }
+}

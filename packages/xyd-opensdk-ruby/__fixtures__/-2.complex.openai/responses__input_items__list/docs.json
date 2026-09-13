@@ -1,0 +1,45 @@
+{
+  "chain": [
+    "responses",
+    "input-items"
+  ],
+  "action": "list",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.responses.input_items.list(\"response_id\", limit: 20, order: \"asc\", after: \"after\", include: [\"file_search_call.results\"])\npp result\n",
+  "typeReference": {
+    "signature": "client.responses.input_items.list(response_id, limit: nil, order: nil, after: nil, include: nil) -> Page<Models::ItemResource>",
+    "request": {
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "Integer",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between\n1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "order",
+          "langType": "Models::ResponsesInputItemsListOrder",
+          "required": false,
+          "description": "The order to return the input items in. Default is `desc`.\n- `asc`: Return the input items in ascending order.\n- `desc`: Return the input items in descending order.\n",
+          "refTypeName": "ResponsesInputItemsListOrder"
+        },
+        {
+          "name": "after",
+          "langType": "String",
+          "required": false,
+          "description": "An item ID to list items after, used in pagination.\n"
+        },
+        {
+          "name": "include",
+          "langType": "Array<Models::IncludeEnum>",
+          "required": false,
+          "description": "Additional fields to include in the response. See the `include`\nparameter for Response creation above for more information.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Page<Models::ItemResource>",
+      "langType": "Page<Models::ItemResource>",
+      "note": "paginated (Page)"
+    }
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "chain": [
+    "beta",
+    "assistants"
+  ],
+  "action": "list",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.beta.assistants.list(limit=20, order=\"asc\", after=\"after\", before=\"before\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.beta.assistants.list(limit=..., order=..., after=..., before=...) -> CursorPage[AssistantObject]",
+    "request": {
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "Optional[int]",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "order",
+          "langType": "Optional[BetaAssistantsListOrder]",
+          "required": false,
+          "description": "Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc` for descending order.\n",
+          "refTypeName": "BetaAssistantsListOrder"
+        },
+        {
+          "name": "after",
+          "langType": "Optional[str]",
+          "required": false,
+          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+        },
+        {
+          "name": "before",
+          "langType": "Optional[str]",
+          "required": false,
+          "description": "A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "CursorPage[AssistantObject]",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `assistant`."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the assistant was created."
+        },
+        {
+          "name": "name",
+          "langType": "Optional[str]",
+          "required": true
+        },
+        {
+          "name": "description",
+          "langType": "Optional[str]",
+          "required": true
+        },
+        {
+          "name": "model",
+          "langType": "str",
+          "required": true,
+          "description": "ID of the model to use. You can use the [List models](/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](/docs/models) for descriptions of them.\n"
+        },
+        {
+          "name": "instructions",
+          "langType": "Optional[str]",
+          "required": true
+        },
+        {
+          "name": "tools",
+          "langType": "list[AssistantObjectToolsItem]",
+          "required": true,
+          "description": "A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.\n"
+        },
+        {
+          "name": "tool_resources",
+          "langType": "Optional[AssistantObjectToolResources]",
+          "required": false,
+          "refTypeName": "AssistantObjectToolResources"
+        },
+        {
+          "name": "metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        },
+        {
+          "name": "temperature",
+          "langType": "Optional[float]",
+          "required": false
+        },
+        {
+          "name": "top_p",
+          "langType": "Optional[float]",
+          "required": false
+        },
+        {
+          "name": "response_format",
+          "langType": "Optional[AssistantsApiResponseFormatOption]",
+          "required": false,
+          "refTypeName": "AssistantsApiResponseFormatOption"
+        }
+      ]
+    }
+  }
+}

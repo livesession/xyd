@@ -1,0 +1,80 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "groups"
+  ],
+  "action": "list",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Admin.Organization.Projects.Groups.List(\n\t\tcontext.TODO(),\n\t\t\"project_id\",\n\t\topenai.AdminOrganizationProjectGroupListParams{\n\t\t\tLimit: param.NewOpt[int64](20),\n\t\t\tAfter: param.NewOpt[string](\"after\"),\n\t\t\tOrder: param.NewOpt[openai.AdminOrganizationProjectsGroupsListOrder](openai.AdminOrganizationProjectsGroupsListOrderAsc),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Admin.Organization.Projects.Groups.List(ctx, projectID, query) (*pagination.CursorPage[ProjectGroup], error)",
+    "request": {
+      "typeName": "AdminOrganizationProjectGroupListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "Limit",
+          "langType": "param.Opt[int64]",
+          "required": false,
+          "description": "A limit on the number of project groups to return. Defaults to 20."
+        },
+        {
+          "name": "After",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "Cursor for pagination. Provide the ID of the last group from the previous response to fetch the next page."
+        },
+        {
+          "name": "Order",
+          "langType": "param.Opt[AdminOrganizationProjectsGroupsListOrder]",
+          "required": false,
+          "description": "Sort order for the returned groups.",
+          "refTypeName": "AdminOrganizationProjectsGroupsListOrder"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ProjectGroup",
+      "note": "paginated (pagination.CursorPage)",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "Always `project.group`."
+        },
+        {
+          "name": "ProjectID",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the project."
+        },
+        {
+          "name": "GroupID",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the group that has access to the project."
+        },
+        {
+          "name": "GroupName",
+          "langType": "string",
+          "required": true,
+          "description": "Display name of the group."
+        },
+        {
+          "name": "GroupType",
+          "langType": "string",
+          "required": true,
+          "description": "The type of the group."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the group was granted project access."
+        }
+      ]
+    }
+  }
+}

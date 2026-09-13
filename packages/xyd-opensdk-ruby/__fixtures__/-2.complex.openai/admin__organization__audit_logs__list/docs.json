@@ -1,0 +1,435 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "audit-logs"
+  ],
+  "action": "list",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.admin.organization.audit_logs.list(effective_at: { \"gt\" => 1, \"gte\" => 1, \"lt\" => 1, \"lte\" => 1 }, project_ids: [\"string\"], event_types: [\"api_key.created\"], actor_ids: [\"string\"], actor_emails: [\"string\"], resource_ids: [\"string\"], limit: 20, after: \"after\", before: \"before\")\npp result\n",
+  "typeReference": {
+    "signature": "client.admin.organization.audit_logs.list(effective_at: nil, project_ids: nil, event_types: nil, actor_ids: nil, actor_emails: nil, resource_ids: nil, limit: nil, after: nil, before: nil) -> Page<Models::AuditLog>",
+    "request": {
+      "fields": [
+        {
+          "name": "effective_at",
+          "langType": "Models::AdminOrganizationAuditLogsListEffectiveAt",
+          "required": false,
+          "description": "Return only events whose `effective_at` (Unix seconds) is in this range.",
+          "refTypeName": "AdminOrganizationAuditLogsListEffectiveAt"
+        },
+        {
+          "name": "project_ids",
+          "langType": "Array<String>",
+          "required": false,
+          "description": "Return only events for these projects."
+        },
+        {
+          "name": "event_types",
+          "langType": "Array<Models::AuditLogEventType>",
+          "required": false,
+          "description": "Return only events with a `type` in one of these values. For example, `project.created`. For all options, see the documentation for the [audit log object](/docs/api-reference/audit-logs/object)."
+        },
+        {
+          "name": "actor_ids",
+          "langType": "Array<String>",
+          "required": false,
+          "description": "Return only events performed by these actors. Can be a user ID, a service account ID, or an api key tracking ID."
+        },
+        {
+          "name": "actor_emails",
+          "langType": "Array<String>",
+          "required": false,
+          "description": "Return only events performed by users with these emails."
+        },
+        {
+          "name": "resource_ids",
+          "langType": "Array<String>",
+          "required": false,
+          "description": "Return only events performed on these targets. For example, a project ID updated."
+        },
+        {
+          "name": "limit",
+          "langType": "Integer",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "after",
+          "langType": "String",
+          "required": false,
+          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+        },
+        {
+          "name": "before",
+          "langType": "String",
+          "required": false,
+          "description": "A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Page<Models::AuditLog>",
+      "note": "paginated (Page)",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "The ID of this log."
+        },
+        {
+          "name": "type",
+          "langType": "Models::AuditLogEventType",
+          "required": true,
+          "refTypeName": "AuditLogEventType"
+        },
+        {
+          "name": "effective_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of the event."
+        },
+        {
+          "name": "project",
+          "langType": "Models::AuditLogProject",
+          "required": false,
+          "description": "The project that the action was scoped to. Absent for actions not scoped to projects. Note that any admin actions taken via Admin API keys are associated with the default project.",
+          "refTypeName": "AuditLogProject"
+        },
+        {
+          "name": "actor",
+          "langType": "Models::AuditLogActor",
+          "required": false,
+          "refTypeName": "AuditLogActor"
+        },
+        {
+          "name": "api_key_created",
+          "langType": "Models::AuditLogApiKeyCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogApiKeyCreated"
+        },
+        {
+          "name": "api_key_updated",
+          "langType": "Models::AuditLogApiKeyUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogApiKeyUpdated"
+        },
+        {
+          "name": "api_key_deleted",
+          "langType": "Models::AuditLogApiKeyDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogApiKeyDeleted"
+        },
+        {
+          "name": "checkpoint_permission_created",
+          "langType": "Models::AuditLogCheckpointPermissionCreated",
+          "required": false,
+          "description": "The project and fine-tuned model checkpoint that the checkpoint permission was created for.",
+          "refTypeName": "AuditLogCheckpointPermissionCreated"
+        },
+        {
+          "name": "checkpoint_permission_deleted",
+          "langType": "Models::AuditLogCheckpointPermissionDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogCheckpointPermissionDeleted"
+        },
+        {
+          "name": "external_key_registered",
+          "langType": "Models::AuditLogExternalKeyRegistered",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogExternalKeyRegistered"
+        },
+        {
+          "name": "external_key_removed",
+          "langType": "Models::AuditLogExternalKeyRemoved",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogExternalKeyRemoved"
+        },
+        {
+          "name": "group_created",
+          "langType": "Models::AuditLogGroupCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogGroupCreated"
+        },
+        {
+          "name": "group_updated",
+          "langType": "Models::AuditLogGroupUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogGroupUpdated"
+        },
+        {
+          "name": "group_deleted",
+          "langType": "Models::AuditLogGroupDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogGroupDeleted"
+        },
+        {
+          "name": "scim_enabled",
+          "langType": "Models::AuditLogScimEnabled",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogScimEnabled"
+        },
+        {
+          "name": "scim_disabled",
+          "langType": "Models::AuditLogScimDisabled",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogScimDisabled"
+        },
+        {
+          "name": "invite_sent",
+          "langType": "Models::AuditLogInviteSent",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogInviteSent"
+        },
+        {
+          "name": "invite_accepted",
+          "langType": "Models::AuditLogInviteAccepted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogInviteAccepted"
+        },
+        {
+          "name": "invite_deleted",
+          "langType": "Models::AuditLogInviteAccepted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogInviteAccepted"
+        },
+        {
+          "name": "ip_allowlist_created",
+          "langType": "Models::AuditLogIpAllowlistCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogIpAllowlistCreated"
+        },
+        {
+          "name": "ip_allowlist_updated",
+          "langType": "Models::AuditLogIpAllowlistUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogIpAllowlistUpdated"
+        },
+        {
+          "name": "ip_allowlist_deleted",
+          "langType": "Models::AuditLogIpAllowlistDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogIpAllowlistDeleted"
+        },
+        {
+          "name": "ip_allowlist_config_activated",
+          "langType": "Models::AuditLogIpAllowlistConfigActivated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogIpAllowlistConfigActivated"
+        },
+        {
+          "name": "ip_allowlist_config_deactivated",
+          "langType": "Models::AuditLogIpAllowlistConfigDeactivated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogIpAllowlistConfigDeactivated"
+        },
+        {
+          "name": "login_succeeded",
+          "langType": "Hash{String => Object}",
+          "required": false,
+          "description": "This event has no additional fields beyond the standard audit log attributes."
+        },
+        {
+          "name": "login_failed",
+          "langType": "Models::AuditLogLoginFailed",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogLoginFailed"
+        },
+        {
+          "name": "logout_succeeded",
+          "langType": "Hash{String => Object}",
+          "required": false,
+          "description": "This event has no additional fields beyond the standard audit log attributes."
+        },
+        {
+          "name": "logout_failed",
+          "langType": "Models::AuditLogLoginFailed",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogLoginFailed"
+        },
+        {
+          "name": "organization_updated",
+          "langType": "Models::AuditLogOrganizationUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogOrganizationUpdated"
+        },
+        {
+          "name": "project_created",
+          "langType": "Models::AuditLogProjectCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogProjectCreated"
+        },
+        {
+          "name": "project_updated",
+          "langType": "Models::AuditLogProjectUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogProjectUpdated"
+        },
+        {
+          "name": "project_archived",
+          "langType": "Models::AuditLogProjectArchived",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogProjectArchived"
+        },
+        {
+          "name": "project_deleted",
+          "langType": "Models::AuditLogProjectArchived",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogProjectArchived"
+        },
+        {
+          "name": "rate_limit_updated",
+          "langType": "Models::AuditLogRateLimitUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogRateLimitUpdated"
+        },
+        {
+          "name": "rate_limit_deleted",
+          "langType": "Models::AuditLogRateLimitDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogRateLimitDeleted"
+        },
+        {
+          "name": "role_created",
+          "langType": "Models::AuditLogRoleCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogRoleCreated"
+        },
+        {
+          "name": "role_updated",
+          "langType": "Models::AuditLogRoleUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogRoleUpdated"
+        },
+        {
+          "name": "role_deleted",
+          "langType": "Models::AuditLogRoleDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogRoleDeleted"
+        },
+        {
+          "name": "role_assignment_created",
+          "langType": "Models::AuditLogRoleAssignmentCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogRoleAssignmentCreated"
+        },
+        {
+          "name": "role_assignment_deleted",
+          "langType": "Models::AuditLogRoleAssignmentDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogRoleAssignmentDeleted"
+        },
+        {
+          "name": "service_account_created",
+          "langType": "Models::AuditLogServiceAccountCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogServiceAccountCreated"
+        },
+        {
+          "name": "service_account_updated",
+          "langType": "Models::AuditLogServiceAccountUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogServiceAccountUpdated"
+        },
+        {
+          "name": "service_account_deleted",
+          "langType": "Models::AuditLogServiceAccountDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogServiceAccountDeleted"
+        },
+        {
+          "name": "user_added",
+          "langType": "Models::AuditLogUserAdded",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogUserAdded"
+        },
+        {
+          "name": "user_updated",
+          "langType": "Models::AuditLogUserUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogUserUpdated"
+        },
+        {
+          "name": "user_deleted",
+          "langType": "Models::AuditLogUserDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogUserDeleted"
+        },
+        {
+          "name": "certificate_created",
+          "langType": "Models::AuditLogCertificateCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogCertificateCreated"
+        },
+        {
+          "name": "certificate_updated",
+          "langType": "Models::AuditLogCertificateCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogCertificateCreated"
+        },
+        {
+          "name": "certificate_deleted",
+          "langType": "Models::AuditLogCertificateDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogCertificateDeleted"
+        },
+        {
+          "name": "certificates_activated",
+          "langType": "Models::AuditLogCertificatesActivated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogCertificatesActivated"
+        },
+        {
+          "name": "certificates_deactivated",
+          "langType": "Models::AuditLogCertificatesActivated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogCertificatesActivated"
+        }
+      ]
+    }
+  }
+}

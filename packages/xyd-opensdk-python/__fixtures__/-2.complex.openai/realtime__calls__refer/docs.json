@@ -1,0 +1,25 @@
+{
+  "chain": [
+    "realtime",
+    "calls"
+  ],
+  "action": "refer",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nclient.realtime.calls.refer(\"call_id\", target_uri=\"string\")\n",
+  "typeReference": {
+    "signature": "client.realtime.calls.refer(call_id, target_uri) -> None",
+    "request": {
+      "fields": [
+        {
+          "name": "target_uri",
+          "langType": "str",
+          "required": true,
+          "description": "URI that should appear in the SIP Refer-To header. Supports values like\n`tel:+14155550123` or `sip:agent@example.com`."
+        }
+      ]
+    },
+    "response": {
+      "langType": "None",
+      "note": "no response body"
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "roles"
+  ],
+  "action": "list",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.admin.organization.roles.list(limit=1000, after=\"after\", order=\"asc\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.admin.organization.roles.list(limit=..., after=..., order=...) -> CursorPage[Role]",
+    "request": {
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "Optional[int]",
+          "required": false,
+          "description": "A limit on the number of roles to return. Defaults to 1000."
+        },
+        {
+          "name": "after",
+          "langType": "Optional[str]",
+          "required": false,
+          "description": "Cursor for pagination. Provide the value from the previous response's `next` field to continue listing roles."
+        },
+        {
+          "name": "order",
+          "langType": "Optional[AdminOrganizationRolesListOrder]",
+          "required": false,
+          "description": "Sort order for the returned roles.",
+          "refTypeName": "AdminOrganizationRolesListOrder"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "CursorPage[Role]",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "Always `role`."
+        },
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "Identifier for the role."
+        },
+        {
+          "name": "name",
+          "langType": "str",
+          "required": true,
+          "description": "Unique name for the role."
+        },
+        {
+          "name": "description",
+          "langType": "Optional[str]",
+          "required": true,
+          "description": "Optional description of the role."
+        },
+        {
+          "name": "permissions",
+          "langType": "list[str]",
+          "required": true,
+          "description": "Permissions granted by the role."
+        },
+        {
+          "name": "resource_type",
+          "langType": "str",
+          "required": true,
+          "description": "Resource type the role is bound to (for example `api.organization` or `api.project`)."
+        },
+        {
+          "name": "predefined_role",
+          "langType": "bool",
+          "required": true,
+          "description": "Whether the role is predefined and managed by OpenAI."
+        }
+      ]
+    }
+  }
+}

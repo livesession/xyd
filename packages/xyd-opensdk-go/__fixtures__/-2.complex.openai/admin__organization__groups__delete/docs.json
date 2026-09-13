@@ -1,0 +1,38 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "groups"
+  ],
+  "action": "delete",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Admin.Organization.Groups.Delete(context.TODO(), \"group_id\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Admin.Organization.Groups.Delete(ctx, groupID) (*GroupDeletedResource, error)",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "GroupDeletedResource",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "Always `group.deleted`."
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the deleted group."
+        },
+        {
+          "name": "Deleted",
+          "langType": "bool",
+          "required": true,
+          "description": "Whether the group was deleted."
+        }
+      ]
+    }
+  }
+}

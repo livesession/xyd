@@ -1,0 +1,83 @@
+{
+  "chain": [
+    "skills"
+  ],
+  "action": "list",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.skills.list({ limit: 1, order: \"asc\", after: \"after\" });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.skills.list(query?): Promise<CursorPage<SkillResource>>",
+    "request": {
+      "typeName": "SkillListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "number",
+          "required": false,
+          "description": "Number of items to retrieve"
+        },
+        {
+          "name": "order",
+          "langType": "OrderEnum",
+          "required": false,
+          "description": "Sort order of results by timestamp. Use `asc` for ascending order or `desc` for descending order.",
+          "refTypeName": "OrderEnum"
+        },
+        {
+          "name": "after",
+          "langType": "string",
+          "required": false,
+          "description": "Identifier for the last item from the previous pagination request"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "SkillResource",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "Unique identifier for the skill."
+        },
+        {
+          "name": "object",
+          "langType": "\"skill\"",
+          "required": true,
+          "description": "The object type, which is `skill`."
+        },
+        {
+          "name": "name",
+          "langType": "string",
+          "required": true,
+          "description": "Name of the skill."
+        },
+        {
+          "name": "description",
+          "langType": "string",
+          "required": true,
+          "description": "Description of the skill."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "Unix timestamp (seconds) for when the skill was created."
+        },
+        {
+          "name": "default_version",
+          "langType": "string",
+          "required": true,
+          "description": "Default version for the skill."
+        },
+        {
+          "name": "latest_version",
+          "langType": "string",
+          "required": true,
+          "description": "Latest version for the skill."
+        }
+      ]
+    }
+  }
+}

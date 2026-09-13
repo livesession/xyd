@@ -1,0 +1,57 @@
+{
+  "chain": [
+    "files"
+  ],
+  "action": "upload",
+  "usage": "import WireKitchen from \"wire-kitchen\";\n\nconst client = new WireKitchen({\n  apiKey: process.env[\"WIRE_API_KEY\"],\n});\n\nconst result = await client.files.upload({ idempotency_key: \"idempotency_key\", file: new Uint8Array([1, 2, 3]), purpose: \"string\", request_priority: \"request_priority\", description: \"string\" });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.files.upload(params): Promise<File>",
+    "request": {
+      "typeName": "FileUploadParams",
+      "argName": "params",
+      "fields": [
+        {
+          "name": "file",
+          "langType": "Uint8Array | Blob",
+          "required": true,
+          "description": "The file content."
+        },
+        {
+          "name": "purpose",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "description",
+          "langType": "string",
+          "required": false
+        },
+        {
+          "name": "idempotency_key",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "request_priority",
+          "langType": "string",
+          "required": false
+        }
+      ]
+    },
+    "response": {
+      "typeName": "File",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "purpose",
+          "langType": "string",
+          "required": false
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "chain": [
+    "fine-tuning",
+    "alpha",
+    "graders",
+    "run"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.FineTuning.Alpha.Graders.Run.New(\n\t\tcontext.TODO(),\n\t\topenai.FineTuningAlphaGraderRunNewParams{\n\t\t\tGrader: openai.GraderStringCheck{Type: \"string_check\", Name: \"string\", Input: \"string\", Reference: \"string\", Operation: openai.GraderStringCheckOperationEq},\n\t\t\tItem: map[string]any{\"key\": nil},\n\t\t\tModelSample: \"string\",\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.FineTuning.Alpha.Graders.Run.New(ctx, body) (*RunGraderResponse, error)",
+    "request": {
+      "typeName": "FineTuningAlphaGraderRunNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "Grader",
+          "langType": "RunGraderRequestGrader",
+          "required": true,
+          "description": "The grader used for the fine-tuning job.",
+          "refTypeName": "RunGraderRequestGrader"
+        },
+        {
+          "name": "Item",
+          "langType": "map[string]any",
+          "required": false,
+          "description": "The dataset item provided to the grader. This will be used to populate \nthe `item` namespace. See [the guide](/docs/guides/graders) for more details. \n"
+        },
+        {
+          "name": "ModelSample",
+          "langType": "string",
+          "required": true,
+          "description": "The model sample to be evaluated. This value will be used to populate \nthe `sample` namespace. See [the guide](/docs/guides/graders) for more details.\nThe `output_json` variable will be populated if the model sample is a \nvalid JSON string.\n \n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "RunGraderResponse",
+      "fields": [
+        {
+          "name": "Reward",
+          "langType": "float64",
+          "required": true
+        },
+        {
+          "name": "Metadata",
+          "langType": "RunGraderResponseMetadata",
+          "required": true,
+          "refTypeName": "RunGraderResponseMetadata"
+        },
+        {
+          "name": "SubRewards",
+          "langType": "map[string]any",
+          "required": true
+        },
+        {
+          "name": "ModelGraderTokenUsagePerModel",
+          "langType": "map[string]any",
+          "required": true
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "chain": [
+    "audio",
+    "voice-consents"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.audio.voice_consents.create(name=\"string\", recording=b\"Example data\", language=\"string\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.audio.voice_consents.create(name, recording, language) -> VoiceConsentResource",
+    "request": {
+      "fields": [
+        {
+          "name": "name",
+          "langType": "str",
+          "required": true,
+          "description": "The label to use for this consent recording."
+        },
+        {
+          "name": "recording",
+          "langType": "Union[bytes, BinaryIO]",
+          "required": true,
+          "description": "The consent audio recording file. Maximum size is 10 MiB.\n\nSupported MIME types:\n`audio/mpeg`, `audio/wav`, `audio/x-wav`, `audio/ogg`, `audio/aac`, `audio/flac`, `audio/webm`, `audio/mp4`.\n"
+        },
+        {
+          "name": "language",
+          "langType": "str",
+          "required": true,
+          "description": "The BCP 47 language tag for the consent phrase (for example, `en-US`)."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "VoiceConsentResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `audio.voice_consent`."
+        },
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The consent recording identifier."
+        },
+        {
+          "name": "name",
+          "langType": "str",
+          "required": true,
+          "description": "The label provided when the consent recording was uploaded."
+        },
+        {
+          "name": "language",
+          "langType": "str",
+          "required": true,
+          "description": "The BCP 47 language tag for the consent phrase (for example, `en-US`)."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the consent recording was created."
+        }
+      ]
+    }
+  }
+}

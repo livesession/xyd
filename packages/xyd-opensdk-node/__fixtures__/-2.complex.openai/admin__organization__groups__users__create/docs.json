@@ -1,0 +1,48 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "groups",
+    "users"
+  ],
+  "action": "create",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.admin.organization.groups.users.create(\"group_id\", { user_id: \"string\" });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.admin.organization.groups.users.create(groupId, body): Promise<GroupUserAssignment>",
+    "request": {
+      "typeName": "AdminOrganizationGroupUserCreateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "user_id",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the user to add to the group."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "GroupUserAssignment",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"group.user\"",
+          "required": true,
+          "description": "Always `group.user`."
+        },
+        {
+          "name": "user_id",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the user that was added."
+        },
+        {
+          "name": "group_id",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the group the user was added to."
+        }
+      ]
+    }
+  }
+}

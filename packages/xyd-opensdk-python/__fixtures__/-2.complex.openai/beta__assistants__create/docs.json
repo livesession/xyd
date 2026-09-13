@@ -1,0 +1,155 @@
+{
+  "chain": [
+    "beta",
+    "assistants"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.beta.assistants.create(model=\"string\", name=\"string\", description=\"string\", instructions=\"string\", reasoning_effort=\"none\", tools=[{\"type\": \"code_interpreter\"}], tool_resources={\"code_interpreter\": {\"file_ids\": [\"string\"]}, \"file_search\": None}, metadata={\"key\": \"string\"}, temperature=1, top_p=1, response_format=\"auto\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.beta.assistants.create(model, name=..., description=..., instructions=..., reasoning_effort=..., tools=..., tool_resources=..., metadata=..., temperature=..., top_p=..., response_format=...) -> AssistantObject",
+    "request": {
+      "fields": [
+        {
+          "name": "model",
+          "langType": "CreateAssistantRequestModel",
+          "required": true,
+          "description": "ID of the model to use. You can use the [List models](/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](/docs/models) for descriptions of them.\n",
+          "refTypeName": "CreateAssistantRequestModel"
+        },
+        {
+          "name": "name",
+          "langType": "Optional[str]",
+          "required": false
+        },
+        {
+          "name": "description",
+          "langType": "Optional[str]",
+          "required": false
+        },
+        {
+          "name": "instructions",
+          "langType": "Optional[str]",
+          "required": false
+        },
+        {
+          "name": "reasoning_effort",
+          "langType": "Optional[ReasoningEffort]",
+          "required": false,
+          "refTypeName": "ReasoningEffort"
+        },
+        {
+          "name": "tools",
+          "langType": "Optional[list[CreateAssistantRequestToolsItem]]",
+          "required": false,
+          "description": "A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.\n"
+        },
+        {
+          "name": "tool_resources",
+          "langType": "Optional[CreateAssistantRequestToolResources]",
+          "required": false,
+          "refTypeName": "CreateAssistantRequestToolResources"
+        },
+        {
+          "name": "metadata",
+          "langType": "Optional[Metadata]",
+          "required": false,
+          "refTypeName": "Metadata"
+        },
+        {
+          "name": "temperature",
+          "langType": "Optional[float]",
+          "required": false
+        },
+        {
+          "name": "top_p",
+          "langType": "Optional[float]",
+          "required": false
+        },
+        {
+          "name": "response_format",
+          "langType": "Optional[AssistantsApiResponseFormatOption]",
+          "required": false,
+          "refTypeName": "AssistantsApiResponseFormatOption"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "AssistantObject",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `assistant`."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the assistant was created."
+        },
+        {
+          "name": "name",
+          "langType": "Optional[str]",
+          "required": true
+        },
+        {
+          "name": "description",
+          "langType": "Optional[str]",
+          "required": true
+        },
+        {
+          "name": "model",
+          "langType": "str",
+          "required": true,
+          "description": "ID of the model to use. You can use the [List models](/docs/api-reference/models/list) API to see all of your available models, or see our [Model overview](/docs/models) for descriptions of them.\n"
+        },
+        {
+          "name": "instructions",
+          "langType": "Optional[str]",
+          "required": true
+        },
+        {
+          "name": "tools",
+          "langType": "list[CreateAssistantRequestToolsItem]",
+          "required": true,
+          "description": "A list of tool enabled on the assistant. There can be a maximum of 128 tools per assistant. Tools can be of types `code_interpreter`, `file_search`, or `function`.\n"
+        },
+        {
+          "name": "tool_resources",
+          "langType": "Optional[AssistantObjectToolResources]",
+          "required": false,
+          "refTypeName": "AssistantObjectToolResources"
+        },
+        {
+          "name": "metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        },
+        {
+          "name": "temperature",
+          "langType": "Optional[float]",
+          "required": false
+        },
+        {
+          "name": "top_p",
+          "langType": "Optional[float]",
+          "required": false
+        },
+        {
+          "name": "response_format",
+          "langType": "Optional[AssistantsApiResponseFormatOption]",
+          "required": false,
+          "refTypeName": "AssistantsApiResponseFormatOption"
+        }
+      ]
+    }
+  }
+}

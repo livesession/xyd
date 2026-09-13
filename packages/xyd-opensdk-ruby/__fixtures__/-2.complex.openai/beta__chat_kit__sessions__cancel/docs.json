@@ -1,0 +1,80 @@
+{
+  "chain": [
+    "beta",
+    "chat-kit",
+    "sessions"
+  ],
+  "action": "cancel",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.beta.chat_kit.sessions.cancel(\"cksess_123\")\npp result\n",
+  "typeReference": {
+    "signature": "client.beta.chat_kit.sessions.cancel(session_id) -> Models::ChatSessionResource",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::ChatSessionResource",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "Identifier for the ChatKit session."
+        },
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "Type discriminator that is always `chatkit.session`."
+        },
+        {
+          "name": "expires_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "Unix timestamp (in seconds) for when the session expires."
+        },
+        {
+          "name": "client_secret",
+          "langType": "String",
+          "required": true,
+          "description": "Ephemeral client secret that authenticates session requests."
+        },
+        {
+          "name": "workflow",
+          "langType": "Models::ChatkitWorkflow",
+          "required": true,
+          "refTypeName": "ChatkitWorkflow"
+        },
+        {
+          "name": "user",
+          "langType": "String",
+          "required": true,
+          "description": "User identifier associated with the session."
+        },
+        {
+          "name": "rate_limits",
+          "langType": "Models::ChatSessionRateLimits",
+          "required": true,
+          "refTypeName": "ChatSessionRateLimits"
+        },
+        {
+          "name": "max_requests_per_1_minute",
+          "langType": "Integer",
+          "required": true,
+          "description": "Convenience copy of the per-minute request limit."
+        },
+        {
+          "name": "status",
+          "langType": "Models::ChatSessionStatus",
+          "required": true,
+          "refTypeName": "ChatSessionStatus"
+        },
+        {
+          "name": "chatkit_configuration",
+          "langType": "Models::ChatSessionChatkitConfiguration",
+          "required": true,
+          "refTypeName": "ChatSessionChatkitConfiguration"
+        }
+      ]
+    }
+  }
+}

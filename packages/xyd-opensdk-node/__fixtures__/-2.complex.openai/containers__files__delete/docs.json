@@ -1,0 +1,18 @@
+{
+  "chain": [
+    "containers",
+    "files"
+  ],
+  "action": "delete",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nawait client.containers.files.delete(\"container_id\", \"file_id\");\n",
+  "typeReference": {
+    "signature": "client.containers.files.delete(containerId, fileId): Promise<void>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "langType": "void",
+      "note": "no response body"
+    }
+  }
+}

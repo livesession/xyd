@@ -1,0 +1,41 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "certificates",
+    "deactivate"
+  ],
+  "action": "create",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.admin.organization.projects.certificates.deactivate.create(\"project_id\", { certificate_ids: [\"string\"] });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.admin.organization.projects.certificates.deactivate.create(projectId, body): Promise<OrganizationProjectCertificateDeactivationResponse>",
+    "request": {
+      "typeName": "AdminOrganizationProjectCertificateDeactivateCreateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "certificate_ids",
+          "langType": "string[]",
+          "required": true
+        }
+      ]
+    },
+    "response": {
+      "typeName": "OrganizationProjectCertificateDeactivationResponse",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"organization.project.certificate.deactivation\"",
+          "required": true,
+          "description": "The project certificate deactivation result type."
+        },
+        {
+          "name": "data",
+          "langType": "OrganizationProjectCertificate[]",
+          "required": true
+        }
+      ]
+    }
+  }
+}

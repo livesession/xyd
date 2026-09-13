@@ -1,0 +1,51 @@
+{
+  "chain": [
+    "moderations"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.moderations.create(input=\"string\", model=\"string\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.moderations.create(input, model=...) -> CreateModerationResponse",
+    "request": {
+      "fields": [
+        {
+          "name": "input",
+          "langType": "CreateModerationRequestInput",
+          "required": true,
+          "description": "Input (or inputs) to classify. Can be a single string, an array of strings, or\nan array of multi-modal input objects similar to other models.\n",
+          "refTypeName": "CreateModerationRequestInput"
+        },
+        {
+          "name": "model",
+          "langType": "Optional[CreateModerationRequestModel]",
+          "required": false,
+          "description": "The content moderation model you would like to use. Learn more in\n[the moderation guide](/docs/guides/moderation), and learn about\navailable models [here](/docs/models#moderation).\n",
+          "refTypeName": "CreateModerationRequestModel"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "CreateModerationResponse",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The unique identifier for the moderation request."
+        },
+        {
+          "name": "model",
+          "langType": "str",
+          "required": true,
+          "description": "The model used to generate the moderation results."
+        },
+        {
+          "name": "results",
+          "langType": "list[CreateModerationResponseResultsItem]",
+          "required": true,
+          "description": "A list of moderation objects."
+        }
+      ]
+    }
+  }
+}

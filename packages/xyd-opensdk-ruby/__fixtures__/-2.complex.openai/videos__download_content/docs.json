@@ -1,0 +1,25 @@
+{
+  "chain": [
+    "videos"
+  ],
+  "action": "download-content",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.videos.download_content(\"video_123\", variant: \"video\")\npp result\n",
+  "typeReference": {
+    "signature": "client.videos.download_content(video_id, variant: nil) -> String",
+    "request": {
+      "fields": [
+        {
+          "name": "variant",
+          "langType": "Models::VideoContentVariant",
+          "required": false,
+          "description": "Which downloadable asset to return. Defaults to the MP4 video.",
+          "refTypeName": "VideoContentVariant"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "String",
+      "langType": "String"
+    }
+  }
+}

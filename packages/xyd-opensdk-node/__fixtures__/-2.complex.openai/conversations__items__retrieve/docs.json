@@ -1,0 +1,27 @@
+{
+  "chain": [
+    "conversations",
+    "items"
+  ],
+  "action": "retrieve",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.conversations.items.retrieve(\"conv_123\", \"msg_abc\", { include: [\"file_search_call.results\"] });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.conversations.items.retrieve(conversationId, itemId, query?): Promise<ConversationItem>",
+    "request": {
+      "typeName": "ConversationItemRetrieveParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "include",
+          "langType": "IncludeEnum[]",
+          "required": false,
+          "description": "Additional fields to include in the response. See the `include`\nparameter for [listing Conversation items above](/docs/api-reference/conversations/list-items#conversations_list_items-include) for more information.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ConversationItem",
+      "langType": "ConversationItem"
+    }
+  }
+}

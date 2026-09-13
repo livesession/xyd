@@ -1,0 +1,75 @@
+{
+  "chain": [
+    "chat",
+    "completions"
+  ],
+  "action": "update",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.chat.completions.update(\"completion_id\", metadata: { \"key\" => \"string\" })\npp result\n",
+  "typeReference": {
+    "signature": "client.chat.completions.update(completion_id, metadata:) -> Models::CreateChatCompletionResponse",
+    "request": {
+      "fields": [
+        {
+          "name": "metadata",
+          "langType": "Models::Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Models::CreateChatCompletionResponse",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "A unique identifier for the chat completion."
+        },
+        {
+          "name": "choices",
+          "langType": "Array<Models::CreateChatCompletionResponseChoicesItem>",
+          "required": true,
+          "description": "A list of chat completion choices. Can be more than one if `n` is greater than 1."
+        },
+        {
+          "name": "created",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the chat completion was created."
+        },
+        {
+          "name": "model",
+          "langType": "String",
+          "required": true,
+          "description": "The model used for the chat completion."
+        },
+        {
+          "name": "service_tier",
+          "langType": "Models::ServiceTier",
+          "required": false,
+          "refTypeName": "ServiceTier"
+        },
+        {
+          "name": "system_fingerprint",
+          "langType": "String",
+          "required": false,
+          "description": "This fingerprint represents the backend configuration that the model runs with.\n\nCan be used in conjunction with the `seed` request parameter to understand when backend changes have been made that might impact determinism.\n",
+          "deprecated": true
+        },
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The object type, which is always `chat.completion`."
+        },
+        {
+          "name": "usage",
+          "langType": "Models::CompletionUsage",
+          "required": false,
+          "refTypeName": "CompletionUsage"
+        }
+      ]
+    }
+  }
+}

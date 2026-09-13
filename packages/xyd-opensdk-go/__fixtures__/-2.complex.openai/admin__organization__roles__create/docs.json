@@ -1,0 +1,83 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "roles"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Admin.Organization.Roles.New(\n\t\tcontext.TODO(),\n\t\topenai.AdminOrganizationRoleNewParams{\n\t\t\tRoleName: \"string\",\n\t\t\tPermissions: []string{\"string\"},\n\t\t\tDescription: param.NewOpt[string](\"string\"),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Admin.Organization.Roles.New(ctx, body) (*Role, error)",
+    "request": {
+      "typeName": "AdminOrganizationRoleNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "RoleName",
+          "langType": "string",
+          "required": true,
+          "description": "Unique name for the role."
+        },
+        {
+          "name": "Permissions",
+          "langType": "[]string",
+          "required": true,
+          "description": "Permissions to grant to the role."
+        },
+        {
+          "name": "Description",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "Optional description of the role."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Role",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "Always `role`."
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier for the role."
+        },
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": true,
+          "description": "Unique name for the role."
+        },
+        {
+          "name": "Description",
+          "langType": "string",
+          "required": true,
+          "description": "Optional description of the role."
+        },
+        {
+          "name": "Permissions",
+          "langType": "[]string",
+          "required": true,
+          "description": "Permissions granted by the role."
+        },
+        {
+          "name": "ResourceType",
+          "langType": "string",
+          "required": true,
+          "description": "Resource type the role is bound to (for example `api.organization` or `api.project`)."
+        },
+        {
+          "name": "PredefinedRole",
+          "langType": "bool",
+          "required": true,
+          "description": "Whether the role is predefined and managed by OpenAI."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "chain": [
+    "projects",
+    "groups",
+    "roles"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Projects.Groups.Roles.New(\n\t\tcontext.TODO(),\n\t\t\"project_id\",\n\t\t\"group_id\",\n\t\topenai.ProjectGroupRoleNewParams{\n\t\t\tRoleID: \"string\",\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Projects.Groups.Roles.New(ctx, projectID, groupID, body) (*GroupRoleAssignment, error)",
+    "request": {
+      "typeName": "ProjectGroupRoleNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "RoleID",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the role to assign."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "GroupRoleAssignment",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "Always `group.role`."
+        },
+        {
+          "name": "Group",
+          "langType": "Group",
+          "required": true,
+          "refTypeName": "Group"
+        },
+        {
+          "name": "Role",
+          "langType": "Role",
+          "required": true,
+          "refTypeName": "Role"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "groups",
+    "users"
+  ],
+  "action": "delete",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.admin.organization.groups.users.delete(\"group_id\", \"user_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.admin.organization.groups.users.delete(group_id, user_id) -> Models::GroupUserDeletedResource",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::GroupUserDeletedResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "Always `group.user.deleted`."
+        },
+        {
+          "name": "deleted",
+          "langType": "Boolean",
+          "required": true,
+          "description": "Whether the group membership was removed."
+        }
+      ]
+    }
+  }
+}

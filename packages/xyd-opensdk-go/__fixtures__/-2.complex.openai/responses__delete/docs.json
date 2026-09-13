@@ -1,0 +1,17 @@
+{
+  "chain": [
+    "responses"
+  ],
+  "action": "delete",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\terr := client.Responses.Delete(context.TODO(), \"resp_677efb5139a88190b512bc3fef8e535d\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n}\n",
+  "typeReference": {
+    "signature": "client.Responses.Delete(ctx, responseID) error",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "langType": "error",
+      "note": "no response body"
+    }
+  }
+}

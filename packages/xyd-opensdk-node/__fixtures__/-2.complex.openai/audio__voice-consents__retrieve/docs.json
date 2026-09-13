@@ -1,0 +1,49 @@
+{
+  "chain": [
+    "audio",
+    "voice-consents"
+  ],
+  "action": "retrieve",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.audio.voiceConsents.retrieve(\"consent_id\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.audio.voiceConsents.retrieve(consentId): Promise<VoiceConsentResource>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "VoiceConsentResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"audio.voice_consent\"",
+          "required": true,
+          "description": "The object type, which is always `audio.voice_consent`."
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "The consent recording identifier."
+        },
+        {
+          "name": "name",
+          "langType": "string",
+          "required": true,
+          "description": "The label provided when the consent recording was uploaded."
+        },
+        {
+          "name": "language",
+          "langType": "string",
+          "required": true,
+          "description": "The BCP 47 language tag for the consent phrase (for example, `en-US`)."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the consent recording was created."
+        }
+      ]
+    }
+  }
+}

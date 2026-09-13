@@ -1,0 +1,46 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "groups",
+    "users"
+  ],
+  "action": "create",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.admin.organization.groups.users.create(\"group_id\", user_id: \"string\")\npp result\n",
+  "typeReference": {
+    "signature": "client.admin.organization.groups.users.create(group_id, user_id:) -> Models::GroupUserAssignment",
+    "request": {
+      "fields": [
+        {
+          "name": "user_id",
+          "langType": "String",
+          "required": true,
+          "description": "Identifier of the user to add to the group."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Models::GroupUserAssignment",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "Always `group.user`."
+        },
+        {
+          "name": "user_id",
+          "langType": "String",
+          "required": true,
+          "description": "Identifier of the user that was added."
+        },
+        {
+          "name": "group_id",
+          "langType": "String",
+          "required": true,
+          "description": "Identifier of the group the user was added to."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,205 @@
+{
+  "chain": [
+    "realtime",
+    "sessions"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Realtime.Sessions.New(\n\t\tcontext.TODO(),\n\t\topenai.RealtimeSessionNewParams{\n\t\t\tClientSecret: openai.RealtimeSessionCreateRequestClientSecret{Value: \"string\", ExpiresAt: 1},\n\t\t\tModalities: nil,\n\t\t\tInstructions: param.NewOpt[string](\"string\"),\n\t\t\tVoice: \"string\",\n\t\t\tInputAudioFormat: param.NewOpt[string](\"string\"),\n\t\t\tOutputAudioFormat: param.NewOpt[string](\"string\"),\n\t\t\tInputAudioTranscription: openai.RealtimeSessionCreateRequestInputAudioTranscription{Model: \"string\"},\n\t\t\tSpeed: param.NewOpt[float64](1),\n\t\t\tTracing: \"auto\",\n\t\t\tTurnDetection: openai.RealtimeSessionCreateRequestTurnDetection{Type: \"string\", Threshold: 1, PrefixPaddingMs: 1, SilenceDurationMs: 1},\n\t\t\tTools: []openai.RealtimeSessionCreateRequestToolsItem{openai.RealtimeSessionCreateRequestToolsItem{Type: \"function\", Name: \"string\", Description: \"string\", Parameters: map[string]any{\"key\": nil}}},\n\t\t\tToolChoice: param.NewOpt[string](\"string\"),\n\t\t\tTemperature: param.NewOpt[float64](1),\n\t\t\tMaxResponseOutputTokens: 1,\n\t\t\tTruncation: openai.RealtimeTruncationStringAuto,\n\t\t\tPrompt: openai.Prompt{ID: \"string\", Version: \"string\", Variables: map[string]openai.ResponsePromptVariablesValue{\"key\": \"string\"}},\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Realtime.Sessions.New(ctx, body) (*RealtimeSessionCreateResponse, error)",
+    "request": {
+      "typeName": "RealtimeSessionNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "ClientSecret",
+          "langType": "RealtimeSessionCreateRequestClientSecret",
+          "required": true,
+          "description": "Ephemeral key returned by the API.",
+          "refTypeName": "RealtimeSessionCreateRequestClientSecret"
+        },
+        {
+          "name": "Modalities",
+          "langType": "any",
+          "required": false,
+          "description": "The set of modalities the model can respond with. To disable audio,\nset this to [\"text\"].\n"
+        },
+        {
+          "name": "Instructions",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "The default system instructions (i.e. system message) prepended to model calls. This field allows the client to guide the model on desired responses. The model can be instructed on response content and format, (e.g. \"be extremely succinct\", \"act friendly\", \"here are examples of good responses\") and on audio behavior (e.g. \"talk quickly\", \"inject emotion into your voice\", \"laugh frequently\"). The instructions are not guaranteed to be followed by the model, but they provide guidance to the model on the desired behavior.\nNote that the server sets default instructions which will be used if this field is not set and are visible in the `session.created` event at the start of the session.\n"
+        },
+        {
+          "name": "Voice",
+          "langType": "VoiceIdsOrCustomVoice",
+          "required": false,
+          "refTypeName": "VoiceIdsOrCustomVoice"
+        },
+        {
+          "name": "InputAudioFormat",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.\n"
+        },
+        {
+          "name": "OutputAudioFormat",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "The format of output audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.\n"
+        },
+        {
+          "name": "InputAudioTranscription",
+          "langType": "RealtimeSessionCreateRequestInputAudioTranscription",
+          "required": false,
+          "description": "Configuration for input audio transcription, defaults to off and can be\nset to `null` to turn off once on. Input audio transcription is not native\nto the model, since the model consumes audio directly. Transcription runs\nasynchronously and should be treated as rough guidance\nrather than the representation understood by the model.\n",
+          "refTypeName": "RealtimeSessionCreateRequestInputAudioTranscription"
+        },
+        {
+          "name": "Speed",
+          "langType": "param.Opt[float64]",
+          "required": false,
+          "description": "The speed of the model's spoken response. 1.0 is the default speed. 0.25 is\nthe minimum speed. 1.5 is the maximum speed. This value can only be changed\nin between model turns, not while a response is in progress.\n"
+        },
+        {
+          "name": "Tracing",
+          "langType": "RealtimeSessionCreateRequestTracing",
+          "required": false,
+          "description": "Configuration options for tracing. Set to null to disable tracing. Once\ntracing is enabled for a session, the configuration cannot be modified.\n\n`auto` will create a trace for the session with default values for the\nworkflow name, group id, and metadata.\n",
+          "refTypeName": "RealtimeSessionCreateRequestTracing"
+        },
+        {
+          "name": "TurnDetection",
+          "langType": "RealtimeSessionCreateRequestTurnDetection",
+          "required": false,
+          "description": "Configuration for turn detection. Can be set to `null` to turn off. Server\nVAD means that the model will detect the start and end of speech based on\naudio volume and respond at the end of user speech.\n",
+          "refTypeName": "RealtimeSessionCreateRequestTurnDetection"
+        },
+        {
+          "name": "Tools",
+          "langType": "[]RealtimeSessionCreateRequestToolsItem",
+          "required": false,
+          "description": "Tools (functions) available to the model."
+        },
+        {
+          "name": "ToolChoice",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "How the model chooses tools. Options are `auto`, `none`, `required`, or\nspecify a function.\n"
+        },
+        {
+          "name": "Temperature",
+          "langType": "param.Opt[float64]",
+          "required": false,
+          "description": "Sampling temperature for the model, limited to [0.6, 1.2]. Defaults to 0.8.\n"
+        },
+        {
+          "name": "MaxResponseOutputTokens",
+          "langType": "RealtimeSessionCreateRequestMaxResponseOutputTokens",
+          "required": false,
+          "description": "Maximum number of output tokens for a single assistant response,\ninclusive of tool calls. Provide an integer between 1 and 4096 to\nlimit output tokens, or `inf` for the maximum available tokens for a\ngiven model. Defaults to `inf`.\n",
+          "refTypeName": "RealtimeSessionCreateRequestMaxResponseOutputTokens"
+        },
+        {
+          "name": "Truncation",
+          "langType": "RealtimeTruncation",
+          "required": false,
+          "refTypeName": "RealtimeTruncation"
+        },
+        {
+          "name": "Prompt",
+          "langType": "Prompt",
+          "required": false,
+          "refTypeName": "Prompt"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "RealtimeSessionCreateResponse",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": false,
+          "description": "Unique identifier for the session that looks like `sess_1234567890abcdef`.\n"
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": false,
+          "description": "The object type. Always `realtime.session`."
+        },
+        {
+          "name": "ExpiresAt",
+          "langType": "int64",
+          "required": false,
+          "description": "Expiration timestamp for the session, in seconds since epoch."
+        },
+        {
+          "name": "Include",
+          "langType": "[]string",
+          "required": false,
+          "description": "Additional fields to include in server outputs.\n- `item.input_audio_transcription.logprobs`: Include logprobs for input audio transcription.\n"
+        },
+        {
+          "name": "Model",
+          "langType": "string",
+          "required": false,
+          "description": "The Realtime model used for this session."
+        },
+        {
+          "name": "OutputModalities",
+          "langType": "any",
+          "required": false,
+          "description": "The set of modalities the model can respond with. To disable audio,\nset this to [\"text\"].\n"
+        },
+        {
+          "name": "Instructions",
+          "langType": "string",
+          "required": false,
+          "description": "The default system instructions (i.e. system message) prepended to model\ncalls. This field allows the client to guide the model on desired\nresponses. The model can be instructed on response content and format,\n(e.g. \"be extremely succinct\", \"act friendly\", \"here are examples of good\nresponses\") and on audio behavior (e.g. \"talk quickly\", \"inject emotion\ninto your voice\", \"laugh frequently\"). The instructions are not guaranteed\nto be followed by the model, but they provide guidance to the model on the\ndesired behavior.\n\nNote that the server sets default instructions which will be used if this\nfield is not set and are visible in the `session.created` event at the\nstart of the session.\n"
+        },
+        {
+          "name": "Audio",
+          "langType": "RealtimeSessionCreateResponseAudio",
+          "required": false,
+          "description": "Configuration for input and output audio for the session.\n",
+          "refTypeName": "RealtimeSessionCreateResponseAudio"
+        },
+        {
+          "name": "Tracing",
+          "langType": "RealtimeSessionCreateRequestTracing",
+          "required": false,
+          "description": "Configuration options for tracing. Set to null to disable tracing. Once\ntracing is enabled for a session, the configuration cannot be modified.\n\n`auto` will create a trace for the session with default values for the\nworkflow name, group id, and metadata.\n",
+          "refTypeName": "RealtimeSessionCreateRequestTracing"
+        },
+        {
+          "name": "TurnDetection",
+          "langType": "RealtimeSessionCreateRequestTurnDetection",
+          "required": false,
+          "description": "Configuration for turn detection. Can be set to `null` to turn off. Server\nVAD means that the model will detect the start and end of speech based on\naudio volume and respond at the end of user speech.\n",
+          "refTypeName": "RealtimeSessionCreateRequestTurnDetection"
+        },
+        {
+          "name": "Tools",
+          "langType": "[]RealtimeFunctionTool",
+          "required": false,
+          "description": "Tools (functions) available to the model."
+        },
+        {
+          "name": "ToolChoice",
+          "langType": "string",
+          "required": false,
+          "description": "How the model chooses tools. Options are `auto`, `none`, `required`, or\nspecify a function.\n"
+        },
+        {
+          "name": "MaxOutputTokens",
+          "langType": "RealtimeSessionCreateRequestMaxResponseOutputTokens",
+          "required": false,
+          "description": "Maximum number of output tokens for a single assistant response,\ninclusive of tool calls. Provide an integer between 1 and 4096 to\nlimit output tokens, or `inf` for the maximum available tokens for a\ngiven model. Defaults to `inf`.\n",
+          "refTypeName": "RealtimeSessionCreateRequestMaxResponseOutputTokens"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "chain": [
+    "audio",
+    "translations"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"bytes\"\n\t\"context\"\n\t\"fmt\"\n\t\"io\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Audio.Translations.New(\n\t\tcontext.TODO(),\n\t\topenai.AudioTranslationNewParams{\n\t\t\tFile: io.Reader(bytes.NewBuffer([]byte(\"Example data\"))),\n\t\t\tModel: \"string\",\n\t\t\tPrompt: param.NewOpt[string](\"string\"),\n\t\t\tResponseFormat: openai.CreateTranslationRequestResponseFormatJSON,\n\t\t\tTemperature: param.NewOpt[float64](0),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Audio.Translations.New(ctx, body) (AudioTranslationsCreateResponse, error)",
+    "request": {
+      "typeName": "AudioTranslationNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "File",
+          "langType": "io.Reader",
+          "required": true,
+          "description": "The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.\n"
+        },
+        {
+          "name": "Model",
+          "langType": "CreateTranslationRequestModel",
+          "required": true,
+          "description": "ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2 model) is currently available.\n",
+          "refTypeName": "CreateTranslationRequestModel"
+        },
+        {
+          "name": "Prompt",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "An optional text to guide the model's style or continue a previous audio segment. The [prompt](/docs/guides/speech-to-text#prompting) should be in English.\n"
+        },
+        {
+          "name": "ResponseFormat",
+          "langType": "CreateTranslationRequestResponseFormat",
+          "required": false,
+          "description": "The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or `vtt`.\n",
+          "refTypeName": "CreateTranslationRequestResponseFormat"
+        },
+        {
+          "name": "Temperature",
+          "langType": "param.Opt[float64]",
+          "required": false,
+          "description": "The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically increase the temperature until certain thresholds are hit.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "AudioTranslationsCreateResponse",
+      "langType": "AudioTranslationsCreateResponse"
+    }
+  }
+}

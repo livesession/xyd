@@ -1,0 +1,104 @@
+{
+  "chain": [
+    "chat",
+    "completions"
+  ],
+  "action": "list",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Chat.Completions.List(\n\t\tcontext.TODO(),\n\t\topenai.ChatCompletionListParams{\n\t\t\tModel: param.NewOpt[string](\"model\"),\n\t\t\tMetadata: map[string]string{\"key\": \"string\"},\n\t\t\tAfter: param.NewOpt[string](\"after\"),\n\t\t\tLimit: param.NewOpt[int64](20),\n\t\t\tOrder: param.NewOpt[openai.ChatCompletionsListOrder](openai.ChatCompletionsListOrderAsc),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Chat.Completions.List(ctx, query) (*pagination.CursorPage[CreateChatCompletionResponse], error)",
+    "request": {
+      "typeName": "ChatCompletionListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "Model",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "The model used to generate the Chat Completions."
+        },
+        {
+          "name": "Metadata",
+          "langType": "Metadata",
+          "required": false,
+          "description": "A list of metadata keys to filter the Chat Completions by. Example:\n\n`metadata[key1]=value1&metadata[key2]=value2`\n",
+          "refTypeName": "Metadata"
+        },
+        {
+          "name": "After",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "Identifier for the last chat completion from the previous pagination request."
+        },
+        {
+          "name": "Limit",
+          "langType": "param.Opt[int64]",
+          "required": false,
+          "description": "Number of Chat Completions to retrieve."
+        },
+        {
+          "name": "Order",
+          "langType": "param.Opt[ChatCompletionsListOrder]",
+          "required": false,
+          "description": "Sort order for Chat Completions by timestamp. Use `asc` for ascending order or `desc` for descending order. Defaults to `asc`.",
+          "refTypeName": "ChatCompletionsListOrder"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "CreateChatCompletionResponse",
+      "note": "paginated (pagination.CursorPage)",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "A unique identifier for the chat completion."
+        },
+        {
+          "name": "Choices",
+          "langType": "[]CreateChatCompletionResponseChoicesItem",
+          "required": true,
+          "description": "A list of chat completion choices. Can be more than one if `n` is greater than 1."
+        },
+        {
+          "name": "Created",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the chat completion was created."
+        },
+        {
+          "name": "Model",
+          "langType": "string",
+          "required": true,
+          "description": "The model used for the chat completion."
+        },
+        {
+          "name": "ServiceTier",
+          "langType": "ServiceTier",
+          "required": false,
+          "refTypeName": "ServiceTier"
+        },
+        {
+          "name": "SystemFingerprint",
+          "langType": "string",
+          "required": false,
+          "description": "This fingerprint represents the backend configuration that the model runs with.\n\nCan be used in conjunction with the `seed` request parameter to understand when backend changes have been made that might impact determinism.\n",
+          "deprecated": true
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always `chat.completion`."
+        },
+        {
+          "name": "Usage",
+          "langType": "CompletionUsage",
+          "required": false,
+          "refTypeName": "CompletionUsage"
+        }
+      ]
+    }
+  }
+}

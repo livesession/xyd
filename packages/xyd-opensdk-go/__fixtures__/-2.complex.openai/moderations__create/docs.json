@@ -1,0 +1,53 @@
+{
+  "chain": [
+    "moderations"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Moderations.New(\n\t\tcontext.TODO(),\n\t\topenai.ModerationNewParams{\n\t\t\tInput: \"string\",\n\t\t\tModel: \"string\",\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Moderations.New(ctx, body) (*CreateModerationResponse, error)",
+    "request": {
+      "typeName": "ModerationNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "Input",
+          "langType": "CreateModerationRequestInput",
+          "required": true,
+          "description": "Input (or inputs) to classify. Can be a single string, an array of strings, or\nan array of multi-modal input objects similar to other models.\n",
+          "refTypeName": "CreateModerationRequestInput"
+        },
+        {
+          "name": "Model",
+          "langType": "CreateModerationRequestModel",
+          "required": false,
+          "description": "The content moderation model you would like to use. Learn more in\n[the moderation guide](/docs/guides/moderation), and learn about\navailable models [here](/docs/models#moderation).\n",
+          "refTypeName": "CreateModerationRequestModel"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "CreateModerationResponse",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The unique identifier for the moderation request."
+        },
+        {
+          "name": "Model",
+          "langType": "string",
+          "required": true,
+          "description": "The model used to generate the moderation results."
+        },
+        {
+          "name": "Results",
+          "langType": "[]CreateModerationResponseResultsItem",
+          "required": true,
+          "description": "A list of moderation objects."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "chain": [
+    "fine-tuning",
+    "checkpoints",
+    "permissions"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.FineTuning.Checkpoints.Permissions.New(\n\t\tcontext.TODO(),\n\t\t\"ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd\",\n\t\topenai.FineTuningCheckpointPermissionNewParams{\n\t\t\tProjectIds: []string{\"string\"},\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.FineTuning.Checkpoints.Permissions.New(ctx, fineTunedModelCheckpoint, body) (*pagination.CursorPage[FineTuningCheckpointPermission], error)",
+    "request": {
+      "typeName": "FineTuningCheckpointPermissionNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "ProjectIds",
+          "langType": "[]string",
+          "required": true,
+          "description": "The project identifiers to grant access to."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "FineTuningCheckpointPermission",
+      "note": "paginated (pagination.CursorPage)",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The permission identifier, which can be referenced in the API endpoints."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the permission was created."
+        },
+        {
+          "name": "ProjectID",
+          "langType": "string",
+          "required": true,
+          "description": "The project identifier that the permission is for."
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always \"checkpoint.permission\"."
+        }
+      ]
+    }
+  }
+}

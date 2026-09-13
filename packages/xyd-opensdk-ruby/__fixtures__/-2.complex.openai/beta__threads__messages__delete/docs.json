@@ -1,0 +1,35 @@
+{
+  "chain": [
+    "beta",
+    "threads",
+    "messages"
+  ],
+  "action": "delete",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.beta.threads.messages.delete(\"thread_id\", \"message_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.beta.threads.messages.delete(thread_id, message_id) -> Models::DeleteMessageResponse",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::DeleteMessageResponse",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "Boolean",
+          "required": true
+        },
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true
+        }
+      ]
+    }
+  }
+}

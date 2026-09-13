@@ -1,0 +1,33 @@
+{
+  "chain": [
+    "vector-stores"
+  ],
+  "action": "delete",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.vector_stores.delete(\"vector_store_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.vector_stores.delete(vector_store_id) -> Models::DeleteVectorStoreResponse",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::DeleteVectorStoreResponse",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "Boolean",
+          "required": true
+        },
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true
+        }
+      ]
+    }
+  }
+}

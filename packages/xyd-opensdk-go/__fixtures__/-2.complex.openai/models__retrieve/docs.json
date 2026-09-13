@@ -1,0 +1,42 @@
+{
+  "chain": [
+    "models"
+  ],
+  "action": "retrieve",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Models.Get(context.TODO(), \"gpt-4o-mini\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Models.Get(ctx, model) (*Model, error)",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Model",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The model identifier, which can be referenced in the API endpoints."
+        },
+        {
+          "name": "Created",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) when the model was created."
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always \"model\"."
+        },
+        {
+          "name": "OwnedBy",
+          "langType": "string",
+          "required": true,
+          "description": "The organization that owns the model."
+        }
+      ]
+    }
+  }
+}

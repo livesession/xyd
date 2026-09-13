@@ -1,0 +1,53 @@
+{
+  "chain": [
+    "audio",
+    "translations"
+  ],
+  "action": "create",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.audio.translations.create({ file: new Uint8Array([1, 2, 3]), model: \"string\", prompt: \"string\", response_format: \"json\", temperature: 0 });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.audio.translations.create(body): Promise<AudioTranslationsCreateResponse>",
+    "request": {
+      "typeName": "AudioTranslationCreateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "file",
+          "langType": "Uint8Array | Blob",
+          "required": true,
+          "description": "The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.\n"
+        },
+        {
+          "name": "model",
+          "langType": "CreateTranslationRequestModel",
+          "required": true,
+          "description": "ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2 model) is currently available.\n",
+          "refTypeName": "CreateTranslationRequestModel"
+        },
+        {
+          "name": "prompt",
+          "langType": "string",
+          "required": false,
+          "description": "An optional text to guide the model's style or continue a previous audio segment. The [prompt](/docs/guides/speech-to-text#prompting) should be in English.\n"
+        },
+        {
+          "name": "response_format",
+          "langType": "CreateTranslationRequestResponseFormat",
+          "required": false,
+          "description": "The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or `vtt`.\n",
+          "refTypeName": "CreateTranslationRequestResponseFormat"
+        },
+        {
+          "name": "temperature",
+          "langType": "number",
+          "required": false,
+          "description": "The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically increase the temperature until certain thresholds are hit.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "AudioTranslationsCreateResponse",
+      "langType": "AudioTranslationsCreateResponse"
+    }
+  }
+}

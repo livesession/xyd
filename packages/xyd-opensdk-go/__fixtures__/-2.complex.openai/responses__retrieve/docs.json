@@ -1,0 +1,236 @@
+{
+  "chain": [
+    "responses"
+  ],
+  "action": "retrieve",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Responses.Get(\n\t\tcontext.TODO(),\n\t\t\"resp_677efb5139a88190b512bc3fef8e535d\",\n\t\topenai.ResponseGetParams{\n\t\t\tInclude: []openai.IncludeEnum{openai.IncludeEnumFileSearchCallResults},\n\t\t\tStream: param.NewOpt[bool](true),\n\t\t\tStartingAfter: param.NewOpt[int64](1),\n\t\t\tIncludeObfuscation: param.NewOpt[bool](true),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Responses.Get(ctx, responseID, query) (*Response, error)",
+    "request": {
+      "typeName": "ResponseGetParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "Include",
+          "langType": "[]IncludeEnum",
+          "required": false,
+          "description": "Additional fields to include in the response. See the `include`\nparameter for Response creation above for more information.\n"
+        },
+        {
+          "name": "Stream",
+          "langType": "param.Opt[bool]",
+          "required": false,
+          "description": "If set to true, the model response data will be streamed to the client\nas it is generated using [server-sent events](https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events#Event_stream_format).\nSee the [Streaming section below](/docs/api-reference/responses-streaming)\nfor more information.\n"
+        },
+        {
+          "name": "StartingAfter",
+          "langType": "param.Opt[int64]",
+          "required": false,
+          "description": "The sequence number of the event after which to start streaming.\n"
+        },
+        {
+          "name": "IncludeObfuscation",
+          "langType": "param.Opt[bool]",
+          "required": false,
+          "description": "When true, stream obfuscation will be enabled. Stream obfuscation adds\nrandom characters to an `obfuscation` field on streaming delta events\nto normalize payload sizes as a mitigation to certain side-channel\nattacks. These obfuscation fields are included by default, but add a\nsmall amount of overhead to the data stream. You can set\n`include_obfuscation` to false to optimize for bandwidth if you trust\nthe network links between your application and the OpenAI API.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Response",
+      "fields": [
+        {
+          "name": "Metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        },
+        {
+          "name": "TopLogprobs",
+          "langType": "int64",
+          "required": false
+        },
+        {
+          "name": "Temperature",
+          "langType": "float64",
+          "required": true
+        },
+        {
+          "name": "TopP",
+          "langType": "float64",
+          "required": true
+        },
+        {
+          "name": "User",
+          "langType": "string",
+          "required": false,
+          "description": "This field is being replaced by `safety_identifier` and `prompt_cache_key`. Use `prompt_cache_key` instead to maintain caching optimizations.\nA stable identifier for your end-users.\nUsed to boost cache hit rates by better bucketing similar requests and  to help OpenAI detect and prevent abuse. [Learn more](/docs/guides/safety-best-practices#safety-identifiers).\n",
+          "deprecated": true
+        },
+        {
+          "name": "SafetyIdentifier",
+          "langType": "string",
+          "required": false,
+          "description": "A stable identifier used to help detect users of your application that may be violating OpenAI's usage policies.\nThe IDs should be a string that uniquely identifies each user, with a maximum length of 64 characters. We recommend hashing their username or email address, in order to avoid sending us any identifying information. [Learn more](/docs/guides/safety-best-practices#safety-identifiers).\n"
+        },
+        {
+          "name": "PromptCacheKey",
+          "langType": "string",
+          "required": false,
+          "description": "Used by OpenAI to cache responses for similar requests to optimize your cache hit rates. Replaces the `user` field. [Learn more](/docs/guides/prompt-caching).\n"
+        },
+        {
+          "name": "ServiceTier",
+          "langType": "ServiceTier",
+          "required": false,
+          "refTypeName": "ServiceTier"
+        },
+        {
+          "name": "PromptCacheRetention",
+          "langType": "ResponsePromptCacheRetention",
+          "required": false,
+          "refTypeName": "ResponsePromptCacheRetention"
+        },
+        {
+          "name": "PreviousResponseID",
+          "langType": "string",
+          "required": false
+        },
+        {
+          "name": "Model",
+          "langType": "ModelIdsResponses",
+          "required": true,
+          "refTypeName": "ModelIdsResponses"
+        },
+        {
+          "name": "Reasoning",
+          "langType": "Reasoning",
+          "required": false,
+          "refTypeName": "Reasoning"
+        },
+        {
+          "name": "Background",
+          "langType": "bool",
+          "required": false
+        },
+        {
+          "name": "MaxToolCalls",
+          "langType": "int64",
+          "required": false
+        },
+        {
+          "name": "Text",
+          "langType": "ResponseTextParam",
+          "required": false,
+          "refTypeName": "ResponseTextParam"
+        },
+        {
+          "name": "Tools",
+          "langType": "ToolsArray",
+          "required": true,
+          "refTypeName": "ToolsArray"
+        },
+        {
+          "name": "ToolChoice",
+          "langType": "ToolChoiceParam",
+          "required": true,
+          "refTypeName": "ToolChoiceParam"
+        },
+        {
+          "name": "Prompt",
+          "langType": "Prompt",
+          "required": false,
+          "refTypeName": "Prompt"
+        },
+        {
+          "name": "Truncation",
+          "langType": "ResponseTruncation",
+          "required": false,
+          "refTypeName": "ResponseTruncation"
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "Unique identifier for this Response.\n"
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type of this resource - always set to `response`.\n"
+        },
+        {
+          "name": "Status",
+          "langType": "ResponseStatus",
+          "required": false,
+          "description": "The status of the response generation. One of `completed`, `failed`,\n`in_progress`, `cancelled`, `queued`, or `incomplete`.\n",
+          "refTypeName": "ResponseStatus"
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "float64",
+          "required": true,
+          "description": "Unix timestamp (in seconds) of when this Response was created.\n"
+        },
+        {
+          "name": "CompletedAt",
+          "langType": "float64",
+          "required": false
+        },
+        {
+          "name": "Error",
+          "langType": "ResponseError",
+          "required": true,
+          "refTypeName": "ResponseError"
+        },
+        {
+          "name": "IncompleteDetails",
+          "langType": "ResponseIncompleteDetails",
+          "required": true,
+          "refTypeName": "ResponseIncompleteDetails"
+        },
+        {
+          "name": "Output",
+          "langType": "[]OutputItem",
+          "required": true,
+          "description": "An array of content items generated by the model.\n\n- The length and order of items in the `output` array is dependent\n  on the model's response.\n- Rather than accessing the first item in the `output` array and\n  assuming it's an `assistant` message with the content generated by\n  the model, you might consider using the `output_text` property where\n  supported in SDKs.\n"
+        },
+        {
+          "name": "Instructions",
+          "langType": "ResponseInstructions",
+          "required": true,
+          "refTypeName": "ResponseInstructions"
+        },
+        {
+          "name": "OutputText",
+          "langType": "string",
+          "required": false
+        },
+        {
+          "name": "Usage",
+          "langType": "ResponseUsage",
+          "required": false,
+          "refTypeName": "ResponseUsage"
+        },
+        {
+          "name": "ParallelToolCalls",
+          "langType": "bool",
+          "required": true,
+          "description": "Whether to allow the model to run tool calls in parallel.\n"
+        },
+        {
+          "name": "Conversation",
+          "langType": "Conversation2",
+          "required": false,
+          "refTypeName": "Conversation2"
+        },
+        {
+          "name": "MaxOutputTokens",
+          "langType": "int64",
+          "required": false
+        }
+      ]
+    }
+  }
+}

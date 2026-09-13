@@ -1,0 +1,70 @@
+{
+  "chain": [
+    "audio",
+    "voice-consents"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"bytes\"\n\t\"context\"\n\t\"fmt\"\n\t\"io\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Audio.VoiceConsents.New(\n\t\tcontext.TODO(),\n\t\topenai.AudioVoiceConsentNewParams{\n\t\t\tName: \"string\",\n\t\t\tRecording: io.Reader(bytes.NewBuffer([]byte(\"Example data\"))),\n\t\t\tLanguage: \"string\",\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Audio.VoiceConsents.New(ctx, body) (*VoiceConsentResource, error)",
+    "request": {
+      "typeName": "AudioVoiceConsentNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": true,
+          "description": "The label to use for this consent recording."
+        },
+        {
+          "name": "Recording",
+          "langType": "io.Reader",
+          "required": true,
+          "description": "The consent audio recording file. Maximum size is 10 MiB.\n\nSupported MIME types:\n`audio/mpeg`, `audio/wav`, `audio/x-wav`, `audio/ogg`, `audio/aac`, `audio/flac`, `audio/webm`, `audio/mp4`.\n"
+        },
+        {
+          "name": "Language",
+          "langType": "string",
+          "required": true,
+          "description": "The BCP 47 language tag for the consent phrase (for example, `en-US`)."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "VoiceConsentResource",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always `audio.voice_consent`."
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The consent recording identifier."
+        },
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": true,
+          "description": "The label provided when the consent recording was uploaded."
+        },
+        {
+          "name": "Language",
+          "langType": "string",
+          "required": true,
+          "description": "The BCP 47 language tag for the consent phrase (for example, `en-US`)."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the consent recording was created."
+        }
+      ]
+    }
+  }
+}

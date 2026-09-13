@@ -1,0 +1,79 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "admin-api-keys"
+  ],
+  "action": "list",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.admin.organization.admin_api_keys.list(after=\"after\", order=\"asc\", limit=20)\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.admin.organization.admin_api_keys.list(after=..., order=..., limit=...) -> CursorPage[AdminApiKey]",
+    "request": {
+      "fields": [
+        {
+          "name": "after",
+          "langType": "Optional[str]",
+          "required": false
+        },
+        {
+          "name": "order",
+          "langType": "Optional[AdminOrganizationAdminApiKeysListOrder]",
+          "required": false,
+          "refTypeName": "AdminOrganizationAdminApiKeysListOrder"
+        },
+        {
+          "name": "limit",
+          "langType": "Optional[int]",
+          "required": false
+        }
+      ]
+    },
+    "response": {
+      "typeName": "CursorPage[AdminApiKey]",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `organization.admin_api_key`"
+        },
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "langType": "Optional[str]",
+          "required": false,
+          "description": "The name of the API key"
+        },
+        {
+          "name": "redacted_value",
+          "langType": "str",
+          "required": true,
+          "description": "The redacted value of the API key"
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the API key was created"
+        },
+        {
+          "name": "last_used_at",
+          "langType": "Optional[int]",
+          "required": false
+        },
+        {
+          "name": "owner",
+          "langType": "AdminApiKeyOwner",
+          "required": true,
+          "refTypeName": "AdminApiKeyOwner"
+        }
+      ]
+    }
+  }
+}

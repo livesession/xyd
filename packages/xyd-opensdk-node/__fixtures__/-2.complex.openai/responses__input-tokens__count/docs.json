@@ -1,0 +1,93 @@
+{
+  "chain": [
+    "responses",
+    "input-tokens"
+  ],
+  "action": "count",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.responses.inputTokens.count({ model: \"string\", input: \"string\", previous_response_id: \"string\", tools: [{ type: \"function\", name: \"string\", parameters: { key: {} as any }, strict: true, description: \"string\", defer_loading: true }], text: { format: { type: \"text\" }, verbosity: \"low\" }, reasoning: { effort: \"none\", summary: \"auto\", generate_summary: \"auto\" }, truncation: \"auto\", instructions: \"string\", conversation: \"string\", tool_choice: \"none\", parallel_tool_calls: true });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.responses.inputTokens.count(body?): Promise<TokenCountsResource>",
+    "request": {
+      "typeName": "ResponseInputTokenCountParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "model",
+          "langType": "string | null",
+          "required": false
+        },
+        {
+          "name": "input",
+          "langType": "TokenCountsBodyInput | null",
+          "required": false,
+          "refTypeName": "TokenCountsBodyInput"
+        },
+        {
+          "name": "previous_response_id",
+          "langType": "string | null",
+          "required": false
+        },
+        {
+          "name": "tools",
+          "langType": "Tool[] | null",
+          "required": false
+        },
+        {
+          "name": "text",
+          "langType": "ResponseTextParam | null",
+          "required": false,
+          "refTypeName": "ResponseTextParam"
+        },
+        {
+          "name": "reasoning",
+          "langType": "Reasoning | null",
+          "required": false,
+          "refTypeName": "Reasoning"
+        },
+        {
+          "name": "truncation",
+          "langType": "TruncationEnum",
+          "required": false,
+          "refTypeName": "TruncationEnum"
+        },
+        {
+          "name": "instructions",
+          "langType": "string | null",
+          "required": false
+        },
+        {
+          "name": "conversation",
+          "langType": "ConversationParam | null",
+          "required": false,
+          "refTypeName": "ConversationParam"
+        },
+        {
+          "name": "tool_choice",
+          "langType": "ToolChoiceParam | null",
+          "required": false,
+          "refTypeName": "ToolChoiceParam"
+        },
+        {
+          "name": "parallel_tool_calls",
+          "langType": "boolean | null",
+          "required": false
+        }
+      ]
+    },
+    "response": {
+      "typeName": "TokenCountsResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"response.input_tokens\"",
+          "required": true
+        },
+        {
+          "name": "input_tokens",
+          "langType": "number",
+          "required": true
+        }
+      ]
+    }
+  }
+}

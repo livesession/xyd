@@ -1,0 +1,52 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "service-accounts"
+  ],
+  "action": "retrieve",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.admin.organization.projects.serviceAccounts.retrieve(\"project_id\", \"service_account_id\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.admin.organization.projects.serviceAccounts.retrieve(projectId, serviceAccountId): Promise<ProjectServiceAccount>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "ProjectServiceAccount",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"organization.project.service_account\"",
+          "required": true,
+          "description": "The object type, which is always `organization.project.service_account`"
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "langType": "string",
+          "required": true,
+          "description": "The name of the service account"
+        },
+        {
+          "name": "role",
+          "langType": "ProjectServiceAccountRole",
+          "required": true,
+          "description": "`owner` or `member`",
+          "refTypeName": "ProjectServiceAccountRole"
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the service account was created"
+        }
+      ]
+    }
+  }
+}

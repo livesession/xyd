@@ -1,0 +1,32 @@
+{
+  "chain": [
+    "projects",
+    "users",
+    "roles"
+  ],
+  "action": "delete",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.projects.users.roles.delete(\"project_id\", \"user_id\", \"role_id\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.projects.users.roles.delete(projectId, userId, roleId): Promise<DeletedRoleAssignmentResource>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "DeletedRoleAssignmentResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier for the deleted assignment, such as `group.role.deleted` or `user.role.deleted`."
+        },
+        {
+          "name": "deleted",
+          "langType": "boolean",
+          "required": true,
+          "description": "Whether the assignment was removed."
+        }
+      ]
+    }
+  }
+}

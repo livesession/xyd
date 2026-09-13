@@ -1,0 +1,83 @@
+{
+  "chain": [
+    "skills"
+  ],
+  "action": "list",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Skills.List(\n\t\tcontext.TODO(),\n\t\topenai.SkillListParams{\n\t\t\tLimit: param.NewOpt[int64](1),\n\t\t\tOrder: param.NewOpt[openai.OrderEnum](openai.OrderEnumAsc),\n\t\t\tAfter: param.NewOpt[string](\"after\"),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Skills.List(ctx, query) (*pagination.CursorPage[SkillResource], error)",
+    "request": {
+      "typeName": "SkillListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "Limit",
+          "langType": "param.Opt[int64]",
+          "required": false,
+          "description": "Number of items to retrieve"
+        },
+        {
+          "name": "Order",
+          "langType": "param.Opt[OrderEnum]",
+          "required": false,
+          "description": "Sort order of results by timestamp. Use `asc` for ascending order or `desc` for descending order.",
+          "refTypeName": "OrderEnum"
+        },
+        {
+          "name": "After",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "Identifier for the last item from the previous pagination request"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "SkillResource",
+      "note": "paginated (pagination.CursorPage)",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "Unique identifier for the skill."
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is `skill`."
+        },
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": true,
+          "description": "Name of the skill."
+        },
+        {
+          "name": "Description",
+          "langType": "string",
+          "required": true,
+          "description": "Description of the skill."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "Unix timestamp (seconds) for when the skill was created."
+        },
+        {
+          "name": "DefaultVersion",
+          "langType": "string",
+          "required": true,
+          "description": "Default version for the skill."
+        },
+        {
+          "name": "LatestVersion",
+          "langType": "string",
+          "required": true,
+          "description": "Latest version for the skill."
+        }
+      ]
+    }
+  }
+}

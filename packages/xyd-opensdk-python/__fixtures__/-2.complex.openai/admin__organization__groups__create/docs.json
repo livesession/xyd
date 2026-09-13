@@ -1,0 +1,57 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "groups"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.admin.organization.groups.create(name=\"string\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.admin.organization.groups.create(name) -> GroupResponse",
+    "request": {
+      "fields": [
+        {
+          "name": "name",
+          "langType": "str",
+          "required": true,
+          "description": "Human readable name for the group."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "GroupResponse",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "Identifier for the group."
+        },
+        {
+          "name": "name",
+          "langType": "str",
+          "required": true,
+          "description": "Display name of the group."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the group was created."
+        },
+        {
+          "name": "is_scim_managed",
+          "langType": "bool",
+          "required": true,
+          "description": "Whether the group is managed through SCIM and controlled by your identity provider."
+        },
+        {
+          "name": "group_type",
+          "langType": "str",
+          "required": true,
+          "description": "The type of the group."
+        }
+      ]
+    }
+  }
+}

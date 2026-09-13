@@ -1,0 +1,33 @@
+{
+  "chain": [
+    "conversations"
+  ],
+  "action": "delete",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.conversations.delete(\"conv_123\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.conversations.delete(conversationId): Promise<DeletedConversationResource>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "DeletedConversationResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"conversation.deleted\"",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "boolean",
+          "required": true
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true
+        }
+      ]
+    }
+  }
+}

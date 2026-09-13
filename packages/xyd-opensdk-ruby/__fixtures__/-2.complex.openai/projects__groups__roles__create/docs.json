@@ -1,0 +1,45 @@
+{
+  "chain": [
+    "projects",
+    "groups",
+    "roles"
+  ],
+  "action": "create",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.projects.groups.roles.create(\"project_id\", \"group_id\", role_id: \"string\")\npp result\n",
+  "typeReference": {
+    "signature": "client.projects.groups.roles.create(project_id, group_id, role_id:) -> Models::GroupRoleAssignment",
+    "request": {
+      "fields": [
+        {
+          "name": "role_id",
+          "langType": "String",
+          "required": true,
+          "description": "Identifier of the role to assign."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Models::GroupRoleAssignment",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "Always `group.role`."
+        },
+        {
+          "name": "group",
+          "langType": "Models::Group",
+          "required": true,
+          "refTypeName": "Group"
+        },
+        {
+          "name": "role",
+          "langType": "Models::Role",
+          "required": true,
+          "refTypeName": "Role"
+        }
+      ]
+    }
+  }
+}

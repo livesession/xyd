@@ -1,0 +1,115 @@
+{
+  "chain": [
+    "videos"
+  ],
+  "action": "list",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Videos.List(\n\t\tcontext.TODO(),\n\t\topenai.VideoListParams{\n\t\t\tLimit: param.NewOpt[int64](1),\n\t\t\tOrder: param.NewOpt[openai.OrderEnum](openai.OrderEnumAsc),\n\t\t\tAfter: param.NewOpt[string](\"after\"),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Videos.List(ctx, query) (*pagination.CursorPage[VideoResource], error)",
+    "request": {
+      "typeName": "VideoListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "Limit",
+          "langType": "param.Opt[int64]",
+          "required": false,
+          "description": "Number of items to retrieve"
+        },
+        {
+          "name": "Order",
+          "langType": "param.Opt[OrderEnum]",
+          "required": false,
+          "description": "Sort order of results by timestamp. Use `asc` for ascending order or `desc` for descending order.",
+          "refTypeName": "OrderEnum"
+        },
+        {
+          "name": "After",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "Identifier for the last item from the previous pagination request"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "VideoResource",
+      "note": "paginated (pagination.CursorPage)",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "Unique identifier for the video job."
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always `video`."
+        },
+        {
+          "name": "Model",
+          "langType": "VideoModel",
+          "required": true,
+          "refTypeName": "VideoModel"
+        },
+        {
+          "name": "Status",
+          "langType": "VideoStatus",
+          "required": true,
+          "refTypeName": "VideoStatus"
+        },
+        {
+          "name": "Progress",
+          "langType": "int64",
+          "required": true,
+          "description": "Approximate completion percentage for the generation task."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "Unix timestamp (seconds) for when the job was created."
+        },
+        {
+          "name": "CompletedAt",
+          "langType": "int64",
+          "required": true
+        },
+        {
+          "name": "ExpiresAt",
+          "langType": "int64",
+          "required": true
+        },
+        {
+          "name": "Prompt",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "Size",
+          "langType": "VideoSize",
+          "required": true,
+          "refTypeName": "VideoSize"
+        },
+        {
+          "name": "Seconds",
+          "langType": "string",
+          "required": true,
+          "description": "Duration of the generated clip in seconds. For extensions, this is the stitched total duration."
+        },
+        {
+          "name": "RemixedFromVideoID",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "Error",
+          "langType": "Error2",
+          "required": true,
+          "refTypeName": "Error2"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "api-keys"
+  ],
+  "action": "retrieve",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Admin.Organization.Projects.APIKeys.Get(context.TODO(), \"project_id\", \"api_key_id\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Admin.Organization.Projects.APIKeys.Get(ctx, projectID, apiKeyID) (*ProjectAPIKey, error)",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "ProjectAPIKey",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always `organization.project.api_key`"
+        },
+        {
+          "name": "RedactedValue",
+          "langType": "string",
+          "required": true,
+          "description": "The redacted value of the API key"
+        },
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": true,
+          "description": "The name of the API key"
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the API key was created"
+        },
+        {
+          "name": "LastUsedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the API key was last used."
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "Owner",
+          "langType": "ProjectAPIKeyOwner",
+          "required": true,
+          "refTypeName": "ProjectApiKeyOwner"
+        }
+      ]
+    }
+  }
+}

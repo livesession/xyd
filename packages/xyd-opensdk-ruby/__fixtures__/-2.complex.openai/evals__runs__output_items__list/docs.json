@@ -1,0 +1,109 @@
+{
+  "chain": [
+    "evals",
+    "runs",
+    "output-items"
+  ],
+  "action": "list",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.evals.runs.output_items.list(\"eval_id\", \"run_id\", after: \"after\", limit: 20, status: \"fail\", order: \"asc\")\npp result\n",
+  "typeReference": {
+    "signature": "client.evals.runs.output_items.list(eval_id, run_id, after: nil, limit: nil, status: nil, order: nil) -> Page<Models::EvalRunOutputItem>",
+    "request": {
+      "fields": [
+        {
+          "name": "after",
+          "langType": "String",
+          "required": false,
+          "description": "Identifier for the last output item from the previous pagination request."
+        },
+        {
+          "name": "limit",
+          "langType": "Integer",
+          "required": false,
+          "description": "Number of output items to retrieve."
+        },
+        {
+          "name": "status",
+          "langType": "Models::EvalsRunsOutputItemsListStatus",
+          "required": false,
+          "description": "Filter output items by status. Use `failed` to filter by failed output\nitems or `pass` to filter by passed output items.\n",
+          "refTypeName": "EvalsRunsOutputItemsListStatus"
+        },
+        {
+          "name": "order",
+          "langType": "Models::EvalsRunsOutputItemsListOrder",
+          "required": false,
+          "description": "Sort order for output items by timestamp. Use `asc` for ascending order or `desc` for descending order. Defaults to `asc`.",
+          "refTypeName": "EvalsRunsOutputItemsListOrder"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Page<Models::EvalRunOutputItem>",
+      "note": "paginated (Page)",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The type of the object. Always \"eval.run.output_item\"."
+        },
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "Unique identifier for the evaluation run output item."
+        },
+        {
+          "name": "run_id",
+          "langType": "String",
+          "required": true,
+          "description": "The identifier of the evaluation run associated with this output item."
+        },
+        {
+          "name": "eval_id",
+          "langType": "String",
+          "required": true,
+          "description": "The identifier of the evaluation group."
+        },
+        {
+          "name": "created_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the evaluation run was created."
+        },
+        {
+          "name": "status",
+          "langType": "String",
+          "required": true,
+          "description": "The status of the evaluation run."
+        },
+        {
+          "name": "datasource_item_id",
+          "langType": "Integer",
+          "required": true,
+          "description": "The identifier for the data source item."
+        },
+        {
+          "name": "datasource_item",
+          "langType": "Hash{String => Object}",
+          "required": true,
+          "description": "Details of the input data source item."
+        },
+        {
+          "name": "results",
+          "langType": "Array<Models::EvalRunOutputItemResult>",
+          "required": true,
+          "description": "A list of grader results for this output item."
+        },
+        {
+          "name": "sample",
+          "langType": "Models::EvalRunOutputItemSample",
+          "required": true,
+          "description": "A sample containing the input and output of the evaluation run.",
+          "refTypeName": "EvalRunOutputItemSample"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects"
+  ],
+  "action": "archive",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.admin.organization.projects.archive(\"project_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.admin.organization.projects.archive(project_id) -> Models::Project",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::Project",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The object type, which is always `organization.project`"
+        },
+        {
+          "name": "name",
+          "langType": "String",
+          "required": false,
+          "description": "The name of the project. This appears in reporting."
+        },
+        {
+          "name": "created_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the project was created."
+        },
+        {
+          "name": "archived_at",
+          "langType": "Integer",
+          "required": false
+        },
+        {
+          "name": "status",
+          "langType": "String",
+          "required": false,
+          "description": "`active` or `archived`"
+        },
+        {
+          "name": "external_key_id",
+          "langType": "String",
+          "required": false,
+          "description": "The external key associated with the project."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "chain": [
+    "projects",
+    "roles"
+  ],
+  "action": "delete",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Projects.Roles.Delete(context.TODO(), \"project_id\", \"role_id\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Projects.Roles.Delete(ctx, projectID, roleID) (*RoleDeletedResource, error)",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "RoleDeletedResource",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "Always `role.deleted`."
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the deleted role."
+        },
+        {
+          "name": "Deleted",
+          "langType": "bool",
+          "required": true,
+          "description": "Whether the role was deleted."
+        }
+      ]
+    }
+  }
+}

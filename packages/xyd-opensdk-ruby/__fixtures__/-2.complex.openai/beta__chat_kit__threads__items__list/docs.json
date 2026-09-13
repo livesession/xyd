@@ -1,0 +1,47 @@
+{
+  "chain": [
+    "beta",
+    "chat-kit",
+    "threads",
+    "items"
+  ],
+  "action": "list",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.beta.chat_kit.threads.items.list(\"cthr_123\", limit: 1, order: \"asc\", after: \"after\", before: \"before\")\npp result\n",
+  "typeReference": {
+    "signature": "client.beta.chat_kit.threads.items.list(thread_id, limit: nil, order: nil, after: nil, before: nil) -> Page<Models::ThreadItem>",
+    "request": {
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "Integer",
+          "required": false,
+          "description": "Maximum number of thread items to return. Defaults to 20."
+        },
+        {
+          "name": "order",
+          "langType": "Models::OrderEnum",
+          "required": false,
+          "description": "Sort order for results by creation time. Defaults to `desc`.",
+          "refTypeName": "OrderEnum"
+        },
+        {
+          "name": "after",
+          "langType": "String",
+          "required": false,
+          "description": "List items created after this thread item ID. Defaults to null for the first page."
+        },
+        {
+          "name": "before",
+          "langType": "String",
+          "required": false,
+          "description": "List items created before this thread item ID. Defaults to null for the newest results."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Page<Models::ThreadItem>",
+      "langType": "Page<Models::ThreadItem>",
+      "note": "paginated (Page)"
+    }
+  }
+}

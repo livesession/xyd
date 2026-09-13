@@ -1,0 +1,39 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "certificates",
+    "deactivate"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.admin.organization.projects.certificates.deactivate.create(\"project_id\", certificate_ids=[\"string\"])\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.admin.organization.projects.certificates.deactivate.create(project_id, certificate_ids) -> OrganizationProjectCertificateDeactivationResponse",
+    "request": {
+      "fields": [
+        {
+          "name": "certificate_ids",
+          "langType": "list[str]",
+          "required": true
+        }
+      ]
+    },
+    "response": {
+      "typeName": "OrganizationProjectCertificateDeactivationResponse",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The project certificate deactivation result type."
+        },
+        {
+          "name": "data",
+          "langType": "list[OrganizationProjectCertificate]",
+          "required": true
+        }
+      ]
+    }
+  }
+}

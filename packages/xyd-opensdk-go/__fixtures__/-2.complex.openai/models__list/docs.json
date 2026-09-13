@@ -1,0 +1,43 @@
+{
+  "chain": [
+    "models"
+  ],
+  "action": "list",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Models.List(context.TODO())\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Models.List(ctx) (*pagination.Page[Model], error)",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Model",
+      "note": "paginated (pagination.Page)",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The model identifier, which can be referenced in the API endpoints."
+        },
+        {
+          "name": "Created",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) when the model was created."
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always \"model\"."
+        },
+        {
+          "name": "OwnedBy",
+          "langType": "string",
+          "required": true,
+          "description": "The organization that owns the model."
+        }
+      ]
+    }
+  }
+}

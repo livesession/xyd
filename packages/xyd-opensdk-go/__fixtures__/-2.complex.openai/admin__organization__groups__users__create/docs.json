@@ -1,0 +1,48 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "groups",
+    "users"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Admin.Organization.Groups.Users.New(\n\t\tcontext.TODO(),\n\t\t\"group_id\",\n\t\topenai.AdminOrganizationGroupUserNewParams{\n\t\t\tUserID: \"string\",\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Admin.Organization.Groups.Users.New(ctx, groupID, body) (*GroupUserAssignment, error)",
+    "request": {
+      "typeName": "AdminOrganizationGroupUserNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "UserID",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the user to add to the group."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "GroupUserAssignment",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "Always `group.user`."
+        },
+        {
+          "name": "UserID",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the user that was added."
+        },
+        {
+          "name": "GroupID",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the group the user was added to."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "chain": [
+    "chat",
+    "completions"
+  ],
+  "action": "delete",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Chat.Completions.Delete(context.TODO(), \"completion_id\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Chat.Completions.Delete(ctx, completionID) (*ChatCompletionDeleted, error)",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "ChatCompletionDeleted",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The type of object being deleted."
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The ID of the chat completion that was deleted."
+        },
+        {
+          "name": "Deleted",
+          "langType": "bool",
+          "required": true,
+          "description": "Whether the chat completion was deleted."
+        }
+      ]
+    }
+  }
+}

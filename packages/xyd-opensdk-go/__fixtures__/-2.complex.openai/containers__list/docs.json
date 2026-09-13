@@ -1,0 +1,104 @@
+{
+  "chain": [
+    "containers"
+  ],
+  "action": "list",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Containers.List(\n\t\tcontext.TODO(),\n\t\topenai.ContainerListParams{\n\t\t\tLimit: param.NewOpt[int64](20),\n\t\t\tOrder: param.NewOpt[openai.ContainersListOrder](openai.ContainersListOrderAsc),\n\t\t\tAfter: param.NewOpt[string](\"after\"),\n\t\t\tName: param.NewOpt[string](\"name\"),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Containers.List(ctx, query) (*pagination.CursorPage[ContainerResource], error)",
+    "request": {
+      "typeName": "ContainerListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "Limit",
+          "langType": "param.Opt[int64]",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "Order",
+          "langType": "param.Opt[ContainersListOrder]",
+          "required": false,
+          "description": "Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc` for descending order.\n",
+          "refTypeName": "ContainersListOrder"
+        },
+        {
+          "name": "After",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+        },
+        {
+          "name": "Name",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "Filter results by container name."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ContainerResource",
+      "note": "paginated (pagination.CursorPage)",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "Unique identifier for the container."
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The type of this object."
+        },
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": true,
+          "description": "Name of the container."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the container was created."
+        },
+        {
+          "name": "Status",
+          "langType": "string",
+          "required": true,
+          "description": "Status of the container (e.g., active, deleted)."
+        },
+        {
+          "name": "LastActiveAt",
+          "langType": "int64",
+          "required": false,
+          "description": "Unix timestamp (in seconds) when the container was last active."
+        },
+        {
+          "name": "ExpiresAfter",
+          "langType": "ContainerResourceExpiresAfter",
+          "required": false,
+          "description": "The container will expire after this time period.\nThe anchor is the reference point for the expiration.\nThe minutes is the number of minutes after the anchor before the container expires.\n",
+          "refTypeName": "ContainerResourceExpiresAfter"
+        },
+        {
+          "name": "MemoryLimit",
+          "langType": "ContainerResourceMemoryLimit",
+          "required": false,
+          "description": "The memory limit configured for the container.",
+          "refTypeName": "ContainerResourceMemoryLimit"
+        },
+        {
+          "name": "NetworkPolicy",
+          "langType": "ContainerResourceNetworkPolicy",
+          "required": false,
+          "description": "Network access policy for the container.",
+          "refTypeName": "ContainerResourceNetworkPolicy"
+        }
+      ]
+    }
+  }
+}

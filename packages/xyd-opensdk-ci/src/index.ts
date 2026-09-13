@@ -33,6 +33,19 @@ export {
 export type { PublishAdapter, PublishCtx, PublishRoundTripConfig } from './publish';
 export { listComplexCorpora, representativeMethods, CORPUS_SPECS } from './corpus';
 export type { ComplexCorpus, RepresentativeMethod, CorpusSpec } from './corpus';
+export {
+  DOCS_GOLDEN_FILE,
+  defineDocsGolden,
+  listDocsFixtures,
+  docsEmitterContext,
+  buildDocsGolden,
+  serializeDocsGolden,
+  readIr,
+  readDocsGolden,
+  hasDocsGolden,
+  writeDocsGolden,
+} from './docs-golden';
+export type { DocsGolden, DocsFixture } from './docs-golden';
 export { compileSmoke } from './compile-smoke';
 export { compileUsageSnippet, placeSnippet } from './usage-compile';
 export { recordSdkE2E, defineSdkE2E, apiKeyEnvFor } from './sdk-e2e';

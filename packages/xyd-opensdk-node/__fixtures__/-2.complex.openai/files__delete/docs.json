@@ -1,0 +1,33 @@
+{
+  "chain": [
+    "files"
+  ],
+  "action": "delete",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.files.delete(\"file_id\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.files.delete(fileId): Promise<DeleteFileResponse>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "DeleteFileResponse",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "object",
+          "langType": "\"file\"",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "boolean",
+          "required": true
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "chain": [
+    "models"
+  ],
+  "action": "delete",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.models.delete(\"ft:gpt-4o-mini:acemeco:suffix:abc123\")\npp result\n",
+  "typeReference": {
+    "signature": "client.models.delete(model) -> Models::DeleteModelResponse",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::DeleteModelResponse",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "Boolean",
+          "required": true
+        },
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true
+        }
+      ]
+    }
+  }
+}

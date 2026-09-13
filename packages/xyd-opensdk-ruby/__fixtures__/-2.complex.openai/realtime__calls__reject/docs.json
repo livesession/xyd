@@ -1,0 +1,25 @@
+{
+  "chain": [
+    "realtime",
+    "calls"
+  ],
+  "action": "reject",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nclient.realtime.calls.reject(\"call_id\", status_code: 1)\n",
+  "typeReference": {
+    "signature": "client.realtime.calls.reject(call_id, status_code: nil) -> nil",
+    "request": {
+      "fields": [
+        {
+          "name": "status_code",
+          "langType": "Integer",
+          "required": false,
+          "description": "SIP response code to send back to the caller. Defaults to `603` (Decline)\nwhen omitted."
+        }
+      ]
+    },
+    "response": {
+      "langType": "nil",
+      "note": "no response body"
+    }
+  }
+}

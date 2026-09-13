@@ -1,0 +1,98 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "invites"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Admin.Organization.Invites.New(\n\t\tcontext.TODO(),\n\t\topenai.AdminOrganizationInviteNewParams{\n\t\t\tEmail: \"string\",\n\t\t\tRole: openai.InviteRequestRoleReader,\n\t\t\tProjects: []openai.InviteRequestProjectsItem{openai.InviteRequestProjectsItem{ID: \"string\", Role: openai.InviteRequestProjectsItemRoleMember}},\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Admin.Organization.Invites.New(ctx, body) (*Invite, error)",
+    "request": {
+      "typeName": "AdminOrganizationInviteNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "Email",
+          "langType": "string",
+          "required": true,
+          "description": "Send an email to this address"
+        },
+        {
+          "name": "Role",
+          "langType": "InviteRequestRole",
+          "required": true,
+          "description": "`owner` or `reader`",
+          "refTypeName": "InviteRequestRole"
+        },
+        {
+          "name": "Projects",
+          "langType": "[]InviteRequestProjectsItem",
+          "required": false,
+          "description": "An array of projects to which membership is granted at the same time the org invite is accepted. If omitted, the user will be invited to the default project for compatibility with legacy behavior."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Invite",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always `organization.invite`"
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "Email",
+          "langType": "string",
+          "required": true,
+          "description": "The email address of the individual to whom the invite was sent"
+        },
+        {
+          "name": "Role",
+          "langType": "InviteRole",
+          "required": true,
+          "description": "`owner` or `reader`",
+          "refTypeName": "InviteRole"
+        },
+        {
+          "name": "Status",
+          "langType": "InviteStatus",
+          "required": true,
+          "description": "`accepted`,`expired`, or `pending`",
+          "refTypeName": "InviteStatus"
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the invite was sent."
+        },
+        {
+          "name": "ExpiresAt",
+          "langType": "int64",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the invite expires."
+        },
+        {
+          "name": "AcceptedAt",
+          "langType": "int64",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the invite was accepted."
+        },
+        {
+          "name": "Projects",
+          "langType": "[]InviteRequestProjectsItem",
+          "required": true,
+          "description": "The projects that were granted membership upon acceptance of the invite."
+        }
+      ]
+    }
+  }
+}

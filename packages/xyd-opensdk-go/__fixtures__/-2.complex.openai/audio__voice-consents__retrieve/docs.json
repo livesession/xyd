@@ -1,0 +1,49 @@
+{
+  "chain": [
+    "audio",
+    "voice-consents"
+  ],
+  "action": "retrieve",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Audio.VoiceConsents.Get(context.TODO(), \"consent_id\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Audio.VoiceConsents.Get(ctx, consentID) (*VoiceConsentResource, error)",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "VoiceConsentResource",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always `audio.voice_consent`."
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The consent recording identifier."
+        },
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": true,
+          "description": "The label provided when the consent recording was uploaded."
+        },
+        {
+          "name": "Language",
+          "langType": "string",
+          "required": true,
+          "description": "The BCP 47 language tag for the consent phrase (for example, `en-US`)."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the consent recording was created."
+        }
+      ]
+    }
+  }
+}

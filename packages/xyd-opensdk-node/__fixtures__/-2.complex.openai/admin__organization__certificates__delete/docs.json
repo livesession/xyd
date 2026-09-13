@@ -1,0 +1,32 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "certificates"
+  ],
+  "action": "delete",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.admin.organization.certificates.delete(\"certificate_id\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.admin.organization.certificates.delete(certificateId): Promise<DeleteCertificateResponse>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "DeleteCertificateResponse",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"certificate.deleted\"",
+          "required": true,
+          "description": "The object type, must be `certificate.deleted`."
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "The ID of the certificate that was deleted."
+        }
+      ]
+    }
+  }
+}

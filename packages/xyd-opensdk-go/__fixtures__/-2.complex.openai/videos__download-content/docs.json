@@ -1,0 +1,27 @@
+{
+  "chain": [
+    "videos"
+  ],
+  "action": "download-content",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Videos.DownloadContent(\n\t\tcontext.TODO(),\n\t\t\"video_123\",\n\t\topenai.VideoDownloadContentParams{\n\t\t\tVariant: param.NewOpt[openai.VideoContentVariant](openai.VideoContentVariantVideo),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Videos.DownloadContent(ctx, videoID, query) (string, error)",
+    "request": {
+      "typeName": "VideoDownloadContentParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "Variant",
+          "langType": "param.Opt[VideoContentVariant]",
+          "required": false,
+          "description": "Which downloadable asset to return. Defaults to the MP4 video.",
+          "refTypeName": "VideoContentVariant"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "string",
+      "langType": "string"
+    }
+  }
+}

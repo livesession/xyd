@@ -1,0 +1,75 @@
+{
+  "chain": [
+    "containers"
+  ],
+  "action": "retrieve",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.containers.retrieve(\"container_id\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.containers.retrieve(containerId): Promise<ContainerResource>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "ContainerResource",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "Unique identifier for the container."
+        },
+        {
+          "name": "object",
+          "langType": "string",
+          "required": true,
+          "description": "The type of this object."
+        },
+        {
+          "name": "name",
+          "langType": "string",
+          "required": true,
+          "description": "Name of the container."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the container was created."
+        },
+        {
+          "name": "status",
+          "langType": "string",
+          "required": true,
+          "description": "Status of the container (e.g., active, deleted)."
+        },
+        {
+          "name": "last_active_at",
+          "langType": "number",
+          "required": false,
+          "description": "Unix timestamp (in seconds) when the container was last active."
+        },
+        {
+          "name": "expires_after",
+          "langType": "ContainerResourceExpiresAfter",
+          "required": false,
+          "description": "The container will expire after this time period.\nThe anchor is the reference point for the expiration.\nThe minutes is the number of minutes after the anchor before the container expires.\n",
+          "refTypeName": "ContainerResourceExpiresAfter"
+        },
+        {
+          "name": "memory_limit",
+          "langType": "ContainerResourceMemoryLimit",
+          "required": false,
+          "description": "The memory limit configured for the container.",
+          "refTypeName": "ContainerResourceMemoryLimit"
+        },
+        {
+          "name": "network_policy",
+          "langType": "ContainerResourceNetworkPolicy",
+          "required": false,
+          "description": "Network access policy for the container.",
+          "refTypeName": "ContainerResourceNetworkPolicy"
+        }
+      ]
+    }
+  }
+}

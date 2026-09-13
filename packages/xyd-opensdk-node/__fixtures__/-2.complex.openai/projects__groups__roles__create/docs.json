@@ -1,0 +1,47 @@
+{
+  "chain": [
+    "projects",
+    "groups",
+    "roles"
+  ],
+  "action": "create",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.projects.groups.roles.create(\"project_id\", \"group_id\", { role_id: \"string\" });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.projects.groups.roles.create(projectId, groupId, body): Promise<GroupRoleAssignment>",
+    "request": {
+      "typeName": "ProjectGroupRoleCreateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "role_id",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the role to assign."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "GroupRoleAssignment",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"group.role\"",
+          "required": true,
+          "description": "Always `group.role`."
+        },
+        {
+          "name": "group",
+          "langType": "Group",
+          "required": true,
+          "refTypeName": "Group"
+        },
+        {
+          "name": "role",
+          "langType": "Role",
+          "required": true,
+          "refTypeName": "Role"
+        }
+      ]
+    }
+  }
+}

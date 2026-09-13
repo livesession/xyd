@@ -1,0 +1,45 @@
+{
+  "chain": [
+    "conversations",
+    "items"
+  ],
+  "action": "list",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.conversations.items.list(\"conv_123\", limit=20, order=\"asc\", after=\"after\", include=[\"file_search_call.results\"])\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.conversations.items.list(conversation_id, limit=..., order=..., after=..., include=...) -> CursorPage[ConversationItem]",
+    "request": {
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "Optional[int]",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between\n1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "order",
+          "langType": "Optional[ConversationsItemsListOrder]",
+          "required": false,
+          "description": "The order to return the input items in. Default is `desc`.\n- `asc`: Return the input items in ascending order.\n- `desc`: Return the input items in descending order.\n",
+          "refTypeName": "ConversationsItemsListOrder"
+        },
+        {
+          "name": "after",
+          "langType": "Optional[str]",
+          "required": false,
+          "description": "An item ID to list items after, used in pagination.\n"
+        },
+        {
+          "name": "include",
+          "langType": "Optional[list[IncludeEnum]]",
+          "required": false,
+          "description": "Specify additional output data to include in the model response. Currently supported values are:\n- `web_search_call.action.sources`: Include the sources of the web search tool call.\n- `code_interpreter_call.outputs`: Includes the outputs of python code execution in code interpreter tool call items.\n- `computer_call_output.output.image_url`: Include image urls from the computer call output.\n- `file_search_call.results`: Include the search results of the file search tool call.\n- `message.input_image.image_url`: Include image urls from the input message.\n- `message.output_text.logprobs`: Include logprobs with assistant messages.\n- `reasoning.encrypted_content`: Includes an encrypted version of reasoning tokens in reasoning item outputs. This enables reasoning items to be used in multi-turn conversations when using the Responses API statelessly (like when the `store` parameter is set to `false`, or when an organization is enrolled in the zero data retention program)."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "CursorPage[ConversationItem]",
+      "langType": "CursorPage[ConversationItem]",
+      "note": "paginated (CursorPage)"
+    }
+  }
+}

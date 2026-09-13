@@ -1,0 +1,76 @@
+{
+  "chain": [
+    "files"
+  ],
+  "action": "retrieve",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.files.retrieve(\"file_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.files.retrieve(file_id) -> Models::OpenAiFile",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::OpenAiFile",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "The file identifier, which can be referenced in the API endpoints."
+        },
+        {
+          "name": "bytes",
+          "langType": "Integer",
+          "required": true,
+          "description": "The size of the file, in bytes."
+        },
+        {
+          "name": "created_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the file was created."
+        },
+        {
+          "name": "expires_at",
+          "langType": "Integer",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the file will expire."
+        },
+        {
+          "name": "filename",
+          "langType": "String",
+          "required": true,
+          "description": "The name of the file."
+        },
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The object type, which is always `file`."
+        },
+        {
+          "name": "purpose",
+          "langType": "Models::OpenAiFilePurpose",
+          "required": true,
+          "description": "The intended purpose of the file. Supported values are `assistants`, `assistants_output`, `batch`, `batch_output`, `fine-tune`, `fine-tune-results`, `vision`, and `user_data`.",
+          "refTypeName": "OpenAiFilePurpose"
+        },
+        {
+          "name": "status",
+          "langType": "Models::OpenAiFileStatus",
+          "required": true,
+          "description": "Deprecated. The current status of the file, which can be either `uploaded`, `processed`, or `error`.",
+          "deprecated": true,
+          "refTypeName": "OpenAiFileStatus"
+        },
+        {
+          "name": "status_details",
+          "langType": "String",
+          "required": false,
+          "description": "Deprecated. For details on why a fine-tuning training file failed validation, see the `error` field on `fine_tuning.job`.",
+          "deprecated": true
+        }
+      ]
+    }
+  }
+}

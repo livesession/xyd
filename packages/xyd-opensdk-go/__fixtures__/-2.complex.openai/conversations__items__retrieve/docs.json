@@ -1,0 +1,27 @@
+{
+  "chain": [
+    "conversations",
+    "items"
+  ],
+  "action": "retrieve",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Conversations.Items.Get(\n\t\tcontext.TODO(),\n\t\t\"conv_123\",\n\t\t\"msg_abc\",\n\t\topenai.ConversationItemGetParams{\n\t\t\tInclude: []openai.IncludeEnum{openai.IncludeEnumFileSearchCallResults},\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Conversations.Items.Get(ctx, conversationID, itemID, query) (ConversationItem, error)",
+    "request": {
+      "typeName": "ConversationItemGetParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "Include",
+          "langType": "[]IncludeEnum",
+          "required": false,
+          "description": "Additional fields to include in the response. See the `include`\nparameter for [listing Conversation items above](/docs/api-reference/conversations/list-items#conversations_list_items-include) for more information.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ConversationItem",
+      "langType": "ConversationItem"
+    }
+  }
+}

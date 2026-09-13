@@ -1,0 +1,61 @@
+{
+  "chain": [
+    "evals"
+  ],
+  "action": "retrieve",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.evals.retrieve(\"eval_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.evals.retrieve(eval_id) -> Models::Eval",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::Eval",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The object type."
+        },
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "Unique identifier for the evaluation."
+        },
+        {
+          "name": "name",
+          "langType": "String",
+          "required": true,
+          "description": "The name of the evaluation."
+        },
+        {
+          "name": "data_source_config",
+          "langType": "Models::EvalDataSourceConfig",
+          "required": true,
+          "description": "Configuration of data sources used in runs of the evaluation.",
+          "refTypeName": "EvalDataSourceConfig"
+        },
+        {
+          "name": "testing_criteria",
+          "langType": "Array<Models::EvalTestingCriteriaItem>",
+          "required": true,
+          "description": "A list of testing criteria."
+        },
+        {
+          "name": "created_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the eval was created."
+        },
+        {
+          "name": "metadata",
+          "langType": "Models::Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        }
+      ]
+    }
+  }
+}

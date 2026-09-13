@@ -1,0 +1,296 @@
+{
+  "chain": [
+    "beta",
+    "threads",
+    "runs"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.beta.threads.runs.create(\"thread_id\", assistant_id=\"string\", include=[\"step_details.tool_calls[*].file_search.results[*].content\"], model=\"string\", reasoning_effort=\"none\", instructions=\"string\", additional_instructions=\"string\", additional_messages=[{\"role\": \"user\", \"content\": \"string\", \"attachments\": [{\"file_id\": \"string\", \"tools\": [{\"type\": None}]}], \"metadata\": {\"key\": \"string\"}}], tools=[{\"type\": \"code_interpreter\"}], metadata={\"key\": \"string\"}, temperature=1, top_p=1, stream=True, max_prompt_tokens=1, max_completion_tokens=1, truncation_strategy={\"type\": \"auto\", \"last_messages\": 1}, tool_choice=\"none\", parallel_tool_calls=True, response_format=\"auto\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.beta.threads.runs.create(thread_id, assistant_id, model=..., reasoning_effort=..., instructions=..., additional_instructions=..., additional_messages=..., tools=..., metadata=..., temperature=..., top_p=..., stream=..., max_prompt_tokens=..., max_completion_tokens=..., truncation_strategy=..., tool_choice=..., parallel_tool_calls=..., response_format=..., include=...) -> RunObject",
+    "request": {
+      "fields": [
+        {
+          "name": "assistant_id",
+          "langType": "str",
+          "required": true,
+          "description": "The ID of the [assistant](/docs/api-reference/assistants) to use to execute this run."
+        },
+        {
+          "name": "model",
+          "langType": "Optional[CreateRunRequestModel]",
+          "required": false,
+          "description": "The ID of the [Model](/docs/api-reference/models) to be used to execute this run. If a value is provided here, it will override the model associated with the assistant. If not, the model associated with the assistant will be used.",
+          "refTypeName": "CreateRunRequestModel"
+        },
+        {
+          "name": "reasoning_effort",
+          "langType": "Optional[ReasoningEffort]",
+          "required": false,
+          "refTypeName": "ReasoningEffort"
+        },
+        {
+          "name": "instructions",
+          "langType": "Optional[str]",
+          "required": false,
+          "description": "Overrides the [instructions](/docs/api-reference/assistants/createAssistant) of the assistant. This is useful for modifying the behavior on a per-run basis."
+        },
+        {
+          "name": "additional_instructions",
+          "langType": "Optional[str]",
+          "required": false,
+          "description": "Appends additional instructions at the end of the instructions for the run. This is useful for modifying the behavior on a per-run basis without overriding other instructions."
+        },
+        {
+          "name": "additional_messages",
+          "langType": "Optional[list[CreateMessageRequest]]",
+          "required": false,
+          "description": "Adds additional messages to the thread before creating the run."
+        },
+        {
+          "name": "tools",
+          "langType": "Optional[list[CreateRunRequestToolsItem]]",
+          "required": false,
+          "description": "Override the tools the assistant can use for this run. This is useful for modifying the behavior on a per-run basis."
+        },
+        {
+          "name": "metadata",
+          "langType": "Optional[Metadata]",
+          "required": false,
+          "refTypeName": "Metadata"
+        },
+        {
+          "name": "temperature",
+          "langType": "Optional[float]",
+          "required": false,
+          "description": "What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.\n"
+        },
+        {
+          "name": "top_p",
+          "langType": "Optional[float]",
+          "required": false,
+          "description": "An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered.\n\nWe generally recommend altering this or temperature but not both.\n"
+        },
+        {
+          "name": "stream",
+          "langType": "Optional[bool]",
+          "required": false,
+          "description": "If `true`, returns a stream of events that happen during the Run as server-sent events, terminating when the Run enters a terminal state with a `data: [DONE]` message.\n"
+        },
+        {
+          "name": "max_prompt_tokens",
+          "langType": "Optional[int]",
+          "required": false,
+          "description": "The maximum number of prompt tokens that may be used over the course of the run. The run will make a best effort to use only the number of prompt tokens specified, across multiple turns of the run. If the run exceeds the number of prompt tokens specified, the run will end with status `incomplete`. See `incomplete_details` for more info.\n"
+        },
+        {
+          "name": "max_completion_tokens",
+          "langType": "Optional[int]",
+          "required": false,
+          "description": "The maximum number of completion tokens that may be used over the course of the run. The run will make a best effort to use only the number of completion tokens specified, across multiple turns of the run. If the run exceeds the number of completion tokens specified, the run will end with status `incomplete`. See `incomplete_details` for more info.\n"
+        },
+        {
+          "name": "truncation_strategy",
+          "langType": "Optional[TruncationObject]",
+          "required": false,
+          "refTypeName": "TruncationObject"
+        },
+        {
+          "name": "tool_choice",
+          "langType": "Optional[AssistantsApiToolChoiceOption]",
+          "required": false,
+          "refTypeName": "AssistantsApiToolChoiceOption"
+        },
+        {
+          "name": "parallel_tool_calls",
+          "langType": "Optional[ParallelToolCalls]",
+          "required": false,
+          "refTypeName": "ParallelToolCalls"
+        },
+        {
+          "name": "response_format",
+          "langType": "Optional[AssistantsApiResponseFormatOption]",
+          "required": false,
+          "refTypeName": "AssistantsApiResponseFormatOption"
+        },
+        {
+          "name": "include",
+          "langType": "Optional[list[str]]",
+          "required": false,
+          "description": "A list of additional fields to include in the response. Currently the only supported value is `step_details.tool_calls[*].file_search.results[*].content` to fetch the file search result content.\n\nSee the [file search tool documentation](/docs/assistants/tools/file-search#customizing-file-search-settings) for more information.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "RunObject",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `thread.run`."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was created."
+        },
+        {
+          "name": "thread_id",
+          "langType": "str",
+          "required": true,
+          "description": "The ID of the [thread](/docs/api-reference/threads) that was executed on as a part of this run."
+        },
+        {
+          "name": "assistant_id",
+          "langType": "str",
+          "required": true,
+          "description": "The ID of the [assistant](/docs/api-reference/assistants) used for execution of this run."
+        },
+        {
+          "name": "status",
+          "langType": "RunObjectStatus",
+          "required": true,
+          "description": "The status of the run, which can be either `queued`, `in_progress`, `requires_action`, `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`.",
+          "refTypeName": "RunObjectStatus"
+        },
+        {
+          "name": "required_action",
+          "langType": "Optional[RunObjectRequiredAction]",
+          "required": true,
+          "description": "Details on the action required to continue the run. Will be `null` if no action is required.",
+          "refTypeName": "RunObjectRequiredAction"
+        },
+        {
+          "name": "last_error",
+          "langType": "Optional[RunObjectLastError]",
+          "required": true,
+          "description": "The last error associated with this run. Will be `null` if there are no errors.",
+          "refTypeName": "RunObjectLastError"
+        },
+        {
+          "name": "expires_at",
+          "langType": "Optional[int]",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run will expire."
+        },
+        {
+          "name": "started_at",
+          "langType": "Optional[int]",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was started."
+        },
+        {
+          "name": "cancelled_at",
+          "langType": "Optional[int]",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was cancelled."
+        },
+        {
+          "name": "failed_at",
+          "langType": "Optional[int]",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run failed."
+        },
+        {
+          "name": "completed_at",
+          "langType": "Optional[int]",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was completed."
+        },
+        {
+          "name": "incomplete_details",
+          "langType": "Optional[RunObjectIncompleteDetails]",
+          "required": true,
+          "description": "Details on why the run is incomplete. Will be `null` if the run is not incomplete.",
+          "refTypeName": "RunObjectIncompleteDetails"
+        },
+        {
+          "name": "model",
+          "langType": "str",
+          "required": true,
+          "description": "The model that the [assistant](/docs/api-reference/assistants) used for this run."
+        },
+        {
+          "name": "instructions",
+          "langType": "str",
+          "required": true,
+          "description": "The instructions that the [assistant](/docs/api-reference/assistants) used for this run."
+        },
+        {
+          "name": "tools",
+          "langType": "list[CreateRunRequestToolsItem]",
+          "required": true,
+          "description": "The list of tools that the [assistant](/docs/api-reference/assistants) used for this run."
+        },
+        {
+          "name": "metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        },
+        {
+          "name": "usage",
+          "langType": "RunCompletionUsage",
+          "required": true,
+          "refTypeName": "RunCompletionUsage"
+        },
+        {
+          "name": "temperature",
+          "langType": "Optional[float]",
+          "required": false,
+          "description": "The sampling temperature used for this run. If not set, defaults to 1."
+        },
+        {
+          "name": "top_p",
+          "langType": "Optional[float]",
+          "required": false,
+          "description": "The nucleus sampling value used for this run. If not set, defaults to 1."
+        },
+        {
+          "name": "max_prompt_tokens",
+          "langType": "Optional[int]",
+          "required": true,
+          "description": "The maximum number of prompt tokens specified to have been used over the course of the run.\n"
+        },
+        {
+          "name": "max_completion_tokens",
+          "langType": "Optional[int]",
+          "required": true,
+          "description": "The maximum number of completion tokens specified to have been used over the course of the run.\n"
+        },
+        {
+          "name": "truncation_strategy",
+          "langType": "Optional[TruncationObject]",
+          "required": true,
+          "refTypeName": "TruncationObject"
+        },
+        {
+          "name": "tool_choice",
+          "langType": "Optional[AssistantsApiToolChoiceOption]",
+          "required": true,
+          "refTypeName": "AssistantsApiToolChoiceOption"
+        },
+        {
+          "name": "parallel_tool_calls",
+          "langType": "ParallelToolCalls",
+          "required": true,
+          "refTypeName": "ParallelToolCalls"
+        },
+        {
+          "name": "response_format",
+          "langType": "AssistantsApiResponseFormatOption",
+          "required": true,
+          "refTypeName": "AssistantsApiResponseFormatOption"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "chain": [
+    "evals",
+    "runs"
+  ],
+  "action": "delete",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.evals.runs.delete(\"eval_id\", \"run_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.evals.runs.delete(eval_id, run_id) -> Models::EvalsRunsDeleteResponse",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::EvalsRunsDeleteResponse",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": false
+        },
+        {
+          "name": "deleted",
+          "langType": "Boolean",
+          "required": false
+        },
+        {
+          "name": "run_id",
+          "langType": "String",
+          "required": false
+        }
+      ]
+    }
+  }
+}

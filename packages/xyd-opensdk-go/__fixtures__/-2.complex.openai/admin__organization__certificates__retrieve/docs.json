@@ -1,0 +1,66 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "certificates"
+  ],
+  "action": "retrieve",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Admin.Organization.Certificates.Get(\n\t\tcontext.TODO(),\n\t\t\"certificate_id\",\n\t\topenai.AdminOrganizationCertificateGetParams{\n\t\t\tInclude: []string{\"content\"},\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Admin.Organization.Certificates.Get(ctx, certificateID, query) (*Certificate, error)",
+    "request": {
+      "typeName": "AdminOrganizationCertificateGetParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "Include",
+          "langType": "[]string",
+          "required": false,
+          "description": "A list of additional fields to include in the response. Currently the only supported value is `content` to fetch the PEM content of the certificate."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Certificate",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "CertificateObject",
+          "required": true,
+          "description": "The object type.\n\n- If creating, updating, or getting a specific certificate, the object type is `certificate`.\n- If listing, activating, or deactivating certificates for the organization, the object type is `organization.certificate`.\n- If listing, activating, or deactivating certificates for a project, the object type is `organization.project.certificate`.\n",
+          "refTypeName": "CertificateObject"
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": true,
+          "description": "The name of the certificate."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the certificate was uploaded."
+        },
+        {
+          "name": "CertificateDetails",
+          "langType": "CertificateCertificateDetails",
+          "required": true,
+          "refTypeName": "CertificateCertificateDetails"
+        },
+        {
+          "name": "Active",
+          "langType": "bool",
+          "required": false,
+          "description": "Whether the certificate is currently active at the specified scope. Not returned when getting details for a specific certificate."
+        }
+      ]
+    }
+  }
+}

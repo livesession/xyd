@@ -1,0 +1,36 @@
+{
+  "chain": [
+    "videos"
+  ],
+  "action": "delete",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.videos.delete(\"video_123\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.videos.delete(videoId): Promise<DeletedVideoResource>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "DeletedVideoResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"video.deleted\"",
+          "required": true,
+          "description": "The object type that signals the deletion response."
+        },
+        {
+          "name": "deleted",
+          "langType": "boolean",
+          "required": true,
+          "description": "Indicates that the video resource was deleted."
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the deleted video."
+        }
+      ]
+    }
+  }
+}

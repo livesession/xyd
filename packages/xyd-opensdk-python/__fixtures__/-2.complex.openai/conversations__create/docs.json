@@ -1,0 +1,54 @@
+{
+  "chain": [
+    "conversations"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.conversations.create(metadata={\"key\": \"string\"}, items=[{\"role\": \"user\", \"content\": \"string\", \"phase\": \"commentary\", \"type\": \"message\"}])\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.conversations.create(metadata=..., items=...) -> ConversationResource",
+    "request": {
+      "fields": [
+        {
+          "name": "metadata",
+          "langType": "Optional[Metadata]",
+          "required": false,
+          "refTypeName": "Metadata"
+        },
+        {
+          "name": "items",
+          "langType": "Optional[list[InputItem]]",
+          "required": false
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ConversationResource",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The unique ID of the conversation."
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `conversation`."
+        },
+        {
+          "name": "metadata",
+          "langType": "Any",
+          "required": true,
+          "description": "Set of 16 key-value pairs that can be attached to an object. This can be         useful for storing additional information about the object in a structured         format, and querying for objects via API or the dashboard.\n        Keys are strings with a maximum length of 64 characters. Values are strings         with a maximum length of 512 characters."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "The time at which the conversation was created, measured in seconds since the Unix epoch."
+        }
+      ]
+    }
+  }
+}

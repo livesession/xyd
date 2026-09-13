@@ -1,0 +1,152 @@
+{
+  "chain": [
+    "batches"
+  ],
+  "action": "retrieve",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.batches.retrieve(\"batch_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.batches.retrieve(batch_id) -> Models::Batch",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::Batch",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true
+        },
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The object type, which is always `batch`."
+        },
+        {
+          "name": "endpoint",
+          "langType": "String",
+          "required": true,
+          "description": "The OpenAI API endpoint used by the batch."
+        },
+        {
+          "name": "model",
+          "langType": "String",
+          "required": false,
+          "description": "Model ID used to process the batch, like `gpt-5-2025-08-07`. OpenAI\noffers a wide range of models with different capabilities, performance\ncharacteristics, and price points. Refer to the [model\nguide](/docs/models) to browse and compare available models.\n"
+        },
+        {
+          "name": "errors",
+          "langType": "Models::BatchErrors",
+          "required": false,
+          "refTypeName": "BatchErrors"
+        },
+        {
+          "name": "input_file_id",
+          "langType": "String",
+          "required": true,
+          "description": "The ID of the input file for the batch."
+        },
+        {
+          "name": "completion_window",
+          "langType": "String",
+          "required": true,
+          "description": "The time frame within which the batch should be processed."
+        },
+        {
+          "name": "status",
+          "langType": "Models::BatchStatus",
+          "required": true,
+          "description": "The current status of the batch.",
+          "refTypeName": "BatchStatus"
+        },
+        {
+          "name": "output_file_id",
+          "langType": "String",
+          "required": false,
+          "description": "The ID of the file containing the outputs of successfully executed requests."
+        },
+        {
+          "name": "error_file_id",
+          "langType": "String",
+          "required": false,
+          "description": "The ID of the file containing the outputs of requests with errors."
+        },
+        {
+          "name": "created_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the batch was created."
+        },
+        {
+          "name": "in_progress_at",
+          "langType": "Integer",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch started processing."
+        },
+        {
+          "name": "expires_at",
+          "langType": "Integer",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch will expire."
+        },
+        {
+          "name": "finalizing_at",
+          "langType": "Integer",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch started finalizing."
+        },
+        {
+          "name": "completed_at",
+          "langType": "Integer",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch was completed."
+        },
+        {
+          "name": "failed_at",
+          "langType": "Integer",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch failed."
+        },
+        {
+          "name": "expired_at",
+          "langType": "Integer",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch expired."
+        },
+        {
+          "name": "cancelling_at",
+          "langType": "Integer",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch started cancelling."
+        },
+        {
+          "name": "cancelled_at",
+          "langType": "Integer",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) for when the batch was cancelled."
+        },
+        {
+          "name": "request_counts",
+          "langType": "Models::BatchRequestCounts",
+          "required": false,
+          "description": "The request counts for different statuses within the batch.",
+          "refTypeName": "BatchRequestCounts"
+        },
+        {
+          "name": "usage",
+          "langType": "Models::BatchUsage",
+          "required": false,
+          "description": "Represents token usage details including input tokens, output tokens, a\nbreakdown of output tokens, and the total tokens used. Only populated on\nbatches created after September 7, 2025.\n",
+          "refTypeName": "BatchUsage"
+        },
+        {
+          "name": "metadata",
+          "langType": "Models::Metadata",
+          "required": false,
+          "refTypeName": "Metadata"
+        }
+      ]
+    }
+  }
+}

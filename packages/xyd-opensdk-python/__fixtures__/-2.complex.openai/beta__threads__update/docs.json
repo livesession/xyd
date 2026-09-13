@@ -1,0 +1,62 @@
+{
+  "chain": [
+    "beta",
+    "threads"
+  ],
+  "action": "update",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.beta.threads.update(\"thread_id\", tool_resources={\"code_interpreter\": {\"file_ids\": [\"string\"]}, \"file_search\": {\"vector_store_ids\": [\"string\"]}}, metadata={\"key\": \"string\"})\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.beta.threads.update(thread_id, tool_resources=..., metadata=...) -> ThreadObject",
+    "request": {
+      "fields": [
+        {
+          "name": "tool_resources",
+          "langType": "Optional[ModifyThreadRequestToolResources]",
+          "required": false,
+          "refTypeName": "ModifyThreadRequestToolResources"
+        },
+        {
+          "name": "metadata",
+          "langType": "Optional[Metadata]",
+          "required": false,
+          "refTypeName": "Metadata"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ThreadObject",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `thread`."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the thread was created."
+        },
+        {
+          "name": "tool_resources",
+          "langType": "Optional[ModifyThreadRequestToolResources]",
+          "required": true,
+          "refTypeName": "ModifyThreadRequestToolResources"
+        },
+        {
+          "name": "metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        }
+      ]
+    }
+  }
+}

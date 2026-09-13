@@ -1,0 +1,50 @@
+{
+  "chain": [
+    "uploads",
+    "parts"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.uploads.parts.create(\"upload_abc123\", data=b\"Example data\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.uploads.parts.create(upload_id, data) -> UploadPart",
+    "request": {
+      "fields": [
+        {
+          "name": "data",
+          "langType": "Union[bytes, BinaryIO]",
+          "required": true,
+          "description": "The chunk of bytes for this Part.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "UploadPart",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The upload Part unique identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the Part was created."
+        },
+        {
+          "name": "upload_id",
+          "langType": "str",
+          "required": true,
+          "description": "The ID of the Upload object that this Part was added to."
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `upload.part`."
+        }
+      ]
+    }
+  }
+}

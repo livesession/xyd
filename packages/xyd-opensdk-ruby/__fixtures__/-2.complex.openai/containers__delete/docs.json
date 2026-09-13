@@ -1,0 +1,17 @@
+{
+  "chain": [
+    "containers"
+  ],
+  "action": "delete",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nclient.containers.delete(\"container_id\")\n",
+  "typeReference": {
+    "signature": "client.containers.delete(container_id) -> nil",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "langType": "nil",
+      "note": "no response body"
+    }
+  }
+}

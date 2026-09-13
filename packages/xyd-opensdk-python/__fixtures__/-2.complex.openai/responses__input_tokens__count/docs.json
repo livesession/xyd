@@ -1,0 +1,91 @@
+{
+  "chain": [
+    "responses",
+    "input-tokens"
+  ],
+  "action": "count",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.responses.input_tokens.count(model=\"string\", input=\"string\", previous_response_id=\"string\", tools=[{\"type\": \"function\", \"name\": \"string\", \"parameters\": {\"key\": None}, \"strict\": True, \"description\": \"string\", \"defer_loading\": True}], text={\"format\": {\"type\": \"text\"}, \"verbosity\": \"low\"}, reasoning={\"effort\": \"none\", \"summary\": \"auto\", \"generate_summary\": \"auto\"}, truncation=\"auto\", instructions=\"string\", conversation=\"string\", tool_choice=\"none\", parallel_tool_calls=True)\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.responses.input_tokens.count(model=..., input=..., previous_response_id=..., tools=..., text=..., reasoning=..., truncation=..., instructions=..., conversation=..., tool_choice=..., parallel_tool_calls=...) -> TokenCountsResource",
+    "request": {
+      "fields": [
+        {
+          "name": "model",
+          "langType": "Optional[str]",
+          "required": false
+        },
+        {
+          "name": "input",
+          "langType": "Optional[TokenCountsBodyInput]",
+          "required": false,
+          "refTypeName": "TokenCountsBodyInput"
+        },
+        {
+          "name": "previous_response_id",
+          "langType": "Optional[str]",
+          "required": false
+        },
+        {
+          "name": "tools",
+          "langType": "Optional[list[Tool]]",
+          "required": false
+        },
+        {
+          "name": "text",
+          "langType": "Optional[ResponseTextParam]",
+          "required": false,
+          "refTypeName": "ResponseTextParam"
+        },
+        {
+          "name": "reasoning",
+          "langType": "Optional[Reasoning]",
+          "required": false,
+          "refTypeName": "Reasoning"
+        },
+        {
+          "name": "truncation",
+          "langType": "Optional[TruncationEnum]",
+          "required": false,
+          "refTypeName": "TruncationEnum"
+        },
+        {
+          "name": "instructions",
+          "langType": "Optional[str]",
+          "required": false
+        },
+        {
+          "name": "conversation",
+          "langType": "Optional[ConversationParam]",
+          "required": false,
+          "refTypeName": "ConversationParam"
+        },
+        {
+          "name": "tool_choice",
+          "langType": "Optional[ToolChoiceParam]",
+          "required": false,
+          "refTypeName": "ToolChoiceParam"
+        },
+        {
+          "name": "parallel_tool_calls",
+          "langType": "Optional[bool]",
+          "required": false
+        }
+      ]
+    },
+    "response": {
+      "typeName": "TokenCountsResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true
+        },
+        {
+          "name": "input_tokens",
+          "langType": "int",
+          "required": true
+        }
+      ]
+    }
+  }
+}

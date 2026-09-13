@@ -1,0 +1,72 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "groups"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Admin.Organization.Projects.Groups.New(\n\t\tcontext.TODO(),\n\t\t\"project_id\",\n\t\topenai.AdminOrganizationProjectGroupNewParams{\n\t\t\tGroupID: \"string\",\n\t\t\tRole: \"string\",\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Admin.Organization.Projects.Groups.New(ctx, projectID, body) (*ProjectGroup, error)",
+    "request": {
+      "typeName": "AdminOrganizationProjectGroupNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "GroupID",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the group to add to the project."
+        },
+        {
+          "name": "Role",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the project role to grant to the group."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ProjectGroup",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "Always `project.group`."
+        },
+        {
+          "name": "ProjectID",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the project."
+        },
+        {
+          "name": "GroupID",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the group that has access to the project."
+        },
+        {
+          "name": "GroupName",
+          "langType": "string",
+          "required": true,
+          "description": "Display name of the group."
+        },
+        {
+          "name": "GroupType",
+          "langType": "string",
+          "required": true,
+          "description": "The type of the group."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the group was granted project access."
+        }
+      ]
+    }
+  }
+}

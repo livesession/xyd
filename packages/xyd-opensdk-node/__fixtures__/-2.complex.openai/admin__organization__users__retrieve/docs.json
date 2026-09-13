@@ -1,0 +1,118 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "users"
+  ],
+  "action": "retrieve",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.admin.organization.users.retrieve(\"user_id\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.admin.organization.users.retrieve(userId): Promise<User>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "User",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"organization.user\"",
+          "required": true,
+          "description": "The object type, which is always `organization.user`"
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "langType": "string | null",
+          "required": false,
+          "description": "The name of the user"
+        },
+        {
+          "name": "email",
+          "langType": "string | null",
+          "required": false,
+          "description": "The email address of the user"
+        },
+        {
+          "name": "role",
+          "langType": "string | null",
+          "required": false,
+          "description": "`owner` or `reader`"
+        },
+        {
+          "name": "added_at",
+          "langType": "number",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the user was added."
+        },
+        {
+          "name": "is_default",
+          "langType": "boolean",
+          "required": false,
+          "description": "Whether this is the organization's default user."
+        },
+        {
+          "name": "created",
+          "langType": "number",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the user was created."
+        },
+        {
+          "name": "user",
+          "langType": "UserUser",
+          "required": false,
+          "description": "Nested user details.",
+          "refTypeName": "UserUser"
+        },
+        {
+          "name": "is_service_account",
+          "langType": "boolean",
+          "required": false,
+          "description": "Whether the user is a service account."
+        },
+        {
+          "name": "is_scale_tier_authorized_purchaser",
+          "langType": "boolean | null",
+          "required": false,
+          "description": "Whether the user is an authorized purchaser for Scale Tier."
+        },
+        {
+          "name": "is_scim_managed",
+          "langType": "boolean",
+          "required": false,
+          "description": "Whether the user is managed through SCIM."
+        },
+        {
+          "name": "api_key_last_used_at",
+          "langType": "number | null",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of the user's last API key usage."
+        },
+        {
+          "name": "technical_level",
+          "langType": "string | null",
+          "required": false,
+          "description": "The technical level metadata for the user."
+        },
+        {
+          "name": "developer_persona",
+          "langType": "string | null",
+          "required": false,
+          "description": "The developer persona metadata for the user."
+        },
+        {
+          "name": "projects",
+          "langType": "UserProjects | null",
+          "required": false,
+          "description": "Projects associated with the user, if included.",
+          "refTypeName": "UserProjects"
+        }
+      ]
+    }
+  }
+}

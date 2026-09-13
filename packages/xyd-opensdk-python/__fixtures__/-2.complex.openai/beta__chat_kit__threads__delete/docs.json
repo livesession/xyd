@@ -1,0 +1,38 @@
+{
+  "chain": [
+    "beta",
+    "chat-kit",
+    "threads"
+  ],
+  "action": "delete",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.beta.chat_kit.threads.delete(\"cthr_123\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.beta.chat_kit.threads.delete(thread_id) -> DeletedThreadResource",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "DeletedThreadResource",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "Identifier of the deleted thread."
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "Type discriminator that is always `chatkit.thread.deleted`."
+        },
+        {
+          "name": "deleted",
+          "langType": "bool",
+          "required": true,
+          "description": "Indicates that the thread has been deleted."
+        }
+      ]
+    }
+  }
+}

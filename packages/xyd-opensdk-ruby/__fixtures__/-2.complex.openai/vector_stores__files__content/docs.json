@@ -1,0 +1,32 @@
+{
+  "chain": [
+    "vector-stores",
+    "files"
+  ],
+  "action": "content",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.vector_stores.files.content(\"vs_abc123\", \"file-abc123\")\npp result\n",
+  "typeReference": {
+    "signature": "client.vector_stores.files.content(vector_store_id, file_id) -> Page<Models::VectorStoreFileContentResponseDataItem>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Page<Models::VectorStoreFileContentResponseDataItem>",
+      "note": "paginated (Page)",
+      "fields": [
+        {
+          "name": "type",
+          "langType": "String",
+          "required": false,
+          "description": "The content type (currently only `\"text\"`)"
+        },
+        {
+          "name": "text",
+          "langType": "String",
+          "required": false,
+          "description": "The text content"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "invites"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.admin.organization.invites.create(email=\"string\", role=\"reader\", projects=[{\"id\": \"string\", \"role\": \"member\"}])\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.admin.organization.invites.create(email, role, projects=...) -> Invite",
+    "request": {
+      "fields": [
+        {
+          "name": "email",
+          "langType": "str",
+          "required": true,
+          "description": "Send an email to this address"
+        },
+        {
+          "name": "role",
+          "langType": "InviteRequestRole",
+          "required": true,
+          "description": "`owner` or `reader`",
+          "refTypeName": "InviteRequestRole"
+        },
+        {
+          "name": "projects",
+          "langType": "Optional[list[InviteRequestProjectsItem]]",
+          "required": false,
+          "description": "An array of projects to which membership is granted at the same time the org invite is accepted. If omitted, the user will be invited to the default project for compatibility with legacy behavior."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Invite",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `organization.invite`"
+        },
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "email",
+          "langType": "str",
+          "required": true,
+          "description": "The email address of the individual to whom the invite was sent"
+        },
+        {
+          "name": "role",
+          "langType": "InviteRole",
+          "required": true,
+          "description": "`owner` or `reader`",
+          "refTypeName": "InviteRole"
+        },
+        {
+          "name": "status",
+          "langType": "InviteStatus",
+          "required": true,
+          "description": "`accepted`,`expired`, or `pending`",
+          "refTypeName": "InviteStatus"
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the invite was sent."
+        },
+        {
+          "name": "expires_at",
+          "langType": "Optional[int]",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the invite expires."
+        },
+        {
+          "name": "accepted_at",
+          "langType": "Optional[int]",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the invite was accepted."
+        },
+        {
+          "name": "projects",
+          "langType": "list[InviteRequestProjectsItem]",
+          "required": true,
+          "description": "The projects that were granted membership upon acceptance of the invite."
+        }
+      ]
+    }
+  }
+}

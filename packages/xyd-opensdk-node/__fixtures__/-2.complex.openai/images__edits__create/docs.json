@@ -1,0 +1,165 @@
+{
+  "chain": [
+    "images",
+    "edits"
+  ],
+  "action": "create",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.images.edits.create({ images: [{} as any], prompt: \"string\", model: \"string\", mask: {} as any, n: 1, quality: \"low\", input_fidelity: \"high\", size: \"auto\", user: \"string\", output_format: \"png\", output_compression: 1, moderation: \"low\", background: \"transparent\", stream: false, partial_images: 1 });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.images.edits.create(body): Promise<ImagesResponse>",
+    "request": {
+      "typeName": "ImageEditCreateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "model",
+          "langType": "EditImageBodyJsonParamModel | null",
+          "required": false,
+          "description": "The model to use for image editing.",
+          "refTypeName": "EditImageBodyJsonParamModel"
+        },
+        {
+          "name": "images",
+          "langType": "ImageRefParam[]",
+          "required": true,
+          "description": "Input image references to edit.\nFor GPT image models, you can provide up to 16 images.\n"
+        },
+        {
+          "name": "mask",
+          "langType": "ImageRefParam",
+          "required": false,
+          "refTypeName": "ImageRefParam"
+        },
+        {
+          "name": "prompt",
+          "langType": "string",
+          "required": true,
+          "description": "A text description of the desired image edit."
+        },
+        {
+          "name": "n",
+          "langType": "number | null",
+          "required": false,
+          "description": "The number of edited images to generate."
+        },
+        {
+          "name": "quality",
+          "langType": "EditImageBodyJsonParamQuality | null",
+          "required": false,
+          "description": "Output quality for GPT image models.\n",
+          "refTypeName": "EditImageBodyJsonParamQuality"
+        },
+        {
+          "name": "input_fidelity",
+          "langType": "EditImageBodyJsonParamInputFidelity | null",
+          "required": false,
+          "description": "Controls fidelity to the original input image(s).",
+          "refTypeName": "EditImageBodyJsonParamInputFidelity"
+        },
+        {
+          "name": "size",
+          "langType": "EditImageBodyJsonParamSize | null",
+          "required": false,
+          "description": "Requested output image size.",
+          "refTypeName": "EditImageBodyJsonParamSize"
+        },
+        {
+          "name": "user",
+          "langType": "string",
+          "required": false,
+          "description": "A unique identifier representing your end-user, which can help OpenAI\nmonitor and detect abuse.\n"
+        },
+        {
+          "name": "output_format",
+          "langType": "EditImageBodyJsonParamOutputFormat | null",
+          "required": false,
+          "description": "Output image format. Supported for GPT image models.",
+          "refTypeName": "EditImageBodyJsonParamOutputFormat"
+        },
+        {
+          "name": "output_compression",
+          "langType": "number | null",
+          "required": false,
+          "description": "Compression level for `jpeg` or `webp` output."
+        },
+        {
+          "name": "moderation",
+          "langType": "EditImageBodyJsonParamModeration | null",
+          "required": false,
+          "description": "Moderation level for GPT image models.",
+          "refTypeName": "EditImageBodyJsonParamModeration"
+        },
+        {
+          "name": "background",
+          "langType": "EditImageBodyJsonParamBackground | null",
+          "required": false,
+          "description": "Background behavior for generated image output.",
+          "refTypeName": "EditImageBodyJsonParamBackground"
+        },
+        {
+          "name": "stream",
+          "langType": "boolean | null",
+          "required": false,
+          "description": "Stream partial image results as events."
+        },
+        {
+          "name": "partial_images",
+          "langType": "PartialImages",
+          "required": false,
+          "refTypeName": "PartialImages"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ImagesResponse",
+      "fields": [
+        {
+          "name": "created",
+          "langType": "number",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the image was created."
+        },
+        {
+          "name": "data",
+          "langType": "Image[]",
+          "required": false,
+          "description": "The list of generated images."
+        },
+        {
+          "name": "background",
+          "langType": "ImagesResponseBackground",
+          "required": false,
+          "description": "The background parameter used for the image generation. Either `transparent` or `opaque`.",
+          "refTypeName": "ImagesResponseBackground"
+        },
+        {
+          "name": "output_format",
+          "langType": "ImagesResponseOutputFormat",
+          "required": false,
+          "description": "The output format of the image generation. Either `png`, `webp`, or `jpeg`.",
+          "refTypeName": "ImagesResponseOutputFormat"
+        },
+        {
+          "name": "size",
+          "langType": "ImagesResponseSize",
+          "required": false,
+          "description": "The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`.",
+          "refTypeName": "ImagesResponseSize"
+        },
+        {
+          "name": "quality",
+          "langType": "ImagesResponseQuality",
+          "required": false,
+          "description": "The quality of the image generated. Either `low`, `medium`, or `high`.",
+          "refTypeName": "ImagesResponseQuality"
+        },
+        {
+          "name": "usage",
+          "langType": "ImageGenUsage",
+          "required": false,
+          "refTypeName": "ImageGenUsage"
+        }
+      ]
+    }
+  }
+}

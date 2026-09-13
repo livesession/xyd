@@ -1,0 +1,62 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "service-accounts"
+  ],
+  "action": "create",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.admin.organization.projects.serviceAccounts.create(\"project_id\", { name: \"string\" });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.admin.organization.projects.serviceAccounts.create(projectId, body): Promise<ProjectServiceAccountCreateResponse>",
+    "request": {
+      "typeName": "AdminOrganizationProjectServiceAccountCreateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "name",
+          "langType": "string",
+          "required": true,
+          "description": "The name of the service account being created."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ProjectServiceAccountCreateResponse",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"organization.project.service_account\"",
+          "required": true
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "name",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "role",
+          "langType": "\"member\"",
+          "required": true,
+          "description": "Service accounts can only have one role of type `member`"
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true
+        },
+        {
+          "name": "api_key",
+          "langType": "ProjectServiceAccountApiKey | null",
+          "required": true,
+          "refTypeName": "ProjectServiceAccountApiKey"
+        }
+      ]
+    }
+  }
+}

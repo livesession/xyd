@@ -1,0 +1,34 @@
+{
+  "chain": [
+    "beta",
+    "threads"
+  ],
+  "action": "delete",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.beta.threads.delete(\"thread_id\");\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.beta.threads.delete(threadId): Promise<DeleteThreadResponse>",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "DeleteThreadResponse",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "boolean",
+          "required": true
+        },
+        {
+          "name": "object",
+          "langType": "\"thread.deleted\"",
+          "required": true
+        }
+      ]
+    }
+  }
+}

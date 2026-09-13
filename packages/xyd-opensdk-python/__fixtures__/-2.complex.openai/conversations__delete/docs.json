@@ -1,0 +1,33 @@
+{
+  "chain": [
+    "conversations"
+  ],
+  "action": "delete",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.conversations.delete(\"conv_123\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.conversations.delete(conversation_id) -> DeletedConversationResource",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "DeletedConversationResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "bool",
+          "required": true
+        },
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true
+        }
+      ]
+    }
+  }
+}

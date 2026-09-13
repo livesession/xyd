@@ -1,0 +1,90 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "invites"
+  ],
+  "action": "list",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.admin.organization.invites.list(limit: 20, after: \"after\")\npp result\n",
+  "typeReference": {
+    "signature": "client.admin.organization.invites.list(limit: nil, after: nil) -> Page<Models::Invite>",
+    "request": {
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "Integer",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "after",
+          "langType": "String",
+          "required": false,
+          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Page<Models::Invite>",
+      "note": "paginated (Page)",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The object type, which is always `organization.invite`"
+        },
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "email",
+          "langType": "String",
+          "required": true,
+          "description": "The email address of the individual to whom the invite was sent"
+        },
+        {
+          "name": "role",
+          "langType": "Models::InviteRole",
+          "required": true,
+          "description": "`owner` or `reader`",
+          "refTypeName": "InviteRole"
+        },
+        {
+          "name": "status",
+          "langType": "Models::InviteStatus",
+          "required": true,
+          "description": "`accepted`,`expired`, or `pending`",
+          "refTypeName": "InviteStatus"
+        },
+        {
+          "name": "created_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the invite was sent."
+        },
+        {
+          "name": "expires_at",
+          "langType": "Integer",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the invite expires."
+        },
+        {
+          "name": "accepted_at",
+          "langType": "Integer",
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the invite was accepted."
+        },
+        {
+          "name": "projects",
+          "langType": "Array<Models::InviteProjectsItem>",
+          "required": true,
+          "description": "The projects that were granted membership upon acceptance of the invite."
+        }
+      ]
+    }
+  }
+}

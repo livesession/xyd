@@ -1,0 +1,27 @@
+{
+  "chain": [
+    "realtime",
+    "calls"
+  ],
+  "action": "refer",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\terr := client.Realtime.Calls.Refer(\n\t\tcontext.TODO(),\n\t\t\"call_id\",\n\t\topenai.RealtimeCallReferParams{\n\t\t\tTargetURI: \"string\",\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n}\n",
+  "typeReference": {
+    "signature": "client.Realtime.Calls.Refer(ctx, callID, body) error",
+    "request": {
+      "typeName": "RealtimeCallReferParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "TargetURI",
+          "langType": "string",
+          "required": true,
+          "description": "URI that should appear in the SIP Refer-To header. Supports values like\n`tel:+14155550123` or `sip:agent@example.com`."
+        }
+      ]
+    },
+    "response": {
+      "langType": "error",
+      "note": "no response body"
+    }
+  }
+}

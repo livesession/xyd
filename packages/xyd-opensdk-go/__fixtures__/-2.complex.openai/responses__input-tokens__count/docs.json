@@ -1,0 +1,93 @@
+{
+  "chain": [
+    "responses",
+    "input-tokens"
+  ],
+  "action": "count",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Responses.InputTokens.Count(\n\t\tcontext.TODO(),\n\t\topenai.ResponseInputTokenCountParams{\n\t\t\tModel: param.NewOpt[string](\"string\"),\n\t\t\tInput: \"string\",\n\t\t\tPreviousResponseID: param.NewOpt[string](\"string\"),\n\t\t\tTools: []openai.Tool{openai.FunctionTool{Type: \"function\", Name: \"string\", Parameters: map[string]any{\"key\": nil}, Strict: true, Description: \"string\", DeferLoading: true}},\n\t\t\tText: openai.ResponseTextParam{Format: openai.ResponseFormatText{Type: \"text\"}, Verbosity: openai.VerbosityLow},\n\t\t\tReasoning: openai.Reasoning{Effort: openai.ReasoningEffortNone, Summary: openai.ReasoningSummaryAuto, GenerateSummary: openai.ReasoningSummaryAuto},\n\t\t\tTruncation: openai.TruncationEnumAuto,\n\t\t\tInstructions: param.NewOpt[string](\"string\"),\n\t\t\tConversation: \"string\",\n\t\t\tToolChoice: openai.ToolChoiceOptionsNone,\n\t\t\tParallelToolCalls: param.NewOpt[bool](true),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Responses.InputTokens.Count(ctx, body) (*TokenCountsResource, error)",
+    "request": {
+      "typeName": "ResponseInputTokenCountParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "Model",
+          "langType": "param.Opt[string]",
+          "required": false
+        },
+        {
+          "name": "Input",
+          "langType": "TokenCountsBodyInput",
+          "required": false,
+          "refTypeName": "TokenCountsBodyInput"
+        },
+        {
+          "name": "PreviousResponseID",
+          "langType": "param.Opt[string]",
+          "required": false
+        },
+        {
+          "name": "Tools",
+          "langType": "[]Tool",
+          "required": false
+        },
+        {
+          "name": "Text",
+          "langType": "ResponseTextParam",
+          "required": false,
+          "refTypeName": "ResponseTextParam"
+        },
+        {
+          "name": "Reasoning",
+          "langType": "Reasoning",
+          "required": false,
+          "refTypeName": "Reasoning"
+        },
+        {
+          "name": "Truncation",
+          "langType": "TruncationEnum",
+          "required": false,
+          "refTypeName": "TruncationEnum"
+        },
+        {
+          "name": "Instructions",
+          "langType": "param.Opt[string]",
+          "required": false
+        },
+        {
+          "name": "Conversation",
+          "langType": "ConversationParam",
+          "required": false,
+          "refTypeName": "ConversationParam"
+        },
+        {
+          "name": "ToolChoice",
+          "langType": "ToolChoiceParam",
+          "required": false,
+          "refTypeName": "ToolChoiceParam"
+        },
+        {
+          "name": "ParallelToolCalls",
+          "langType": "param.Opt[bool]",
+          "required": false
+        }
+      ]
+    },
+    "response": {
+      "typeName": "TokenCountsResource",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "InputTokens",
+          "langType": "int64",
+          "required": true
+        }
+      ]
+    }
+  }
+}

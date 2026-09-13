@@ -1,0 +1,46 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "users",
+    "roles"
+  ],
+  "action": "create",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.admin.organization.users.roles.create(\"user_id\", role_id: \"string\")\npp result\n",
+  "typeReference": {
+    "signature": "client.admin.organization.users.roles.create(user_id, role_id:) -> Models::UserRoleAssignment",
+    "request": {
+      "fields": [
+        {
+          "name": "role_id",
+          "langType": "String",
+          "required": true,
+          "description": "Identifier of the role to assign."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Models::UserRoleAssignment",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "Always `user.role`."
+        },
+        {
+          "name": "user",
+          "langType": "Models::User",
+          "required": true,
+          "refTypeName": "User"
+        },
+        {
+          "name": "role",
+          "langType": "Models::Role",
+          "required": true,
+          "refTypeName": "Role"
+        }
+      ]
+    }
+  }
+}

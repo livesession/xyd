@@ -1,0 +1,74 @@
+{
+  "chain": [
+    "skills",
+    "versions"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.skills.versions.create(\"skill_123\", files=[b\"Example data\"], default=True)\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.skills.versions.create(skill_id, files, default=...) -> SkillVersionResource",
+    "request": {
+      "fields": [
+        {
+          "name": "files",
+          "langType": "CreateSkillVersionBodyFiles",
+          "required": true,
+          "refTypeName": "CreateSkillVersionBodyFiles"
+        },
+        {
+          "name": "default",
+          "langType": "Optional[bool]",
+          "required": false,
+          "description": "Whether to set this version as the default."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "SkillVersionResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is `skill.version`."
+        },
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "Unique identifier for the skill version."
+        },
+        {
+          "name": "skill_id",
+          "langType": "str",
+          "required": true,
+          "description": "Identifier of the skill for this version."
+        },
+        {
+          "name": "version",
+          "langType": "str",
+          "required": true,
+          "description": "Version number for this skill."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "Unix timestamp (seconds) for when the version was created."
+        },
+        {
+          "name": "name",
+          "langType": "str",
+          "required": true,
+          "description": "Name of the skill version."
+        },
+        {
+          "name": "description",
+          "langType": "str",
+          "required": true,
+          "description": "Description of the skill version."
+        }
+      ]
+    }
+  }
+}

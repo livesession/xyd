@@ -1,0 +1,123 @@
+{
+  "chain": [
+    "videos"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.videos.create(prompt=\"string\", model=\"string\", input_reference={\"image_url\": \"https://example.com\", \"file_id\": \"string\"}, seconds=\"4\", size=\"720x1280\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.videos.create(model=..., prompt, input_reference=..., seconds=..., size=...) -> VideoResource",
+    "request": {
+      "fields": [
+        {
+          "name": "model",
+          "langType": "Optional[VideoModel]",
+          "required": false,
+          "refTypeName": "VideoModel"
+        },
+        {
+          "name": "prompt",
+          "langType": "str",
+          "required": true,
+          "description": "Text prompt that describes the video to generate."
+        },
+        {
+          "name": "input_reference",
+          "langType": "Optional[ImageRefParam2]",
+          "required": false,
+          "refTypeName": "ImageRefParam2"
+        },
+        {
+          "name": "seconds",
+          "langType": "Optional[VideoSeconds]",
+          "required": false,
+          "refTypeName": "VideoSeconds"
+        },
+        {
+          "name": "size",
+          "langType": "Optional[VideoSize]",
+          "required": false,
+          "refTypeName": "VideoSize"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "VideoResource",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "Unique identifier for the video job."
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `video`."
+        },
+        {
+          "name": "model",
+          "langType": "VideoModel",
+          "required": true,
+          "refTypeName": "VideoModel"
+        },
+        {
+          "name": "status",
+          "langType": "VideoStatus",
+          "required": true,
+          "refTypeName": "VideoStatus"
+        },
+        {
+          "name": "progress",
+          "langType": "int",
+          "required": true,
+          "description": "Approximate completion percentage for the generation task."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "Unix timestamp (seconds) for when the job was created."
+        },
+        {
+          "name": "completed_at",
+          "langType": "Optional[int]",
+          "required": true
+        },
+        {
+          "name": "expires_at",
+          "langType": "Optional[int]",
+          "required": true
+        },
+        {
+          "name": "prompt",
+          "langType": "Optional[str]",
+          "required": true
+        },
+        {
+          "name": "size",
+          "langType": "VideoSize",
+          "required": true,
+          "refTypeName": "VideoSize"
+        },
+        {
+          "name": "seconds",
+          "langType": "str",
+          "required": true,
+          "description": "Duration of the generated clip in seconds. For extensions, this is the stitched total duration."
+        },
+        {
+          "name": "remixed_from_video_id",
+          "langType": "Optional[str]",
+          "required": true
+        },
+        {
+          "name": "error",
+          "langType": "Optional[Error2]",
+          "required": true,
+          "refTypeName": "Error2"
+        }
+      ]
+    }
+  }
+}

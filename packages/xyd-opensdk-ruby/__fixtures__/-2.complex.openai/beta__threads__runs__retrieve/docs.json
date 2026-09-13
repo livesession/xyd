@@ -1,0 +1,186 @@
+{
+  "chain": [
+    "beta",
+    "threads",
+    "runs"
+  ],
+  "action": "retrieve",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.beta.threads.runs.retrieve(\"thread_id\", \"run_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.beta.threads.runs.retrieve(thread_id, run_id) -> Models::RunObject",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::RunObject",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The object type, which is always `thread.run`."
+        },
+        {
+          "name": "created_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was created."
+        },
+        {
+          "name": "thread_id",
+          "langType": "String",
+          "required": true,
+          "description": "The ID of the [thread](/docs/api-reference/threads) that was executed on as a part of this run."
+        },
+        {
+          "name": "assistant_id",
+          "langType": "String",
+          "required": true,
+          "description": "The ID of the [assistant](/docs/api-reference/assistants) used for execution of this run."
+        },
+        {
+          "name": "status",
+          "langType": "Models::RunObjectStatus",
+          "required": true,
+          "description": "The status of the run, which can be either `queued`, `in_progress`, `requires_action`, `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`.",
+          "refTypeName": "RunObjectStatus"
+        },
+        {
+          "name": "required_action",
+          "langType": "Models::RunObjectRequiredAction",
+          "required": true,
+          "description": "Details on the action required to continue the run. Will be `null` if no action is required.",
+          "refTypeName": "RunObjectRequiredAction"
+        },
+        {
+          "name": "last_error",
+          "langType": "Models::RunObjectLastError",
+          "required": true,
+          "description": "The last error associated with this run. Will be `null` if there are no errors.",
+          "refTypeName": "RunObjectLastError"
+        },
+        {
+          "name": "expires_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run will expire."
+        },
+        {
+          "name": "started_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was started."
+        },
+        {
+          "name": "cancelled_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was cancelled."
+        },
+        {
+          "name": "failed_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run failed."
+        },
+        {
+          "name": "completed_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was completed."
+        },
+        {
+          "name": "incomplete_details",
+          "langType": "Models::RunObjectIncompleteDetails",
+          "required": true,
+          "description": "Details on why the run is incomplete. Will be `null` if the run is not incomplete.",
+          "refTypeName": "RunObjectIncompleteDetails"
+        },
+        {
+          "name": "model",
+          "langType": "String",
+          "required": true,
+          "description": "The model that the [assistant](/docs/api-reference/assistants) used for this run."
+        },
+        {
+          "name": "instructions",
+          "langType": "String",
+          "required": true,
+          "description": "The instructions that the [assistant](/docs/api-reference/assistants) used for this run."
+        },
+        {
+          "name": "tools",
+          "langType": "Array<Models::RunObjectToolsItem>",
+          "required": true,
+          "description": "The list of tools that the [assistant](/docs/api-reference/assistants) used for this run."
+        },
+        {
+          "name": "metadata",
+          "langType": "Models::Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        },
+        {
+          "name": "usage",
+          "langType": "Models::RunCompletionUsage",
+          "required": true,
+          "refTypeName": "RunCompletionUsage"
+        },
+        {
+          "name": "temperature",
+          "langType": "Float",
+          "required": false,
+          "description": "The sampling temperature used for this run. If not set, defaults to 1."
+        },
+        {
+          "name": "top_p",
+          "langType": "Float",
+          "required": false,
+          "description": "The nucleus sampling value used for this run. If not set, defaults to 1."
+        },
+        {
+          "name": "max_prompt_tokens",
+          "langType": "Integer",
+          "required": true,
+          "description": "The maximum number of prompt tokens specified to have been used over the course of the run.\n"
+        },
+        {
+          "name": "max_completion_tokens",
+          "langType": "Integer",
+          "required": true,
+          "description": "The maximum number of completion tokens specified to have been used over the course of the run.\n"
+        },
+        {
+          "name": "truncation_strategy",
+          "langType": "Models::TruncationObject",
+          "required": true,
+          "refTypeName": "TruncationObject"
+        },
+        {
+          "name": "tool_choice",
+          "langType": "Models::AssistantsApiToolChoiceOption",
+          "required": true,
+          "refTypeName": "AssistantsApiToolChoiceOption"
+        },
+        {
+          "name": "parallel_tool_calls",
+          "langType": "Models::ParallelToolCalls",
+          "required": true,
+          "refTypeName": "ParallelToolCalls"
+        },
+        {
+          "name": "response_format",
+          "langType": "Models::AssistantsApiResponseFormatOption",
+          "required": true,
+          "refTypeName": "AssistantsApiResponseFormatOption"
+        }
+      ]
+    }
+  }
+}

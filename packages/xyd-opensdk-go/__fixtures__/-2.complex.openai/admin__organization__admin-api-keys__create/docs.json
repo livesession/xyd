@@ -1,0 +1,75 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "admin-api-keys"
+  ],
+  "action": "create",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Admin.Organization.AdminAPIKeys.New(\n\t\tcontext.TODO(),\n\t\topenai.AdminOrganizationAdminAPIKeyNewParams{\n\t\t\tName: \"string\",\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Admin.Organization.AdminAPIKeys.New(ctx, body) (*AdminAPIKeyCreateResponse, error)",
+    "request": {
+      "typeName": "AdminOrganizationAdminAPIKeyNewParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": true
+        }
+      ]
+    },
+    "response": {
+      "typeName": "AdminAPIKeyCreateResponse",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always `organization.admin_api_key`"
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": false,
+          "description": "The name of the API key"
+        },
+        {
+          "name": "RedactedValue",
+          "langType": "string",
+          "required": true,
+          "description": "The redacted value of the API key"
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the API key was created"
+        },
+        {
+          "name": "LastUsedAt",
+          "langType": "int64",
+          "required": false
+        },
+        {
+          "name": "Owner",
+          "langType": "AdminAPIKeyCreateResponseOwner",
+          "required": true,
+          "refTypeName": "AdminApiKeyCreateResponseOwner"
+        },
+        {
+          "name": "Value",
+          "langType": "string",
+          "required": true,
+          "description": "The value of the API key. Only shown on create."
+        }
+      ]
+    }
+  }
+}

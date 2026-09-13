@@ -1,0 +1,85 @@
+{
+  "chain": [
+    "realtime",
+    "transcription-sessions"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.realtime.transcription_sessions.create(turn_detection={\"type\": \"server_vad\", \"threshold\": 1, \"prefix_padding_ms\": 1, \"silence_duration_ms\": 1}, input_audio_noise_reduction={\"type\": \"near_field\"}, input_audio_format=\"pcm16\", input_audio_transcription={\"model\": \"string\", \"language\": \"string\", \"prompt\": \"string\", \"delay\": \"minimal\"}, include=[\"item.input_audio_transcription.logprobs\"])\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.realtime.transcription_sessions.create(turn_detection=..., input_audio_noise_reduction=..., input_audio_format=..., input_audio_transcription=..., include=...) -> RealtimeTranscriptionSessionCreateResponse",
+    "request": {
+      "fields": [
+        {
+          "name": "turn_detection",
+          "langType": "Optional[RealtimeTranscriptionSessionCreateRequestTurnDetection]",
+          "required": false,
+          "description": "Configuration for turn detection. Can be set to `null` to turn off. Server VAD means that the model will detect the start and end of speech based on audio volume and respond at the end of user speech.\n",
+          "refTypeName": "RealtimeTranscriptionSessionCreateRequestTurnDetection"
+        },
+        {
+          "name": "input_audio_noise_reduction",
+          "langType": "Optional[RealtimeTranscriptionSessionCreateRequestInputAudioNoiseReduction]",
+          "required": false,
+          "description": "Configuration for input audio noise reduction. This can be set to `null` to turn off.\nNoise reduction filters audio added to the input audio buffer before it is sent to VAD and the model.\nFiltering the audio can improve VAD and turn detection accuracy (reducing false positives) and model performance by improving perception of the input audio.\n",
+          "refTypeName": "RealtimeTranscriptionSessionCreateRequestInputAudioNoiseReduction"
+        },
+        {
+          "name": "input_audio_format",
+          "langType": "Optional[RealtimeTranscriptionSessionCreateRequestInputAudioFormat]",
+          "required": false,
+          "description": "The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.\nFor `pcm16`, input audio must be 16-bit PCM at a 24kHz sample rate,\nsingle channel (mono), and little-endian byte order.\n",
+          "refTypeName": "RealtimeTranscriptionSessionCreateRequestInputAudioFormat"
+        },
+        {
+          "name": "input_audio_transcription",
+          "langType": "Optional[AudioTranscription]",
+          "required": false,
+          "refTypeName": "AudioTranscription"
+        },
+        {
+          "name": "include",
+          "langType": "Optional[list[str]]",
+          "required": false,
+          "description": "The set of items to include in the transcription. Current available items are:\n`item.input_audio_transcription.logprobs`\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "RealtimeTranscriptionSessionCreateResponse",
+      "fields": [
+        {
+          "name": "client_secret",
+          "langType": "RealtimeTranscriptionSessionCreateResponseClientSecret",
+          "required": true,
+          "description": "Ephemeral key returned by the API. Only present when the session is\ncreated on the server via REST API.\n",
+          "refTypeName": "RealtimeTranscriptionSessionCreateResponseClientSecret"
+        },
+        {
+          "name": "modalities",
+          "langType": "Any",
+          "required": false,
+          "description": "The set of modalities the model can respond with. To disable audio,\nset this to [\"text\"].\n"
+        },
+        {
+          "name": "input_audio_format",
+          "langType": "str",
+          "required": false,
+          "description": "The format of input audio. Options are `pcm16`, `g711_ulaw`, or `g711_alaw`.\n"
+        },
+        {
+          "name": "input_audio_transcription",
+          "langType": "AudioTranscriptionResponse",
+          "required": false,
+          "refTypeName": "AudioTranscriptionResponse"
+        },
+        {
+          "name": "turn_detection",
+          "langType": "RealtimeTranscriptionSessionCreateResponseTurnDetection",
+          "required": false,
+          "description": "Configuration for turn detection. Can be set to `null` to turn off. Server\nVAD means that the model will detect the start and end of speech based on\naudio volume and respond at the end of user speech.\n",
+          "refTypeName": "RealtimeTranscriptionSessionCreateResponseTurnDetection"
+        }
+      ]
+    }
+  }
+}

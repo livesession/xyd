@@ -1,0 +1,18 @@
+{
+  "chain": [
+    "containers",
+    "files"
+  ],
+  "action": "content",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\terr := client.Containers.Files.Content(context.TODO(), \"container_id\", \"file_id\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n}\n",
+  "typeReference": {
+    "signature": "client.Containers.Files.Content(ctx, containerID, fileID) error",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "langType": "error",
+      "note": "no response body"
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "chain": [
+    "vector-stores",
+    "files"
+  ],
+  "action": "content",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.vector_stores.files.content(\"vs_abc123\", \"file-abc123\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.vector_stores.files.content(vector_store_id, file_id) -> CursorPage[VectorStoreFileContentResponseDataItem]",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "CursorPage[VectorStoreFileContentResponseDataItem]",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "type",
+          "langType": "str",
+          "required": false,
+          "description": "The content type (currently only `\"text\"`)"
+        },
+        {
+          "name": "text",
+          "langType": "str",
+          "required": false,
+          "description": "The text content"
+        }
+      ]
+    }
+  }
+}

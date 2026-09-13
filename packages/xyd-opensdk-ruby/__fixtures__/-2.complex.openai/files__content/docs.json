@@ -1,0 +1,17 @@
+{
+  "chain": [
+    "files"
+  ],
+  "action": "content",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.files.content(\"file_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.files.content(file_id) -> String",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "String",
+      "langType": "String"
+    }
+  }
+}

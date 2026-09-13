@@ -1,0 +1,18 @@
+{
+  "chain": [
+    "realtime",
+    "calls"
+  ],
+  "action": "hangup",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\terr := client.Realtime.Calls.Hangup(context.TODO(), \"call_id\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n}\n",
+  "typeReference": {
+    "signature": "client.Realtime.Calls.Hangup(ctx, callID) error",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "langType": "error",
+      "note": "no response body"
+    }
+  }
+}

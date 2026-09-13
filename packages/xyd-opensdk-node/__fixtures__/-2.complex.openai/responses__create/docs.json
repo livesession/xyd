@@ -1,0 +1,375 @@
+{
+  "chain": [
+    "responses"
+  ],
+  "action": "create",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.responses.create({ metadata: { key: \"string\" }, top_logprobs: 1, temperature: 1, top_p: 1, user: \"string\", safety_identifier: \"string\", prompt_cache_key: \"string\", service_tier: \"auto\", prompt_cache_retention: \"in_memory\", previous_response_id: \"string\", model: \"string\", reasoning: { effort: \"none\", summary: \"auto\", generate_summary: \"auto\" }, background: true, max_tool_calls: 1, text: { format: { type: \"text\" }, verbosity: \"low\" }, tools: [{ type: \"function\", name: \"string\", parameters: { key: {} as any }, strict: true, description: \"string\", defer_loading: true }], tool_choice: \"none\", prompt: { id: \"string\", version: \"string\", variables: { key: \"string\" } }, truncation: \"auto\", input: \"string\", include: [\"file_search_call.results\"], parallel_tool_calls: true, store: true, instructions: \"string\", stream: true, stream_options: { include_obfuscation: true }, conversation: \"string\", context_management: [{ type: \"string\", compact_threshold: 1 }], max_output_tokens: 1 });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.responses.create(body): Promise<Response>",
+    "request": {
+      "typeName": "ResponseCreateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "metadata",
+          "langType": "Metadata",
+          "required": false,
+          "refTypeName": "Metadata"
+        },
+        {
+          "name": "top_logprobs",
+          "langType": "number",
+          "required": false,
+          "description": "An integer between 0 and 20 specifying the maximum number of most likely\ntokens to return at each token position, each with an associated log\nprobability. In some cases, the number of returned tokens may be fewer than\nrequested.\n"
+        },
+        {
+          "name": "temperature",
+          "langType": "number | null",
+          "required": false
+        },
+        {
+          "name": "top_p",
+          "langType": "number | null",
+          "required": false
+        },
+        {
+          "name": "user",
+          "langType": "string",
+          "required": false,
+          "description": "This field is being replaced by `safety_identifier` and `prompt_cache_key`. Use `prompt_cache_key` instead to maintain caching optimizations.\nA stable identifier for your end-users.\nUsed to boost cache hit rates by better bucketing similar requests and  to help OpenAI detect and prevent abuse. [Learn more](/docs/guides/safety-best-practices#safety-identifiers).\n",
+          "deprecated": true
+        },
+        {
+          "name": "safety_identifier",
+          "langType": "string",
+          "required": false,
+          "description": "A stable identifier used to help detect users of your application that may be violating OpenAI's usage policies.\nThe IDs should be a string that uniquely identifies each user, with a maximum length of 64 characters. We recommend hashing their username or email address, in order to avoid sending us any identifying information. [Learn more](/docs/guides/safety-best-practices#safety-identifiers).\n"
+        },
+        {
+          "name": "prompt_cache_key",
+          "langType": "string",
+          "required": false,
+          "description": "Used by OpenAI to cache responses for similar requests to optimize your cache hit rates. Replaces the `user` field. [Learn more](/docs/guides/prompt-caching).\n"
+        },
+        {
+          "name": "service_tier",
+          "langType": "ServiceTier",
+          "required": false,
+          "refTypeName": "ServiceTier"
+        },
+        {
+          "name": "prompt_cache_retention",
+          "langType": "CreateResponsePromptCacheRetention | null",
+          "required": false,
+          "refTypeName": "CreateResponsePromptCacheRetention"
+        },
+        {
+          "name": "previous_response_id",
+          "langType": "string | null",
+          "required": false
+        },
+        {
+          "name": "model",
+          "langType": "ModelIdsResponses",
+          "required": false,
+          "refTypeName": "ModelIdsResponses"
+        },
+        {
+          "name": "reasoning",
+          "langType": "Reasoning | null",
+          "required": false,
+          "refTypeName": "Reasoning"
+        },
+        {
+          "name": "background",
+          "langType": "boolean | null",
+          "required": false
+        },
+        {
+          "name": "max_tool_calls",
+          "langType": "number | null",
+          "required": false
+        },
+        {
+          "name": "text",
+          "langType": "ResponseTextParam",
+          "required": false,
+          "refTypeName": "ResponseTextParam"
+        },
+        {
+          "name": "tools",
+          "langType": "ToolsArray",
+          "required": false,
+          "refTypeName": "ToolsArray"
+        },
+        {
+          "name": "tool_choice",
+          "langType": "ToolChoiceParam",
+          "required": false,
+          "refTypeName": "ToolChoiceParam"
+        },
+        {
+          "name": "prompt",
+          "langType": "Prompt",
+          "required": false,
+          "refTypeName": "Prompt"
+        },
+        {
+          "name": "truncation",
+          "langType": "CreateResponseTruncation | null",
+          "required": false,
+          "refTypeName": "CreateResponseTruncation"
+        },
+        {
+          "name": "input",
+          "langType": "InputParam",
+          "required": false,
+          "refTypeName": "InputParam"
+        },
+        {
+          "name": "include",
+          "langType": "IncludeEnum[] | null",
+          "required": false
+        },
+        {
+          "name": "parallel_tool_calls",
+          "langType": "boolean | null",
+          "required": false
+        },
+        {
+          "name": "store",
+          "langType": "boolean | null",
+          "required": false
+        },
+        {
+          "name": "instructions",
+          "langType": "string | null",
+          "required": false
+        },
+        {
+          "name": "stream",
+          "langType": "boolean | null",
+          "required": false
+        },
+        {
+          "name": "stream_options",
+          "langType": "ResponseStreamOptions",
+          "required": false,
+          "refTypeName": "ResponseStreamOptions"
+        },
+        {
+          "name": "conversation",
+          "langType": "ConversationParam | null",
+          "required": false,
+          "refTypeName": "ConversationParam"
+        },
+        {
+          "name": "context_management",
+          "langType": "ContextManagementParam[] | null",
+          "required": false
+        },
+        {
+          "name": "max_output_tokens",
+          "langType": "number | null",
+          "required": false
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Response",
+      "fields": [
+        {
+          "name": "metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        },
+        {
+          "name": "top_logprobs",
+          "langType": "number | null",
+          "required": false
+        },
+        {
+          "name": "temperature",
+          "langType": "number | null",
+          "required": true
+        },
+        {
+          "name": "top_p",
+          "langType": "number | null",
+          "required": true
+        },
+        {
+          "name": "user",
+          "langType": "string",
+          "required": false,
+          "description": "This field is being replaced by `safety_identifier` and `prompt_cache_key`. Use `prompt_cache_key` instead to maintain caching optimizations.\nA stable identifier for your end-users.\nUsed to boost cache hit rates by better bucketing similar requests and  to help OpenAI detect and prevent abuse. [Learn more](/docs/guides/safety-best-practices#safety-identifiers).\n",
+          "deprecated": true
+        },
+        {
+          "name": "safety_identifier",
+          "langType": "string",
+          "required": false,
+          "description": "A stable identifier used to help detect users of your application that may be violating OpenAI's usage policies.\nThe IDs should be a string that uniquely identifies each user, with a maximum length of 64 characters. We recommend hashing their username or email address, in order to avoid sending us any identifying information. [Learn more](/docs/guides/safety-best-practices#safety-identifiers).\n"
+        },
+        {
+          "name": "prompt_cache_key",
+          "langType": "string",
+          "required": false,
+          "description": "Used by OpenAI to cache responses for similar requests to optimize your cache hit rates. Replaces the `user` field. [Learn more](/docs/guides/prompt-caching).\n"
+        },
+        {
+          "name": "service_tier",
+          "langType": "ServiceTier",
+          "required": false,
+          "refTypeName": "ServiceTier"
+        },
+        {
+          "name": "prompt_cache_retention",
+          "langType": "CreateResponsePromptCacheRetention | null",
+          "required": false,
+          "refTypeName": "CreateResponsePromptCacheRetention"
+        },
+        {
+          "name": "previous_response_id",
+          "langType": "string | null",
+          "required": false
+        },
+        {
+          "name": "model",
+          "langType": "ModelIdsResponses",
+          "required": true,
+          "refTypeName": "ModelIdsResponses"
+        },
+        {
+          "name": "reasoning",
+          "langType": "Reasoning | null",
+          "required": false,
+          "refTypeName": "Reasoning"
+        },
+        {
+          "name": "background",
+          "langType": "boolean | null",
+          "required": false
+        },
+        {
+          "name": "max_tool_calls",
+          "langType": "number | null",
+          "required": false
+        },
+        {
+          "name": "text",
+          "langType": "ResponseTextParam",
+          "required": false,
+          "refTypeName": "ResponseTextParam"
+        },
+        {
+          "name": "tools",
+          "langType": "ToolsArray",
+          "required": true,
+          "refTypeName": "ToolsArray"
+        },
+        {
+          "name": "tool_choice",
+          "langType": "ToolChoiceParam",
+          "required": true,
+          "refTypeName": "ToolChoiceParam"
+        },
+        {
+          "name": "prompt",
+          "langType": "Prompt",
+          "required": false,
+          "refTypeName": "Prompt"
+        },
+        {
+          "name": "truncation",
+          "langType": "CreateResponseTruncation | null",
+          "required": false,
+          "refTypeName": "CreateResponseTruncation"
+        },
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "Unique identifier for this Response.\n"
+        },
+        {
+          "name": "object",
+          "langType": "\"response\"",
+          "required": true,
+          "description": "The object type of this resource - always set to `response`.\n"
+        },
+        {
+          "name": "status",
+          "langType": "ResponseStatus",
+          "required": false,
+          "description": "The status of the response generation. One of `completed`, `failed`,\n`in_progress`, `cancelled`, `queued`, or `incomplete`.\n",
+          "refTypeName": "ResponseStatus"
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "Unix timestamp (in seconds) of when this Response was created.\n"
+        },
+        {
+          "name": "completed_at",
+          "langType": "number | null",
+          "required": false
+        },
+        {
+          "name": "error",
+          "langType": "ResponseError",
+          "required": true,
+          "refTypeName": "ResponseError"
+        },
+        {
+          "name": "incomplete_details",
+          "langType": "ResponseIncompleteDetails | null",
+          "required": true,
+          "refTypeName": "ResponseIncompleteDetails"
+        },
+        {
+          "name": "output",
+          "langType": "OutputItem[]",
+          "required": true,
+          "description": "An array of content items generated by the model.\n\n- The length and order of items in the `output` array is dependent\n  on the model's response.\n- Rather than accessing the first item in the `output` array and\n  assuming it's an `assistant` message with the content generated by\n  the model, you might consider using the `output_text` property where\n  supported in SDKs.\n"
+        },
+        {
+          "name": "instructions",
+          "langType": "ResponseInstructions | null",
+          "required": true,
+          "refTypeName": "ResponseInstructions"
+        },
+        {
+          "name": "output_text",
+          "langType": "string | null",
+          "required": false
+        },
+        {
+          "name": "usage",
+          "langType": "ResponseUsage",
+          "required": false,
+          "refTypeName": "ResponseUsage"
+        },
+        {
+          "name": "parallel_tool_calls",
+          "langType": "boolean",
+          "required": true,
+          "description": "Whether to allow the model to run tool calls in parallel.\n"
+        },
+        {
+          "name": "conversation",
+          "langType": "Conversation2 | null",
+          "required": false,
+          "refTypeName": "Conversation2"
+        },
+        {
+          "name": "max_output_tokens",
+          "langType": "number | null",
+          "required": false
+        }
+      ]
+    }
+  }
+}

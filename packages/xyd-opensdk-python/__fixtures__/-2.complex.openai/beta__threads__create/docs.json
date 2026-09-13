@@ -1,0 +1,68 @@
+{
+  "chain": [
+    "beta",
+    "threads"
+  ],
+  "action": "create",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.beta.threads.create(messages=[{\"role\": \"user\", \"content\": \"string\", \"attachments\": [{\"file_id\": \"string\", \"tools\": [{\"type\": None}]}], \"metadata\": {\"key\": \"string\"}}], tool_resources={\"code_interpreter\": {\"file_ids\": [\"string\"]}, \"file_search\": None}, metadata={\"key\": \"string\"})\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.beta.threads.create(messages=..., tool_resources=..., metadata=...) -> ThreadObject",
+    "request": {
+      "fields": [
+        {
+          "name": "messages",
+          "langType": "Optional[list[CreateMessageRequest]]",
+          "required": false,
+          "description": "A list of [messages](/docs/api-reference/messages) to start the thread with."
+        },
+        {
+          "name": "tool_resources",
+          "langType": "Optional[CreateThreadRequestToolResources]",
+          "required": false,
+          "refTypeName": "CreateThreadRequestToolResources"
+        },
+        {
+          "name": "metadata",
+          "langType": "Optional[Metadata]",
+          "required": false,
+          "refTypeName": "Metadata"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ThreadObject",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `thread`."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the thread was created."
+        },
+        {
+          "name": "tool_resources",
+          "langType": "Optional[ThreadObjectToolResources]",
+          "required": true,
+          "refTypeName": "ThreadObjectToolResources"
+        },
+        {
+          "name": "metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        }
+      ]
+    }
+  }
+}

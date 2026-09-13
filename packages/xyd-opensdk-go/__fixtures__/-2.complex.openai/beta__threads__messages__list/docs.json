@@ -1,0 +1,136 @@
+{
+  "chain": [
+    "beta",
+    "threads",
+    "messages"
+  ],
+  "action": "list",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Beta.Threads.Messages.List(\n\t\tcontext.TODO(),\n\t\t\"thread_id\",\n\t\topenai.BetaThreadMessageListParams{\n\t\t\tLimit: param.NewOpt[int64](20),\n\t\t\tOrder: param.NewOpt[openai.BetaThreadsMessagesListOrder](openai.BetaThreadsMessagesListOrderAsc),\n\t\t\tAfter: param.NewOpt[string](\"after\"),\n\t\t\tBefore: param.NewOpt[string](\"before\"),\n\t\t\tRunID: param.NewOpt[string](\"run_id\"),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Beta.Threads.Messages.List(ctx, threadID, query) (*pagination.CursorPage[MessageObject], error)",
+    "request": {
+      "typeName": "BetaThreadMessageListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "Limit",
+          "langType": "param.Opt[int64]",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "Order",
+          "langType": "param.Opt[BetaThreadsMessagesListOrder]",
+          "required": false,
+          "description": "Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc` for descending order.\n",
+          "refTypeName": "BetaThreadsMessagesListOrder"
+        },
+        {
+          "name": "After",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+        },
+        {
+          "name": "Before",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.\n"
+        },
+        {
+          "name": "RunID",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "Filter messages by the run ID that generated them.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "MessageObject",
+      "note": "paginated (pagination.CursorPage)",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always `thread.message`."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the message was created."
+        },
+        {
+          "name": "ThreadID",
+          "langType": "string",
+          "required": true,
+          "description": "The [thread](/docs/api-reference/threads) ID that this message belongs to."
+        },
+        {
+          "name": "Status",
+          "langType": "MessageObjectStatus",
+          "required": true,
+          "description": "The status of the message, which can be either `in_progress`, `incomplete`, or `completed`.",
+          "refTypeName": "MessageObjectStatus"
+        },
+        {
+          "name": "IncompleteDetails",
+          "langType": "MessageObjectIncompleteDetails",
+          "required": true,
+          "refTypeName": "MessageObjectIncompleteDetails"
+        },
+        {
+          "name": "CompletedAt",
+          "langType": "int64",
+          "required": true
+        },
+        {
+          "name": "IncompleteAt",
+          "langType": "int64",
+          "required": true
+        },
+        {
+          "name": "Role",
+          "langType": "MessageObjectRole",
+          "required": true,
+          "description": "The entity that produced the message. One of `user` or `assistant`.",
+          "refTypeName": "MessageObjectRole"
+        },
+        {
+          "name": "Content",
+          "langType": "[]MessageObjectContentItem",
+          "required": true,
+          "description": "The content of the message in array of text and/or images."
+        },
+        {
+          "name": "AssistantID",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "RunID",
+          "langType": "string",
+          "required": true
+        },
+        {
+          "name": "Attachments",
+          "langType": "[]MessageObjectAttachmentsItem",
+          "required": true
+        },
+        {
+          "name": "Metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        }
+      ]
+    }
+  }
+}

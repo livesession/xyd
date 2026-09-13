@@ -1,0 +1,36 @@
+{
+  "chain": [
+    "fine-tuning",
+    "alpha",
+    "graders",
+    "validate"
+  ],
+  "action": "create",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.fine_tuning.alpha.graders.validate.create(grader: { \"type\" => \"string_check\", \"name\" => \"string\", \"input\" => \"string\", \"reference\" => \"string\", \"operation\" => \"eq\" })\npp result\n",
+  "typeReference": {
+    "signature": "client.fine_tuning.alpha.graders.validate.create(grader:) -> Models::ValidateGraderResponse",
+    "request": {
+      "fields": [
+        {
+          "name": "grader",
+          "langType": "Models::ValidateGraderRequestGrader",
+          "required": true,
+          "description": "The grader used for the fine-tuning job.",
+          "refTypeName": "ValidateGraderRequestGrader"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Models::ValidateGraderResponse",
+      "fields": [
+        {
+          "name": "grader",
+          "langType": "Models::ValidateGraderRequestGrader",
+          "required": false,
+          "description": "The grader used for the fine-tuning job.",
+          "refTypeName": "ValidateGraderRequestGrader"
+        }
+      ]
+    }
+  }
+}

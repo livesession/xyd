@@ -1,0 +1,186 @@
+{
+  "chain": [
+    "beta",
+    "threads",
+    "runs"
+  ],
+  "action": "cancel",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.beta.threads.runs.cancel(\"thread_id\", \"run_id\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.beta.threads.runs.cancel(thread_id, run_id) -> RunObject",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "RunObject",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always `thread.run`."
+        },
+        {
+          "name": "created_at",
+          "langType": "int",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was created."
+        },
+        {
+          "name": "thread_id",
+          "langType": "str",
+          "required": true,
+          "description": "The ID of the [thread](/docs/api-reference/threads) that was executed on as a part of this run."
+        },
+        {
+          "name": "assistant_id",
+          "langType": "str",
+          "required": true,
+          "description": "The ID of the [assistant](/docs/api-reference/assistants) used for execution of this run."
+        },
+        {
+          "name": "status",
+          "langType": "RunObjectStatus",
+          "required": true,
+          "description": "The status of the run, which can be either `queued`, `in_progress`, `requires_action`, `cancelling`, `cancelled`, `failed`, `completed`, `incomplete`, or `expired`.",
+          "refTypeName": "RunObjectStatus"
+        },
+        {
+          "name": "required_action",
+          "langType": "Optional[RunObjectRequiredAction]",
+          "required": true,
+          "description": "Details on the action required to continue the run. Will be `null` if no action is required.",
+          "refTypeName": "RunObjectRequiredAction"
+        },
+        {
+          "name": "last_error",
+          "langType": "Optional[RunObjectLastError]",
+          "required": true,
+          "description": "The last error associated with this run. Will be `null` if there are no errors.",
+          "refTypeName": "RunObjectLastError"
+        },
+        {
+          "name": "expires_at",
+          "langType": "Optional[int]",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run will expire."
+        },
+        {
+          "name": "started_at",
+          "langType": "Optional[int]",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was started."
+        },
+        {
+          "name": "cancelled_at",
+          "langType": "Optional[int]",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was cancelled."
+        },
+        {
+          "name": "failed_at",
+          "langType": "Optional[int]",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run failed."
+        },
+        {
+          "name": "completed_at",
+          "langType": "Optional[int]",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the run was completed."
+        },
+        {
+          "name": "incomplete_details",
+          "langType": "Optional[RunObjectIncompleteDetails]",
+          "required": true,
+          "description": "Details on why the run is incomplete. Will be `null` if the run is not incomplete.",
+          "refTypeName": "RunObjectIncompleteDetails"
+        },
+        {
+          "name": "model",
+          "langType": "str",
+          "required": true,
+          "description": "The model that the [assistant](/docs/api-reference/assistants) used for this run."
+        },
+        {
+          "name": "instructions",
+          "langType": "str",
+          "required": true,
+          "description": "The instructions that the [assistant](/docs/api-reference/assistants) used for this run."
+        },
+        {
+          "name": "tools",
+          "langType": "list[RunObjectToolsItem]",
+          "required": true,
+          "description": "The list of tools that the [assistant](/docs/api-reference/assistants) used for this run."
+        },
+        {
+          "name": "metadata",
+          "langType": "Metadata",
+          "required": true,
+          "refTypeName": "Metadata"
+        },
+        {
+          "name": "usage",
+          "langType": "RunCompletionUsage",
+          "required": true,
+          "refTypeName": "RunCompletionUsage"
+        },
+        {
+          "name": "temperature",
+          "langType": "Optional[float]",
+          "required": false,
+          "description": "The sampling temperature used for this run. If not set, defaults to 1."
+        },
+        {
+          "name": "top_p",
+          "langType": "Optional[float]",
+          "required": false,
+          "description": "The nucleus sampling value used for this run. If not set, defaults to 1."
+        },
+        {
+          "name": "max_prompt_tokens",
+          "langType": "Optional[int]",
+          "required": true,
+          "description": "The maximum number of prompt tokens specified to have been used over the course of the run.\n"
+        },
+        {
+          "name": "max_completion_tokens",
+          "langType": "Optional[int]",
+          "required": true,
+          "description": "The maximum number of completion tokens specified to have been used over the course of the run.\n"
+        },
+        {
+          "name": "truncation_strategy",
+          "langType": "Optional[TruncationObject]",
+          "required": true,
+          "refTypeName": "TruncationObject"
+        },
+        {
+          "name": "tool_choice",
+          "langType": "Optional[AssistantsApiToolChoiceOption]",
+          "required": true,
+          "refTypeName": "AssistantsApiToolChoiceOption"
+        },
+        {
+          "name": "parallel_tool_calls",
+          "langType": "ParallelToolCalls",
+          "required": true,
+          "refTypeName": "ParallelToolCalls"
+        },
+        {
+          "name": "response_format",
+          "langType": "AssistantsApiResponseFormatOption",
+          "required": true,
+          "refTypeName": "AssistantsApiResponseFormatOption"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,123 @@
+{
+  "chain": [
+    "videos"
+  ],
+  "action": "create",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.videos.create(prompt: \"string\", model: \"string\", input_reference: { \"image_url\" => \"https://example.com\", \"file_id\" => \"string\" }, seconds: \"4\", size: \"720x1280\")\npp result\n",
+  "typeReference": {
+    "signature": "client.videos.create(model: nil, prompt:, input_reference: nil, seconds: nil, size: nil) -> Models::VideoResource",
+    "request": {
+      "fields": [
+        {
+          "name": "model",
+          "langType": "Models::VideoModel",
+          "required": false,
+          "refTypeName": "VideoModel"
+        },
+        {
+          "name": "prompt",
+          "langType": "String",
+          "required": true,
+          "description": "Text prompt that describes the video to generate."
+        },
+        {
+          "name": "input_reference",
+          "langType": "Models::ImageRefParam2",
+          "required": false,
+          "refTypeName": "ImageRefParam2"
+        },
+        {
+          "name": "seconds",
+          "langType": "Models::VideoSeconds",
+          "required": false,
+          "refTypeName": "VideoSeconds"
+        },
+        {
+          "name": "size",
+          "langType": "Models::VideoSize",
+          "required": false,
+          "refTypeName": "VideoSize"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Models::VideoResource",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "Unique identifier for the video job."
+        },
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The object type, which is always `video`."
+        },
+        {
+          "name": "model",
+          "langType": "Models::VideoModel",
+          "required": true,
+          "refTypeName": "VideoModel"
+        },
+        {
+          "name": "status",
+          "langType": "Models::VideoStatus",
+          "required": true,
+          "refTypeName": "VideoStatus"
+        },
+        {
+          "name": "progress",
+          "langType": "Integer",
+          "required": true,
+          "description": "Approximate completion percentage for the generation task."
+        },
+        {
+          "name": "created_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "Unix timestamp (seconds) for when the job was created."
+        },
+        {
+          "name": "completed_at",
+          "langType": "Integer",
+          "required": true
+        },
+        {
+          "name": "expires_at",
+          "langType": "Integer",
+          "required": true
+        },
+        {
+          "name": "prompt",
+          "langType": "String",
+          "required": true
+        },
+        {
+          "name": "size",
+          "langType": "Models::VideoSize",
+          "required": true,
+          "refTypeName": "VideoSize"
+        },
+        {
+          "name": "seconds",
+          "langType": "String",
+          "required": true,
+          "description": "Duration of the generated clip in seconds. For extensions, this is the stitched total duration."
+        },
+        {
+          "name": "remixed_from_video_id",
+          "langType": "String",
+          "required": true
+        },
+        {
+          "name": "error",
+          "langType": "Models::Error2",
+          "required": true,
+          "refTypeName": "Error2"
+        }
+      ]
+    }
+  }
+}

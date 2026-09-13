@@ -1,0 +1,50 @@
+{
+  "chain": [
+    "videos",
+    "characters"
+  ],
+  "action": "create",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.videos.characters.create({ video: new Uint8Array([1, 2, 3]), name: \"string\" });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.videos.characters.create(body?): Promise<VideoCharacterResource>",
+    "request": {
+      "typeName": "VideoCharacterCreateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "video",
+          "langType": "Uint8Array | Blob",
+          "required": true,
+          "description": "Video file used to create a character."
+        },
+        {
+          "name": "name",
+          "langType": "string",
+          "required": true,
+          "description": "Display name for this API character."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "VideoCharacterResource",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string | null",
+          "required": true
+        },
+        {
+          "name": "name",
+          "langType": "string | null",
+          "required": true
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the character was created."
+        }
+      ]
+    }
+  }
+}

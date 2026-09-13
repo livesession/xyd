@@ -1,0 +1,437 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "audit-logs"
+  ],
+  "action": "list",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n\t\"github.com/example/openai/packages/param\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Admin.Organization.AuditLogs.List(\n\t\tcontext.TODO(),\n\t\topenai.AdminOrganizationAuditLogListParams{\n\t\t\tEffectiveAt: &openai.AdminOrganizationAuditLogsListEffectiveAt{Gt: 1, Gte: 1, Lt: 1, Lte: 1},\n\t\t\tProjectIds: []string{\"string\"},\n\t\t\tEventTypes: []openai.AuditLogEventType{openai.AuditLogEventTypeAPIKeyCreated},\n\t\t\tActorIds: []string{\"string\"},\n\t\t\tActorEmails: []string{\"string\"},\n\t\t\tResourceIds: []string{\"string\"},\n\t\t\tLimit: param.NewOpt[int64](20),\n\t\t\tAfter: param.NewOpt[string](\"after\"),\n\t\t\tBefore: param.NewOpt[string](\"before\"),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Admin.Organization.AuditLogs.List(ctx, query) (*pagination.CursorPage[AuditLog], error)",
+    "request": {
+      "typeName": "AdminOrganizationAuditLogListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "EffectiveAt",
+          "langType": "*AdminOrganizationAuditLogsListEffectiveAt",
+          "required": false,
+          "description": "Return only events whose `effective_at` (Unix seconds) is in this range.",
+          "refTypeName": "AdminOrganizationAuditLogsListEffectiveAt"
+        },
+        {
+          "name": "ProjectIds",
+          "langType": "[]string",
+          "required": false,
+          "description": "Return only events for these projects."
+        },
+        {
+          "name": "EventTypes",
+          "langType": "[]AuditLogEventType",
+          "required": false,
+          "description": "Return only events with a `type` in one of these values. For example, `project.created`. For all options, see the documentation for the [audit log object](/docs/api-reference/audit-logs/object)."
+        },
+        {
+          "name": "ActorIds",
+          "langType": "[]string",
+          "required": false,
+          "description": "Return only events performed by these actors. Can be a user ID, a service account ID, or an api key tracking ID."
+        },
+        {
+          "name": "ActorEmails",
+          "langType": "[]string",
+          "required": false,
+          "description": "Return only events performed by users with these emails."
+        },
+        {
+          "name": "ResourceIds",
+          "langType": "[]string",
+          "required": false,
+          "description": "Return only events performed on these targets. For example, a project ID updated."
+        },
+        {
+          "name": "Limit",
+          "langType": "param.Opt[int64]",
+          "required": false,
+          "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n"
+        },
+        {
+          "name": "After",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+        },
+        {
+          "name": "Before",
+          "langType": "param.Opt[string]",
+          "required": false,
+          "description": "A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, starting with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "AuditLog",
+      "note": "paginated (pagination.CursorPage)",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The ID of this log."
+        },
+        {
+          "name": "Type",
+          "langType": "AuditLogEventType",
+          "required": true,
+          "refTypeName": "AuditLogEventType"
+        },
+        {
+          "name": "EffectiveAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of the event."
+        },
+        {
+          "name": "Project",
+          "langType": "AuditLogProject",
+          "required": false,
+          "description": "The project that the action was scoped to. Absent for actions not scoped to projects. Note that any admin actions taken via Admin API keys are associated with the default project.",
+          "refTypeName": "AuditLogProject"
+        },
+        {
+          "name": "Actor",
+          "langType": "AuditLogActor",
+          "required": false,
+          "refTypeName": "AuditLogActor"
+        },
+        {
+          "name": "APIKeyCreated",
+          "langType": "AuditLogAPIKeyCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogApiKeyCreated"
+        },
+        {
+          "name": "APIKeyUpdated",
+          "langType": "AuditLogAPIKeyUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogApiKeyUpdated"
+        },
+        {
+          "name": "APIKeyDeleted",
+          "langType": "AuditLogAPIKeyDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogApiKeyDeleted"
+        },
+        {
+          "name": "CheckpointPermissionCreated",
+          "langType": "AuditLogCheckpointPermissionCreated",
+          "required": false,
+          "description": "The project and fine-tuned model checkpoint that the checkpoint permission was created for.",
+          "refTypeName": "AuditLogCheckpointPermissionCreated"
+        },
+        {
+          "name": "CheckpointPermissionDeleted",
+          "langType": "AuditLogCheckpointPermissionDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogCheckpointPermissionDeleted"
+        },
+        {
+          "name": "ExternalKeyRegistered",
+          "langType": "AuditLogExternalKeyRegistered",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogExternalKeyRegistered"
+        },
+        {
+          "name": "ExternalKeyRemoved",
+          "langType": "AuditLogExternalKeyRemoved",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogExternalKeyRemoved"
+        },
+        {
+          "name": "GroupCreated",
+          "langType": "AuditLogGroupCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogGroupCreated"
+        },
+        {
+          "name": "GroupUpdated",
+          "langType": "AuditLogGroupUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogGroupUpdated"
+        },
+        {
+          "name": "GroupDeleted",
+          "langType": "AuditLogGroupDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogGroupDeleted"
+        },
+        {
+          "name": "ScimEnabled",
+          "langType": "AuditLogScimEnabled",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogScimEnabled"
+        },
+        {
+          "name": "ScimDisabled",
+          "langType": "AuditLogScimDisabled",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogScimDisabled"
+        },
+        {
+          "name": "InviteSent",
+          "langType": "AuditLogInviteSent",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogInviteSent"
+        },
+        {
+          "name": "InviteAccepted",
+          "langType": "AuditLogInviteAccepted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogInviteAccepted"
+        },
+        {
+          "name": "InviteDeleted",
+          "langType": "AuditLogInviteAccepted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogInviteAccepted"
+        },
+        {
+          "name": "IPAllowlistCreated",
+          "langType": "AuditLogIPAllowlistCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogIpAllowlistCreated"
+        },
+        {
+          "name": "IPAllowlistUpdated",
+          "langType": "AuditLogIPAllowlistUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogIpAllowlistUpdated"
+        },
+        {
+          "name": "IPAllowlistDeleted",
+          "langType": "AuditLogIPAllowlistDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogIpAllowlistDeleted"
+        },
+        {
+          "name": "IPAllowlistConfigActivated",
+          "langType": "AuditLogIPAllowlistConfigActivated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogIpAllowlistConfigActivated"
+        },
+        {
+          "name": "IPAllowlistConfigDeactivated",
+          "langType": "AuditLogIPAllowlistConfigDeactivated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogIpAllowlistConfigDeactivated"
+        },
+        {
+          "name": "LoginSucceeded",
+          "langType": "map[string]any",
+          "required": false,
+          "description": "This event has no additional fields beyond the standard audit log attributes."
+        },
+        {
+          "name": "LoginFailed",
+          "langType": "AuditLogLoginFailed",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogLoginFailed"
+        },
+        {
+          "name": "LogoutSucceeded",
+          "langType": "map[string]any",
+          "required": false,
+          "description": "This event has no additional fields beyond the standard audit log attributes."
+        },
+        {
+          "name": "LogoutFailed",
+          "langType": "AuditLogLoginFailed",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogLoginFailed"
+        },
+        {
+          "name": "OrganizationUpdated",
+          "langType": "AuditLogOrganizationUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogOrganizationUpdated"
+        },
+        {
+          "name": "ProjectCreated",
+          "langType": "AuditLogProjectCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogProjectCreated"
+        },
+        {
+          "name": "ProjectUpdated",
+          "langType": "AuditLogProjectUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogProjectUpdated"
+        },
+        {
+          "name": "ProjectArchived",
+          "langType": "AuditLogProjectArchived",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogProjectArchived"
+        },
+        {
+          "name": "ProjectDeleted",
+          "langType": "AuditLogProjectArchived",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogProjectArchived"
+        },
+        {
+          "name": "RateLimitUpdated",
+          "langType": "AuditLogRateLimitUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogRateLimitUpdated"
+        },
+        {
+          "name": "RateLimitDeleted",
+          "langType": "AuditLogRateLimitDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogRateLimitDeleted"
+        },
+        {
+          "name": "RoleCreated",
+          "langType": "AuditLogRoleCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogRoleCreated"
+        },
+        {
+          "name": "RoleUpdated",
+          "langType": "AuditLogRoleUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogRoleUpdated"
+        },
+        {
+          "name": "RoleDeleted",
+          "langType": "AuditLogRoleDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogRoleDeleted"
+        },
+        {
+          "name": "RoleAssignmentCreated",
+          "langType": "AuditLogRoleAssignmentCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogRoleAssignmentCreated"
+        },
+        {
+          "name": "RoleAssignmentDeleted",
+          "langType": "AuditLogRoleAssignmentDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogRoleAssignmentDeleted"
+        },
+        {
+          "name": "ServiceAccountCreated",
+          "langType": "AuditLogServiceAccountCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogServiceAccountCreated"
+        },
+        {
+          "name": "ServiceAccountUpdated",
+          "langType": "AuditLogServiceAccountUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogServiceAccountUpdated"
+        },
+        {
+          "name": "ServiceAccountDeleted",
+          "langType": "AuditLogServiceAccountDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogServiceAccountDeleted"
+        },
+        {
+          "name": "UserAdded",
+          "langType": "AuditLogUserAdded",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogUserAdded"
+        },
+        {
+          "name": "UserUpdated",
+          "langType": "AuditLogUserUpdated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogUserUpdated"
+        },
+        {
+          "name": "UserDeleted",
+          "langType": "AuditLogUserDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogUserDeleted"
+        },
+        {
+          "name": "CertificateCreated",
+          "langType": "AuditLogCertificateCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogCertificateCreated"
+        },
+        {
+          "name": "CertificateUpdated",
+          "langType": "AuditLogCertificateCreated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogCertificateCreated"
+        },
+        {
+          "name": "CertificateDeleted",
+          "langType": "AuditLogCertificateDeleted",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogCertificateDeleted"
+        },
+        {
+          "name": "CertificatesActivated",
+          "langType": "AuditLogCertificatesActivated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogCertificatesActivated"
+        },
+        {
+          "name": "CertificatesDeactivated",
+          "langType": "AuditLogCertificatesActivated",
+          "required": false,
+          "description": "The details for events with this `type`.",
+          "refTypeName": "AuditLogCertificatesActivated"
+        }
+      ]
+    }
+  }
+}

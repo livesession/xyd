@@ -1,0 +1,38 @@
+{
+  "chain": [
+    "fine-tuning",
+    "checkpoints",
+    "permissions"
+  ],
+  "action": "delete",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.fine_tuning.checkpoints.permissions.delete(\"ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd\", \"cp_zc4Q7MP6XxulcVzj4MZdwsAB\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.fine_tuning.checkpoints.permissions.delete(fine_tuned_model_checkpoint, permission_id) -> DeleteFineTuningCheckpointPermissionResponse",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "DeleteFineTuningCheckpointPermissionResponse",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true,
+          "description": "The ID of the fine-tuned model checkpoint permission that was deleted."
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true,
+          "description": "The object type, which is always \"checkpoint.permission\"."
+        },
+        {
+          "name": "deleted",
+          "langType": "bool",
+          "required": true,
+          "description": "Whether the fine-tuned model checkpoint permission was successfully deleted."
+        }
+      ]
+    }
+  }
+}

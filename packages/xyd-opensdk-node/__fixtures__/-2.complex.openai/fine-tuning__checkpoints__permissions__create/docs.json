@@ -1,0 +1,54 @@
+{
+  "chain": [
+    "fine-tuning",
+    "checkpoints",
+    "permissions"
+  ],
+  "action": "create",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.fineTuning.checkpoints.permissions.create(\"ft:gpt-4o-mini-2024-07-18:org:weather:B7R9VjQd\", { project_ids: [\"string\"] });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.fineTuning.checkpoints.permissions.create(fineTunedModelCheckpoint, body): Promise<CursorPage<FineTuningCheckpointPermission>>",
+    "request": {
+      "typeName": "FineTuningCheckpointPermissionCreateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "project_ids",
+          "langType": "string[]",
+          "required": true,
+          "description": "The project identifiers to grant access to."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "FineTuningCheckpointPermission",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "The permission identifier, which can be referenced in the API endpoints."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the permission was created."
+        },
+        {
+          "name": "project_id",
+          "langType": "string",
+          "required": true,
+          "description": "The project identifier that the permission is for."
+        },
+        {
+          "name": "object",
+          "langType": "\"checkpoint.permission\"",
+          "required": true,
+          "description": "The object type, which is always \"checkpoint.permission\"."
+        }
+      ]
+    }
+  }
+}

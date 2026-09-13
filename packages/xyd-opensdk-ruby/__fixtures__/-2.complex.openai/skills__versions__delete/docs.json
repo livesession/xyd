@@ -1,0 +1,40 @@
+{
+  "chain": [
+    "skills",
+    "versions"
+  ],
+  "action": "delete",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.skills.versions.delete(\"skill_123\", \"version\")\npp result\n",
+  "typeReference": {
+    "signature": "client.skills.versions.delete(skill_id, version) -> Models::DeletedSkillVersionResource",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::DeletedSkillVersionResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "Boolean",
+          "required": true
+        },
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true
+        },
+        {
+          "name": "version",
+          "langType": "String",
+          "required": true,
+          "description": "The deleted skill version."
+        }
+      ]
+    }
+  }
+}

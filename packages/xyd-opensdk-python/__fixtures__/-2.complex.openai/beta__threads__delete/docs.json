@@ -1,0 +1,34 @@
+{
+  "chain": [
+    "beta",
+    "threads"
+  ],
+  "action": "delete",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nresult = client.beta.threads.delete(\"thread_id\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.beta.threads.delete(thread_id) -> DeleteThreadResponse",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "DeleteThreadResponse",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "str",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "bool",
+          "required": true
+        },
+        {
+          "name": "object",
+          "langType": "str",
+          "required": true
+        }
+      ]
+    }
+  }
+}

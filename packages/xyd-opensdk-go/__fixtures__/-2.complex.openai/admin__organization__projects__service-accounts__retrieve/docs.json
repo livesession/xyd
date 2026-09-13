@@ -1,0 +1,52 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "projects",
+    "service-accounts"
+  ],
+  "action": "retrieve",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Admin.Organization.Projects.ServiceAccounts.Get(context.TODO(), \"project_id\", \"service_account_id\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Admin.Organization.Projects.ServiceAccounts.Get(ctx, projectID, serviceAccountID) (*ProjectServiceAccount, error)",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "ProjectServiceAccount",
+      "fields": [
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": true,
+          "description": "The object type, which is always `organization.project.service_account`"
+        },
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "Name",
+          "langType": "string",
+          "required": true,
+          "description": "The name of the service account"
+        },
+        {
+          "name": "Role",
+          "langType": "ProjectServiceAccountRole",
+          "required": true,
+          "description": "`owner` or `member`",
+          "refTypeName": "ProjectServiceAccountRole"
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the service account was created"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "chain": [
+    "beta",
+    "chat-kit",
+    "threads"
+  ],
+  "action": "list",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.beta.chatKit.threads.list({ limit: 1, order: \"asc\", after: \"after\", before: \"before\", user: \"user\" });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.beta.chatKit.threads.list(query?): Promise<CursorPage<ThreadResource>>",
+    "request": {
+      "typeName": "BetaChatKitThreadListParams",
+      "argName": "query",
+      "fields": [
+        {
+          "name": "limit",
+          "langType": "number",
+          "required": false,
+          "description": "Maximum number of thread items to return. Defaults to 20."
+        },
+        {
+          "name": "order",
+          "langType": "OrderEnum",
+          "required": false,
+          "description": "Sort order for results by creation time. Defaults to `desc`.",
+          "refTypeName": "OrderEnum"
+        },
+        {
+          "name": "after",
+          "langType": "string",
+          "required": false,
+          "description": "List items created after this thread item ID. Defaults to null for the first page."
+        },
+        {
+          "name": "before",
+          "langType": "string",
+          "required": false,
+          "description": "List items created before this thread item ID. Defaults to null for the newest results."
+        },
+        {
+          "name": "user",
+          "langType": "string",
+          "required": false,
+          "description": "Filter threads that belong to this user identifier. Defaults to null to return all users."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "ThreadResource",
+      "note": "paginated (CursorPage)",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the thread."
+        },
+        {
+          "name": "object",
+          "langType": "\"chatkit.thread\"",
+          "required": true,
+          "description": "Type discriminator that is always `chatkit.thread`."
+        },
+        {
+          "name": "created_at",
+          "langType": "number",
+          "required": true,
+          "description": "Unix timestamp (in seconds) for when the thread was created."
+        },
+        {
+          "name": "title",
+          "langType": "string | null",
+          "required": true
+        },
+        {
+          "name": "status",
+          "langType": "ThreadResourceStatus",
+          "required": true,
+          "description": "Current status for the thread. Defaults to `active` for newly created threads.",
+          "refTypeName": "ThreadResourceStatus"
+        },
+        {
+          "name": "user",
+          "langType": "string",
+          "required": true,
+          "description": "Free-form string that identifies your end user who owns the thread."
+        }
+      ]
+    }
+  }
+}

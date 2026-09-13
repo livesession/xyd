@@ -1,0 +1,17 @@
+{
+  "chain": [
+    "responses"
+  ],
+  "action": "delete",
+  "usage": "import os\n\nfrom openai import Client\n\nclient = Client(\n    api_key=os.environ.get(\"OPENAI_API_KEY\"),\n)\n\nclient.responses.delete(\"resp_677efb5139a88190b512bc3fef8e535d\")\n",
+  "typeReference": {
+    "signature": "client.responses.delete(response_id) -> None",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "langType": "None",
+      "note": "no response body"
+    }
+  }
+}

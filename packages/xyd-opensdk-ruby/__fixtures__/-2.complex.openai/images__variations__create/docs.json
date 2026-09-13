@@ -1,0 +1,105 @@
+{
+  "chain": [
+    "images",
+    "variations"
+  ],
+  "action": "create",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.images.variations.create(image: StringIO.new(\"Example data\"), model: \"string\", n: 1, response_format: \"url\", size: \"256x256\", user: \"string\")\npp result\n",
+  "typeReference": {
+    "signature": "client.images.variations.create(image:, model: nil, n: nil, response_format: nil, size: nil, user: nil) -> Models::ImagesResponse",
+    "request": {
+      "fields": [
+        {
+          "name": "image",
+          "langType": "IO, String",
+          "required": true,
+          "description": "The image to use as the basis for the variation(s). Must be a valid PNG file, less than 4MB, and square."
+        },
+        {
+          "name": "model",
+          "langType": "Models::CreateImageVariationRequestModel",
+          "required": false,
+          "description": "The model to use for image generation. Only `dall-e-2` is supported at this time.",
+          "refTypeName": "CreateImageVariationRequestModel"
+        },
+        {
+          "name": "n",
+          "langType": "Integer",
+          "required": false,
+          "description": "The number of images to generate. Must be between 1 and 10."
+        },
+        {
+          "name": "response_format",
+          "langType": "Models::CreateImageVariationRequestResponseFormat",
+          "required": false,
+          "description": "The format in which the generated images are returned. Must be one of `url` or `b64_json`. URLs are only valid for 60 minutes after the image has been generated.",
+          "refTypeName": "CreateImageVariationRequestResponseFormat"
+        },
+        {
+          "name": "size",
+          "langType": "Models::CreateImageVariationRequestSize",
+          "required": false,
+          "description": "The size of the generated images. Must be one of `256x256`, `512x512`, or `1024x1024`.",
+          "refTypeName": "CreateImageVariationRequestSize"
+        },
+        {
+          "name": "user",
+          "langType": "String",
+          "required": false,
+          "description": "A unique identifier representing your end-user, which can help OpenAI to monitor and detect abuse. [Learn more](/docs/guides/safety-best-practices#end-user-ids).\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Models::ImagesResponse",
+      "fields": [
+        {
+          "name": "created",
+          "langType": "Integer",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the image was created."
+        },
+        {
+          "name": "data",
+          "langType": "Array<Models::Image>",
+          "required": false,
+          "description": "The list of generated images."
+        },
+        {
+          "name": "background",
+          "langType": "Models::ImagesResponseBackground",
+          "required": false,
+          "description": "The background parameter used for the image generation. Either `transparent` or `opaque`.",
+          "refTypeName": "ImagesResponseBackground"
+        },
+        {
+          "name": "output_format",
+          "langType": "Models::ImagesResponseOutputFormat",
+          "required": false,
+          "description": "The output format of the image generation. Either `png`, `webp`, or `jpeg`.",
+          "refTypeName": "ImagesResponseOutputFormat"
+        },
+        {
+          "name": "size",
+          "langType": "Models::ImagesResponseSize",
+          "required": false,
+          "description": "The size of the image generated. Either `1024x1024`, `1024x1536`, or `1536x1024`.",
+          "refTypeName": "ImagesResponseSize"
+        },
+        {
+          "name": "quality",
+          "langType": "Models::ImagesResponseQuality",
+          "required": false,
+          "description": "The quality of the image generated. Either `low`, `medium`, or `high`.",
+          "refTypeName": "ImagesResponseQuality"
+        },
+        {
+          "name": "usage",
+          "langType": "Models::ImageGenUsage",
+          "required": false,
+          "refTypeName": "ImageGenUsage"
+        }
+      ]
+    }
+  }
+}

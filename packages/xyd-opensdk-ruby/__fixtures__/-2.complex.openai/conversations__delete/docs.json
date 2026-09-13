@@ -1,0 +1,33 @@
+{
+  "chain": [
+    "conversations"
+  ],
+  "action": "delete",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.conversations.delete(\"conv_123\")\npp result\n",
+  "typeReference": {
+    "signature": "client.conversations.delete(conversation_id) -> Models::DeletedConversationResource",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::DeletedConversationResource",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true
+        },
+        {
+          "name": "deleted",
+          "langType": "Boolean",
+          "required": true
+        },
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true
+        }
+      ]
+    }
+  }
+}

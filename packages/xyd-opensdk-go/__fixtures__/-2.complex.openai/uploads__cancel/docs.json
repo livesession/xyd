@@ -1,0 +1,73 @@
+{
+  "chain": [
+    "uploads"
+  ],
+  "action": "cancel",
+  "usage": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/openai\"\n\t\"github.com/example/openai/option\"\n)\n\nfunc main() {\n\tclient := openai.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Uploads.Cancel(context.TODO(), \"upload_abc123\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n",
+  "typeReference": {
+    "signature": "client.Uploads.Cancel(ctx, uploadID) (*Upload, error)",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Upload",
+      "fields": [
+        {
+          "name": "ID",
+          "langType": "string",
+          "required": true,
+          "description": "The Upload unique identifier, which can be referenced in API endpoints."
+        },
+        {
+          "name": "CreatedAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the Upload was created."
+        },
+        {
+          "name": "Filename",
+          "langType": "string",
+          "required": true,
+          "description": "The name of the file to be uploaded."
+        },
+        {
+          "name": "Bytes",
+          "langType": "int64",
+          "required": true,
+          "description": "The intended number of bytes to be uploaded."
+        },
+        {
+          "name": "Purpose",
+          "langType": "string",
+          "required": true,
+          "description": "The intended purpose of the file. [Please refer here](/docs/api-reference/files/object#files/object-purpose) for acceptable values."
+        },
+        {
+          "name": "Status",
+          "langType": "UploadStatus",
+          "required": true,
+          "description": "The status of the Upload.",
+          "refTypeName": "UploadStatus"
+        },
+        {
+          "name": "ExpiresAt",
+          "langType": "int64",
+          "required": true,
+          "description": "The Unix timestamp (in seconds) for when the Upload will expire."
+        },
+        {
+          "name": "Object",
+          "langType": "string",
+          "required": false,
+          "description": "The object type, which is always \"upload\"."
+        },
+        {
+          "name": "File",
+          "langType": "OpenAiFile",
+          "required": false,
+          "refTypeName": "OpenAiFile"
+        }
+      ]
+    }
+  }
+}

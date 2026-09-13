@@ -1,0 +1,17 @@
+{
+  "chain": [
+    "shapes"
+  ],
+  "action": "retrieve",
+  "usage": "require \"union_depot\"\n\nclient = UnionDepot::Client.new(api_key: ENV[\"UNIONDEPOT_API_KEY\"])\n\nresult = client.shapes.retrieve(\"shape_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.shapes.retrieve(shape_id) -> Models::Shape",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::Shape",
+      "langType": "Models::Shape"
+    }
+  }
+}

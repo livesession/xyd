@@ -1,0 +1,74 @@
+{
+  "chain": [
+    "containers",
+    "files"
+  ],
+  "action": "create",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.containers.files.create(\"container_id\", file_id: \"string\", file: StringIO.new(\"Example data\"))\npp result\n",
+  "typeReference": {
+    "signature": "client.containers.files.create(container_id, file_id: nil, file: nil) -> Models::ContainerFileResource",
+    "request": {
+      "fields": [
+        {
+          "name": "file_id",
+          "langType": "String",
+          "required": false,
+          "description": "Name of the file to create."
+        },
+        {
+          "name": "file",
+          "langType": "IO, String",
+          "required": false,
+          "description": "The File object (not file name) to be uploaded.\n"
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Models::ContainerFileResource",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "Unique identifier for the file."
+        },
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The type of this object (`container.file`)."
+        },
+        {
+          "name": "container_id",
+          "langType": "String",
+          "required": true,
+          "description": "The container this file belongs to."
+        },
+        {
+          "name": "created_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the file was created."
+        },
+        {
+          "name": "bytes",
+          "langType": "Integer",
+          "required": true,
+          "description": "Size of the file in bytes."
+        },
+        {
+          "name": "path",
+          "langType": "String",
+          "required": true,
+          "description": "Path of the file in the container."
+        },
+        {
+          "name": "source",
+          "langType": "String",
+          "required": true,
+          "description": "Source of the file (e.g., `user`, `assistant`)."
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "chain": [
+    "containers",
+    "files"
+  ],
+  "action": "retrieve",
+  "usage": "require \"openai\"\n\nclient = Openai::Client.new(api_key: ENV[\"OPENAI_API_KEY\"])\n\nresult = client.containers.files.retrieve(\"container_id\", \"file_id\")\npp result\n",
+  "typeReference": {
+    "signature": "client.containers.files.retrieve(container_id, file_id) -> Models::ContainerFileResource",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Models::ContainerFileResource",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true,
+          "description": "Unique identifier for the file."
+        },
+        {
+          "name": "object",
+          "langType": "String",
+          "required": true,
+          "description": "The type of this object (`container.file`)."
+        },
+        {
+          "name": "container_id",
+          "langType": "String",
+          "required": true,
+          "description": "The container this file belongs to."
+        },
+        {
+          "name": "created_at",
+          "langType": "Integer",
+          "required": true,
+          "description": "Unix timestamp (in seconds) when the file was created."
+        },
+        {
+          "name": "bytes",
+          "langType": "Integer",
+          "required": true,
+          "description": "Size of the file in bytes."
+        },
+        {
+          "name": "path",
+          "langType": "String",
+          "required": true,
+          "description": "Path of the file in the container."
+        },
+        {
+          "name": "source",
+          "langType": "String",
+          "required": true,
+          "description": "Source of the file (e.g., `user`, `assistant`)."
+        }
+      ]
+    }
+  }
+}

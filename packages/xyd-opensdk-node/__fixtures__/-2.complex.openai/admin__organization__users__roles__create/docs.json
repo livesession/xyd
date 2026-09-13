@@ -1,0 +1,48 @@
+{
+  "chain": [
+    "admin",
+    "organization",
+    "users",
+    "roles"
+  ],
+  "action": "create",
+  "usage": "import Openai from \"openai\";\n\nconst client = new Openai({\n  apiKey: process.env[\"OPENAI_API_KEY\"],\n});\n\nconst result = await client.admin.organization.users.roles.create(\"user_id\", { role_id: \"string\" });\nconsole.log(result);\n",
+  "typeReference": {
+    "signature": "client.admin.organization.users.roles.create(userId, body): Promise<UserRoleAssignment>",
+    "request": {
+      "typeName": "AdminOrganizationUserRoleCreateParams",
+      "argName": "body",
+      "fields": [
+        {
+          "name": "role_id",
+          "langType": "string",
+          "required": true,
+          "description": "Identifier of the role to assign."
+        }
+      ]
+    },
+    "response": {
+      "typeName": "UserRoleAssignment",
+      "fields": [
+        {
+          "name": "object",
+          "langType": "\"user.role\"",
+          "required": true,
+          "description": "Always `user.role`."
+        },
+        {
+          "name": "user",
+          "langType": "User",
+          "required": true,
+          "refTypeName": "User"
+        },
+        {
+          "name": "role",
+          "langType": "Role",
+          "required": true,
+          "refTypeName": "Role"
+        }
+      ]
+    }
+  }
+}
