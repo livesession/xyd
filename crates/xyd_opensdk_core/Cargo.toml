@@ -1,0 +1,21 @@
+[package]
+name = "xyd_opensdk_core"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "Dependency-free shared leaf for the OpenSDK emitters: SdkBehavior defaults/merge, the ownership-header table, and the data-only emitter descriptor"
+
+# BOUNDARY (mirrors xyd_opensdk_cli_common's): pure data + pure functions only.
+# No IO, no parser, no third-party dep beyond serde/serde_json. Every one of the
+# 7 emitters depends on this, and packages/xyd-native path-deps all 7 — so this
+# crate lands in the .node cdylib graph. Anything heavier (regex, sha2, ...)
+# belongs in xyd_opensdk_framework, which must NOT be pulled in here.
+[dependencies]
+serde = { workspace = true }
+# MANDATORY `workspace = true` — the `preserve_order` feature is BYTE-LOAD-BEARING.
+# `default_behavior()`'s `userAgent.aiAgentEnvVars` is declared CLAUDE_CODE,
+# CURSOR_AGENT, CLINE_ACTIVE, WINDSURF_ACTIVE, COPILOT_AGENT (NOT alphabetical),
+# and the generated runtimes iterate it straight into emitted source. A bare
+# `serde_json = "1"` here yields a BTreeMap and silently reorders every runtime.
+# `tests::defaults_preserve_declaration_key_order` pins this.
+serde_json = { workspace = true }
