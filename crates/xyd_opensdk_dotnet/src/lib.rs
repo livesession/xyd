@@ -312,3 +312,15 @@ fn resource_paginates(resource: &Value, types: &BTreeMap<String, Value>) -> bool
 /// descriptor rather than a trait.
 pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
     xyd_opensdk_core::emitter::EmitterFns::new("dotnet", generate_dotnet);
+
+/// The generated file map WITH per-file write semantics.
+///
+/// The regen-safety contract: `skipIfExists` protects a user-owned scaffold,
+/// `mergeJson` deep-merges into the user's file. The flat [`generate_dotnet`]
+/// above stays the byte-exact source of content; this only pairs it with the
+/// shared write-mode table.
+pub fn generate_dotnet_files(
+    spec: &serde_json::Value,
+) -> std::collections::BTreeMap<String, xyd_opensdk_core::emitter::GeneratedFile> {
+    xyd_opensdk_core::emitter::attach_write_modes("dotnet", generate_dotnet(spec))
+}

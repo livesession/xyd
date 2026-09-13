@@ -18,6 +18,103 @@ use std::collections::BTreeMap;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+/// How `writeProject` treats a generated file that already exists on disk.
+///
+/// Mirrors the TS `WriteMode` union; `rename_all = "camelCase"` makes the wire
+/// strings `"overwrite"` / `"skipIfExists"` / `"mergeJson"` exactly.
+///
+/// A second definition of this already exists in `xyd_opensdk_framework`, which
+/// owns the write LIFECYCLE. It is not reused here on purpose: framework pulls
+/// `regex` + `sha2`, and every emitter depends on this crate, so importing it
+/// would drag both into the `@xyd-js/native` cdylib for all 7 languages.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum WriteMode {
+    /// Replace it (identical bytes are a no-op, so mtimes stay stable).
+    Overwrite,
+    /// User-owned scaffold (README, Cargo.toml): never clobber an existing file.
+    SkipIfExists,
+    /// Deep-merge the generated JSON INTO the existing file's JSON (existing
+    /// user keys win; arrays replace as a unit).
+    MergeJson,
+}
+
+/// One generated file on the wire: `{ content, writeMode? }`.
+///
+/// `write_mode` is `None` for the overwrite default and skipped on the wire, so
+/// the payload matches the TS `GeneratedFileEntry` shape byte for byte — only
+/// the handful of non-default entries carry the field.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct GeneratedFile {
+    pub content: String,
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub write_mode: Option<WriteMode>,
+}
+
+impl GeneratedFile {
+    /// A plain overwrite file (the default for all but 7 paths across 5 langs).
+    pub fn new(content: String) -> Self {
+        Self {
+            content,
+            write_mode: None,
+        }
+    }
+
+    pub fn with_mode(content: String, mode: WriteMode) -> Self {
+        Self {
+            content,
+            write_mode: Some(mode),
+        }
+    }
+}
+
+/// The non-default write mode for one generated path, or `None` for the
+/// overwrite default.
+///
+/// The COMPLETE contract is 7 entries across 5 languages (go and dotnet declare
+/// none); it is validated against `write-modes.json`, captured from the
+/// TypeScript emitters before any of this was ported.
+///
+/// Matching is exact rather than by basename: every one of these files is
+/// top-level in every golden tree (verified across all fixtures), so a nested
+/// `README.md` or `package.json` must NOT pick up a mode. Ruby is the one
+/// dynamic case — its gemspec is named after the package (`petstore.gemspec`,
+/// `wire_kitchen.gemspec`, …) — so it matches the extension at top level, which
+/// is why a flat filename table would not have worked.
+pub fn write_mode_for(language: &str, path: &str) -> Option<WriteMode> {
+    let top_level = !path.contains('/');
+    match (language, path) {
+        ("node", "package.json") => Some(WriteMode::MergeJson),
+        ("node", "tsconfig.json") | ("node", "README.md") => Some(WriteMode::SkipIfExists),
+        ("python", "pyproject.toml") => Some(WriteMode::SkipIfExists),
+        ("java", "pom.xml") => Some(WriteMode::SkipIfExists),
+        ("rust", "Cargo.toml") => Some(WriteMode::SkipIfExists),
+        ("ruby", p) if top_level && p.ends_with(".gemspec") => Some(WriteMode::SkipIfExists),
+        _ => None,
+    }
+}
+
+/// Pair a flat `path -> content` map with its language's write modes.
+///
+/// Emitters keep producing the flat map they always have, so no `generate_*`
+/// internals change.
+pub fn attach_write_modes(
+    language: &str,
+    files: BTreeMap<String, String>,
+) -> BTreeMap<String, GeneratedFile> {
+    files
+        .into_iter()
+        .map(|(path, content)| {
+            let file = match write_mode_for(language, &path) {
+                Some(m) => GeneratedFile::with_mode(content, m),
+                None => GeneratedFile::new(content),
+            };
+            (path, file)
+        })
+        .collect()
+}
+
 /// One language-rendered field row of an SDK type.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -148,6 +245,55 @@ mod tests {
         ] {
             assert_eq!(resolve_language(input), want, "resolve_language({input:?})");
         }
+    }
+
+    #[test]
+    fn write_mode_table_matches_the_contract() {
+        use WriteMode::*;
+        // The complete non-default set, mirroring write-modes.json.
+        assert_eq!(write_mode_for("node", "package.json"), Some(MergeJson));
+        assert_eq!(write_mode_for("node", "tsconfig.json"), Some(SkipIfExists));
+        assert_eq!(write_mode_for("node", "README.md"), Some(SkipIfExists));
+        assert_eq!(
+            write_mode_for("python", "pyproject.toml"),
+            Some(SkipIfExists)
+        );
+        assert_eq!(write_mode_for("java", "pom.xml"), Some(SkipIfExists));
+        assert_eq!(write_mode_for("rust", "Cargo.toml"), Some(SkipIfExists));
+        // Ruby's is named after the package — the reason this is not a flat table.
+        assert_eq!(
+            write_mode_for("ruby", "petstore.gemspec"),
+            Some(SkipIfExists)
+        );
+        assert_eq!(
+            write_mode_for("ruby", "wire_kitchen.gemspec"),
+            Some(SkipIfExists)
+        );
+        // go and dotnet declare none.
+        assert_eq!(write_mode_for("go", "go.mod"), None);
+        assert_eq!(write_mode_for("dotnet", "Acme.csproj"), None);
+        // Cross-language leakage: each rule is scoped to its own emitter.
+        assert_eq!(write_mode_for("go", "package.json"), None);
+        assert_eq!(write_mode_for("python", "Cargo.toml"), None);
+        // Nested files must NOT pick up a mode.
+        assert_eq!(write_mode_for("node", "src/package.json"), None);
+        assert_eq!(write_mode_for("ruby", "lib/nested.gemspec"), None);
+    }
+
+    #[test]
+    fn only_non_default_modes_reach_the_wire() {
+        let files = BTreeMap::from([
+            ("package.json".to_string(), "{}".to_string()),
+            ("src/index.ts".to_string(), "export {}".to_string()),
+        ]);
+        let out = attach_write_modes("node", files);
+        assert_eq!(out["package.json"].write_mode, Some(WriteMode::MergeJson));
+        assert_eq!(out["src/index.ts"].write_mode, None);
+        // `writeMode` is skipped for the default, so the payload stays the shape
+        // the TS `GeneratedFileEntry` already had.
+        let json = serde_json::to_string(&out).unwrap();
+        assert!(json.contains(r#""writeMode":"mergeJson""#), "{json}");
+        assert_eq!(json.matches("writeMode").count(), 1, "{json}");
     }
 
     #[test]

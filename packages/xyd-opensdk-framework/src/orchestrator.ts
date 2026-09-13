@@ -1,7 +1,7 @@
 import type { NamedType, OpensdkSpecJson } from '@xyd-js/opensdk-core';
 
 import { nativeOpensdkGenerate } from './native';
-import type { Emitter, EmitterContext, GeneratedFile, GeneratedFileEntry, WriteMode } from './types';
+import type { Emitter, EmitterContext, GeneratedFile, GeneratedFileEntry } from './types';
 
 /**
  * Comment syntax for the ownership header, by file extension. Extensions the
@@ -83,17 +83,11 @@ export function generateFileMap(
   const nativeGen =
     Object.keys(emitterOptions).length === 0 ? nativeOpensdkGenerate(emitter.language) : null;
   if (nativeGen) {
-    const flat = JSON.parse(nativeGen(JSON.stringify(spec))) as Record<string, string>;
-    const modeByPath = new Map<string, WriteMode>();
-    for (const f of emitter.generateProject(spec, ctx)) {
-      if (f.writeMode) modeByPath.set(f.path, f.writeMode);
-    }
-    const nativeFiles: Record<string, GeneratedFileEntry> = {};
-    for (const [path, content] of Object.entries(flat)) {
-      const wm = modeByPath.get(path);
-      nativeFiles[path] = wm ? { content, writeMode: wm } : { content };
-    }
-    return nativeFiles;
+    // The native surface now returns `{ content, writeMode? }` directly, so the
+    // whole file map — content AND write semantics — comes from Rust. This used
+    // to call the TypeScript generateProject purely to rebuild the writeMode
+    // map, which is what kept the TS emitters load-bearing at XYD_NATIVE=1.
+    return JSON.parse(nativeGen(JSON.stringify(spec))) as Record<string, GeneratedFileEntry>;
   }
 
   const files: Record<string, GeneratedFileEntry> = {};

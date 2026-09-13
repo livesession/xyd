@@ -161,3 +161,15 @@ pub fn generate_resources_py(spec: &Value) -> String {
 /// descriptor rather than a trait.
 pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
     xyd_opensdk_core::emitter::EmitterFns::new("python", generate_python);
+
+/// The generated file map WITH per-file write semantics.
+///
+/// The regen-safety contract: `skipIfExists` protects a user-owned scaffold,
+/// `mergeJson` deep-merges into the user's file. The flat [`generate_python`]
+/// above stays the byte-exact source of content; this only pairs it with the
+/// shared write-mode table.
+pub fn generate_python_files(
+    spec: &serde_json::Value,
+) -> std::collections::BTreeMap<String, xyd_opensdk_core::emitter::GeneratedFile> {
+    xyd_opensdk_core::emitter::attach_write_modes("python", generate_python(spec))
+}

@@ -174,3 +174,15 @@ pub fn generate_ruby(spec: &Value) -> BTreeMap<String, String> {
 /// descriptor rather than a trait.
 pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
     xyd_opensdk_core::emitter::EmitterFns::new("ruby", generate_ruby);
+
+/// The generated file map WITH per-file write semantics.
+///
+/// The regen-safety contract: `skipIfExists` protects a user-owned scaffold,
+/// `mergeJson` deep-merges into the user's file. The flat [`generate_ruby`]
+/// above stays the byte-exact source of content; this only pairs it with the
+/// shared write-mode table.
+pub fn generate_ruby_files(
+    spec: &serde_json::Value,
+) -> std::collections::BTreeMap<String, xyd_opensdk_core::emitter::GeneratedFile> {
+    xyd_opensdk_core::emitter::attach_write_modes("ruby", generate_ruby(spec))
+}
