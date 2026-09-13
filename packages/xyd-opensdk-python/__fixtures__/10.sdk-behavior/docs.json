@@ -1,0 +1,43 @@
+{
+  "chain": [
+    "items"
+  ],
+  "action": "list",
+  "usage": "import os\n\nfrom wire_service import Client\n\nclient = Client(\n    api_key=os.environ.get(\"WIRE_API_KEY\"),\n)\n\nresult = client.items.list(ids=[\"string\"], tags=[\"string\"], after=\"after\", limit=1, workspace=\"workspace\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.items.list(ids=..., tags=..., after=..., limit=..., workspace=...) -> CursorPage[Item]",
+    "request": {
+      "fields": [
+        {
+          "name": "ids",
+          "langType": "Optional[list[str]]",
+          "required": false
+        },
+        {
+          "name": "tags",
+          "langType": "Optional[list[str]]",
+          "required": false
+        },
+        {
+          "name": "after",
+          "langType": "Optional[str]",
+          "required": false
+        },
+        {
+          "name": "limit",
+          "langType": "Optional[int]",
+          "required": false
+        },
+        {
+          "name": "workspace",
+          "langType": "Optional[str]",
+          "required": false
+        }
+      ]
+    },
+    "response": {
+      "langType": "None",
+      "note": "no response body"
+    }
+  }
+}

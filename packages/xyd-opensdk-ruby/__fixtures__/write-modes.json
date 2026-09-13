@@ -2,6 +2,12 @@
   "1.basic": {
     "petstore.gemspec": "skipIfExists"
   },
+  "10.sdk-behavior": {
+    "wire_kitchen.gemspec": "skipIfExists"
+  },
+  "11.sdk-behavior-pagination": {
+    "union_depot.gemspec": "skipIfExists"
+  },
   "2.wire": {
     "wire_kitchen.gemspec": "skipIfExists"
   },

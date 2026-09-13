@@ -2,6 +2,12 @@
   "1.basic": {
     "pom.xml": "skipIfExists"
   },
+  "10.sdk-behavior": {
+    "pom.xml": "skipIfExists"
+  },
+  "11.sdk-behavior-pagination": {
+    "pom.xml": "skipIfExists"
+  },
   "2.wire": {
     "pom.xml": "skipIfExists"
   },

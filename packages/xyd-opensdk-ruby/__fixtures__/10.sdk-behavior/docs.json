@@ -1,0 +1,55 @@
+{
+  "chain": [
+    "files"
+  ],
+  "action": "upload",
+  "usage": "require \"wire_kitchen\"\n\nclient = WireKitchen::Client.new(api_key: ENV[\"WIRE_API_KEY\"])\n\nresult = client.files.upload(idempotency_key: \"idempotency_key\", file: StringIO.new(\"Example data\"), purpose: \"string\", request_priority: \"request_priority\", description: \"string\")\npp result\n",
+  "typeReference": {
+    "signature": "client.files.upload(file:, purpose:, description: nil, idempotency_key:, request_priority: nil) -> Models::File",
+    "request": {
+      "fields": [
+        {
+          "name": "file",
+          "langType": "IO, String",
+          "required": true,
+          "description": "The file content."
+        },
+        {
+          "name": "purpose",
+          "langType": "String",
+          "required": true
+        },
+        {
+          "name": "description",
+          "langType": "String",
+          "required": false
+        },
+        {
+          "name": "idempotency_key",
+          "langType": "String",
+          "required": true
+        },
+        {
+          "name": "request_priority",
+          "langType": "String",
+          "required": false
+        }
+      ]
+    },
+    "response": {
+      "typeName": "Models::File",
+      "fields": [
+        {
+          "name": "id",
+          "langType": "String",
+          "required": true
+        },
+        {
+          "name": "purpose",
+          "langType": "String",
+          "required": false
+        }
+      ]
+    }
+  }
+}

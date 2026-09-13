@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "union-depot"
+version = "0.4.0"
+description = "Handcrafted IR exercising discriminated-union decode, const auto-fill and auto-pagers."
+requires-python = ">=3.9"
+
+[tool.setuptools.packages.find]
+include = ["union_depot"]

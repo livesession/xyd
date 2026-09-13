@@ -1,0 +1,17 @@
+{
+  "chain": [
+    "shapes"
+  ],
+  "action": "retrieve",
+  "usage": "import os\n\nfrom union_depot import Client\n\nclient = Client(\n    api_key=os.environ.get(\"UNIONDEPOT_API_KEY\"),\n)\n\nresult = client.shapes.retrieve(\"shape_id\")\nprint(result)\n",
+  "typeReference": {
+    "signature": "client.shapes.retrieve(shape_id) -> Shape",
+    "request": {
+      "fields": []
+    },
+    "response": {
+      "typeName": "Shape",
+      "langType": "Shape"
+    }
+  }
+}

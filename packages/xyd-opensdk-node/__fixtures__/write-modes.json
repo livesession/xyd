@@ -4,6 +4,16 @@
     "README.md": "skipIfExists",
     "tsconfig.json": "skipIfExists"
   },
+  "10.sdk-behavior": {
+    "package.json": "mergeJson",
+    "README.md": "skipIfExists",
+    "tsconfig.json": "skipIfExists"
+  },
+  "11.sdk-behavior-pagination": {
+    "package.json": "mergeJson",
+    "README.md": "skipIfExists",
+    "tsconfig.json": "skipIfExists"
+  },
   "2.wire": {
     "package.json": "mergeJson",
     "README.md": "skipIfExists",

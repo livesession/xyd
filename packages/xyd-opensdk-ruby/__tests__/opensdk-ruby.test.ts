@@ -21,6 +21,16 @@ const fixtures = [
     description:
       'x-open-sdk naming overrides: method/resource names from the IR action + resource tree (catalog.browse, system.health.check, things.fetch)',
   },
+  {
+    name: '10.sdk-behavior',
+    description:
+      'sdk-behavior overrides: EVERY policy dimension set to a non-default value (retry counts/codes/backoff, timeout + env var, error kind map + doc-url template, UA template + runtime version + extra agent probe, telemetry headers, reduced log events, idempotency header, auto-page delay, reduced request guard)',
+  },
+  {
+    name: '11.sdk-behavior-pagination',
+    description:
+      'the same non-default sdk block over a PAGINATED base (3.unions), so pagination.autoPageDelayMs is reachable — 2.wire emits no pagination module',
+  },
 ];
 
 describe('opensdk-ruby', () => {

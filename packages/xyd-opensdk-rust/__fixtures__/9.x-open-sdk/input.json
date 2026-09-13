@@ -1,0 +1,239 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "Extensions Demo",
+    "version": "1.0.0",
+    "description": "Exercises x-open-sdk-* naming extensions."
+  },
+  "servers": [
+    "https://api.demo.io/v1"
+  ],
+  "types": [
+    {
+      "name": "Thing",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false
+        }
+      ],
+      "description": "A thing."
+    },
+    {
+      "name": "SystemHealthCheckResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "ok",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "name": "catalog",
+      "methods": [
+        {
+          "action": "browse",
+          "httpMethod": "get",
+          "path": "/things",
+          "operationId": "listThings",
+          "description": "List things",
+          "responses": [
+            {
+              "status": "200",
+              "description": "Things.",
+              "contentType": "application/json",
+              "type": {
+                "kind": "array",
+                "items": {
+                  "kind": "ref",
+                  "name": "Thing"
+                }
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "Thing"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "system",
+      "resources": [
+        {
+          "name": "health",
+          "methods": [
+            {
+              "action": "check",
+              "httpMethod": "get",
+              "path": "/misc/ping",
+              "operationId": "ping",
+              "description": "Health check",
+              "responses": [
+                {
+                  "status": "200",
+                  "description": "OK.",
+                  "contentType": "application/json",
+                  "type": {
+                    "kind": "ref",
+                    "name": "SystemHealthCheckResponse"
+                  }
+                }
+              ],
+              "primaryResponse": {
+                "kind": "ref",
+                "name": "SystemHealthCheckResponse"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "things",
+      "methods": [
+        {
+          "action": "fetch",
+          "httpMethod": "get",
+          "path": "/things/{thing_id}",
+          "operationId": "getThing",
+          "description": "Retrieve a thing",
+          "pathParams": [
+            {
+              "name": "thing_id",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "status": "200",
+              "description": "The thing.",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "Thing"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "Thing"
+          }
+        }
+      ]
+    }
+  ],
+  "sdk": {
+    "retry": {
+      "maxRetries": 2,
+      "retryableStatusCodes": [
+        408,
+        429,
+        500,
+        502,
+        503,
+        504
+      ],
+      "retryConnectionErrors": true,
+      "honorRetryAfterHeader": true,
+      "backoff": {
+        "initialDelayMs": 500,
+        "maxDelayMs": 8000,
+        "multiplier": 2,
+        "jitter": 0.25
+      }
+    },
+    "timeout": {
+      "defaultTimeoutMs": 60000
+    },
+    "errors": {
+      "statusCodeMap": {
+        "400": "BadRequest",
+        "401": "Unauthorized",
+        "403": "PermissionDenied",
+        "404": "NotFound",
+        "409": "Conflict",
+        "422": "UnprocessableEntity",
+        "429": "RateLimited"
+      },
+      "clientErrorKind": "API",
+      "serverErrorKind": "Internal"
+    },
+    "userAgent": {
+      "sdkIdentifierTemplate": "{package}-{language}/{version}",
+      "includeRuntimeVersion": false,
+      "aiAgentEnvVars": {
+        "CLAUDE_CODE": "claude-code",
+        "CURSOR_AGENT": "cursor",
+        "CLINE_ACTIVE": "cline",
+        "WINDSURF_ACTIVE": "windsurf",
+        "COPILOT_AGENT": "copilot"
+      }
+    },
+    "telemetry": {
+      "requestIdHeader": "X-Request-ID",
+      "headerName": "X-Client-Telemetry",
+      "enabledByDefault": false
+    },
+    "logging": {
+      "events": [
+        "request.start",
+        "request.success",
+        "request.retry",
+        "request.rate_limited",
+        "request.error",
+        "request.connection_error"
+      ]
+    },
+    "idempotency": {
+      "headerName": "Idempotency-Key",
+      "autoGenerateForPost": true
+    },
+    "pagination": {
+      "autoPageDelayMs": 0
+    },
+    "requestGuard": {
+      "optionKeys": [
+        "api_key",
+        "apiKey",
+        "idempotency_key",
+        "idempotencyKey",
+        "extra_headers",
+        "extraHeaders",
+        "max_retries",
+        "maxRetries",
+        "base_url",
+        "baseUrl",
+        "timeout"
+      ]
+    }
+  }
+}
