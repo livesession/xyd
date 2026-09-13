@@ -10,8 +10,8 @@
 
 use serde_json::Value;
 
-use crate::behavior::resolve_behavior;
 use crate::jsrt::{json_string, pascal_case};
+use xyd_opensdk_core::behavior::resolve_behavior;
 
 const TRANSPORT_TEMPLATE: &str = include_str!("transport_template.cs.txt");
 const PAGINATION_TEMPLATE: &str = include_str!("pagination.cs.txt");

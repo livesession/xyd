@@ -1,7 +1,12 @@
 //! SdkBehavior defaults + deep-merge — port of opensdk-core src/behavior.ts.
 //! The IR ALWAYS carries the merged behavior block as `spec.sdk`.
 
-use serde_json::{json, Map, Value};
+use serde_json::{json, Value};
+
+// The merge itself lives in xyd_opensdk_core. Note it is the CONVERTER flavour
+// (a non-object side yields `source`), deliberately distinct from the emitters'
+// in-place one — see that module for the measured divergence.
+use xyd_opensdk_core::behavior::deep_merge;
 
 /// The canonical SDK behavior defaults (single source of truth mirrored from
 /// opensdk-core `defaultSdkBehavior()` — keep byte-in-sync).
@@ -95,19 +100,4 @@ pub fn merge_sdk_behavior(overrides: Option<&Value>) -> Value {
         Some(over) => deep_merge(&defaults, over),
         None => defaults,
     }
-}
-
-fn deep_merge(target: &Value, source: &Value) -> Value {
-    let (Some(t), Some(s)) = (target.as_object(), source.as_object()) else {
-        return source.clone();
-    };
-    let mut result: Map<String, Value> = t.clone();
-    for (key, source_val) in s {
-        let merged = match (t.get(key), source_val) {
-            (Some(tv), sv) if tv.is_object() && sv.is_object() => deep_merge(tv, sv),
-            (_, sv) => sv.clone(),
-        };
-        result.insert(key.clone(), merged);
-    }
-    Value::Object(result)
 }

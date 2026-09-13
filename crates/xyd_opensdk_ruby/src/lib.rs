@@ -9,7 +9,6 @@
 //! DO NOT EDIT.` ownership header is prepended (+ one blank line) to every
 //! `.rb` file, and NOT to the `.gemspec` (unknown extension).
 
-mod behavior;
 mod cli;
 mod client;
 mod example;

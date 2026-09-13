@@ -3,9 +3,9 @@
 
 use serde_json::Value;
 
-use crate::behavior::resolve_behavior;
 use crate::ir::{str_field, Types};
 use crate::jsrt::java_package_name;
+use xyd_opensdk_core::behavior::resolve_behavior;
 
 pub struct JavaCtx {
     pub pkg: String,

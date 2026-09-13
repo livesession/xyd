@@ -4,7 +4,12 @@
 //! carries the merged behavior block as `spec.sdk`; `"mode": "cli"` is the
 //! discriminator emitters branch on (HTTP specs carry no `mode`).
 
-use serde_json::{json, Map, Value};
+use serde_json::{json, Value};
+
+// The merge itself lives in xyd_opensdk_core. Only the merge is shared — the CLI
+// DEFAULTS above stay here, since they are a disjoint value set from the HTTP
+// ones and folding them together would inject HTTP policy into every generated CLI.
+use xyd_opensdk_core::behavior::deep_merge;
 
 /// The canonical CLI-mode behavior defaults (emitters read policy values,
 /// never re-hardcode them).
@@ -42,21 +47,6 @@ pub fn merge_cli_behavior(overrides: Option<&Value>) -> Value {
         Some(over) => deep_merge(&defaults, over),
         None => defaults,
     }
-}
-
-fn deep_merge(target: &Value, source: &Value) -> Value {
-    let (Some(t), Some(s)) = (target.as_object(), source.as_object()) else {
-        return source.clone();
-    };
-    let mut result: Map<String, Value> = t.clone();
-    for (key, source_val) in s {
-        let merged = match (t.get(key), source_val) {
-            (Some(tv), sv) if tv.is_object() && sv.is_object() => deep_merge(tv, sv),
-            (_, sv) => sv.clone(),
-        };
-        result.insert(key.clone(), merged);
-    }
-    Value::Object(result)
 }
 
 #[cfg(test)]

@@ -8,8 +8,8 @@
 
 use serde_json::Value;
 
-use crate::behavior::resolve_behavior;
 use crate::writer::rb_string;
+use xyd_opensdk_core::behavior::resolve_behavior;
 
 /// The fixed transport source with `__XYD_*__` seams (validated byte-exact
 /// against the JS emitter's goldens).

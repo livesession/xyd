@@ -14,7 +14,6 @@
 //! CLI mode: a spec with a root `x-cli` block (see `xyd_opensdk_cli_common`)
 //! instead produces an SDK that spawns the real CLI binary — see `cli.rs`.
 
-mod behavior;
 mod cli;
 mod client;
 mod example;

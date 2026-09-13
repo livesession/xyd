@@ -12,7 +12,6 @@
 //! `javaFile` applies the ownership header itself; `pom.xml` (unknown ext) gets
 //! none — matching the JS `generate()`.
 
-mod behavior;
 mod cli;
 mod client;
 mod example;

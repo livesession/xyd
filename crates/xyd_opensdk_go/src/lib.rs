@@ -9,7 +9,6 @@
 //! byte-identical to the JS emitter's goldens. `generate_go` returns the complete
 //! path→content map.
 
-mod behavior;
 mod cli;
 mod client;
 mod example_go;
@@ -91,7 +90,7 @@ pub fn generate_go(spec: &Value) -> std::collections::BTreeMap<String, String> {
         }
     }
 
-    let sdk_behavior = behavior::resolve_behavior(spec);
+    let sdk_behavior = xyd_opensdk_core::behavior::resolve_behavior(spec);
     let ctx = GoCtx {
         module_path: opts.module_path.clone(),
         pkg: opts.pkg.clone(),

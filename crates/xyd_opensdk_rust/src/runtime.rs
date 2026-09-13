@@ -8,9 +8,9 @@
 
 use serde_json::Value;
 
-use crate::behavior::resolve_behavior;
 use crate::naming::pascal_case;
 use crate::rswriter::rs_string;
+use xyd_opensdk_core::behavior::resolve_behavior;
 
 /// The fixed error-type source with two seams.
 const ERROR_TEMPLATE: &str = include_str!("error_template.rs.txt");

@@ -9,3 +9,4 @@ description = "Go SDK emitter — OpenSDK IR -> generated Go SDK code (Rust port
 serde = { workspace = true }
 serde_json = { workspace = true }
 xyd_opensdk_cli_common = { path = "../xyd_opensdk_cli_common" }
+xyd_opensdk_core = { path = "../xyd_opensdk_core" }
