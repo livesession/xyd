@@ -1,0 +1,22 @@
+{
+  "1.basic": {
+    "package.json": "mergeJson",
+    "README.md": "skipIfExists",
+    "tsconfig.json": "skipIfExists"
+  },
+  "2.wire": {
+    "package.json": "mergeJson",
+    "README.md": "skipIfExists",
+    "tsconfig.json": "skipIfExists"
+  },
+  "3.unions": {
+    "package.json": "mergeJson",
+    "README.md": "skipIfExists",
+    "tsconfig.json": "skipIfExists"
+  },
+  "9.x-open-sdk": {
+    "package.json": "mergeJson",
+    "README.md": "skipIfExists",
+    "tsconfig.json": "skipIfExists"
+  }
+}

@@ -46,6 +46,8 @@ export {
   writeDocsGolden,
 } from './docs-golden';
 export type { DocsGolden, DocsFixture } from './docs-golden';
+export { WRITE_MODE_GOLDEN_FILE, collectWriteModes, defineWriteModeGolden } from './write-mode-golden';
+export type { WriteModeGolden } from './write-mode-golden';
 export { compileSmoke } from './compile-smoke';
 export { compileUsageSnippet, placeSnippet } from './usage-compile';
 export { recordSdkE2E, defineSdkE2E, apiKeyEnvFor } from './sdk-e2e';

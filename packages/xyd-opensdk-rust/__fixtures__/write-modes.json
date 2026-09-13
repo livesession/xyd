@@ -1,0 +1,11 @@
+{
+  "1.basic": {
+    "Cargo.toml": "skipIfExists"
+  },
+  "2.wire": {
+    "Cargo.toml": "skipIfExists"
+  },
+  "3.unions": {
+    "Cargo.toml": "skipIfExists"
+  }
+}

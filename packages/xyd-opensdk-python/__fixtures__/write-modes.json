@@ -1,0 +1,11 @@
+{
+  "1.basic": {
+    "pyproject.toml": "skipIfExists"
+  },
+  "2.wire": {
+    "pyproject.toml": "skipIfExists"
+  },
+  "9.x-open-sdk": {
+    "pyproject.toml": "skipIfExists"
+  }
+}

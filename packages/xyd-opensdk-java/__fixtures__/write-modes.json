@@ -1,0 +1,14 @@
+{
+  "1.basic": {
+    "pom.xml": "skipIfExists"
+  },
+  "2.wire": {
+    "pom.xml": "skipIfExists"
+  },
+  "3.unions": {
+    "pom.xml": "skipIfExists"
+  },
+  "9.x-open-sdk": {
+    "pom.xml": "skipIfExists"
+  }
+}
