@@ -41,7 +41,7 @@ import (
 
 // autoPageDelay is the politeness delay before each auto-fetched next page
 // (sdk.pagination.autoPageDelayMs).
-const autoPageDelay = 0 * time.Millisecond
+const autoPageDelay = __XYD_AUTO_PAGE_DELAY__
 
 // CursorPage is a single page of a cursor-paginated list (style "cursor").
 type CursorPage[T any] struct {

@@ -114,20 +114,14 @@ fn x_open_sdk() {
     run_case("9.x-open-sdk");
 }
 
-// TODO(A2 "Go behavior"): `10.sdk-behavior` and `11.sdk-behavior-pagination` have
-// complete golden trees here, and every OTHER language emitter (node, python,
-// java, dotnet, ruby, rust) passes them — but Go FAILS, with 3 and 4 diffs
-// respectively (verified 2026-09-13):
-//
-//   option/option.go            golden "Default: 5 (sdk.retry)"      got "Default: 2"
-//   packages/pagination/…       golden "autoPageDelay = 350 * …"     got "0 * …"
-//   internal/requestconfig/…    missing the `runtime` import + the mapped error kinds
-//
-// Root cause: Go emits its runtime from static `include_str!("*.go.txt")`
-// templates that hardcode those constants instead of interpolating
-// `behavior::resolve_behavior(spec)`. That is a defect in Go's runtime EMISSION,
-// pre-existing and unrelated to the shared behavior module. Add the two
-// `run_case` lines below once A2 wires the templates to the resolved block.
-//
-//   fn sdk_behavior()            { run_case("10.sdk-behavior"); }
-//   fn sdk_behavior_pagination() { run_case("11.sdk-behavior-pagination"); }
+// The sdk-behavior fixtures: every policy dimension set to a NON-default value.
+// Without them the emitter could hardcode `defaultSdkBehavior()` and still pass —
+// 9.x-open-sdk carries an `sdk` block whose every value EQUALS the default.
+#[test]
+fn sdk_behavior() {
+    run_case("10.sdk-behavior");
+}
+#[test]
+fn sdk_behavior_pagination() {
+    run_case("11.sdk-behavior-pagination");
+}

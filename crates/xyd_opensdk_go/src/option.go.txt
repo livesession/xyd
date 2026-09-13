@@ -28,7 +28,7 @@ func WithBaseURL(baseURL string) RequestOption {
 }
 
 // WithMaxRetries sets how many times transient failures (connection errors and
-// the retryable status set) are retried. Default: 2 (sdk.retry). Zero
+// the retryable status set) are retried. Default: __XYD_MAX_RETRIES__ (sdk.retry). Zero
 // disables retries.
 func WithMaxRetries(count int) RequestOption {
 	return func(cfg *requestconfig.RequestConfig) error {
@@ -38,7 +38,7 @@ func WithMaxRetries(count int) RequestOption {
 }
 
 // WithRequestTimeout sets a per-attempt deadline on each request (each retry
-// gets a fresh timeout). Default: 60s (sdk.timeout). Zero disables the
+// gets a fresh timeout). __XYD_TIMEOUT_DEFAULT__ Zero disables the
 // deadline.
 func WithRequestTimeout(timeout time.Duration) RequestOption {
 	return func(cfg *requestconfig.RequestConfig) error {
@@ -48,7 +48,7 @@ func WithRequestTimeout(timeout time.Duration) RequestOption {
 }
 
 // WithLogger sets a structured logger that receives the SDK's request
-// lifecycle events (request.start, request.success, request.retry, request.rate_limited, request.error, request.connection_error).
+// lifecycle events (__XYD_LOG_EVENTS__).
 // No logger configured means zero logging overhead.
 func WithLogger(logger *slog.Logger) RequestOption {
 	return func(cfg *requestconfig.RequestConfig) error {

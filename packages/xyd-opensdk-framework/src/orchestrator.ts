@@ -72,20 +72,16 @@ export function generateFileMap(
   // goldens), so withFileHeader is intentionally NOT re-applied here.
   //
   // The native surface takes ONLY the spec, so it can't honor emitterOptions
-  // (e.g. { tests: false }). And some emitter runtimes bake default sdk-behavior
-  // constants rather than fully interpolating them (they were golden against the
-  // all-default fixtures), so a spec carrying `sdk` behavior overrides must take
-  // the faithful JS interpolation path. Gate on both — the common default-config
-  // case, which is exactly what the crates reproduce byte-exact.
-  const behaviorOverride = (spec as { sdk?: unknown }).sdk;
-  const hasBehaviorOverride =
-    behaviorOverride != null &&
-    typeof behaviorOverride === 'object' &&
-    Object.keys(behaviorOverride).length > 0;
+  // (e.g. { tests: false }) — those still take the JS path.
+  //
+  // A spec carrying `sdk` behavior overrides no longer does. Every crate now
+  // interpolates the resolved block instead of baking defaults, proven by the
+  // `10.sdk-behavior` / `11.sdk-behavior-pagination` fixtures — golden trees
+  // with every policy dimension set to a non-default value — passing in all
+  // seven Rust parity suites. (Go was the last holdout: its runtime came from
+  // static .go.txt templates hardcoding `Default: 2` and `autoPageDelay = 0`.)
   const nativeGen =
-    Object.keys(emitterOptions).length === 0 && !hasBehaviorOverride
-      ? nativeOpensdkGenerate(emitter.language)
-      : null;
+    Object.keys(emitterOptions).length === 0 ? nativeOpensdkGenerate(emitter.language) : null;
   if (nativeGen) {
     const flat = JSON.parse(nativeGen(JSON.stringify(spec))) as Record<string, string>;
     const modeByPath = new Map<string, WriteMode>();
