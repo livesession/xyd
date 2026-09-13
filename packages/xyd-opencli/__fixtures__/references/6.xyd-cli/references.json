@@ -1,0 +1,550 @@
+[
+  {
+    "title": "dev",
+    "canonical": "dev",
+    "description": "Run your docs locally in development mode",
+    "category": "cli",
+    "context": {
+      "path": "dev",
+      "fullPath": "xyd dev",
+      "group": [
+        "Commands"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "xyd dev"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": []
+  },
+  {
+    "title": "build",
+    "canonical": "build",
+    "description": "Build your docs",
+    "category": "cli",
+    "context": {
+      "path": "build",
+      "fullPath": "xyd build",
+      "group": [
+        "Commands"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "xyd build"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": []
+  },
+  {
+    "title": "serve",
+    "canonical": "serve",
+    "description": "Serve your built docs in production mode",
+    "category": "cli",
+    "context": {
+      "path": "serve",
+      "fullPath": "xyd serve",
+      "group": [
+        "Commands"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "xyd serve"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": []
+  },
+  {
+    "title": "install",
+    "canonical": "install",
+    "description": "Install the xyd framework manually",
+    "category": "cli",
+    "context": {
+      "path": "install",
+      "fullPath": "xyd install",
+      "group": [
+        "Commands"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "xyd install"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": []
+  },
+  {
+    "title": "migrateme",
+    "canonical": "migrateme",
+    "description": "Migrate your docs to the new xyd framework",
+    "category": "cli",
+    "context": {
+      "path": "migrateme",
+      "fullPath": "xyd migrateme <path>",
+      "group": [
+        "Commands"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "title": "./path-to-docs",
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "xyd migrateme ./path-to-docs"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "path",
+            "type": "string",
+            "description": "Path to the docs directory to migrate",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "example",
+                "value": "./path-to-docs"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "components <command>",
+    "canonical": "components",
+    "description": "Manage xyd components",
+    "category": "cli",
+    "context": {
+      "path": "components",
+      "fullPath": "xyd components <command>",
+      "group": [
+        "Commands",
+        "components"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "xyd components <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "install",
+            "type": "command",
+            "description": "Install a xyd component into your project"
+          },
+          {
+            "name": "uninstall",
+            "type": "command",
+            "description": "Remove an installed xyd component"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "components install",
+    "canonical": "components/install",
+    "description": "Install a xyd component into your project",
+    "category": "cli",
+    "context": {
+      "path": "components install",
+      "fullPath": "xyd components install <component>",
+      "group": [
+        "Commands",
+        "components"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "title": "diagrams",
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "xyd components install diagrams"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "opensdk",
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "xyd components install opensdk"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "component",
+            "type": "string",
+            "description": "Name of the component to install",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "examples",
+                "value": [
+                  "diagrams",
+                  "opensdk"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "components uninstall",
+    "canonical": "components/uninstall",
+    "description": "Remove an installed xyd component",
+    "category": "cli",
+    "context": {
+      "path": "components uninstall",
+      "fullPath": "xyd components uninstall <component>",
+      "group": [
+        "Commands",
+        "components"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "title": "opensdk",
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "xyd components uninstall opensdk"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "component",
+            "type": "string",
+            "description": "Name of the component to remove",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "examples",
+                "value": [
+                  "opensdk"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "opensdk",
+    "canonical": "opensdk",
+    "description": "Run the OpenSDK toolchain (requires `xyd components install opensdk`)",
+    "category": "cli",
+    "context": {
+      "path": "opensdk",
+      "fullPath": "xyd opensdk",
+      "group": [
+        "Commands"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "xyd opensdk"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": []
+  },
+  {
+    "title": "completion",
+    "canonical": "completion",
+    "description": "Generate shell completions or the CLI OpenCLI document. Run `xyd completion <zsh|fish>` to print a script, `xyd completion install [shell]` to install it, or `xyd completion opencli` to print the OpenCLI document.",
+    "category": "cli",
+    "context": {
+      "path": "completion",
+      "fullPath": "xyd completion <shell>",
+      "group": [
+        "Commands"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "title": "zsh",
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "xyd completion zsh"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "fish",
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "xyd completion fish"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "install",
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "xyd completion install"
+                  }
+                ]
+              }
+            },
+            {
+              "codeblock": {
+                "title": "opencli",
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "xyd completion opencli"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "shell",
+            "type": "string",
+            "description": "Shell to generate completions for",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "examples",
+                "value": [
+                  "zsh",
+                  "fish",
+                  "install",
+                  "opencli"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "Global options",
+    "canonical": "global-options",
+    "description": "Options available on every command.",
+    "category": "cli",
+    "context": {
+      "path": "global-options",
+      "fullPath": "",
+      "group": [
+        "Global options"
+      ]
+    },
+    "examples": {
+      "groups": []
+    },
+    "definitions": [
+      {
+        "title": "Global options",
+        "properties": [
+          {
+            "name": "--help",
+            "type": "boolean",
+            "description": "Print this help message and exit (alias: -h)"
+          },
+          {
+            "name": "--version",
+            "type": "boolean",
+            "description": "Print the CLI version and exit (alias: -v)"
+          },
+          {
+            "name": "--verbose",
+            "type": "boolean",
+            "description": "Enable verbose output"
+          },
+          {
+            "name": "--port",
+            "type": "string",
+            "description": "Port to run the dev server on (alias: -p)"
+          },
+          {
+            "name": "--logLevel",
+            "type": "string",
+            "description": "Set logging level (e.g. info, debug) (alias: -l)"
+          },
+          {
+            "name": "--debug",
+            "type": "boolean",
+            "description": "Enable debug output"
+          }
+        ]
+      }
+    ]
+  }
+]

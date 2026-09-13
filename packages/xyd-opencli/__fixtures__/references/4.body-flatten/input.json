@@ -1,0 +1,153 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "chat-api",
+    "version": "1.0.0"
+  },
+  "x-openapi": {
+    "servers": [
+      "https://api.chat.test/v1"
+    ],
+    "security": [
+      {
+        "type": "http",
+        "kind": "bearer",
+        "envVar": "CHAT_API_API_KEY",
+        "scheme": "bearer"
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "chat",
+      "commands": [
+        {
+          "name": "completions",
+          "commands": [
+            {
+              "name": "create",
+              "description": "Creates a model response for the given chat conversation.",
+              "options": [
+                {
+                  "name": "model",
+                  "group": "body",
+                  "required": true,
+                  "description": "ID of the model to use.",
+                  "arguments": [
+                    {
+                      "name": "string",
+                      "acceptedValues": [
+                        "gpt-4o",
+                        "gpt-4o-mini",
+                        "o3"
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "messages",
+                  "group": "body",
+                  "required": true,
+                  "description": "A list of messages comprising the conversation.",
+                  "arguments": [
+                    {
+                      "name": "json",
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "temperature",
+                  "group": "body",
+                  "description": "Sampling temperature.",
+                  "arguments": [
+                    {
+                      "name": "number"
+                    }
+                  ]
+                },
+                {
+                  "name": "stop",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "string",
+                      "arity": {
+                        "minimum": 0
+                      }
+                    }
+                  ]
+                },
+                {
+                  "name": "stream",
+                  "group": "body"
+                },
+                {
+                  "name": "response-format",
+                  "group": "body",
+                  "arguments": [
+                    {
+                      "name": "json"
+                    }
+                  ]
+                }
+              ],
+              "x-openapi": {
+                "method": "post",
+                "path": "/chat/completions",
+                "operationId": "createChatCompletion",
+                "contentType": "application/json",
+                "body": {
+                  "style": "flatten",
+                  "contentType": "application/json",
+                  "properties": [
+                    {
+                      "name": "model",
+                      "from": "option:model",
+                      "jsonPath": "model",
+                      "encoding": "string",
+                      "required": true
+                    },
+                    {
+                      "name": "messages",
+                      "from": "option:messages",
+                      "jsonPath": "messages",
+                      "encoding": "array",
+                      "required": true
+                    },
+                    {
+                      "name": "temperature",
+                      "from": "option:temperature",
+                      "jsonPath": "temperature",
+                      "encoding": "number"
+                    },
+                    {
+                      "name": "stop",
+                      "from": "option:stop",
+                      "jsonPath": "stop",
+                      "encoding": "array"
+                    },
+                    {
+                      "name": "stream",
+                      "from": "option:stream",
+                      "jsonPath": "stream",
+                      "encoding": "boolean"
+                    },
+                    {
+                      "name": "response_format",
+                      "from": "option:response-format",
+                      "jsonPath": "response_format",
+                      "encoding": "json"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

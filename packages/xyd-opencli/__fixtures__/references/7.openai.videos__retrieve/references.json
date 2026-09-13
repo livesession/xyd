@@ -1,0 +1,102 @@
+[
+  {
+    "title": "videos <command>",
+    "canonical": "videos",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "videos",
+      "fullPath": "openai videos <command>",
+      "group": [
+        "Commands",
+        "videos"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "openai videos <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "list",
+            "type": "command",
+            "description": "List recently generated videos for the current project."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "videos list",
+    "canonical": "videos/list",
+    "description": "List recently generated videos for the current project.",
+    "category": "cli",
+    "context": {
+      "path": "videos list",
+      "fullPath": "openai videos list [options]",
+      "group": [
+        "Commands",
+        "videos"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "openai videos list"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Options",
+        "properties": [
+          {
+            "name": "--limit",
+            "type": "string",
+            "description": "Number of items to retrieve"
+          },
+          {
+            "name": "--order",
+            "type": "string",
+            "description": "Sort order of results by timestamp. Use `asc` for ascending order or `desc` for descending order."
+          },
+          {
+            "name": "--after",
+            "type": "string",
+            "description": "Identifier for the last item from the previous pagination request"
+          }
+        ]
+      }
+    ]
+  }
+]

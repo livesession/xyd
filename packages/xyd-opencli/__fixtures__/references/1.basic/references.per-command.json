@@ -1,0 +1,137 @@
+[
+  {
+    "title": "models <command>",
+    "canonical": "models",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "models",
+      "fullPath": "sample-api models <command>",
+      "group": [
+        "Commands",
+        "models"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "sample-api models <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "list",
+            "type": "command",
+            "description": "Lists the currently available models."
+          },
+          {
+            "name": "retrieve",
+            "type": "command",
+            "description": "Retrieves a model instance."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "models list",
+    "canonical": "models/list",
+    "description": "Lists the currently available models.",
+    "category": "cli",
+    "context": {
+      "path": "models list",
+      "fullPath": "sample-api models list",
+      "group": [
+        "Commands",
+        "models"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "sample-api models list"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": []
+  },
+  {
+    "title": "models retrieve",
+    "canonical": "models/retrieve",
+    "description": "Retrieves a model instance.",
+    "category": "cli",
+    "context": {
+      "path": "models retrieve",
+      "fullPath": "sample-api models retrieve <model>",
+      "group": [
+        "Commands",
+        "models"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "sample-api models retrieve 'Example data'"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "model",
+            "type": "string",
+            "description": "The ID of the model to use for this request.",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,176 @@
+[
+  {
+    "title": "chat <command>",
+    "canonical": "chat",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "chat",
+      "fullPath": "chat-api chat <command>",
+      "group": [
+        "Commands",
+        "chat"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "chat-api chat <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "completions",
+            "type": "command",
+            "description": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "chat completions <command>",
+    "canonical": "chat/completions",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "chat completions",
+      "fullPath": "chat-api chat completions <command>",
+      "group": [
+        "Commands",
+        "chat",
+        "completions"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "chat-api chat completions <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "create",
+            "type": "command",
+            "description": "Creates a model response for the given chat conversation."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "chat completions create",
+    "canonical": "chat/completions/create",
+    "description": "Creates a model response for the given chat conversation.",
+    "category": "cli",
+    "context": {
+      "path": "chat completions create",
+      "fullPath": "chat-api chat completions create [options]",
+      "group": [
+        "Commands",
+        "chat",
+        "completions"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "chat-api chat completions create \\\n  --model gpt-4o \\\n  --messages 'Example data'"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Options",
+        "properties": [
+          {
+            "name": "--model",
+            "type": "string",
+            "description": "ID of the model to use.",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "--messages",
+            "type": "string",
+            "description": "A list of messages comprising the conversation.",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "--temperature",
+            "type": "string",
+            "description": "Sampling temperature."
+          },
+          {
+            "name": "--stop",
+            "type": "string",
+            "description": ""
+          },
+          {
+            "name": "--stream",
+            "type": "boolean",
+            "description": ""
+          },
+          {
+            "name": "--response-format",
+            "type": "string",
+            "description": ""
+          }
+        ]
+      }
+    ]
+  }
+]
