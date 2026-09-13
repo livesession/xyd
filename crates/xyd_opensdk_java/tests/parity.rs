@@ -125,3 +125,14 @@ fn unions() {
 fn x_open_sdk() {
     check("9.x-open-sdk");
 }
+// The sdk-behavior fixtures: every policy dimension set to a NON-default value.
+// Without them the emitter could hardcode `defaultSdkBehavior()` and still pass —
+// 9.x-open-sdk carries an `sdk` block whose every value EQUALS the default.
+#[test]
+fn sdk_behavior() {
+    check("10.sdk-behavior");
+}
+#[test]
+fn sdk_behavior_pagination() {
+    check("11.sdk-behavior-pagination");
+}

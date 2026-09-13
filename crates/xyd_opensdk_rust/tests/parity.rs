@@ -108,3 +108,18 @@ fn wire() {
 fn unions() {
     run_case("3.unions");
 }
+#[test]
+fn x_open_sdk() {
+    run_case("9.x-open-sdk");
+}
+// The sdk-behavior fixtures: every policy dimension set to a NON-default value.
+// Without them the emitter could hardcode `defaultSdkBehavior()` and still pass —
+// 9.x-open-sdk carries an `sdk` block whose every value EQUALS the default.
+#[test]
+fn sdk_behavior() {
+    run_case("10.sdk-behavior");
+}
+#[test]
+fn sdk_behavior_pagination() {
+    run_case("11.sdk-behavior-pagination");
+}

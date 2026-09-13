@@ -10,7 +10,19 @@ use std::path::{Path, PathBuf};
 use xyd_opensdk_node::generate_node;
 
 /// Fixtures with a complete `output/` tree (the full runtime + tests set).
-const FIXTURES: &[&str] = &["1.basic", "2.wire", "3.unions", "9.x-open-sdk"];
+///
+/// `10.sdk-behavior` / `11.sdk-behavior-pagination` set every policy dimension to
+/// a NON-default value. Without them the emitter could hardcode
+/// `defaultSdkBehavior()` and still pass, since `9.x-open-sdk` carries an `sdk`
+/// block whose every value EQUALS the default.
+const FIXTURES: &[&str] = &[
+    "1.basic",
+    "2.wire",
+    "3.unions",
+    "9.x-open-sdk",
+    "10.sdk-behavior",
+    "11.sdk-behavior-pagination",
+];
 
 fn fixtures_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packages/xyd-opensdk-node/__fixtures__")
