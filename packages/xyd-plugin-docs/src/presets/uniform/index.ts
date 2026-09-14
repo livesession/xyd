@@ -236,7 +236,15 @@ async function uniformResolver(
         // Prior JS-path runs push uniformPluginXDocsSidebar into the GLOBAL
         // array; only genuinely user-supplied plugins force the JS path.
         && globalUniformPlugins.filter((p: unknown) => p !== uniformPluginXDocsSidebar).length === 0
-        && !sdkLanguages
+        // NOTE: sdk-enabled sources are NOT excluded. They were, from the commit
+        // that introduced SDK docs, but the fused path never actually conflicted
+        // with them: it returns `references: null` and contributes only sidebar /
+        // pageFrontMatter / pages, while `meta.sdkLanguages` is stamped in the
+        // SHARED page loop below and the per-page enrichment happens later in
+        // processUniformFunctionCall. Verified by running the sdk e2e both ways —
+        // 16/16 on bun and vite either way, with XYD_VERBOSE confirming all three
+        // sources (incl. `sdk: true` and x-sdk) now take the native path where
+        // previously only the non-sdk one did.
 
     let uniformWithNavigation: {
         references: Reference[] | null;
