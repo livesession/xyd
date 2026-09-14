@@ -20,6 +20,7 @@ xyd_openapi = { path = "../../crates/xyd_openapi" }
 xyd_oas_snippet = { path = "../../crates/xyd_oas_snippet" }
 xyd_openapi2opensdk = { path = "../../crates/xyd_openapi2opensdk" }
 xyd_openapi2opencli = { path = "../../crates/xyd_openapi2opencli" }
+xyd_opencli_uniform = { path = "../../crates/xyd_opencli_uniform" }
 xyd_uniform = { path = "../../crates/xyd_uniform" }
 xyd_mcp_uniform = { path = "../../crates/xyd_mcp_uniform" }
 xyd_settings = { path = "../../crates/xyd_settings" }

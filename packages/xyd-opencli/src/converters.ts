@@ -1,4 +1,5 @@
 import { generateUsage } from './generate';
+import { nativeOpencliToReferences } from './native';
 import type { Argument, Command, OpencliSpecJson, Option } from './types';
 
 // Structural subset of @xyd-js/uniform's `Reference` — kept local so the OpenCLI
@@ -67,6 +68,19 @@ export function opencliToReferences(
   options: OpencliToReferencesOptions = {},
 ): OpencliReference[] {
   if (!spec) return [];
+
+  // Native fast path — byte-identical to the TypeScript below, gated by 34
+  // goldens (17 cases x both globalOptionsPerCommand modes). This function is
+  // on the page-compile hot path: one call per CLI docs page.
+  const nativeFn = nativeOpencliToReferences();
+  if (nativeFn) {
+    try {
+      return JSON.parse(nativeFn(JSON.stringify(spec), JSON.stringify(options))) as OpencliReference[];
+    } catch {
+      // A malformed doc the native side rejects falls through to the JS impl,
+      // which has always been lenient about partial specs.
+    }
+  }
 
   const cliTitle = spec.info?.title || 'cli';
   const regionSet = options.regions?.length ? new Set(options.regions) : null;

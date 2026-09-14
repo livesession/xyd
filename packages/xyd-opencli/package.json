@@ -13,7 +13,9 @@
     "generate:types": "json2ts -i opencli-spec.json -o src/types.ts",
     "format": "bunx biome check --write src"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@xyd-js/native": "workspace:*"
+  },
   "devDependencies": {
     "@types/node": "^20.9.0",
     "json-schema-to-typescript": "^14.0.1",

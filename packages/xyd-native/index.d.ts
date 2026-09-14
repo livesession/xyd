@@ -116,6 +116,12 @@ export declare function opencli2go(specJson: string, optionsJson?: string | unde
 
 export declare function opencli2rust(specJson: string, optionsJson?: string | undefined | null): string
 
+/**
+ * `specJson` is the parsed OpenCLI document; `optionsJson` is
+ * `{ regions?: string[], globalOptionsPerCommand?: boolean }`.
+ */
+export declare function opencliToReferences(specJson: string, optionsJson?: string | undefined | null): string
+
 export declare function opensdkDocsDotnet(specJson: string, optionsJson?: string | undefined | null): string
 
 export declare function opensdkDocsGo(specJson: string, optionsJson?: string | undefined | null): string

@@ -721,6 +721,7 @@ module.exports.openapi2opencliFromFile = nativeBinding.openapi2opencliFromFile
 module.exports.openapi2opensdk = nativeBinding.openapi2opensdk
 module.exports.opencli2go = nativeBinding.opencli2go
 module.exports.opencli2rust = nativeBinding.opencli2rust
+module.exports.opencliToReferences = nativeBinding.opencliToReferences
 module.exports.opensdkDocsDotnet = nativeBinding.opensdkDocsDotnet
 module.exports.opensdkDocsGo = nativeBinding.opensdkDocsGo
 module.exports.opensdkDocsJava = nativeBinding.opensdkDocsJava
