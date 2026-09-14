@@ -20,6 +20,7 @@ mod naming;
 mod plan;
 mod runtime;
 mod service;
+mod type_plan;
 
 use serde_json::{Map, Value};
 
@@ -71,6 +72,20 @@ fn resolve_options(spec: &Value, options: &Value) -> Options {
     }
 }
 
+/// The IR symbol table — `name -> NamedType`, the map `EmitterContext.types`
+/// carries in TypeScript.
+fn symbol_table(spec: &Value) -> Map<String, Value> {
+    let mut type_map: Map<String, Value> = Map::new();
+    if let Some(types) = spec.get("types").and_then(|t| t.as_array()) {
+        for t in types {
+            if let Some(name) = t.get("name").and_then(|n| n.as_str()) {
+                type_map.insert(name.to_string(), t.clone());
+            }
+        }
+    }
+    type_map
+}
+
 /// Prepend the .go ownership header (only for .go files), once.
 // The header text + per-extension comment table live in xyd_opensdk_core. The
 // shared table is wider than this crate's old gate, but provably output-neutral:
@@ -99,14 +114,7 @@ pub fn generate_go_with(
     }
     let opts = resolve_options(spec, options);
     let types = spec.get("types").and_then(|t| t.as_array());
-    let mut type_map: Map<String, Value> = Map::new();
-    if let Some(types) = types {
-        for t in types {
-            if let Some(name) = t.get("name").and_then(|n| n.as_str()) {
-                type_map.insert(name.to_string(), t.clone());
-            }
-        }
-    }
+    let type_map = symbol_table(spec);
 
     let sdk_behavior = xyd_opensdk_core::behavior::resolve_behavior(spec);
     let ctx = GoCtx {
@@ -171,6 +179,48 @@ pub fn generate_go_with(
     }
 
     files
+}
+
+/// The per-operation USAGE SNIPPET for the docs API-reference page: a
+/// self-contained `package main` that constructs the client and makes ONE call.
+///
+/// `chain` is the resource-name path (root→owner) the method hangs off; `method`
+/// is that method's IR node; `options` is the `emitterOptions` bag
+/// (`Value::Null` for none). Only `packageName` / `modulePath` (which name the
+/// generated package) and the docs-only `baseUrlEnv` (make the snippet read its
+/// base URL from that env var, so a snippet-run test can capture the request)
+/// affect the output.
+pub fn generate_go_usage(
+    spec: &Value,
+    chain: &[String],
+    method: &Value,
+    options: &Value,
+) -> String {
+    let opts = resolve_options(spec, options);
+    let types = symbol_table(spec);
+    example_go::go_usage(
+        method,
+        chain,
+        &types,
+        &opts.module_path,
+        &opts.pkg,
+        xyd_opensdk_core::emitter::opt_str(options, "baseUrlEnv"),
+    )
+}
+
+/// The per-operation SDK TYPE REFERENCE for the docs API-reference page: the
+/// method signature plus the request-params and response types as field rows.
+///
+/// `_options` is accepted for a uniform cross-language entry point; no Go
+/// emitter option reaches this output (the rendered type names are unqualified,
+/// so neither `packageName` nor `modulePath` appears in it).
+pub fn generate_go_type_reference(
+    spec: &Value,
+    chain: &[String],
+    method: &Value,
+    _options: &Value,
+) -> xyd_opensdk_core::emitter::RenderedTypeReference {
+    example_go::go_type_reference(method, chain, &symbol_table(spec))
 }
 
 /// This crate as plain data, for a Rust-side dispatcher and the A2 docs surface.

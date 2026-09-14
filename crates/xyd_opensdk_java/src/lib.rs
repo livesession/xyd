@@ -14,6 +14,7 @@
 
 mod cli;
 mod client;
+mod docs;
 mod example;
 mod example_plan;
 mod ir;
@@ -26,6 +27,9 @@ mod project;
 mod runtime;
 mod service;
 mod tests_gen;
+mod type_plan;
+
+pub use docs::{generate_java_type_reference, generate_java_usage};
 
 use serde_json::Value;
 use std::collections::BTreeMap;

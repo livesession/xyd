@@ -10,7 +10,7 @@ use std::collections::HashMap;
 use serde_json::Value;
 
 use crate::example::render_py_example;
-use crate::example_plan::{plan_method_example, MethodExample};
+use crate::example_plan::{plan_method_example, MethodExample, MethodExampleOpts};
 use crate::naming::{pascal_case, snake_case};
 use crate::pytype::{py_type, PyUses};
 use crate::resources::{plan_operation, py_page_name};
@@ -109,7 +109,7 @@ fn response_type_expr(
 }
 
 /// Positional path args followed by `name=value` keyword args for one example.
-fn render_call_args(ex: &MethodExample) -> String {
+pub(crate) fn render_call_args(ex: &MethodExample) -> String {
     let mut parts: Vec<String> = ex
         .path_args
         .iter()
@@ -194,7 +194,7 @@ pub fn resource_test_py(resource: &Value, pkg: &str, types: &TypeMap) -> String 
         let response_type =
             response_type_expr(f.method, &mut uses, &mut page_cursor, &mut page_page);
 
-        let required = plan_method_example(f.method, types, false);
+        let required = plan_method_example(f.method, types, MethodExampleOpts::neutral(false));
         blocks.push(render_method_test(
             &format!("test_method_{base}"),
             &format!("{call_chain}({})", render_call_args(&required)),
@@ -202,7 +202,7 @@ pub fn resource_test_py(resource: &Value, pkg: &str, types: &TypeMap) -> String 
         ));
 
         if required.has_optional {
-            let all = plan_method_example(f.method, types, true);
+            let all = plan_method_example(f.method, types, MethodExampleOpts::neutral(true));
             blocks.push(render_method_test(
                 &format!("test_method_{base}_with_all_params"),
                 &format!("{call_chain}({})", render_call_args(&all)),

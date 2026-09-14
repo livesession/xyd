@@ -102,7 +102,7 @@ fn result_assertion(
 }
 
 /// Positional path args followed by `name: value` keyword args for one example.
-fn render_call_args(ex: &MethodExample) -> String {
+pub(crate) fn render_call_args(ex: &MethodExample) -> String {
     let mut parts: Vec<String> = ex
         .path_args
         .iter()

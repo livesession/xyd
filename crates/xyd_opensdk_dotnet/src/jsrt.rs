@@ -83,6 +83,17 @@ pub fn camel_case(input: &str) -> String {
     }
 }
 
+/// `screamingSnakeCase`: SCREAMING_SNAKE token (the credential env-var name).
+pub fn screaming_snake_case(input: &str) -> String {
+    let joined: String = split_words(input).join("_").to_uppercase();
+    safe_ident(
+        &joined
+            .chars()
+            .filter(|c| c.is_ascii_uppercase() || c.is_ascii_digit() || *c == '_')
+            .collect::<String>(),
+    )
+}
+
 /// `allocIdent`: `base`, then `baseValue`, `baseValue2`, … on collision.
 fn alloc_ident(base: &str, used: &mut HashSet<String>) -> String {
     let mut name = base.to_string();

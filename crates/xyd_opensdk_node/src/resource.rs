@@ -325,6 +325,15 @@ fn emit_method(
     )
 }
 
+/// The idiomatic `Promise<...>` return type for a DISPLAY-only signature (the
+/// docs type reference) — mirrors `return_plan`'s return type (Response /
+/// <Page><Item> / decoded model / void) minus the request call, with its import
+/// trackers discarded.
+pub(crate) fn node_return_display(op: &OperationPlan, method: &Method, ctx: &NodeCtx) -> String {
+    let mut uses = FileUses::default();
+    return_plan(op, method, "", &mut uses, ctx).0
+}
+
 /// The return type + the `return this._client.request(...)` statement.
 fn return_plan(
     op: &OperationPlan,
@@ -392,7 +401,11 @@ fn union_decode_for(ref_: Option<&TypeRef>, ctx: &NodeCtx) -> Option<String> {
     union_decode_name(named)
 }
 
-fn params_arg_name(has_body: bool, query_count: usize, header_count: usize) -> &'static str {
+pub(crate) fn params_arg_name(
+    has_body: bool,
+    query_count: usize,
+    header_count: usize,
+) -> &'static str {
     if has_body {
         if query_count + header_count > 0 {
             "params"

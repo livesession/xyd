@@ -1,10 +1,16 @@
-//! Port of the framework `example-plan.ts` (the test-suite path: `realistic` is
-//! never set by `generateTests`, so the spec-example/`default` branch — which the
-//! typed IR here does not carry — is intentionally omitted). Turns a `TypeRef`
-//! into a language-neutral `ExampleValue` tree; `example.rs` renders it to a
-//! TypeScript literal, so every emitter's suite exercises identical shapes.
+//! Port of the framework `example-plan.ts`. Turns a `TypeRef` into a
+//! language-neutral `ExampleValue` tree; `example.rs` renders it to a TypeScript
+//! literal, so every emitter's suite exercises identical shapes.
+//!
+//! Two callers with different needs share it: `generateTests` plans NEUTRAL
+//! required-only values (a test only needs the right shape), while the docs
+//! `generateUsage` snippet plans REALISTIC values for ALL fields — spec
+//! `example`/`default` literals and format-aware scalar samples. That is the
+//! [`ExampleOpts`] pair (`realistic` + `with_optional`).
 
 use std::collections::BTreeSet;
+
+use serde_json::Value;
 
 use crate::ir::{Field, Method, NamedType, Param, TypeRef};
 
@@ -14,9 +20,8 @@ pub enum ExampleValue {
     Integer(i64),
     Number(f64),
     Boolean(bool),
-    // Note: the `null` example (from a spec `default`/`example` literal) is only
-    // produced by the `realistic` planner path, which `generateTests` never
-    // enables — so it is intentionally not modeled in this test-suite fork.
+    /// A spec `default`/`example` literal that is JSON `null` (realistic only).
+    Null,
     Binary,
     Enum(serde_json::Value),
     Const(serde_json::Value),
@@ -49,14 +54,80 @@ pub struct MethodExample {
 
 const MAX_DEPTH: usize = 6;
 
+/// The caller-facing planner flags (the TS `{ withOptional, realistic }` bag).
+#[derive(Clone, Copy, Default)]
+pub struct ExampleOpts {
+    /// Include optional struct fields (the "with all params" example).
+    pub with_optional: bool,
+    /// Prefer the spec's own `example`/`default` and emit format-aware scalar
+    /// samples instead of the neutral `0`/`"x"`. Docs snippets only.
+    pub realistic: bool,
+}
+
 #[derive(Clone, Default)]
 struct PlanOpts {
     with_optional: bool,
     string_hint: Option<String>,
+    realistic: bool,
+}
+
+impl PlanOpts {
+    /// The per-level opts for a nested type: flags kept, the string hint dropped.
+    fn nested(&self) -> Self {
+        Self {
+            with_optional: self.with_optional,
+            string_hint: None,
+            realistic: self.realistic,
+        }
+    }
 }
 
 fn field_required(f: &Field) -> bool {
     f.required == Some(true)
+}
+
+/// Coerce a spec `example`/`default` JSON literal into a neutral `ExampleValue`
+/// — ONLY for scalar / scalar-array shapes. A struct/enum/union literal needs
+/// the TYPE to render correctly, so it yields `None` and the caller walks the
+/// type instead.
+fn literal_to_example(value: &Value) -> Option<ExampleValue> {
+    match value {
+        Value::String(s) => Some(ExampleValue::Str(s.clone())),
+        Value::Bool(b) => Some(ExampleValue::Boolean(*b)),
+        Value::Number(n) => {
+            // `Number.isInteger` is about the VALUE, not the JSON spelling:
+            // `1.0` is an integer to JS, so test `fract()` rather than `as_i64`.
+            let f = n.as_f64().unwrap_or(0.0);
+            Some(if f.fract() == 0.0 {
+                ExampleValue::Integer(f as i64)
+            } else {
+                ExampleValue::Number(f)
+            })
+        }
+        Value::Null => Some(ExampleValue::Null),
+        Value::Array(items) => {
+            let first = items.first()?;
+            literal_to_example(first).map(|item| ExampleValue::Array(Box::new(item)))
+        }
+        Value::Object(_) => None,
+    }
+}
+
+/// Under `realistic`, the spec's own example/default for a scalar/array-typed
+/// param or field (ref types render from the TYPE, so they are skipped).
+fn realistic_literal(ty: &TypeRef, candidates: &[&Option<Value>]) -> Option<ExampleValue> {
+    if ty.kind() != "scalar" && ty.kind() != "array" {
+        return None;
+    }
+    for candidate in candidates {
+        let Some(value) = candidate.as_ref() else {
+            continue;
+        };
+        if let Some(example) = literal_to_example(value) {
+            return Some(example);
+        }
+    }
+    None
 }
 
 /// Resolve a `TypeRef` to an example value, expanding named types via the symbol
@@ -78,18 +149,18 @@ fn plan_example(
         return ExampleValue::Const(c.clone());
     }
     match r.kind() {
-        "scalar" => scalar_example(r, opts.string_hint.as_deref()),
+        "scalar" => scalar_example(r, opts.string_hint.as_deref(), opts.realistic),
         "array" => ExampleValue::Array(Box::new(plan_example(
             r.items.as_deref(),
             types,
-            &drop_hint(opts),
+            &opts.nested(),
             seen,
             depth + 1,
         ))),
         "map" => ExampleValue::Map(Box::new(plan_example(
             r.values.as_deref(),
             types,
-            &drop_hint(opts),
+            &opts.nested(),
             seen,
             depth + 1,
         ))),
@@ -99,16 +170,21 @@ fn plan_example(
     }
 }
 
-fn scalar_example(r: &TypeRef, hint: Option<&str>) -> ExampleValue {
+fn scalar_example(r: &TypeRef, hint: Option<&str>, realistic: bool) -> ExampleValue {
     let fmt = r.format.as_deref().unwrap_or("").to_lowercase();
     if fmt == "binary" {
         return ExampleValue::Binary;
     }
     match r.scalar.as_deref() {
-        Some("integer") => ExampleValue::Integer(0),
-        Some("number") => ExampleValue::Number(0.0),
+        Some("integer") => ExampleValue::Integer(i64::from(realistic)),
+        Some("number") => ExampleValue::Number(if realistic { 1.0 } else { 0.0 }),
         Some("boolean") => ExampleValue::Boolean(true),
-        _ => ExampleValue::Str(hint.unwrap_or("x").to_string()),
+        _ => ExampleValue::Str(if realistic {
+            // Shared with the other six emitters so a `uuid` sample cannot drift.
+            xyd_opensdk_core::example::realistic_string(&fmt, hint)
+        } else {
+            hint.unwrap_or("x").to_string()
+        }),
     }
 }
 
@@ -137,14 +213,14 @@ fn ref_example(
                 .unwrap_or_else(|| serde_json::Value::String(String::new()));
             ExampleValue::Enum(val)
         }
-        "alias" => plan_example(named.of.as_ref(), types, &drop_hint(opts), seen, depth + 1),
+        "alias" => plan_example(named.of.as_ref(), types, &opts.nested(), seen, depth + 1),
         "union" => {
             let mut nested = seen.clone();
             nested.insert(name.to_string());
             ExampleValue::Union(Box::new(plan_example(
                 named.variants.first(),
                 types,
-                &drop_hint(opts),
+                &opts.nested(),
                 &nested,
                 depth + 1,
             )))
@@ -179,50 +255,43 @@ fn example_fields(
     // required first, then optional — stable so declaration order is preserved.
     wanted.sort_by_key(|f| usize::from(!field_required(f)));
 
-    let nested = PlanOpts {
-        with_optional: opts.with_optional,
-        string_hint: None,
-    };
+    let nested = opts.nested();
     wanted
         .into_iter()
         .map(|f| ExampleField {
             name: f.name.clone(),
             required: field_required(f),
-            value: plan_example(Some(&f.ty), types, &nested, seen, depth),
+            // A Field carries only `default` (no `example`); prefer it under
+            // `realistic`, else walk the type.
+            value: opts
+                .realistic
+                .then(|| realistic_literal(&f.ty, &[&f.default]))
+                .flatten()
+                .unwrap_or_else(|| plan_example(Some(&f.ty), types, &nested, seen, depth)),
         })
         .collect()
 }
 
-/// Drop the per-level `stringHint` before recursing (keep `withOptional`).
-fn drop_hint(opts: &PlanOpts) -> PlanOpts {
-    if opts.string_hint.is_none() {
-        opts.clone()
-    } else {
-        PlanOpts {
-            with_optional: opts.with_optional,
-            string_hint: None,
-        }
-    }
-}
-
-fn push_param(
-    p: &Param,
-    types: &[&NamedType],
-    with_optional: bool,
-    fields: &mut Vec<ExampleField>,
-) {
+fn push_param(p: &Param, types: &[&NamedType], opts: ExampleOpts, fields: &mut Vec<ExampleField>) {
     let required = p.required == Some(true);
-    if !required && !with_optional {
+    if !required && !opts.with_optional {
         return;
     }
-    let opts = PlanOpts {
-        with_optional,
+    let plan_opts = PlanOpts {
+        with_optional: opts.with_optional,
         string_hint: Some(p.name.clone()),
+        realistic: opts.realistic,
     };
     fields.push(ExampleField {
         name: p.name.clone(),
         required,
-        value: plan_example(Some(&p.ty), types, &opts, &BTreeSet::new(), 0),
+        // A Param carries both `example` and `default`; prefer them (example
+        // first) under `realistic`.
+        value: opts
+            .realistic
+            .then(|| realistic_literal(&p.ty, &[&p.example, &p.default]))
+            .flatten()
+            .unwrap_or_else(|| plan_example(Some(&p.ty), types, &plan_opts, &BTreeSet::new(), 0)),
     });
 }
 
@@ -248,29 +317,37 @@ fn body_has_optional(method: &Method, types: &[&NamedType]) -> bool {
 pub fn plan_method_example(
     method: &Method,
     types: &[&NamedType],
-    with_optional: bool,
+    opts: ExampleOpts,
 ) -> MethodExample {
     let path_args = method
         .path_params
         .iter()
         .map(|p| {
-            let opts = PlanOpts {
+            // NB: path args plan with `withOptional` unset (matches the TS call).
+            let plan_opts = PlanOpts {
                 with_optional: false,
                 string_hint: Some(p.name.clone()),
+                realistic: opts.realistic,
             };
             PathArg {
                 param_name: p.name.clone(),
-                value: plan_example(Some(&p.ty), types, &opts, &BTreeSet::new(), 0),
+                value: opts
+                    .realistic
+                    .then(|| realistic_literal(&p.ty, &[&p.example, &p.default]))
+                    .flatten()
+                    .unwrap_or_else(|| {
+                        plan_example(Some(&p.ty), types, &plan_opts, &BTreeSet::new(), 0)
+                    }),
             }
         })
         .collect();
 
     let mut fields: Vec<ExampleField> = Vec::new();
     for p in &method.query_params {
-        push_param(p, types, with_optional, &mut fields);
+        push_param(p, types, opts, &mut fields);
     }
     for p in &method.header_params {
-        push_param(p, types, with_optional, &mut fields);
+        push_param(p, types, opts, &mut fields);
     }
 
     // request body: flatten its struct fields into the params struct.
@@ -279,11 +356,14 @@ pub fn plan_method_example(
             if let Some(name) = body.ty.name.as_deref() {
                 if let Some(named) = types.iter().find(|t| t.name == name) {
                     if named.kind == "struct" {
-                        let opts = PlanOpts {
-                            with_optional,
+                        let plan_opts = PlanOpts {
+                            with_optional: opts.with_optional,
                             string_hint: None,
+                            realistic: opts.realistic,
                         };
-                        for f in example_fields(&named.fields, types, &opts, &BTreeSet::new(), 0) {
+                        for f in
+                            example_fields(&named.fields, types, &plan_opts, &BTreeSet::new(), 0)
+                        {
                             fields.push(f);
                         }
                     }

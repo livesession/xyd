@@ -13,7 +13,7 @@ use serde_json::Value;
 use crate::cstype::Types;
 use crate::cswriter::{indent, CSPROJ_HEADER, CS_HEADER};
 use crate::example_cs::render_ref_value;
-use crate::example_plan::{method_has_optional, plan_example, PlanOpts};
+use crate::example_plan::{method_has_optional, param_literal, plan_example, PlanOpts};
 use crate::jsrt::{method_name, pascal_case};
 use crate::plan::plan_operation;
 
@@ -139,7 +139,7 @@ fn first_string_path_param(method: &Value) -> Option<usize> {
 }
 
 /// Whether the method returns a value (drives `var result = await` vs bare `await`).
-fn method_has_result(method: &Value, types: Types) -> bool {
+pub fn method_has_result(method: &Value, types: Types) -> bool {
     let op = plan_operation(method, types);
     op.binary_content_type.is_some()
         || op.page_name.is_some()
@@ -153,11 +153,16 @@ fn method_has_result(method: &Value, types: Types) -> bool {
 /// The ordered call arguments (positional, signature order): path args, then the
 /// request body, then query ∪ header — required only, or required+optional when
 /// `with_optional`. `target_path` (a path-param index) renders as `""`.
-fn call_args(
+///
+/// `realistic` is the docs-usage switch: the spec's own `example`/`default`
+/// literals plus format-aware scalar samples. The generated test suite passes
+/// `false`, so its goldens are untouched.
+pub fn call_args(
     method: &Value,
     types: Types,
     with_optional: bool,
     target_path: Option<usize>,
+    realistic: bool,
 ) -> String {
     let mut required: Vec<String> = Vec::new();
     let mut optional: Vec<String> = Vec::new();
@@ -169,8 +174,10 @@ fn call_args(
             let opts = PlanOpts {
                 with_optional: false,
                 string_hint: Some(str_field(p, "name")),
+                realistic,
             };
-            let value = plan_example(p.get("type"), types, &opts, &HashSet::new(), 0);
+            let value = param_literal(p, realistic)
+                .unwrap_or_else(|| plan_example(p.get("type"), types, &opts, &HashSet::new(), 0));
             required.push(render_ref_value(p.get("type"), &value, types));
         }
     }
@@ -180,6 +187,7 @@ fn call_args(
         let opts = PlanOpts {
             with_optional,
             string_hint: None,
+            realistic,
         };
         let value = plan_example(Some(br), types, &opts, &HashSet::new(), 0);
         let expr = render_ref_value(Some(br), &value, types);
@@ -202,8 +210,10 @@ fn call_args(
         let opts = PlanOpts {
             with_optional,
             string_hint: Some(str_field(p, "name")),
+            realistic,
         };
-        let value = plan_example(p.get("type"), types, &opts, &HashSet::new(), 0);
+        let value = param_literal(p, realistic)
+            .unwrap_or_else(|| plan_example(p.get("type"), types, &opts, &HashSet::new(), 0));
         let expr = render_ref_value(p.get("type"), &value, types);
         if p.get("required").and_then(Value::as_bool).unwrap_or(false) {
             required.push(expr);
@@ -271,7 +281,7 @@ fn resource_test(resource: &Value, ctx: &DotnetTestsCtx, test_namespace: &str) -
             &format!("Method{base}"),
             &format!(
                 "{chain_expr}({})",
-                call_args(f.method, ctx.types, false, None)
+                call_args(f.method, ctx.types, false, None, false)
             ),
             has_result,
             ctx.sdk,
@@ -282,7 +292,7 @@ fn resource_test(resource: &Value, ctx: &DotnetTestsCtx, test_namespace: &str) -
                 &format!("Method{base}WithAllParams"),
                 &format!(
                     "{chain_expr}({})",
-                    call_args(f.method, ctx.types, true, None)
+                    call_args(f.method, ctx.types, true, None, false)
                 ),
                 has_result,
                 ctx.sdk,
@@ -294,7 +304,7 @@ fn resource_test(resource: &Value, ctx: &DotnetTestsCtx, test_namespace: &str) -
                 &format!("PathParams{base}"),
                 &format!(
                     "{chain_expr}({})",
-                    call_args(f.method, ctx.types, false, Some(target))
+                    call_args(f.method, ctx.types, false, Some(target), false)
                 ),
                 ctx.sdk,
             ));

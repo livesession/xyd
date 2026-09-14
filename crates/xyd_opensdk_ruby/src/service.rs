@@ -395,7 +395,7 @@ fn method_doc(method: &Value, op: &OperationPlan, body_fields: &[Value]) -> Stri
     rb_comment(&lines.join("\n"))
 }
 
-fn return_doc(method: &Value, op: &OperationPlan) -> String {
+pub(crate) fn return_doc(method: &Value, op: &OperationPlan) -> String {
     if op.binary_content_type.is_some() {
         return "String".to_string();
     }

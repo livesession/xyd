@@ -7,11 +7,15 @@
 //! runtime (`<pkg>/_transport.py`, and `<pkg>/_pagination.py` only when some
 //! method paginates), and the SDK's own pytest suite (`tests/utils.py`,
 //! `tests/conftest.py`, one `tests/test_<resource>.py` per top-level resource).
-//! The docs-only `generateUsage` / `generateTypeReference` capabilities are not
-//! part of the file map and remain out of scope.
+//!
+//! Plus the two DOCS capabilities, which are NOT part of the file map:
+//! [`generate_python_usage`] and [`generate_python_type_reference`] (see
+//! `docs.rs`), gated by `tests/docs.rs` against the per-operation `docs.json`
+//! oracle captured from the TypeScript emitter.
 
 mod behavior;
 mod cli;
+mod docs;
 mod example;
 mod example_plan;
 mod naming;
@@ -20,7 +24,10 @@ mod pytype;
 mod resources;
 mod runtime;
 mod tests;
+mod type_plan;
 mod val;
+
+pub use crate::docs::{generate_python_type_reference, generate_python_usage};
 
 use std::collections::BTreeMap;
 

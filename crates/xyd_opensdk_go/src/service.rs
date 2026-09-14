@@ -143,13 +143,13 @@ fn emit_service(
     }
 }
 
-struct ParamsPlan {
-    arg_name: String,
-    type_name: String,
+pub(crate) struct ParamsPlan {
+    pub(crate) arg_name: String,
+    pub(crate) type_name: String,
     has_body: bool,
 }
 
-fn plan_params(
+pub(crate) fn plan_params(
     segments: &[String],
     method_name: &str,
     has_body: bool,

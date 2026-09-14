@@ -25,6 +25,7 @@ pub fn render_node_example(value: &ExampleValue) -> String {
         ExampleValue::Integer(i) => i.to_string(),
         ExampleValue::Number(n) => js_number(*n),
         ExampleValue::Boolean(b) => if *b { "true" } else { "false" }.to_string(),
+        ExampleValue::Null => "null".to_string(),
         ExampleValue::Binary => "new Uint8Array([1, 2, 3])".to_string(),
         ExampleValue::Enum(v) => ts_literal(v),
         ExampleValue::Const(v) => ts_literal(v),

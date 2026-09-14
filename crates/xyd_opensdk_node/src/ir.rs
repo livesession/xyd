@@ -126,6 +126,25 @@ pub struct Field {
     pub required: Option<bool>,
     #[serde(default)]
     pub description: Option<String>,
+    /// Passed through verbatim to a docs type-reference row (`undefined` stays absent).
+    #[serde(default)]
+    pub deprecated: Option<bool>,
+    /// The field's spec `default`, preferred by the REALISTIC example planner.
+    #[serde(default, deserialize_with = "de_present")]
+    pub default: Option<serde_json::Value>,
+}
+
+/// Deserialize an optional JSON value keeping `null` DISTINCT from absent.
+///
+/// serde's stock `Option<Value>` maps a present `null` to `None`, but the TS
+/// planner treats them differently: an absent `default` falls through to the
+/// type walk, while `"default": null` coerces to the `null` example literal.
+/// Paired with `#[serde(default)]`, an absent key still yields `None`.
+fn de_present<'de, D>(d: D) -> Result<Option<serde_json::Value>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    serde_json::Value::deserialize(d).map(Some)
 }
 
 #[derive(Debug, Deserialize)]
@@ -184,6 +203,16 @@ pub struct Param {
     pub wire_name: Option<String>,
     #[serde(default)]
     pub explode: Option<bool>,
+    #[serde(default)]
+    pub description: Option<String>,
+    #[serde(default)]
+    pub deprecated: Option<bool>,
+    /// The param's spec `default` / `example`, preferred (example first) by the
+    /// REALISTIC example planner. See [`de_present`] for the `null` handling.
+    #[serde(default, deserialize_with = "de_present")]
+    pub default: Option<serde_json::Value>,
+    #[serde(default, deserialize_with = "de_present")]
+    pub example: Option<serde_json::Value>,
 }
 
 impl Param {

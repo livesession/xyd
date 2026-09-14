@@ -199,7 +199,12 @@ fn render_method_tests(segments: &[String], method: &Value, ctx: &JavaCtx) -> Ve
 }
 
 /// A method-call expression `client.pets().list(<args>)`.
-fn call_expr(chain: &str, method_name: &str, path_args: &[String], params: Option<&str>) -> String {
+pub(crate) fn call_expr(
+    chain: &str,
+    method_name: &str,
+    path_args: &[String],
+    params: Option<&str>,
+) -> String {
     let mut args: Vec<String> = path_args.to_vec();
     if let Some(p) = params {
         args.push(p.to_string());
@@ -208,7 +213,7 @@ fn call_expr(chain: &str, method_name: &str, path_args: &[String], params: Optio
 }
 
 /// The `<Params>.builder().<setter>(...)....build()` expression.
-fn render_params_builder(
+pub(crate) fn render_params_builder(
     segments: &[String],
     pascal_method: &str,
     example: &MethodExample,
@@ -256,7 +261,7 @@ fn render_guard_test(name: &str, method_name: &str, call: &str) -> String {
 }
 
 /// The `client.<accessor>()...` receiver chain — the generated client accessors.
-fn client_chain(segments: &[String]) -> String {
+pub(crate) fn client_chain(segments: &[String]) -> String {
     format!(
         "client.{}",
         segments
@@ -268,7 +273,7 @@ fn client_chain(segments: &[String]) -> String {
 }
 
 /// Whether the method carries a params class (mirrors service.ts planParams).
-fn method_has_params(method: &Value, types: &Types) -> bool {
+pub(crate) fn method_has_params(method: &Value, types: &Types) -> bool {
     !request_body_fields(method, types).is_empty()
         || !arr(method, "queryParams").is_empty()
         || !arr(method, "headerParams").is_empty()
@@ -291,7 +296,7 @@ fn request_body_fields<'a>(method: &'a Value, types: &'a Types) -> Vec<&'a Value
 }
 
 /// The const-valued body field names (auto-filled, never a builder input).
-fn const_body_field_names(method: &Value, types: &Types) -> Vec<String> {
+pub(crate) fn const_body_field_names(method: &Value, types: &Types) -> Vec<String> {
     request_body_fields(method, types)
         .into_iter()
         .filter(|f| is_const_field(f))

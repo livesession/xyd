@@ -15,6 +15,7 @@ pub fn render_py_example(value: &ExampleValue) -> String {
         ExampleValue::Integer(n) => n.to_string(),
         ExampleValue::Number(f) => js_number(*f),
         ExampleValue::Boolean(b) => bool_lit(*b),
+        ExampleValue::Null => "None".to_string(),
         ExampleValue::Binary => "b\"Example data\"".to_string(),
         ExampleValue::Enum(v) | ExampleValue::Const(v) => py_literal(v),
         ExampleValue::Array(item) => format!("[{}]", render_py_example(item)),

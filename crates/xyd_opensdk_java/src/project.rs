@@ -24,6 +24,10 @@ pub struct JavaCtx {
     pub auth_name: Option<String>,
     /// The SDK identifier baked into the User-Agent, e.g. "petstore-java/1.2.0".
     pub user_agent: String,
+    /// When set, a generated USAGE snippet reads the client base URL from this
+    /// env var instead of the default (the snippet-run tier). Unset → default
+    /// output, byte-identical to the pre-option snippet.
+    pub base_url_env: Option<String>,
 }
 
 /// `emitterOptions` over the spec-derived defaults (mirrors `project.ts`'s
@@ -100,6 +104,7 @@ pub fn resolve_java_options(spec: &Value, types: Types, options: &Value) -> Java
         auth_kind,
         auth_name,
         user_agent,
+        base_url_env: opt_str(options, "baseUrlEnv").map(str::to_string),
     }
 }
 

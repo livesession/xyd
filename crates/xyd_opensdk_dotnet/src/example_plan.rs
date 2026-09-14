@@ -1,24 +1,29 @@
-//! Port of the framework `example-plan.ts` (the neutral, non-`realistic` path the
-//! generated TEST suite exercises): turns a TypeRef into a language-neutral
-//! `ExampleValue` tree so every language's test suite exercises identical shapes.
-//! `example_cs.rs` renders the tree into TYPED C# literals. The `realistic`
-//! branch (spec example/default + format-aware samples) is docs-usage-only and is
-//! not ported here — the generated tests always plan with `realistic: false`.
+//! Port of the framework `example-plan.ts`: turns a TypeRef into a
+//! language-neutral `ExampleValue` tree so every language's test suite exercises
+//! identical shapes. `example_cs.rs` renders the tree into TYPED C# literals.
+//!
+//! Two planning modes share this code:
+//!   * the generated TEST suite plans NEUTRAL, required-only values (`0`, `"x"`)
+//!     — a test only needs the right shape;
+//!   * the docs USAGE snippet plans `realistic` + `with_optional` values — the
+//!     spec's own `example`/`default` literals and format-aware samples
+//!     (`2024-01-01T00:00:00Z`), across ALL fields, because a human reads it.
 
 use std::collections::HashSet;
 
 use serde_json::Value;
+use xyd_opensdk_core::example::realistic_string;
 
 use crate::cstype::Types;
 
 /// A language-neutral example value; `example_cs.rs` renders it to C# syntax.
-/// (The `null` value the JS planner emits only under `realistic` is omitted —
-/// the generated tests plan with `realistic: false`, so it never arises.)
 pub enum ExampleValue {
     Str(String),
     Integer(i64),
     Number(f64),
     Boolean(bool),
+    /// Only reachable under `realistic`, from a spec `example`/`default` of `null`.
+    Null,
     Binary,
     Enum(Value),
     Const(Value),
@@ -40,6 +45,9 @@ pub struct ExampleField {
 pub struct PlanOpts {
     pub with_optional: bool,
     pub string_hint: Option<String>,
+    /// Prefer the spec's own `example`/`default` and emit format-aware scalar
+    /// samples instead of the neutral `0`/`"x"`. Docs-usage only.
+    pub realistic: bool,
 }
 
 const MAX_DEPTH: usize = 6;
@@ -52,12 +60,73 @@ fn str_field(v: &Value, key: &str) -> String {
     v.get(key).and_then(Value::as_str).unwrap_or("").to_string()
 }
 
-/// Drop the per-level stringHint before recursing (keep withOptional).
+/// Drop the per-level stringHint before recursing (keep withOptional + realistic).
 fn drop_hint(opts: &PlanOpts) -> PlanOpts {
     PlanOpts {
         with_optional: opts.with_optional,
         string_hint: None,
+        realistic: opts.realistic,
     }
+}
+
+/// `literalToExample`: coerce a spec `example`/`default` JSON literal into a
+/// neutral value — scalar/scalar-array shapes only (a struct/enum/union literal
+/// needs the TYPE to render, so it falls through to the type walk).
+fn literal_to_example(value: &Value) -> Option<ExampleValue> {
+    match value {
+        Value::String(s) => Some(ExampleValue::Str(s.clone())),
+        Value::Bool(b) => Some(ExampleValue::Boolean(*b)),
+        Value::Number(n) => Some(number_example(n)),
+        Value::Null => Some(ExampleValue::Null),
+        Value::Array(items) => {
+            let first = items.first()?;
+            literal_to_example(first).map(|item| ExampleValue::Array(Box::new(item)))
+        }
+        Value::Object(_) => None,
+    }
+}
+
+/// JS `Number.isInteger(v) ? integer : number` over a JSON number.
+fn number_example(n: &serde_json::Number) -> ExampleValue {
+    if let Some(i) = n.as_i64() {
+        return ExampleValue::Integer(i);
+    }
+    let f = n.as_f64().unwrap_or(0.0);
+    // A whole-valued float (`1.0` in the spec) is an integer to JS.
+    if f.fract() == 0.0 && f.abs() < 9.0e18 {
+        ExampleValue::Integer(f as i64)
+    } else {
+        ExampleValue::Number(f)
+    }
+}
+
+/// `realisticLiteral`: under `realistic`, the spec's own example/default for a
+/// scalar/array-typed param or field (ref types render from the type instead).
+/// `candidates` are tried in order; an ABSENT key (`None`) is skipped, a JSON
+/// `null` is a real value — matching JS's `undefined` vs `null`.
+pub fn realistic_literal(
+    type_: Option<&Value>,
+    candidates: &[Option<&Value>],
+) -> Option<ExampleValue> {
+    let t = type_?;
+    let kind = t.get("kind").and_then(Value::as_str);
+    if kind != Some("scalar") && kind != Some("array") {
+        return None;
+    }
+    for candidate in candidates.iter().flatten() {
+        if let Some(example) = literal_to_example(candidate) {
+            return Some(example);
+        }
+    }
+    None
+}
+
+/// The realistic value for a param: its `example`, then its `default`.
+pub fn param_literal(p: &Value, realistic: bool) -> Option<ExampleValue> {
+    if !realistic {
+        return None;
+    }
+    realistic_literal(p.get("type"), &[p.get("example"), p.get("default")])
 }
 
 /// Resolve a TypeRef to an example value, expanding named types via the symbol
@@ -79,7 +148,7 @@ pub fn plan_example(
         return ExampleValue::Const(c.clone());
     }
     match r.get("kind").and_then(Value::as_str) {
-        Some("scalar") => scalar_example(r, opts.string_hint.as_deref()),
+        Some("scalar") => scalar_example(r, opts.string_hint.as_deref(), opts.realistic),
         Some("array") => ExampleValue::Array(Box::new(plan_example(
             r.get("items"),
             types,
@@ -100,7 +169,7 @@ pub fn plan_example(
     }
 }
 
-fn scalar_example(r: &Value, hint: Option<&str>) -> ExampleValue {
+fn scalar_example(r: &Value, hint: Option<&str>, realistic: bool) -> ExampleValue {
     let fmt = r
         .get("format")
         .and_then(Value::as_str)
@@ -110,9 +179,10 @@ fn scalar_example(r: &Value, hint: Option<&str>) -> ExampleValue {
         return ExampleValue::Binary;
     }
     match r.get("scalar").and_then(Value::as_str) {
-        Some("integer") => ExampleValue::Integer(0),
-        Some("number") => ExampleValue::Number(0.0),
+        Some("integer") => ExampleValue::Integer(i64::from(realistic)),
+        Some("number") => ExampleValue::Number(if realistic { 1.0 } else { 0.0 }),
         Some("boolean") => ExampleValue::Boolean(true),
+        _ if realistic => ExampleValue::Str(realistic_string(&fmt, hint)),
         _ => ExampleValue::Str(hint.unwrap_or("x").to_string()),
     }
 }
@@ -201,12 +271,20 @@ pub fn example_fields(
     let nested = PlanOpts {
         with_optional: opts.with_optional,
         string_hint: None,
+        realistic: opts.realistic,
     };
     wanted
         .into_iter()
         .map(|f| ExampleField {
             name: str_field(f, "name"),
-            value: plan_example(f.get("type"), types, &nested, seen, depth),
+            // A Field carries only `default` (no `example`); prefer it under
+            // `realistic`, else walk the type.
+            value: (if opts.realistic {
+                realistic_literal(f.get("type"), &[f.get("default")])
+            } else {
+                None
+            })
+            .unwrap_or_else(|| plan_example(f.get("type"), types, &nested, seen, depth)),
         })
         .collect()
 }

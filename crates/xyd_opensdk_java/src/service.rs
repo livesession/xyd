@@ -380,7 +380,7 @@ fn header_line(h: &Value) -> String {
     }
 }
 
-fn return_plan(method: &Value, plan: &OperationPlan, ctx: &JavaCtx) -> (String, String) {
+pub(crate) fn return_plan(method: &Value, plan: &OperationPlan, ctx: &JavaCtx) -> (String, String) {
     if plan.binary_content_type.is_some() {
         return (
             "byte[]".to_string(),

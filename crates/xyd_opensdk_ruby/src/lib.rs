@@ -11,6 +11,7 @@
 
 mod cli;
 mod client;
+mod docs;
 mod example;
 mod example_plan;
 mod model;
@@ -21,6 +22,7 @@ mod rbtype;
 mod runtime;
 mod service;
 mod tests_gen;
+mod type_plan;
 mod writer;
 
 use serde_json::Value;
@@ -28,7 +30,9 @@ use std::collections::{BTreeMap, HashMap};
 
 use naming::{pascal_case, ruby_gem_name, screaming_snake_case, snake_case};
 
-struct Resolved {
+pub use docs::{generate_ruby_type_reference, generate_ruby_usage};
+
+pub(crate) struct Resolved {
     pkg: String,
     module_name: String,
     base_url: String,
@@ -42,7 +46,7 @@ struct Resolved {
 ///
 /// `envVar` is deliberately NOT an option: like the JS emitter it derives from
 /// the RESOLVED `pkg`, so a `packageName` override moves the env var with it.
-fn resolve_options(spec: &Value, options: &Value) -> Resolved {
+pub(crate) fn resolve_options(spec: &Value, options: &Value) -> Resolved {
     use xyd_opensdk_core::emitter::opt_str;
 
     let title = spec

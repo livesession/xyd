@@ -14,6 +14,7 @@ mod cli;
 mod client;
 mod cstype;
 mod cswriter;
+mod docs;
 mod example_cs;
 mod example_plan;
 mod jsrt;
@@ -22,6 +23,9 @@ mod plan;
 mod runtime;
 mod service;
 mod tests_gen;
+mod type_plan;
+
+pub use docs::{generate_dotnet_type_reference, generate_dotnet_usage};
 
 use std::collections::BTreeMap;
 
@@ -100,6 +104,19 @@ pub(crate) fn resolve_options(spec: &Value, options: &Value) -> ResolvedOptions 
             .to_string(),
         env_var,
     }
+}
+
+/// The IR symbol table: name → NamedType. Order-independent lookups; emission
+/// that must preserve declaration order iterates `spec.types` instead.
+pub(crate) fn symbol_table(spec: &Value) -> BTreeMap<String, Value> {
+    let mut table: BTreeMap<String, Value> = BTreeMap::new();
+    let types = spec.get("types").and_then(Value::as_array);
+    for t in types.map(Vec::as_slice).unwrap_or(&[]) {
+        if let Some(name) = t.get("name").and_then(Value::as_str) {
+            table.insert(name.to_string(), t.clone());
+        }
+    }
+    table
 }
 
 /// Resolve the idempotency policy `service.ts` reads (defaults: autoGenerateForPost=true, maxRetries=2).
@@ -222,12 +239,7 @@ pub fn generate_dotnet_with(spec: &Value, options: &Value) -> BTreeMap<String, S
         .and_then(Value::as_array)
         .cloned()
         .unwrap_or_default();
-    let mut table: BTreeMap<String, Value> = BTreeMap::new();
-    for t in &types_arr {
-        if let Some(name) = t.get("name").and_then(Value::as_str) {
-            table.insert(name.to_string(), t.clone());
-        }
-    }
+    let table = symbol_table(spec);
 
     let mut files: BTreeMap<String, String> = BTreeMap::new();
 

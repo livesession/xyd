@@ -78,6 +78,24 @@ pub(crate) fn plan_operation(method: &Value) -> Plan<'_> {
     }
 }
 
+/// The Python "Returns" display type — `returnPlan`'s annotation (bytes /
+/// `<Page>[<Item>]` / decoded model / `None`), minus the method body.
+///
+/// Mirrors `pyReturnDisplay` + `typeRefCtx` in `project.ts`: the docs path needs
+/// only the annotation, so the import/use tracking a real render accumulates is
+/// thrown away with the scratch context.
+pub(crate) fn return_annotation(plan: &Plan) -> String {
+    let mut ctx = ResCtx {
+        uses: PyUses::new(),
+        transport_decode: false,
+        transport_join_csv: false,
+        page_cursor: false,
+        page_page: false,
+        idempotency_auto: true,
+    };
+    return_plan(plan, "", &mut ctx).0
+}
+
 /// The Python page container: OffsetPage has no vendored container yet.
 pub(crate) fn py_page_name(plan: &Plan) -> Option<&'static str> {
     match plan.page_name {

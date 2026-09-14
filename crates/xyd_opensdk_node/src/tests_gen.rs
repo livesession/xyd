@@ -8,7 +8,7 @@
 use serde_json::json;
 
 use crate::example::render_node_example;
-use crate::example_plan::{plan_method_example, MethodExample};
+use crate::example_plan::{plan_method_example, ExampleOpts, MethodExample};
 use crate::ir::{Method, Resource};
 use crate::jsrt::{camel_case, json_string, node_method_name, slug};
 use crate::plan::{plan_operation, OperationPlan, PrimaryResponseKind};
@@ -89,7 +89,7 @@ fn first_string_path_param(method: &Method) -> Option<&str> {
 }
 
 /// Whether the method has a response worth asserting (binary, page, or a primary type).
-fn has_response(op: &OperationPlan) -> bool {
+pub(crate) fn has_response(op: &OperationPlan) -> bool {
     op.binary_content_type.is_some()
         || op.page_name.is_some()
         || op.primary_response != PrimaryResponseKind::None
@@ -97,7 +97,7 @@ fn has_response(op: &OperationPlan) -> bool {
 
 /// The params object literal for an example's fields, or `{}` when a required
 /// arg has no fields, or None when the arg is optional and empty.
-fn params_object(ex: &MethodExample, required_arg: bool) -> Option<String> {
+pub(crate) fn params_object(ex: &MethodExample, required_arg: bool) -> Option<String> {
     if !ex.fields.is_empty() {
         let entries: Vec<String> = ex
             .fields
@@ -119,7 +119,7 @@ fn params_object(ex: &MethodExample, required_arg: bool) -> Option<String> {
 }
 
 /// Positional path args followed by a single params object literal for one example.
-fn render_call_args(ex: &MethodExample, required_arg: bool) -> String {
+pub(crate) fn render_call_args(ex: &MethodExample, required_arg: bool) -> String {
     let mut parts: Vec<String> = ex
         .path_args
         .iter()
@@ -218,7 +218,7 @@ pub fn render_resource_test_file(resource: &Resource, ctx: &NodeCtx) -> String {
             &method.header_params,
         );
 
-        let required = plan_method_example(method, &ctx.types, false);
+        let required = plan_method_example(method, &ctx.types, ExampleOpts::default());
         blocks.push(render_method_test(
             &format!("{label} (method)"),
             &format!(
@@ -229,7 +229,14 @@ pub fn render_resource_test_file(resource: &Resource, ctx: &NodeCtx) -> String {
         ));
 
         if required.has_optional {
-            let all = plan_method_example(method, &ctx.types, true);
+            let all = plan_method_example(
+                method,
+                &ctx.types,
+                ExampleOpts {
+                    with_optional: true,
+                    realistic: false,
+                },
+            );
             blocks.push(render_method_test(
                 &format!("{label} (method, all params)"),
                 &format!("{call_chain}({})", render_call_args(&all, required_arg)),

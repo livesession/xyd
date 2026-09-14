@@ -19,6 +19,7 @@ mod behavior;
 mod busybox;
 mod cli;
 mod client;
+mod docs;
 mod example;
 mod example_plan;
 mod ir;
@@ -29,9 +30,12 @@ mod project;
 mod resource;
 mod runtime;
 mod tests_gen;
+mod type_plan;
 
 use ir::{Resource, Spec};
 use resource::NodeCtx;
+
+pub use docs::{generate_node_type_reference, generate_node_usage};
 
 /// Generate the buildable Node SDK's generated-code files from an OpenSDK IR
 /// document. Returns a virtual file map `{ relativePath: contents }` (the

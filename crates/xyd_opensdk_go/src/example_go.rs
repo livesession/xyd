@@ -6,20 +6,31 @@
 //! (`example_plan.rs`) so the Go/Python/Ruby suites exercise identical shapes;
 //! THIS file only decides how Go spells them, mirroring the SAME param-struct
 //! field types the service emitter declares (`param.Opt` for optional scalars,
-//! plain for the rest) so the whole spec compiles. Docs usage/type-reference
-//! outputs are not ported (they aren't part of the generated file tree).
+//! plain for the rest) so the whole spec compiles.
+//!
+//! It also owns the two DOCS capabilities, which reuse that same call assembly:
+//! `generate_go_usage` (a self-contained runnable snippet: client init + ONE
+//! call, planned `realistic` + `with_optional`) and `generate_go_type_reference`
+//! (the method signature + request/response field rows Atlas renders).
 
 use std::collections::{HashMap, HashSet};
 
 use serde_json::{Map, Value};
 
-use crate::example_plan::{plan_example, plan_method_example, ExampleValue, PlanOpts};
+use xyd_opensdk_core::emitter::{
+    RenderedTypeField, RenderedTypeGroup, RenderedTypeReference, RenderedTypeResponse,
+};
+
+use crate::example_plan::{
+    plan_example, plan_method_example, realistic_literal, ExampleValue, PlanOpts,
+};
 use crate::gotype::{go_type, is_binary_ref, is_scalar_ref};
 use crate::gowriter::{go_file, Imports};
 use crate::model::{go_const_literal, go_enum_const_name, is_const_field};
-use crate::naming::{go_method_name, json_string, pascal_case, slug};
-use crate::plan::{plan_operation, OperationPlan};
-use crate::service::{query_kind, resource_qualifier, QueryKind};
+use crate::naming::{go_method_name, go_var, json_string, pascal_case, slug};
+use crate::plan::{plan_operation, OperationPlan, PrimaryResponse};
+use crate::service::{plan_params, query_kind, resource_qualifier, QueryKind};
+use crate::type_plan::{plan_type_reference, ref_schema_name, FieldLocation, NeutralTypeField};
 
 /// The vendored test helper — faithful to openai-go internal/testutil, stdlib
 /// -only (header prepended by the caller's `with_header`).
@@ -87,7 +98,7 @@ fn render_go_example(ctx: &mut GoExampleCtx, value: &ExampleValue) -> String {
         }
         ExampleValue::Object { .. } => render_object_example(ctx, value),
         ExampleValue::Union { variant, .. } => render_go_example(ctx, variant),
-        ExampleValue::Any => "nil".to_string(),
+        ExampleValue::Null | ExampleValue::Any => "nil".to_string(),
     }
 }
 
@@ -195,7 +206,7 @@ fn render_ref_value(ctx: &mut GoExampleCtx, ref_: Option<&Value>, value: &Exampl
     let Some(r) = ref_ else {
         return render_go_example(ctx, value);
     };
-    if matches!(value, ExampleValue::Any) {
+    if matches!(value, ExampleValue::Any | ExampleValue::Null) {
         return zero_value_for_ref(ctx, Some(r));
     }
     match r.get("kind").and_then(Value::as_str) {
@@ -326,22 +337,29 @@ fn body_field_expr(
     encoding: &str,
     with_optional: bool,
     ctx: &mut GoExampleCtx,
+    realistic: bool,
 ) -> String {
     if encoding == "multipart" && is_binary_ref(f.get("type")) {
         ctx.imports.add("io", None);
         ctx.imports.add("bytes", None);
         return "io.Reader(bytes.NewBuffer([]byte(\"Example data\")))".to_string();
     }
-    let value = plan_example(
-        f.get("type"),
-        ctx.types,
-        &PlanOpts {
-            with_optional,
-            string_hint: None,
-        },
-        &HashSet::new(),
-        0,
-    );
+    let value = realistic
+        .then(|| realistic_literal(f.get("type"), &[f.get("default")]))
+        .flatten()
+        .unwrap_or_else(|| {
+            plan_example(
+                f.get("type"),
+                ctx.types,
+                &PlanOpts {
+                    with_optional,
+                    string_hint: None,
+                    realistic,
+                },
+                &HashSet::new(),
+                0,
+            )
+        });
     if is_const_field(f) {
         return render_ref_value(ctx, f.get("type"), &value);
     }
@@ -356,18 +374,29 @@ fn body_field_expr(
 }
 
 /// One query-param field literal, matching queryFieldLine's Go field type.
-fn query_field_expr(q: &Value, with_optional: bool, ctx: &mut GoExampleCtx) -> String {
+fn query_field_expr(
+    q: &Value,
+    with_optional: bool,
+    ctx: &mut GoExampleCtx,
+    realistic: bool,
+) -> String {
     let kind = query_kind(q.get("type"), ctx.types);
-    let value = plan_example(
-        q.get("type"),
-        ctx.types,
-        &PlanOpts {
-            with_optional,
-            string_hint: Some(s(q, "name").to_string()),
-        },
-        &HashSet::new(),
-        0,
-    );
+    let value = realistic
+        .then(|| realistic_literal(q.get("type"), &[q.get("example"), q.get("default")]))
+        .flatten()
+        .unwrap_or_else(|| {
+            plan_example(
+                q.get("type"),
+                ctx.types,
+                &PlanOpts {
+                    with_optional,
+                    string_hint: Some(s(q, "name").to_string()),
+                    realistic,
+                },
+                &HashSet::new(),
+                0,
+            )
+        });
     match kind {
         QueryKind::Array | QueryKind::Map => render_ref_value(ctx, q.get("type"), &value),
         QueryKind::Object => {
@@ -401,17 +430,28 @@ fn query_field_expr(q: &Value, with_optional: bool, ctx: &mut GoExampleCtx) -> S
 }
 
 /// One header-param field literal, matching headerFieldLine's Go field type.
-fn header_field_expr(h: &Value, with_optional: bool, ctx: &mut GoExampleCtx) -> String {
-    let value = plan_example(
-        h.get("type"),
-        ctx.types,
-        &PlanOpts {
-            with_optional,
-            string_hint: Some(s(h, "name").to_string()),
-        },
-        &HashSet::new(),
-        0,
-    );
+fn header_field_expr(
+    h: &Value,
+    with_optional: bool,
+    ctx: &mut GoExampleCtx,
+    realistic: bool,
+) -> String {
+    let value = realistic
+        .then(|| realistic_literal(h.get("type"), &[h.get("example"), h.get("default")]))
+        .flatten()
+        .unwrap_or_else(|| {
+            plan_example(
+                h.get("type"),
+                ctx.types,
+                &PlanOpts {
+                    with_optional,
+                    string_hint: Some(s(h, "name").to_string()),
+                    realistic,
+                },
+                &HashSet::new(),
+                0,
+            )
+        });
     if is_required(h) {
         return render_ref_value(ctx, h.get("type"), &value);
     }
@@ -429,6 +469,7 @@ fn param_field_literals(
     op: &OperationPlan,
     with_optional: bool,
     ctx: &mut GoExampleCtx,
+    realistic: bool,
 ) -> Vec<String> {
     let encoding = op.encoding.clone().unwrap_or_else(|| "json".to_string());
     let mut lits = Vec::new();
@@ -437,7 +478,7 @@ fn param_field_literals(
             if !is_required(&f) && !with_optional {
                 continue;
             }
-            let expr = body_field_expr(&f, &encoding, with_optional, ctx);
+            let expr = body_field_expr(&f, &encoding, with_optional, ctx, realistic);
             lits.push(format!("{}: {}", pascal_case(s(&f, "name")), expr));
         }
     }
@@ -445,14 +486,14 @@ fn param_field_literals(
         if !is_required(q) && !with_optional {
             continue;
         }
-        let expr = query_field_expr(q, with_optional, ctx);
+        let expr = query_field_expr(q, with_optional, ctx, realistic);
         lits.push(format!("{}: {}", pascal_case(s(q, "name")), expr));
     }
     for h in arr(method, "headerParams") {
         if !is_required(h) && !with_optional {
             continue;
         }
-        let expr = header_field_expr(h, with_optional, ctx);
+        let expr = header_field_expr(h, with_optional, ctx, realistic);
         lits.push(format!("{}: {}", pascal_case(s(h, "name")), expr));
     }
     lits
@@ -464,6 +505,7 @@ struct ParamsExpr {
 }
 
 /// The params-struct call argument, or None when the method takes none.
+#[allow(clippy::too_many_arguments)]
 fn params_struct_expr(
     segments: &[String],
     method: &Value,
@@ -471,6 +513,7 @@ fn params_struct_expr(
     with_optional: bool,
     method_name: &str,
     ctx: &mut GoExampleCtx,
+    realistic: bool,
 ) -> Option<ParamsExpr> {
     if !has_params_struct(method, op) {
         return None;
@@ -480,7 +523,7 @@ fn params_struct_expr(
         ctx.pkg,
         resource_qualifier(segments)
     );
-    let field_lits = param_field_literals(method, op, with_optional, ctx);
+    let field_lits = param_field_literals(method, op, with_optional, ctx, realistic);
     if field_lits.is_empty() {
         return Some(ParamsExpr {
             text: format!("{type_q}{{}}"),
@@ -702,6 +745,7 @@ fn render_path_guard_test(
                 &PlanOpts {
                     with_optional: false,
                     string_hint: Some(s(p, "name").to_string()),
+                    realistic: false,
                 },
                 &HashSet::new(),
                 0,
@@ -709,7 +753,7 @@ fn render_path_guard_test(
             path_args.push(render_ref_value(ctx, p.get("type"), &value));
         }
     }
-    let params = params_struct_expr(segments, method, op, false, method_name, ctx);
+    let params = params_struct_expr(segments, method, op, false, method_name, ctx, false);
     let (args, multiline) = call_args(&path_args, &params);
     let call = call_statement(bind, &client_chain(segments), method_name, &args, multiline);
     [
@@ -733,7 +777,7 @@ fn render_path_guard_test(
 /// All test funcs for one method: the main test + an optional path-param guard.
 fn render_method_tests(segments: &[String], method: &Value, ctx: &mut GoExampleCtx) -> Vec<String> {
     let op = plan_operation(method, ctx.types);
-    let plan = plan_method_example(method, ctx.types);
+    let plan = plan_method_example(method, ctx.types, false);
     let with_optional = plan.has_optional;
     let qualifier = resource_qualifier(segments);
     let method_name = go_method_name(s(method, "action"));
@@ -751,7 +795,15 @@ fn render_method_tests(segments: &[String], method: &Value, ctx: &mut GoExampleC
     for pa in &plan.path_args {
         path_arg_exprs.push(render_ref_value(ctx, pa.param.get("type"), &pa.value));
     }
-    let params = params_struct_expr(segments, method, &op, with_optional, &method_name, ctx);
+    let params = params_struct_expr(
+        segments,
+        method,
+        &op,
+        with_optional,
+        &method_name,
+        ctx,
+        false,
+    );
 
     let mut out = Vec::new();
     if op.binary_content_type.is_some() {
@@ -808,6 +860,291 @@ fn emit_resource_tests(
         seg.push(s(sub, "name").to_string());
         emit_resource_tests(sub, &seg, ctx, decls);
     }
+}
+
+// ---- docs: type reference (Atlas SDK-types view) ----------------------------
+
+/// The params-struct Go field type — mirrors bodyFieldLine/queryFieldLine/
+/// headerFieldLine (service.rs), minus the Imports tracking (display string).
+fn go_field_type_display(
+    f: &NeutralTypeField,
+    encoding: Option<&str>,
+    types: &Map<String, Value>,
+) -> String {
+    let type_ref = f.type_ref.as_ref();
+    let base = go_type(type_ref);
+    match f.in_ {
+        FieldLocation::Query => match query_kind(type_ref, types) {
+            QueryKind::Array | QueryKind::Map => base,
+            QueryKind::Object => {
+                if f.required || base == "any" {
+                    base
+                } else {
+                    format!("*{base}")
+                }
+            }
+            QueryKind::Scalar => {
+                if f.required {
+                    base
+                } else {
+                    format!("param.Opt[{base}]")
+                }
+            }
+        },
+        FieldLocation::Header => {
+            if f.required {
+                base
+            } else {
+                format!("param.Opt[{base}]")
+            }
+        }
+        FieldLocation::Body => {
+            if encoding == Some("multipart") && is_binary_ref(type_ref) {
+                return "io.Reader".to_string();
+            }
+            if type_ref.and_then(|r| r.get("const")).is_some() {
+                return base;
+            }
+            if !f.required && is_scalar_ref(type_ref) {
+                return format!("param.Opt[{base}]");
+            }
+            base
+        }
+    }
+}
+
+/// One rendered field row (the shape Atlas shows) for a neutral field.
+fn go_render_field(
+    f: &NeutralTypeField,
+    encoding: Option<&str>,
+    types: &Map<String, Value>,
+) -> RenderedTypeField {
+    RenderedTypeField {
+        name: pascal_case(&f.logical_name),
+        lang_type: go_field_type_display(f, encoding, types),
+        required: f.required,
+        description: f.description.clone(),
+        deprecated: f.deprecated,
+        ref_type_name: ref_schema_name(f.type_ref.as_ref()),
+    }
+}
+
+/// A response struct field row: the DECLARED Go type, no params wrapping.
+fn go_render_response_field(f: &NeutralTypeField) -> RenderedTypeField {
+    RenderedTypeField {
+        name: pascal_case(&f.logical_name),
+        lang_type: go_type(f.type_ref.as_ref()),
+        required: f.required,
+        description: f.description.clone(),
+        deprecated: f.deprecated,
+        ref_type_name: ref_schema_name(f.type_ref.as_ref()),
+    }
+}
+
+/// The parenthesized Go return, name-stripped for a display signature
+/// (`(*Response, error)`) — mirrors returnSignature (service.rs).
+fn go_return_display(method: &Value, op: &OperationPlan) -> String {
+    if op.binary_content_type.is_some() {
+        return "(*http.Response, error)".to_string();
+    }
+    if let Some(page) = op.page_name {
+        let item = go_type(method.get("pagination").and_then(|p| p.get("itemType")));
+        return format!("(*pagination.{}[{item}], error)", page.as_str());
+    }
+    let Some(ref_) = method.get("primaryResponse") else {
+        return "error".to_string();
+    };
+    if op.primary_response == PrimaryResponse::None {
+        return "error".to_string();
+    }
+    if op.primary_response == PrimaryResponse::Struct {
+        return format!("(*{}, error)", go_type(Some(ref_)));
+    }
+    format!("({}, error)", go_type(Some(ref_)))
+}
+
+fn go_response(
+    op: &OperationPlan,
+    neutral: &crate::type_plan::NeutralTypeReference,
+) -> RenderedTypeResponse {
+    if let Some(ct) = &op.binary_content_type {
+        return RenderedTypeResponse {
+            type_name: None,
+            fields: None,
+            lang_type: Some("*http.Response".to_string()),
+            note: Some(format!("binary download ({ct})")),
+        };
+    }
+    let Some(ref_) = neutral.response_type_ref.as_ref() else {
+        return RenderedTypeResponse {
+            type_name: None,
+            fields: None,
+            lang_type: Some("error".to_string()),
+            note: Some("no response body".to_string()),
+        };
+    };
+    if op.primary_response == PrimaryResponse::None {
+        return RenderedTypeResponse {
+            type_name: None,
+            fields: None,
+            lang_type: Some("error".to_string()),
+            note: Some("no response body".to_string()),
+        };
+    }
+    let type_name = go_type(Some(ref_));
+    let note = op
+        .page_name
+        .map(|p| format!("paginated (pagination.{})", p.as_str()));
+    match &neutral.response_fields {
+        Some(fields) => RenderedTypeResponse {
+            type_name: Some(type_name),
+            fields: Some(fields.iter().map(go_render_response_field).collect()),
+            lang_type: None,
+            note,
+        },
+        None => RenderedTypeResponse {
+            type_name: Some(type_name.clone()),
+            fields: None,
+            lang_type: Some(type_name),
+            note,
+        },
+    }
+}
+
+/// The per-operation TYPE REFERENCE for Go: the method signature, the request
+/// params type's field rows, and the response type — the SDK-native view Atlas
+/// renders in place of the REST param definitions.
+pub(crate) fn go_type_reference(
+    method: &Value,
+    segments: &[String],
+    types: &Map<String, Value>,
+) -> RenderedTypeReference {
+    let op = plan_operation(method, types);
+    let neutral = plan_type_reference(method, types);
+    let method_name = go_method_name(s(method, "action"));
+    let plan = plan_params(
+        segments,
+        &method_name,
+        op.has_body,
+        &arr(method, "queryParams"),
+        &arr(method, "headerParams"),
+    );
+
+    let encoding = op.encoding.as_deref();
+    let request_fields = neutral
+        .request_fields
+        .iter()
+        .map(|f| go_render_field(f, encoding, types))
+        .collect();
+
+    let mut arg_names = vec!["ctx".to_string()];
+    for p in arr(method, "pathParams") {
+        arg_names.push(go_var(s(p, "name")));
+    }
+    if let Some(p) = &plan {
+        arg_names.push(p.arg_name.clone());
+    }
+    let signature = format!(
+        "{}.{method_name}({}) {}",
+        client_chain(segments),
+        arg_names.join(", "),
+        go_return_display(method, &op)
+    );
+
+    RenderedTypeReference {
+        signature,
+        request: RenderedTypeGroup {
+            type_name: plan.as_ref().map(|p| p.type_name.clone()),
+            arg_name: plan.as_ref().map(|p| p.arg_name.clone()),
+            fields: request_fields,
+        },
+        response: go_response(&op, &neutral),
+    }
+}
+
+// ---- docs: usage snippet ----------------------------------------------------
+
+/// A single per-operation USAGE SNIPPET (docs): a self-contained `package main`
+/// that constructs the client and makes ONE call with ALL fields set to
+/// realistic (spec example/default) values — the same call assembly the test
+/// suite uses, minus the mock/assert/guard scaffolding. `segments` is the
+/// resource-name chain the method hangs off (root→owner).
+///
+/// `base_url_env` is a DOCS-ONLY option: when set (only during a snippet-run
+/// test) the client reads its base URL from that env var so the snippet's
+/// request can be captured; unset → the byte-identical docs snippet.
+pub(crate) fn go_usage(
+    method: &Value,
+    segments: &[String],
+    types: &Map<String, Value>,
+    module_path: &str,
+    pkg: &str,
+    base_url_env: Option<&str>,
+) -> String {
+    let mut imports = Imports::new();
+    imports.add("context", None);
+    imports.add(module_path, None); // the ROOT package — the client constructor
+    let option_q = imports.add(&format!("{module_path}/option"), None);
+    let mut ctx = GoExampleCtx {
+        types,
+        module_path: module_path.to_string(),
+        pkg: pkg.to_string(),
+        option_q,
+        imports,
+    };
+
+    let op = plan_operation(method, types);
+    // A doc usage snippet: ALL fields with realistic (spec example/default) values.
+    let plan = plan_method_example(method, types, true);
+    let method_name = go_method_name(s(method, "action"));
+    let mut path_arg_exprs = Vec::new();
+    for pa in &plan.path_args {
+        path_arg_exprs.push(render_ref_value(&mut ctx, pa.param.get("type"), &pa.value));
+    }
+    let params = params_struct_expr(segments, method, &op, true, &method_name, &mut ctx, true);
+    let (args, multiline) = call_args(&path_arg_exprs, &params);
+    let has_result = method_has_result(method, &op);
+    let bind = if has_result {
+        "result, err :="
+    } else {
+        "err :="
+    };
+    let call = call_statement(
+        bind,
+        &client_chain(segments),
+        &method_name,
+        &args,
+        multiline,
+    );
+
+    if has_result {
+        ctx.imports.add("fmt", None);
+    }
+    let mut client_opts = vec![format!("\t\t{}.WithAPIKey(\"My API Key\"),", ctx.option_q)];
+    if let Some(env) = base_url_env {
+        let os_q = ctx.imports.add("os", None);
+        client_opts.push(format!(
+            "\t\t{}.WithBaseURL({os_q}.Getenv({})),",
+            ctx.option_q,
+            json_string(env)
+        ));
+    }
+    let mut body = vec![format!("\tclient := {}.NewClient(", ctx.pkg)];
+    body.extend(client_opts);
+    body.push("\t)".to_string());
+    body.push(call);
+    body.push("\tif err != nil {".to_string());
+    body.push("\t\tpanic(err.Error())".to_string());
+    body.push("\t}".to_string());
+    if has_result {
+        body.push("\tfmt.Printf(\"%+v\\n\", result)".to_string());
+    }
+
+    go_file(
+        "main",
+        &ctx.imports,
+        &[format!("func main() {{\n{}\n}}", body.join("\n"))],
+    )
 }
 
 /// The SDK's OWN test suite: one external `package <pkg>_test` file per top-level

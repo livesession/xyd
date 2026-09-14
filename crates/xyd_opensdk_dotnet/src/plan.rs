@@ -18,6 +18,8 @@ pub struct OperationPlan {
     pub path_params: Vec<Value>,
     pub query_params: Vec<Value>,
     pub header_params: Vec<Value>,
+    /// Whether the method has a request body.
+    pub has_body: bool,
     /// Whether the request body is required.
     pub body_required: bool,
     /// Primary response classification: struct | union-mapped | union-open | scalar | none.
@@ -38,6 +40,7 @@ pub fn plan_operation(m: &Value, types: Types) -> OperationPlan {
         path_params: arr(m.get("pathParams")),
         query_params: arr(m.get("queryParams")),
         header_params: arr(m.get("headerParams")),
+        has_body: m.get("requestBody").map(|b| !b.is_null()).unwrap_or(false),
         body_required: m
             .get("requestBody")
             .and_then(|b| b.get("required"))

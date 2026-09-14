@@ -28,7 +28,7 @@ pub fn render_ref_value(ref_: Option<&Value>, value: &ExampleValue, types: Types
     let Some(r) = ref_ else {
         return render_scalar_like(value);
     };
-    if matches!(value, ExampleValue::Any) {
+    if matches!(value, ExampleValue::Any | ExampleValue::Null) {
         return zero_value(Some(r), types);
     }
     match r.get("kind").and_then(Value::as_str) {
@@ -158,10 +158,14 @@ fn render_enum(named: &Value, value: &ExampleValue) -> String {
                 .or_else(|| ev.get("value"))
         })
         .or(raw);
-    let ident = member
-        .map(js_string)
-        .map(|s| pascal_case(&s))
-        .unwrap_or_default();
+    // `enumMemberName` is `pascalCase(String(name ?? value)) || 'Value'`, and JS
+    // `String(undefined)` is the literal "undefined" — so an ABSENT member
+    // (a realistic spec `default` whose literal matches no declared value)
+    // renders as `.Undefined`, NOT as the empty-ident `.Value` fallback.
+    let ident = match member {
+        Some(v) => pascal_case(&js_string(v)),
+        None => "Undefined".to_string(),
+    };
     let ident = if ident.is_empty() {
         "Value".to_string()
     } else {
@@ -180,6 +184,7 @@ fn render_scalar_like(value: &ExampleValue) -> String {
         ExampleValue::Integer(n) => n.to_string(),
         ExampleValue::Number(f) => js_number(*f),
         ExampleValue::Boolean(b) => bool_lit(*b),
+        ExampleValue::Null => "null".to_string(),
         ExampleValue::Binary => BINARY_LITERAL.to_string(),
         ExampleValue::Const(v) | ExampleValue::Enum(v) => cs_literal(v),
         _ => "null".to_string(),
