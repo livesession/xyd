@@ -1,9 +1,6 @@
-import { openapi2opensdk } from '@xyd-js/openapi2opensdk';
-import { type NamedType, walkMethods } from '@xyd-js/opensdk-core';
-import type { EmitterContext } from '@xyd-js/opensdk-framework';
 import type { OpenAPIV3 } from 'openapi-types';
 import { describe, expect, it } from 'vitest';
-import { SDK_LANGS } from '../src/index';
+import { SDK_LANGS, type SdkLang, prepareSdk } from '../src/index';
 
 // MEDIUM tier: exercise generateUsage across many operation SHAPES × all 6
 // languages. A single OpenAPI doc covers all-optional, required-body, enum,
@@ -92,10 +89,18 @@ const doc: OpenAPIV3.Document = {
   },
 };
 
-const ir = openapi2opensdk(doc);
-const types = new Map<string, NamedType>((ir.types ?? []).map((t) => [t.name, t]));
-const ctx: EmitterContext = { spec: ir, types, emitterOptions: {} };
-const methods = walkMethods(ir);
+// Drives the NATIVE docs path (what actually ships) rather than the retired
+// TypeScript emitters: `prepareSdk` runs the converter + the batch docs surfaces,
+// and `usageFor` reads the same per-(method, path) key the renderer uses.
+const preparedOrNull = prepareSdk(doc);
+if (!preparedOrNull) throw new Error('prepareSdk returned null — is @xyd-js/native built?');
+const prepared = preparedOrNull;
+const methods = [...prepared.byKey.values()];
+
+function usageFor(lang: SdkLang, fm: { method: { httpMethod?: string; path?: string } }): string {
+  const key = `${String(fm.method.httpMethod ?? '').toLowerCase()} ${String(fm.method.path ?? '')}`;
+  return prepared.docsByLang.get(lang.compileLang)?.[key]?.usage ?? '';
+}
 
 // A lang-specific token that proves the client was constructed.
 const CLIENT_MARK: Record<string, string> = {
@@ -112,7 +117,7 @@ describe('opensdk-uniform: generateUsage across shapes × languages', () => {
     expect(methods.length).toBeGreaterThanOrEqual(4);
     for (const fm of methods) {
       for (const lang of SDK_LANGS) {
-        const code = lang.emitter.generateUsage?.(fm.method, fm.path, ctx) ?? '';
+        const code = usageFor(lang, fm);
         const where = `${lang.language}:${fm.method.action}`;
         expect(code.trim().length, where).toBeGreaterThan(0);
         expect(code, where).toContain(CLIENT_MARK[lang.language]);
@@ -127,7 +132,7 @@ describe('opensdk-uniform: generateUsage across shapes × languages', () => {
   it('fills the all-optional list method (limit from the spec example)', () => {
     const list = methods.find((m) => m.method.action === 'list');
     expect(list).toBeDefined();
-    const py = list?.method && SDK_LANGS[1].emitter.generateUsage?.(list.method, list.path, ctx);
+    const py = list && usageFor(SDK_LANGS[1], list);
     expect(py).toContain('limit=5'); // realistic (spec example), not empty/generic
   });
 
@@ -135,7 +140,7 @@ describe('opensdk-uniform: generateUsage across shapes × languages', () => {
     const create = methods.find((m) => m.method.action === 'create');
     expect(create).toBeDefined();
     for (const lang of SDK_LANGS) {
-      const code = create?.method ? (lang.emitter.generateUsage?.(create.method, create.path, ctx) ?? '') : '';
+      const code = create ? usageFor(lang, create) : '';
       // the enum's FIRST value ("draft") is a real token, never a placeholder —
       // each language renders it differently (Go const ItemCreateStatusDraft,
       // TS "draft", Java DRAFT), so match case-insensitively.
@@ -147,7 +152,7 @@ describe('opensdk-uniform: generateUsage across shapes × languages', () => {
     const get = methods.find((m) => m.method.action === 'retrieve' || m.method.action === 'get');
     expect(get).toBeDefined();
     for (const lang of SDK_LANGS) {
-      const code = get?.method ? (lang.emitter.generateUsage?.(get.method, get.path, ctx) ?? '') : '';
+      const code = get ? usageFor(lang, get) : '';
       // the id path arg is rendered as a non-empty string literal ("id" from the hint)
       expect(code, `${lang.language}:get`).toContain('"id"');
     }

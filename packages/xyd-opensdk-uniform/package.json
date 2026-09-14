@@ -13,15 +13,6 @@
     "format": "bunx biome check --write src"
   },
   "dependencies": {
-    "@xyd-js/openapi2opensdk": "workspace:*",
-    "@xyd-js/opensdk-core": "workspace:*",
-    "@xyd-js/opensdk-dotnet": "workspace:*",
-    "@xyd-js/opensdk-framework": "workspace:*",
-    "@xyd-js/opensdk-go": "workspace:*",
-    "@xyd-js/opensdk-java": "workspace:*",
-    "@xyd-js/opensdk-node": "workspace:*",
-    "@xyd-js/opensdk-python": "workspace:*",
-    "@xyd-js/opensdk-ruby": "workspace:*",
     "@xyd-js/uniform": "workspace:*",
     "js-yaml": "^4.1.0"
   },
