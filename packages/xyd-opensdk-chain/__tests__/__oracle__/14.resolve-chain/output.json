@@ -1,0 +1,136 @@
+{
+  "ok-json": {
+    "ok": true,
+    "value": {
+      "$schema": "https://example.com/chain.schema.json",
+      "version": 1,
+      "behavior": {
+        "retry": {
+          "maxRetries": 5
+        }
+      },
+      "publish": {
+        "registry": "https://registry.example.com",
+        "tokenEnv": "TOK"
+      },
+      "sources": {
+        "pet": {
+          "inputs": [
+            {
+              "location": "./spec.json"
+            }
+          ],
+          "overlays": [
+            {
+              "location": "./ov.json"
+            }
+          ],
+          "output": "./.chain/pet.json"
+        }
+      },
+      "targets": {
+        "pet-go": {
+          "target": "go",
+          "source": "pet",
+          "output": "./sdk/go",
+          "sdkName": "pet",
+          "tests": false,
+          "options": {
+            "modulePath": "example.com/pet"
+          }
+        },
+        "pet-ts": {
+          "target": "typescript",
+          "source": "pet",
+          "grouping": {
+            "mountRules": {
+              "/pets": "pets"
+            }
+          }
+        }
+      }
+    }
+  },
+  "ok-yaml": {
+    "ok": true,
+    "value": {
+      "version": 1,
+      "sources": {
+        "pet": {
+          "inputs": [
+            {
+              "location": "./spec.json"
+            }
+          ]
+        }
+      },
+      "targets": {
+        "pet-go": {
+          "target": "go",
+          "source": "pet"
+        }
+      }
+    }
+  },
+  "ok-yml": {
+    "ok": true,
+    "value": {
+      "version": "2",
+      "sources": {
+        "pet": {
+          "inputs": [
+            {
+              "location": "./spec.json"
+            }
+          ]
+        }
+      },
+      "targets": {
+        "pet-go": {
+          "target": "go",
+          "source": "pet"
+        }
+      }
+    }
+  },
+  "unknown-source": {
+    "ok": false,
+    "error": "target \"x\" references unknown source \"nope\" (declare it under `sources`)"
+  },
+  "no-targets": {
+    "ok": false,
+    "error": "chain.json needs at least one `targets` entry"
+  },
+  "no-sources": {
+    "ok": false,
+    "error": "chain.json needs at least one `sources` entry"
+  },
+  "missing-sources-key": {
+    "ok": false,
+    "error": "chain.json needs at least one `sources` entry"
+  },
+  "missing-target-lang": {
+    "ok": false,
+    "error": "target \"x\" is missing `target` (the language)"
+  },
+  "missing-target-source": {
+    "ok": false,
+    "error": "target \"x\" is missing `source`"
+  },
+  "not-an-object": {
+    "ok": false,
+    "error": "Invalid chain file <CWD>/not-an-object.json: expected an object"
+  },
+  "sources-is-array": {
+    "ok": false,
+    "error": "chain.json needs at least one `sources` entry"
+  },
+  "bad-json": {
+    "ok": false,
+    "error": "Failed to parse <CWD>/bad-json.json: Expected property name or '}' in JSON at position 2 (line 1 column 3)"
+  },
+  "file-not-found": {
+    "ok": false,
+    "error": "Chain file not found: <CWD>/nope.json"
+  }
+}

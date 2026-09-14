@@ -1,0 +1,125 @@
+{
+  "description": "applyOverlay: update/remove semantics, JSONPath match set, error surface",
+  "ops": [
+    {
+      "id": "update",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./update.json"
+    },
+    {
+      "id": "remove",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./remove.json"
+    },
+    {
+      "id": "wildcard-update",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./wildcard.json"
+    },
+    {
+      "id": "array-remove-reverse",
+      "op": "applyOverlay",
+      "doc": "./arr.json",
+      "overlay": "./array-remove.json"
+    },
+    {
+      "id": "scalar-update",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./scalar-update.json"
+    },
+    {
+      "id": "scalar-update-with-object",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./scalar-update-object.json"
+    },
+    {
+      "id": "no-match",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./no-match.json"
+    },
+    {
+      "id": "root-update",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./root-update.json"
+    },
+    {
+      "id": "no-op-action",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./no-op-action.json"
+    },
+    {
+      "id": "no-actions",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./no-actions.json"
+    },
+    {
+      "id": "bad-version",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./bad-version.json"
+    },
+    {
+      "id": "missing-version",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./missing-version.json"
+    },
+    {
+      "id": "missing-target",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./missing-target.json"
+    },
+    {
+      "id": "array-update",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./array-update.json"
+    },
+    {
+      "id": "null-update-is-skipped",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./null-update.json"
+    },
+    {
+      "id": "actions-apply-in-order",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./remove-then-update.json"
+    },
+    {
+      "id": "remove-wins-over-update",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./remove-and-update-same-action.json"
+    },
+    {
+      "id": "descendant-remove",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./descendant-remove.json"
+    },
+    {
+      "id": "wildcard-remove",
+      "op": "applyOverlay",
+      "doc": "./spec.json",
+      "overlay": "./wildcard-remove.json"
+    },
+    {
+      "id": "filter-remove",
+      "op": "applyOverlay",
+      "doc": "./arr.json",
+      "overlay": "./filter-remove.json"
+    }
+  ]
+}

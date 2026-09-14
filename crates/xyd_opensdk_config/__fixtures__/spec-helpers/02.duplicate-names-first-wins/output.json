@@ -1,0 +1,25 @@
+{
+  "types": {
+    "Dup": {
+      "name": "Dup",
+      "kind": "alias",
+      "alias": {
+        "kind": "scalar",
+        "scalar": "string"
+      },
+      "marker": "first"
+    },
+    "Other": {
+      "name": "Other",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "x"
+        }
+      ]
+    }
+  },
+  "typeCount": 3,
+  "walk": []
+}

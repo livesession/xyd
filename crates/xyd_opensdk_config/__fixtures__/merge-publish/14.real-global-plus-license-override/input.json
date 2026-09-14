@@ -1,0 +1,12 @@
+{
+  "layers": [
+    {
+      "author": "Acme",
+      "license": "MIT",
+      "repository": "https://github.com/acme/acme"
+    },
+    {
+      "license": "Apache-2.0"
+    }
+  ]
+}

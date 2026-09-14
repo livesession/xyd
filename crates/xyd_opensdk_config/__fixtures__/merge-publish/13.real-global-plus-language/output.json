@@ -1,0 +1,12 @@
+{
+  "result": {
+    "declared": {
+      "author": "Acme",
+      "license": "MIT",
+      "repository": "https://github.com/acme/acme",
+      "registry": "https://npm.acme.dev",
+      "tokenEnv": "NPM_TOKEN"
+    },
+    "extra": {}
+  }
+}

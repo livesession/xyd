@@ -1,0 +1,30 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Overlay",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/pets": {
+      "get": {
+        "summary": "old",
+        "operationId": "listPets"
+      },
+      "post": {
+        "summary": "create"
+      }
+    },
+    "/internal/debug": {
+      "get": {
+        "operationId": "debug"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Pet": {
+        "type": "object"
+      }
+    }
+  }
+}

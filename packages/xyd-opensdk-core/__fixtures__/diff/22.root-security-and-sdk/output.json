@@ -1,0 +1,16 @@
+{
+  "changes": [
+    {
+      "severity": "breaking",
+      "kind": "security-changed",
+      "path": "security",
+      "detail": "default security requirements changed"
+    },
+    {
+      "severity": "safe",
+      "kind": "sdk-behavior-changed",
+      "path": "sdk",
+      "detail": "declared runtime behavior changed"
+    }
+  ]
+}

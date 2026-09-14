@@ -1,0 +1,268 @@
+{
+  "disjoint": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "A",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/a": {
+          "get": {
+            "responses": {
+              "200": {
+                "description": "ok"
+              }
+            }
+          }
+        },
+        "/b": {
+          "get": {
+            "responses": {
+              "200": {
+                "description": "ok"
+              }
+            }
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Shared": {
+            "type": "string"
+          },
+          "BOnly": {
+            "type": "number"
+          }
+        },
+        "parameters": {
+          "Page": {
+            "name": "page",
+            "in": "query"
+          }
+        }
+      },
+      "tags": []
+    }
+  },
+  "operation-granularity": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "PetsGet",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "operationId": "list"
+          },
+          "summary": "pets",
+          "post": {
+            "operationId": "create"
+          }
+        }
+      },
+      "components": {},
+      "tags": []
+    }
+  },
+  "single-input-materialises-keys": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Bare",
+        "version": "1.0.0"
+      },
+      "paths": {},
+      "components": {},
+      "tags": []
+    }
+  },
+  "bare-first": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Bare",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/a": {
+          "get": {
+            "responses": {
+              "200": {
+                "description": "ok"
+              }
+            }
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Shared": {
+            "type": "string"
+          }
+        }
+      },
+      "tags": []
+    }
+  },
+  "tags-and-security": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "TagA",
+        "version": "1.0.0"
+      },
+      "tags": [
+        {
+          "name": "one",
+          "description": "first"
+        },
+        {
+          "name": "two"
+        }
+      ],
+      "security": [
+        {
+          "apiKey": []
+        },
+        {
+          "bearer": [
+            "read"
+          ]
+        }
+      ],
+      "paths": {},
+      "components": {}
+    }
+  },
+  "security-only-in-second": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Bare",
+        "version": "1.0.0"
+      },
+      "paths": {},
+      "components": {},
+      "tags": [
+        {
+          "name": "one",
+          "description": "DIFFERENT description, same name -> deduped by name"
+        },
+        {
+          "name": "two"
+        }
+      ],
+      "security": [
+        {
+          "apiKey": []
+        },
+        {
+          "bearer": [
+            "read"
+          ]
+        }
+      ]
+    }
+  },
+  "numeric-identity-dedup": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "NumInt",
+        "version": "1.0.0"
+      },
+      "paths": {},
+      "components": {
+        "schemas": {
+          "Limit": {
+            "type": "integer",
+            "default": 1,
+            "maximum": 10
+          }
+        }
+      },
+      "tags": []
+    }
+  },
+  "three-way": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "A",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/a": {
+          "get": {
+            "responses": {
+              "200": {
+                "description": "ok"
+              }
+            }
+          }
+        },
+        "/b": {
+          "get": {
+            "responses": {
+              "200": {
+                "description": "ok"
+              }
+            }
+          }
+        },
+        "/pets": {
+          "get": {
+            "operationId": "list"
+          },
+          "summary": "pets"
+        }
+      },
+      "components": {
+        "schemas": {
+          "Shared": {
+            "type": "string"
+          },
+          "BOnly": {
+            "type": "number"
+          }
+        },
+        "parameters": {
+          "Page": {
+            "name": "page",
+            "in": "query"
+          }
+        }
+      },
+      "tags": []
+    }
+  },
+  "inputs-not-mutated": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "PetsGet",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "operationId": "list"
+          },
+          "summary": "pets"
+        }
+      }
+    }
+  }
+}

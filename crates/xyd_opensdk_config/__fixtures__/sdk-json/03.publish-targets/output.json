@@ -1,0 +1,48 @@
+{
+  "$schema": null,
+  "version": 1,
+  "api": null,
+  "spec": null,
+  "sdk": null,
+  "sdkName": null,
+  "behavior": null,
+  "grouping": null,
+  "publish": {
+    "declared": {
+      "author": "Acme",
+      "license": "MIT",
+      "repository": "https://github.com/acme/acme"
+    },
+    "extra": {}
+  },
+  "sections": {
+    "typescript": {
+      "output": null,
+      "behavior": null,
+      "publish": {
+        "declared": {
+          "registry": "https://npm.acme.dev",
+          "tokenEnv": "NPM_TOKEN"
+        },
+        "extra": {}
+      },
+      "options": {
+        "packageName": "acme"
+      }
+    },
+    "python": {
+      "output": null,
+      "behavior": null,
+      "publish": {
+        "declared": {
+          "license": "Apache-2.0"
+        },
+        "extra": {}
+      },
+      "options": {
+        "packageName": "acme"
+      }
+    }
+  },
+  "nonSectionKeys": {}
+}

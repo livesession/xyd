@@ -1,0 +1,36 @@
+{
+  "$schema": null,
+  "version": 1,
+  "api": null,
+  "spec": null,
+  "sdk": null,
+  "sdkName": null,
+  "behavior": null,
+  "grouping": null,
+  "publish": null,
+  "sections": {
+    "rust-cli": {
+      "output": "./cli/rust",
+      "behavior": {
+        "timeout": {
+          "defaultTimeoutMs": 5000
+        }
+      },
+      "publish": {
+        "declared": {
+          "registry": "https://crates.io",
+          "packageName": "acme-cli"
+        },
+        "extra": {
+          "futureKnob": true
+        }
+      },
+      "options": {
+        "binName": "acme",
+        "crateName": "acme_cli",
+        "tests": false
+      }
+    }
+  },
+  "nonSectionKeys": {}
+}

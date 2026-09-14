@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "sdkName": "openai",
+  "grouping": {
+    "mountRules": {
+      "organization": "admin/organization",
+      "assistants": "beta/assistants",
+      "threads": "beta/threads",
+      "chatkit": "beta/chat-kit"
+    },
+    "operationHints": {
+      "POST /threads/runs": {
+        "mountOn": "beta/threads",
+        "action": "new-and-run"
+      },
+      "GET /videos/{video_id}/content": {
+        "action": "download-content"
+      },
+      "GET /fine_tuning/jobs/{fine_tuning_job_id}/events": {
+        "mountOn": "fine-tuning/jobs",
+        "action": "list-events"
+      },
+      "GET /vector_stores/{vector_store_id}/file_batches/{batch_id}/files": {
+        "mountOn": "vector-stores/file-batches",
+        "action": "list-files"
+      },
+      "POST /responses/input_tokens": {
+        "action": "count"
+      },
+      "POST /assistants/{assistant_id}": {
+        "action": "update"
+      },
+      "POST /threads/{thread_id}": {
+        "action": "update"
+      },
+      "POST /threads/{thread_id}/messages/{message_id}": {
+        "action": "update"
+      },
+      "POST /threads/{thread_id}/runs/{run_id}": {
+        "action": "update"
+      },
+      "POST /vector_stores/{vector_store_id}": {
+        "action": "update"
+      },
+      "POST /organization/users/{user_id}": {
+        "action": "update"
+      },
+      "POST /organization/projects/{project_id}": {
+        "action": "update"
+      },
+      "POST /organization/projects/{project_id}/users/{user_id}": {
+        "action": "update"
+      },
+      "POST /organization/certificates/{certificate_id}": {
+        "action": "update"
+      },
+      "GET /organization/projects/{project_id}/rate_limits": {
+        "action": "list-rate-limits"
+      },
+      "POST /organization/projects/{project_id}/rate_limits/{rate_limit_id}": {
+        "action": "update-rate-limit"
+      }
+    }
+  },
+  "go": {
+    "modulePath": "github.com/openai/openai-go",
+    "output": "./sdk/go"
+  }
+}

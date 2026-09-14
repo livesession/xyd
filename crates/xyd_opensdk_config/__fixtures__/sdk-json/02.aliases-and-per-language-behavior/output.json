@@ -1,0 +1,43 @@
+{
+  "$schema": null,
+  "version": 1,
+  "api": null,
+  "spec": null,
+  "sdk": null,
+  "sdkName": "acme",
+  "behavior": {
+    "retry": {
+      "maxRetries": 4
+    }
+  },
+  "grouping": {
+    "mountRules": {
+      "assistants": "beta/assistants"
+    },
+    "operationHints": null
+  },
+  "publish": null,
+  "sections": {
+    "typescript": {
+      "output": "./out/ts",
+      "behavior": {
+        "retry": {
+          "maxRetries": 9
+        }
+      },
+      "publish": null,
+      "options": {
+        "packageName": "acme"
+      }
+    },
+    "go": {
+      "output": null,
+      "behavior": null,
+      "publish": null,
+      "options": {
+        "modulePath": "github.com/acme/acme"
+      }
+    }
+  },
+  "nonSectionKeys": {}
+}

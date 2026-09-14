@@ -1,0 +1,41 @@
+{
+  "spec": {
+    "opensdk": "1.0.0",
+    "info": {
+      "title": "Dup",
+      "version": "1.0.0"
+    },
+    "types": [
+      {
+        "name": "Dup",
+        "kind": "alias",
+        "alias": {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        "marker": "first"
+      },
+      {
+        "name": "Other",
+        "kind": "enum",
+        "base": "string",
+        "values": [
+          {
+            "value": "x"
+          }
+        ]
+      },
+      {
+        "name": "Dup",
+        "kind": "struct",
+        "fields": [],
+        "marker": "second"
+      }
+    ],
+    "resources": []
+  },
+  "lookups": [
+    "Dup",
+    "Other"
+  ]
+}

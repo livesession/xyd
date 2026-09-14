@@ -1,0 +1,11 @@
+{
+  "layers": [
+    {
+      "author": "Acme",
+      "license": "MIT"
+    },
+    {
+      "license": "__UNDEFINED__"
+    }
+  ]
+}

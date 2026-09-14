@@ -1,0 +1,38 @@
+{
+  "types": {
+    "Status": {
+      "name": "Status",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "a"
+        },
+        {
+          "value": "b"
+        }
+      ]
+    },
+    "Pet": {
+      "name": "Pet",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        }
+      ]
+    },
+    "Missing": null,
+    "": null
+  },
+  "typeCount": 2,
+  "walk": [
+    "pets list",
+    "pets/tags create"
+  ]
+}

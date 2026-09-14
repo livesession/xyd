@@ -1,0 +1,12 @@
+{
+  "result": {
+    "declared": {
+      "author": "Acme",
+      "license": "MIT"
+    },
+    "extra": {
+      "futureField": "kept",
+      "anotherUnknown": 42
+    }
+  }
+}

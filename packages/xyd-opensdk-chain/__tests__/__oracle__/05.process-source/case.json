@@ -1,0 +1,106 @@
+{
+  "description": "processSource: single passthrough, merge+overlays, yaml input, number/serialisation fidelity",
+  "ops": [
+    {
+      "id": "single-passthrough",
+      "op": "processSource",
+      "source": {
+        "inputs": [
+          {
+            "location": "./base.json"
+          }
+        ],
+        "output": "./out/single.json"
+      }
+    },
+    {
+      "id": "merge-and-overlays",
+      "op": "processSource",
+      "source": {
+        "inputs": [
+          {
+            "location": "./base.json"
+          },
+          {
+            "location": "./extra.json"
+          }
+        ],
+        "overlays": [
+          {
+            "location": "./ov.json"
+          },
+          {
+            "location": "./ov2.json"
+          }
+        ],
+        "output": "./out/merged.json"
+      }
+    },
+    {
+      "id": "yaml-input-json-output",
+      "op": "processSource",
+      "source": {
+        "inputs": [
+          {
+            "location": "./spec.yaml"
+          }
+        ],
+        "output": "./out/from-yaml.json"
+      }
+    },
+    {
+      "id": "numbers-roundtrip",
+      "op": "processSource",
+      "source": {
+        "inputs": [
+          {
+            "location": "./numbers.json"
+          }
+        ],
+        "output": "./out/numbers.json"
+      }
+    },
+    {
+      "id": "nested-output-dir",
+      "op": "processSource",
+      "source": {
+        "inputs": [
+          {
+            "location": "./base.json"
+          }
+        ],
+        "output": "./out/deep/er/spec.json"
+      }
+    },
+    {
+      "id": "temp-output",
+      "op": "processSource",
+      "source": {
+        "inputs": [
+          {
+            "location": "./base.json"
+          }
+        ]
+      }
+    },
+    {
+      "id": "no-inputs",
+      "op": "processSource",
+      "source": {
+        "inputs": []
+      }
+    },
+    {
+      "id": "missing-input",
+      "op": "processSource",
+      "source": {
+        "inputs": [
+          {
+            "location": "./nope.json"
+          }
+        ],
+        "output": "./out/x.json"
+      }
+    }
+  ]
+}

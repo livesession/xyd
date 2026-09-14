@@ -1,0 +1,64 @@
+{
+  "spec": {
+    "opensdk": "1.0.0",
+    "info": {
+      "title": "Deep",
+      "version": "1.0.0"
+    },
+    "types": [],
+    "resources": [
+      {
+        "name": "admin",
+        "methods": [
+          {
+            "action": "retrieve",
+            "httpMethod": "get",
+            "path": "/admin"
+          }
+        ],
+        "resources": [
+          {
+            "name": "keys",
+            "methods": [
+              {
+                "action": "create",
+                "httpMethod": "post",
+                "path": "/admin/keys"
+              },
+              {
+                "action": "delete",
+                "httpMethod": "delete",
+                "path": "/admin/keys/{id}"
+              }
+            ],
+            "resources": [
+              {
+                "name": "rotations",
+                "methods": [
+                  {
+                    "action": "list",
+                    "httpMethod": "get",
+                    "path": "/admin/keys/{id}/rotations"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "health",
+        "methods": [
+          {
+            "action": "retrieve",
+            "httpMethod": "get",
+            "path": "/health"
+          }
+        ]
+      }
+    ]
+  },
+  "lookups": [
+    "Nope"
+  ]
+}

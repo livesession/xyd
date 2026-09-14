@@ -1,0 +1,46 @@
+{
+  "changes": [
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.PetStatus.1e+21",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.PetStatus.1e-7",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.PetStatus.0.000001",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.PetStatus.0",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.PetStatus.1.5e+300",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.PetStatus.1.2345678901234568e+29",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.PetStatus.2",
+      "detail": "enum value added"
+    }
+  ]
+}

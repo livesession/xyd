@@ -1,0 +1,10 @@
+{
+  "result": {
+    "declared": {
+      "author": "Acme",
+      "license": "Apache-2.0",
+      "repository": "https://github.com/acme/acme"
+    },
+    "extra": {}
+  }
+}

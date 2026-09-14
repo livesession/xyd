@@ -1,0 +1,18 @@
+{
+  "conventional-root-wins": {
+    "ok": true,
+    "value": "<CWD>/chain.json"
+  },
+  "explicit-existing": {
+    "ok": true,
+    "value": "<CWD>/custom/my-chain.json"
+  },
+  "explicit-missing": {
+    "ok": true,
+    "value": null
+  },
+  "explicit-dot-chain": {
+    "ok": true,
+    "value": "<CWD>/.chain/chain.json"
+  }
+}

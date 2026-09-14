@@ -1,0 +1,24 @@
+[package]
+name = "xyd_opensdk_diff"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+description = "IR-to-IR breaking-change differ for OpenSDK specs (Rust port of @xyd-js/opensdk-core's diff.ts)"
+
+# Pure data in, pure data out — no IO, no parser. Mirrors the TS module, which
+# is a leaf of @xyd-js/opensdk-core.
+[dependencies]
+serde = { workspace = true }
+# MANDATORY `workspace = true`: `preserve_order` makes serde_json's Map an
+# IndexMap, so a parsed spec keeps its document key order. That order is
+# OBSERVABLE here — `JSON.stringify(method.security)` / `JSON.stringify(spec.sdk)`
+# are compared as strings, so a BTreeMap would silently re-sort keys and make
+# two specs that JS calls different compare equal (and vice versa).
+serde_json = { workspace = true }
+
+[dev-dependencies]
+# tests/golden.rs gates on the JS-owned fixtures in packages/xyd-opensdk-core.
+xyd_parity = { path = "../xyd_parity" }
+# `canon_eq` = vitest `toEqual` semantics, used to count ALL failing cases
+# before delegating to xyd_parity for the detailed first-divergence report.
+xyd_uniform = { path = "../xyd_uniform" }

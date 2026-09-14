@@ -1,0 +1,13 @@
+{
+  "overlay": "1.0.0",
+  "info": {
+    "title": "ov2",
+    "version": "1.0.0"
+  },
+  "actions": [
+    {
+      "target": "$.paths['/a'].get",
+      "remove": true
+    }
+  ]
+}

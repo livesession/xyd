@@ -1,0 +1,107 @@
+{
+  "method-conflict": {
+    "ok": false,
+    "error": "Merge conflict: path \"/pets\" method \"GET\" differs in inputs[0] and inputs[1]"
+  },
+  "origin-pair-is-1-and-2": {
+    "ok": false,
+    "error": "Merge conflict: path \"/y\" method \"GET\" differs in inputs[1] and inputs[2]"
+  },
+  "field-conflict": {
+    "ok": false,
+    "error": "Merge conflict: path \"/pets\" field \"summary\" differs in inputs[0] and inputs[1]"
+  },
+  "component-conflict": {
+    "ok": false,
+    "error": "Merge conflict: components.schemas.Pet differs in inputs[0] and inputs[1]"
+  },
+  "component-dedup-identical": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "CompA",
+        "version": "1.0.0"
+      },
+      "paths": {},
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "tags": []
+    }
+  },
+  "path-item-non-object-vs-object": {
+    "ok": false,
+    "error": "Merge conflict: path \"/p\" differs in inputs[0] and inputs[1]"
+  },
+  "path-item-non-object-equal": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "NonObjA",
+        "version": "1"
+      },
+      "paths": {
+        "/p": "scalar-path-item"
+      },
+      "components": {},
+      "tags": []
+    }
+  },
+  "components-bucket-not-object-skipped": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "A",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "operationId": "list"
+          }
+        }
+      },
+      "components": {},
+      "tags": []
+    }
+  },
+  "no-inputs": {
+    "ok": false,
+    "error": "mergeOpenApiDocs: no inputs"
+  },
+  "target-bucket-not-object": {
+    "ok": false,
+    "error": "Cannot create property 'Pet' on string 'not-an-object'"
+  },
+  "null-paths-components-tags": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "PathsNull",
+        "version": "1"
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "operationId": "list"
+          }
+        }
+      },
+      "components": {},
+      "tags": []
+    }
+  }
+}

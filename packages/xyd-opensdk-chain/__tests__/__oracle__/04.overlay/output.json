@@ -1,0 +1,540 @@
+{
+  "update": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Overlay",
+        "version": "9.9.9",
+        "description": "overlaid"
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "summary": "new",
+            "operationId": "listPets",
+            "tags": [
+              "pets"
+            ]
+          },
+          "post": {
+            "summary": "create"
+          }
+        },
+        "/internal/debug": {
+          "get": {
+            "operationId": "debug"
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "remove": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Overlay",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "summary": "old"
+          },
+          "post": {
+            "summary": "create"
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "wildcard-update": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Overlay",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "summary": "old",
+            "operationId": "listPets",
+            "x-touched": true
+          },
+          "post": {
+            "summary": "create",
+            "x-touched": true
+          }
+        },
+        "/internal/debug": {
+          "get": {
+            "operationId": "debug",
+            "x-touched": true
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "array-remove-reverse": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Arr",
+        "version": "1.0.0"
+      },
+      "tags": [
+        {
+          "name": "keep1"
+        },
+        {
+          "name": "keep2"
+        }
+      ],
+      "paths": {}
+    }
+  },
+  "scalar-update": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "REPLACED",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "summary": "old",
+            "operationId": "listPets"
+          },
+          "post": {
+            "summary": "create"
+          }
+        },
+        "/internal/debug": {
+          "get": {
+            "operationId": "debug"
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "scalar-update-with-object": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": {
+          "nested": true
+        },
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "summary": "old",
+            "operationId": "listPets"
+          },
+          "post": {
+            "summary": "create"
+          }
+        },
+        "/internal/debug": {
+          "get": {
+            "operationId": "debug"
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "no-match": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Overlay",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "summary": "old",
+            "operationId": "listPets"
+          },
+          "post": {
+            "summary": "create"
+          }
+        },
+        "/internal/debug": {
+          "get": {
+            "operationId": "debug"
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "root-update": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Overlay",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "summary": "old",
+            "operationId": "listPets"
+          },
+          "post": {
+            "summary": "create"
+          }
+        },
+        "/internal/debug": {
+          "get": {
+            "operationId": "debug"
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object"
+          }
+        }
+      },
+      "x-root": "added"
+    }
+  },
+  "no-op-action": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Overlay",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "summary": "old",
+            "operationId": "listPets"
+          },
+          "post": {
+            "summary": "create"
+          }
+        },
+        "/internal/debug": {
+          "get": {
+            "operationId": "debug"
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "no-actions": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Overlay",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "summary": "old",
+            "operationId": "listPets"
+          },
+          "post": {
+            "summary": "create"
+          }
+        },
+        "/internal/debug": {
+          "get": {
+            "operationId": "debug"
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "bad-version": {
+    "ok": false,
+    "error": "Unsupported overlay version \"2.0.0\" (expected \"1.0.0\")"
+  },
+  "missing-version": {
+    "ok": false,
+    "error": "Unsupported overlay version \"\" (expected \"1.0.0\")"
+  },
+  "missing-target": {
+    "ok": false,
+    "error": "Overlay action is missing a `target` JSONPath"
+  },
+  "array-update": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Overlay",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/pets": {
+          "get": [
+            "replaced",
+            "by",
+            "array"
+          ],
+          "post": {
+            "summary": "create"
+          }
+        },
+        "/internal/debug": {
+          "get": {
+            "operationId": "debug"
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "null-update-is-skipped": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Overlay",
+        "version": null
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "summary": "old",
+            "operationId": "listPets"
+          },
+          "post": {
+            "summary": "create"
+          }
+        },
+        "/internal/debug": {
+          "get": {
+            "operationId": "debug"
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "actions-apply-in-order": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Overlay",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "operationId": "listPets",
+            "summary": "re-added after removal"
+          },
+          "post": {
+            "summary": "create"
+          }
+        },
+        "/internal/debug": {
+          "get": {
+            "operationId": "debug"
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "remove-wins-over-update": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "paths": {
+        "/pets": {
+          "get": {
+            "summary": "old",
+            "operationId": "listPets"
+          },
+          "post": {
+            "summary": "create"
+          }
+        },
+        "/internal/debug": {
+          "get": {
+            "operationId": "debug"
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "descendant-remove": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Overlay",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/pets": {
+          "get": {
+            "summary": "old",
+            "operationId": "listPets"
+          },
+          "post": {
+            "summary": "create"
+          }
+        },
+        "/internal/debug": {
+          "get": {
+            "operationId": "debug"
+          }
+        }
+      },
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "wildcard-remove": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Overlay",
+        "version": "1.0.0"
+      },
+      "paths": {
+        "/pets": {},
+        "/internal/debug": {}
+      },
+      "components": {
+        "schemas": {
+          "Pet": {
+            "type": "object"
+          }
+        }
+      }
+    }
+  },
+  "filter-remove": {
+    "ok": true,
+    "value": {
+      "openapi": "3.0.3",
+      "info": {
+        "title": "Arr",
+        "version": "1.0.0"
+      },
+      "tags": [
+        {
+          "name": "keep1"
+        },
+        {
+          "name": "keep2"
+        },
+        {
+          "name": "drop2",
+          "x-internal": true
+        }
+      ],
+      "paths": {}
+    }
+  }
+}

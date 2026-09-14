@@ -1,0 +1,19 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "TagA",
+    "version": "1.0.0"
+  },
+  "tags": [
+    {
+      "name": "one",
+      "description": "first"
+    }
+  ],
+  "security": [
+    {
+      "apiKey": []
+    }
+  ],
+  "paths": {}
+}

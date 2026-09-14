@@ -1,0 +1,11 @@
+{
+  "layers": [
+    {
+      "author": "Acme",
+      "packageName": "acme"
+    },
+    {
+      "packageName": ""
+    }
+  ]
+}

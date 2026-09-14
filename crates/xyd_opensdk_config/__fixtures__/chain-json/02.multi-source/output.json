@@ -1,0 +1,50 @@
+{
+  "$schema": null,
+  "version": 1,
+  "behavior": null,
+  "publish": null,
+  "sources": {
+    "pets": {
+      "inputs": [
+        {
+          "location": "./specs/pets.json"
+        }
+      ],
+      "overlays": null,
+      "output": "./.chain/pets.openapi.json"
+    },
+    "catalog": {
+      "inputs": [
+        {
+          "location": "./specs/catalog.json"
+        }
+      ],
+      "overlays": null,
+      "output": "./.chain/catalog.openapi.json"
+    }
+  },
+  "targets": {
+    "pets-sdk": {
+      "target": "go",
+      "source": "pets",
+      "output": "./sdk/pets",
+      "sdkName": "pets",
+      "behavior": null,
+      "grouping": null,
+      "options": null,
+      "publish": null,
+      "tests": null
+    },
+    "catalog-sdk": {
+      "target": "go",
+      "source": "catalog",
+      "output": "./sdk/catalog",
+      "sdkName": "catalog",
+      "behavior": null,
+      "grouping": null,
+      "options": null,
+      "publish": null,
+      "tests": null
+    }
+  }
+}

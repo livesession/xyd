@@ -1,0 +1,70 @@
+{
+  "changes": [
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.PetList",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.Pet.fields.id",
+      "detail": "scalar:string -> scalar:integer"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.Pet.fields.name",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.Pet.fields.nickname",
+      "detail": "nullable -> non-null"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.Pet.fields.legacy",
+      "detail": "optional -> required"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.Pet.fields.legacy",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.Pet.fields.legacy",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.Pet.fields.doomed",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.Pet.fields.owner_id",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.Pet.fields.note",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "safe",
+      "kind": "type-added",
+      "path": "types.PetPage",
+      "detail": "new named type"
+    }
+  ]
+}

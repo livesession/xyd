@@ -1,0 +1,28 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "YamlOut",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/a": {
+      "get": {
+        "operationId": "a",
+        "tags": [
+          "x"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "A": {
+        "type": "string",
+        "enum": [
+          "a",
+          "b"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "overlay": "1.0.0",
+  "info": {
+    "title": "order",
+    "version": "1.0.0"
+  },
+  "actions": [
+    {
+      "target": "$.paths['/pets'].get.summary",
+      "remove": true
+    },
+    {
+      "target": "$.paths['/pets'].get",
+      "update": {
+        "summary": "re-added after removal"
+      }
+    }
+  ]
+}

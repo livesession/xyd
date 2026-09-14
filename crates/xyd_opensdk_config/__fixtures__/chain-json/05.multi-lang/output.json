@@ -1,0 +1,54 @@
+{
+  "$schema": null,
+  "version": 1,
+  "behavior": null,
+  "publish": null,
+  "sources": {
+    "svc": {
+      "inputs": [
+        {
+          "location": "./specs/svc.json"
+        }
+      ],
+      "overlays": null,
+      "output": "./.chain/svc.openapi.json"
+    }
+  },
+  "targets": {
+    "svc-go": {
+      "target": "go",
+      "source": "svc",
+      "output": "./sdk/go",
+      "sdkName": "svc",
+      "behavior": null,
+      "grouping": null,
+      "options": null,
+      "publish": null,
+      "tests": null
+    },
+    "svc-ts": {
+      "target": "typescript",
+      "source": "svc",
+      "output": "./sdk/ts",
+      "sdkName": "svc",
+      "behavior": null,
+      "grouping": null,
+      "options": {
+        "packageName": "svc"
+      },
+      "publish": null,
+      "tests": null
+    },
+    "svc-py": {
+      "target": "python",
+      "source": "svc",
+      "output": "./sdk/py",
+      "sdkName": "svc",
+      "behavior": null,
+      "grouping": null,
+      "options": null,
+      "publish": null,
+      "tests": null
+    }
+  }
+}

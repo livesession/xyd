@@ -1,0 +1,34 @@
+{
+  "changes": [
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.PetStatus.\"pending\"",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.PetStatus.3",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.PetStatus.undefined",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.PetStatus.\"adopted\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.PetStatus.4",
+      "detail": "enum value added"
+    }
+  ]
+}

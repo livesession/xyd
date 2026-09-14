@@ -1,0 +1,52 @@
+{
+  "single-passthrough": {
+    "ok": true,
+    "value": {
+      "outPath": "<CWD>/out/single.json",
+      "content": "{\n  \"openapi\": \"3.0.3\",\n  \"info\": {\n    \"title\": \"Base\",\n    \"version\": \"1.0.0\"\n  },\n  \"paths\": {\n    \"/a\": {\n      \"get\": {\n        \"operationId\": \"a\"\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"A\": {\n        \"type\": \"string\"\n      }\n    }\n  }\n}\n"
+    }
+  },
+  "merge-and-overlays": {
+    "ok": true,
+    "value": {
+      "outPath": "<CWD>/out/merged.json",
+      "content": "{\n  \"openapi\": \"3.0.3\",\n  \"info\": {\n    \"title\": \"Base\",\n    \"version\": \"1.0.0\",\n    \"description\": \"merged + overlaid\"\n  },\n  \"paths\": {\n    \"/a\": {},\n    \"/b\": {\n      \"post\": {\n        \"operationId\": \"b\"\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"A\": {\n        \"type\": \"string\"\n      },\n      \"B\": {\n        \"type\": \"number\"\n      }\n    }\n  },\n  \"tags\": []\n}\n"
+    }
+  },
+  "yaml-input-json-output": {
+    "ok": true,
+    "value": {
+      "outPath": "<CWD>/out/from-yaml.json",
+      "content": "{\n  \"openapi\": \"3.0.3\",\n  \"info\": {\n    \"title\": \"FromYaml\",\n    \"version\": \"1.0.0\",\n    \"description\": \"multi-line\\ndescription\\n\"\n  },\n  \"paths\": {\n    \"/y\": {\n      \"get\": {\n        \"operationId\": \"y\",\n        \"parameters\": [\n          {\n            \"name\": \"limit\",\n            \"in\": \"query\",\n            \"schema\": {\n              \"type\": \"integer\",\n              \"default\": 10\n            }\n          }\n        ],\n        \"responses\": {\n          \"200\": {\n            \"description\": \"ok\"\n          }\n        }\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"Y\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"flag\": {\n            \"type\": \"boolean\"\n          },\n          \"nothing\": {\n            \"type\": \"null\"\n          }\n        }\n      }\n    }\n  }\n}\n"
+    }
+  },
+  "numbers-roundtrip": {
+    "ok": true,
+    "value": {
+      "outPath": "<CWD>/out/numbers.json",
+      "content": "{\n  \"openapi\": \"3.0.3\",\n  \"info\": {\n    \"title\": \"Numbers\",\n    \"version\": \"1.0.0\"\n  },\n  \"paths\": {},\n  \"components\": {\n    \"schemas\": {\n      \"N\": {\n        \"whole\": 1,\n        \"exp\": 1000,\n        \"big\": 1e+21,\n        \"tiny\": 1e-7,\n        \"sixDec\": 0.000001,\n        \"negZero\": 0,\n        \"frac\": 1.5,\n        \"unicode\": \"café — \\t tab \\u0001 ctrl\",\n        \"empty\": {},\n        \"emptyArr\": []\n      }\n    }\n  }\n}\n"
+    }
+  },
+  "nested-output-dir": {
+    "ok": true,
+    "value": {
+      "outPath": "<CWD>/out/deep/er/spec.json",
+      "content": "{\n  \"openapi\": \"3.0.3\",\n  \"info\": {\n    \"title\": \"Base\",\n    \"version\": \"1.0.0\"\n  },\n  \"paths\": {\n    \"/a\": {\n      \"get\": {\n        \"operationId\": \"a\"\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"A\": {\n        \"type\": \"string\"\n      }\n    }\n  }\n}\n"
+    }
+  },
+  "temp-output": {
+    "ok": true,
+    "value": {
+      "outPath": "<TMP>/opensdk-chain-src-<RAND>/openapi.json",
+      "content": "{\n  \"openapi\": \"3.0.3\",\n  \"info\": {\n    \"title\": \"Base\",\n    \"version\": \"1.0.0\"\n  },\n  \"paths\": {\n    \"/a\": {\n      \"get\": {\n        \"operationId\": \"a\"\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"A\": {\n        \"type\": \"string\"\n      }\n    }\n  }\n}\n"
+    }
+  },
+  "no-inputs": {
+    "ok": false,
+    "error": "chain source has no `inputs`"
+  },
+  "missing-input": {
+    "ok": false,
+    "error": "ENOENT: no such file or directory, open '<CWD>/nope.json'"
+  }
+}

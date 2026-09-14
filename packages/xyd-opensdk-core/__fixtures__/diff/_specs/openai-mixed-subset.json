@@ -1,0 +1,1955 @@
+{
+  "types": [
+    {
+      "name": "AdminOrganizationAdminApiKeysCreateRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "AdminApiKeyCreateResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.admin_api_key"
+          },
+          "required": true,
+          "description": "The object type, which is always `organization.admin_api_key`"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The name of the API key"
+        },
+        {
+          "name": "redacted_value",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The redacted value of the API key"
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the API key was created"
+        },
+        {
+          "name": "last_used_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "owner",
+          "type": {
+            "kind": "ref",
+            "name": "AdminApiKeyCreateResponseOwner"
+          },
+          "required": true
+        },
+        {
+          "name": "value",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The value of the API key. Only shown on create."
+        }
+      ]
+    },
+    {
+      "name": "AdminApiKeyCreateResponseOwner",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Always `user`"
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The object type, which is always organization.user"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The name of the user"
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the user was created"
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "Always `owner`"
+        }
+      ]
+    },
+    {
+      "name": "ModifyCertificateRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The updated name for the certificate"
+        }
+      ]
+    },
+    {
+      "name": "Certificate",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "ref",
+            "name": "CertificateObject"
+          },
+          "required": true,
+          "description": "The object type.\n\n- If creating, updating, or getting a specific certificate, the object type is `certificate`.\n- If listing, activating, or deactivating certificates for the organization, the object type is `organization.certificate`.\n- If listing, activating, or deactivating certificates for a project, the object type is `organization.project.certificate`.\n"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true,
+          "description": "The name of the certificate."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the certificate was uploaded."
+        },
+        {
+          "name": "certificate_details",
+          "type": {
+            "kind": "ref",
+            "name": "CertificateCertificateDetails"
+          },
+          "required": true
+        },
+        {
+          "name": "active",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "Whether the certificate is currently active at the specified scope. Not returned when getting details for a specific certificate."
+        }
+      ],
+      "description": "Represents an individual `certificate` uploaded to the organization."
+    },
+    {
+      "name": "CertificateObject",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "certificate"
+        },
+        {
+          "value": "organization.certificate"
+        },
+        {
+          "value": "organization.project.certificate"
+        }
+      ],
+      "description": "The object type.\n\n- If creating, updating, or getting a specific certificate, the object type is `certificate`.\n- If listing, activating, or deactivating certificates for the organization, the object type is `organization.certificate`.\n- If listing, activating, or deactivating certificates for a project, the object type is `organization.project.certificate`.\n"
+    },
+    {
+      "name": "CertificateCertificateDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "valid_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the certificate becomes valid."
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the certificate expires."
+        },
+        {
+          "name": "content",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "The content of the certificate in PEM format."
+        }
+      ]
+    },
+    {
+      "name": "AdminOrganizationGroupsUsersListOrder",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "asc"
+        },
+        {
+          "value": "desc"
+        }
+      ]
+    },
+    {
+      "name": "UserListResource",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "list"
+          },
+          "required": true,
+          "description": "Always `list`."
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "GroupUser"
+            }
+          },
+          "required": true,
+          "description": "Users in the current page."
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether more users are available when paginating."
+        },
+        {
+          "name": "next",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true,
+          "description": "Cursor to fetch the next page of results, or `null` when no further users are available."
+        }
+      ],
+      "description": "Paginated list of user objects returned when inspecting group membership."
+    },
+    {
+      "name": "GroupUser",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the user."
+        },
+        {
+          "name": "email",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true,
+          "description": "The email address of the user."
+        }
+      ],
+      "description": "Represents an individual user returned when inspecting group membership."
+    },
+    {
+      "name": "AdminOrganizationProjectsCertificatesListOrder",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "asc"
+        },
+        {
+          "value": "desc"
+        }
+      ]
+    },
+    {
+      "name": "ListProjectCertificatesResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "OrganizationProjectCertificate"
+            }
+          },
+          "required": true
+        },
+        {
+          "name": "first_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "last_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        },
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "list"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "OrganizationProjectCertificate",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.project.certificate"
+          },
+          "required": true,
+          "description": "The object type, which is always `organization.project.certificate`."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true,
+          "description": "The name of the certificate."
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the certificate was uploaded."
+        },
+        {
+          "name": "certificate_details",
+          "type": {
+            "kind": "ref",
+            "name": "OrganizationProjectCertificateCertificateDetails"
+          },
+          "required": true
+        },
+        {
+          "name": "active",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether the certificate is currently active at the project level."
+        }
+      ],
+      "description": "Represents an individual certificate configured at the project level."
+    },
+    {
+      "name": "OrganizationProjectCertificateCertificateDetails",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "valid_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the certificate becomes valid."
+        },
+        {
+          "name": "expires_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the certificate expires."
+        }
+      ]
+    },
+    {
+      "name": "ProjectServiceAccountListResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "list"
+          },
+          "required": true
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "ProjectServiceAccount"
+            }
+          },
+          "required": true
+        },
+        {
+          "name": "first_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "last_id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "has_more",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "ProjectServiceAccount",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.project.service_account"
+          },
+          "required": true,
+          "description": "The object type, which is always `organization.project.service_account`"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The name of the service account"
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "ref",
+            "name": "ProjectServiceAccountRole"
+          },
+          "required": true,
+          "description": "`owner` or `member`"
+        },
+        {
+          "name": "created_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the service account was created"
+        }
+      ],
+      "description": "Represents an individual service account in a project."
+    },
+    {
+      "name": "ProjectServiceAccountRole",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "owner"
+        },
+        {
+          "value": "member"
+        }
+      ],
+      "description": "`owner` or `member`"
+    },
+    {
+      "name": "ErrorResponse",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "error",
+          "type": {
+            "kind": "ref",
+            "name": "Error"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "Error",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "code",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "message",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "param",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true
+        },
+        {
+          "name": "type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "PublicUpdateOrganizationRoleBody",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "permissions",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            },
+            "nullable": true
+          },
+          "required": false,
+          "description": "Updated set of permissions for the role."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false,
+          "description": "New description for the role."
+        },
+        {
+          "name": "role_name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false,
+          "description": "New name for the role."
+        }
+      ],
+      "description": "Request payload for updating an existing role."
+    },
+    {
+      "name": "Role",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "role"
+          },
+          "required": true,
+          "description": "Always `role`."
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Identifier for the role."
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Unique name for the role."
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": true,
+          "description": "Optional description of the role."
+        },
+        {
+          "name": "permissions",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "string"
+            }
+          },
+          "required": true,
+          "description": "Permissions granted by the role."
+        },
+        {
+          "name": "resource_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Resource type the role is bound to (for example `api.organization` or `api.project`)."
+        },
+        {
+          "name": "predefined_role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": true,
+          "description": "Whether the role is predefined and managed by OpenAI."
+        }
+      ],
+      "description": "Details about a role that can be assigned through the public Roles API."
+    },
+    {
+      "name": "User",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "organization.user"
+          },
+          "required": true,
+          "description": "The object type, which is always `organization.user`"
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The identifier, which can be referenced in API endpoints"
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The name of the user"
+        },
+        {
+          "name": "email",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The email address of the user"
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false,
+          "description": "`owner` or `reader`"
+        },
+        {
+          "name": "added_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": true,
+          "description": "The Unix timestamp (in seconds) of when the user was added."
+        },
+        {
+          "name": "is_default",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "Whether this is the organization's default user."
+        },
+        {
+          "name": "created",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime"
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of when the user was created."
+        },
+        {
+          "name": "user",
+          "type": {
+            "kind": "ref",
+            "name": "UserUser"
+          },
+          "required": false,
+          "description": "Nested user details."
+        },
+        {
+          "name": "is_service_account",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "Whether the user is a service account."
+        },
+        {
+          "name": "is_scale_tier_authorized_purchaser",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Whether the user is an authorized purchaser for Scale Tier."
+        },
+        {
+          "name": "is_scim_managed",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean"
+          },
+          "required": false,
+          "description": "Whether the user is managed through SCIM."
+        },
+        {
+          "name": "api_key_last_used_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The Unix timestamp (in seconds) of the user's last API key usage."
+        },
+        {
+          "name": "technical_level",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The technical level metadata for the user."
+        },
+        {
+          "name": "developer_persona",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false,
+          "description": "The developer persona metadata for the user."
+        },
+        {
+          "name": "projects",
+          "type": {
+            "kind": "ref",
+            "name": "UserProjects",
+            "nullable": true
+          },
+          "required": false,
+          "description": "Projects associated with the user, if included."
+        }
+      ],
+      "description": "Represents an individual `user` within an organization."
+    },
+    {
+      "name": "UserUser",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "user"
+          },
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "picture",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "enabled",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "banned",
+          "type": {
+            "kind": "scalar",
+            "scalar": "boolean",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "banned_at",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer",
+            "format": "unixtime",
+            "nullable": true
+          },
+          "required": false
+        }
+      ],
+      "description": "Nested user details."
+    },
+    {
+      "name": "UserProjects",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "object",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "const": "list"
+          },
+          "required": true
+        },
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "UserProjectsDataItem"
+            }
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "UserProjectsDataItem",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "name",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        },
+        {
+          "name": "role",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "nullable": true
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "CreateTranslationRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "file",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "binary"
+          },
+          "required": true,
+          "description": "The audio file object (not file name) translate, in one of these formats: flac, mp3, mp4, mpeg, mpga, m4a, ogg, wav, or webm.\n"
+        },
+        {
+          "name": "model",
+          "type": {
+            "kind": "ref",
+            "name": "CreateTranslationRequestModel"
+          },
+          "required": true,
+          "description": "ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2 model) is currently available.\n"
+        },
+        {
+          "name": "prompt",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false,
+          "description": "An optional text to guide the model's style or continue a previous audio segment. The [prompt](/docs/guides/speech-to-text#prompting) should be in English.\n"
+        },
+        {
+          "name": "response_format",
+          "type": {
+            "kind": "ref",
+            "name": "CreateTranslationRequestResponseFormat"
+          },
+          "required": false,
+          "default": "json",
+          "description": "The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or `vtt`.\n"
+        },
+        {
+          "name": "temperature",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number"
+          },
+          "required": false,
+          "default": 0,
+          "description": "The sampling temperature, between 0 and 1. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic. If set to 0, the model will use [log probability](https://en.wikipedia.org/wiki/Log_probability) to automatically increase the temperature until certain thresholds are hit.\n"
+        }
+      ]
+    },
+    {
+      "name": "CreateTranslationRequestModel",
+      "kind": "union",
+      "semantics": "anyOf",
+      "variants": [
+        {
+          "kind": "scalar",
+          "scalar": "string"
+        },
+        {
+          "kind": "scalar",
+          "scalar": "string",
+          "const": "whisper-1"
+        }
+      ],
+      "description": "ID of the model to use. Only `whisper-1` (which is powered by our open source Whisper V2 model) is currently available.\n"
+    },
+    {
+      "name": "CreateTranslationRequestResponseFormat",
+      "kind": "enum",
+      "base": "string",
+      "values": [
+        {
+          "value": "json"
+        },
+        {
+          "value": "text"
+        },
+        {
+          "value": "srt"
+        },
+        {
+          "value": "verbose_json"
+        },
+        {
+          "value": "vtt"
+        }
+      ],
+      "description": "The format of the output, in one of these options: `json`, `text`, `srt`, `verbose_json`, or `vtt`.\n"
+    },
+    {
+      "name": "AudioTranslationsCreateResponse",
+      "kind": "union",
+      "semantics": "oneOf",
+      "variants": [
+        {
+          "kind": "ref",
+          "name": "CreateTranslationResponseJson"
+        },
+        {
+          "kind": "ref",
+          "name": "CreateTranslationResponseVerboseJson"
+        }
+      ]
+    },
+    {
+      "name": "CreateTranslationResponseJson",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "CreateTranslationResponseVerboseJson",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "language",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The language of the output translation (always `english`)."
+        },
+        {
+          "name": "duration",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "format": "double"
+          },
+          "required": true,
+          "description": "The duration of the input audio."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "The translated text."
+        },
+        {
+          "name": "segments",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "TranscriptionSegment"
+            }
+          },
+          "required": false,
+          "description": "Segments of the translated text and their corresponding details."
+        }
+      ]
+    },
+    {
+      "name": "TranscriptionSegment",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Unique identifier of the segment."
+        },
+        {
+          "name": "seek",
+          "type": {
+            "kind": "scalar",
+            "scalar": "integer"
+          },
+          "required": true,
+          "description": "Seek offset of the segment."
+        },
+        {
+          "name": "start",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "format": "double"
+          },
+          "required": true,
+          "description": "Start time of the segment in seconds."
+        },
+        {
+          "name": "end",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "format": "double"
+          },
+          "required": true,
+          "description": "End time of the segment in seconds."
+        },
+        {
+          "name": "text",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true,
+          "description": "Text content of the segment."
+        },
+        {
+          "name": "tokens",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "scalar",
+              "scalar": "integer"
+            }
+          },
+          "required": true,
+          "description": "Array of token IDs for the text content."
+        },
+        {
+          "name": "temperature",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "format": "float"
+          },
+          "required": true,
+          "description": "Temperature parameter used for generating the segment."
+        },
+        {
+          "name": "avg_logprob",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "format": "float"
+          },
+          "required": true,
+          "description": "Average logprob of the segment. If the value is lower than -1, consider the logprobs failed."
+        },
+        {
+          "name": "compression_ratio",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "format": "float"
+          },
+          "required": true,
+          "description": "Compression ratio of the segment. If the value is greater than 2.4, consider the compression failed."
+        },
+        {
+          "name": "no_speech_prob",
+          "type": {
+            "kind": "scalar",
+            "scalar": "number",
+            "format": "float"
+          },
+          "required": true,
+          "description": "Probability of no speech in the segment. If the value is higher than 1.0 and the `avg_logprob` is below -1, consider this segment silent."
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "name": "admin",
+      "resources": [
+        {
+          "name": "organization",
+          "resources": [
+            {
+              "name": "admin-api-keys",
+              "methods": [
+                {
+                  "action": "create",
+                  "httpMethod": "post",
+                  "path": "/organization/admin_api_keys",
+                  "operationId": "admin-api-keys-create",
+                  "description": "Create a new admin-level API key for the organization.",
+                  "requestBody": {
+                    "contentType": "application/json",
+                    "type": {
+                      "kind": "ref",
+                      "name": "AdminOrganizationAdminApiKeysCreateRequest"
+                    },
+                    "required": true,
+                    "encoding": "json"
+                  },
+                  "responses": [
+                    {
+                      "status": "200",
+                      "description": "The newly created admin API key.",
+                      "contentType": "application/json",
+                      "type": {
+                        "kind": "ref",
+                        "name": "AdminApiKeyCreateResponse"
+                      }
+                    }
+                  ],
+                  "primaryResponse": {
+                    "kind": "ref",
+                    "name": "AdminApiKeyCreateResponse"
+                  },
+                  "security": [
+                    {
+                      "type": "http",
+                      "kind": "bearer",
+                      "schemeName": "AdminApiKeyAuth",
+                      "scheme": "bearer"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "certificates",
+              "methods": [
+                {
+                  "action": "update",
+                  "httpMethod": "post",
+                  "path": "/organization/certificates/{certificate_id}",
+                  "operationId": "modifyCertificate",
+                  "description": "Modify a certificate. Note that only the name can be modified.\n",
+                  "pathParams": [
+                    {
+                      "name": "certificate_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "Unique ID of the certificate to modify."
+                    }
+                  ],
+                  "requestBody": {
+                    "contentType": "application/json",
+                    "type": {
+                      "kind": "ref",
+                      "name": "ModifyCertificateRequest"
+                    },
+                    "required": true,
+                    "encoding": "json",
+                    "description": "The certificate modification payload."
+                  },
+                  "responses": [
+                    {
+                      "status": "200",
+                      "description": "Certificate modified successfully.",
+                      "contentType": "application/json",
+                      "type": {
+                        "kind": "ref",
+                        "name": "Certificate"
+                      }
+                    }
+                  ],
+                  "primaryResponse": {
+                    "kind": "ref",
+                    "name": "Certificate"
+                  },
+                  "security": [
+                    {
+                      "type": "http",
+                      "kind": "bearer",
+                      "schemeName": "AdminApiKeyAuth",
+                      "scheme": "bearer"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "groups",
+              "resources": [
+                {
+                  "name": "users",
+                  "methods": [
+                    {
+                      "action": "list",
+                      "httpMethod": "get",
+                      "path": "/organization/groups/{group_id}/users",
+                      "operationId": "list-group-users",
+                      "description": "Lists the users assigned to a group.",
+                      "pathParams": [
+                        {
+                          "name": "group_id",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": true,
+                          "description": "The ID of the group to inspect."
+                        }
+                      ],
+                      "queryParams": [
+                        {
+                          "name": "limit",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "integer"
+                          },
+                          "required": false,
+                          "description": "A limit on the number of users to be returned. Limit can range between 0 and 1000, and the default is 100.\n",
+                          "default": 100
+                        },
+                        {
+                          "name": "after",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": false,
+                          "description": "A cursor for use in pagination. Provide the ID of the last user from the previous list response to retrieve the next page.\n"
+                        },
+                        {
+                          "name": "order",
+                          "type": {
+                            "kind": "ref",
+                            "name": "AdminOrganizationGroupsUsersListOrder"
+                          },
+                          "required": false,
+                          "description": "Specifies the sort order of users in the list.",
+                          "default": "desc"
+                        }
+                      ],
+                      "responses": [
+                        {
+                          "status": "200",
+                          "description": "Group users listed successfully.",
+                          "contentType": "application/json",
+                          "type": {
+                            "kind": "ref",
+                            "name": "UserListResource"
+                          }
+                        }
+                      ],
+                      "primaryResponse": {
+                        "kind": "ref",
+                        "name": "UserListResource"
+                      },
+                      "pagination": {
+                        "style": "cursor",
+                        "itemsField": "data",
+                        "nextField": "has_more",
+                        "itemType": {
+                          "kind": "ref",
+                          "name": "GroupUser"
+                        },
+                        "cursorParam": "after",
+                        "limitParam": "limit"
+                      },
+                      "security": [
+                        {
+                          "type": "http",
+                          "kind": "bearer",
+                          "schemeName": "AdminApiKeyAuth",
+                          "scheme": "bearer"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "projects",
+              "resources": [
+                {
+                  "name": "certificates",
+                  "methods": [
+                    {
+                      "action": "list",
+                      "httpMethod": "get",
+                      "path": "/organization/projects/{project_id}/certificates",
+                      "operationId": "listProjectCertificates",
+                      "description": "List certificates for this project.",
+                      "pathParams": [
+                        {
+                          "name": "project_id",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": true,
+                          "description": "The ID of the project."
+                        }
+                      ],
+                      "queryParams": [
+                        {
+                          "name": "limit",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "integer"
+                          },
+                          "required": false,
+                          "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n",
+                          "default": 20
+                        },
+                        {
+                          "name": "after",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": false,
+                          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+                        },
+                        {
+                          "name": "order",
+                          "type": {
+                            "kind": "ref",
+                            "name": "AdminOrganizationProjectsCertificatesListOrder"
+                          },
+                          "required": false,
+                          "description": "Sort order by the `created_at` timestamp of the objects. `asc` for ascending order and `desc` for descending order.\n",
+                          "default": "desc"
+                        }
+                      ],
+                      "responses": [
+                        {
+                          "status": "200",
+                          "description": "Certificates listed successfully.",
+                          "contentType": "application/json",
+                          "type": {
+                            "kind": "ref",
+                            "name": "ListProjectCertificatesResponse"
+                          }
+                        }
+                      ],
+                      "primaryResponse": {
+                        "kind": "ref",
+                        "name": "ListProjectCertificatesResponse"
+                      },
+                      "pagination": {
+                        "style": "cursor",
+                        "itemsField": "data",
+                        "nextField": "has_more",
+                        "itemType": {
+                          "kind": "ref",
+                          "name": "OrganizationProjectCertificate"
+                        },
+                        "cursorParam": "after",
+                        "limitParam": "limit"
+                      },
+                      "security": [
+                        {
+                          "type": "http",
+                          "kind": "bearer",
+                          "schemeName": "AdminApiKeyAuth",
+                          "scheme": "bearer"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "name": "service-accounts",
+                  "methods": [
+                    {
+                      "action": "list",
+                      "httpMethod": "get",
+                      "path": "/organization/projects/{project_id}/service_accounts",
+                      "operationId": "list-project-service-accounts",
+                      "description": "Returns a list of service accounts in the project.",
+                      "pathParams": [
+                        {
+                          "name": "project_id",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": true,
+                          "description": "The ID of the project."
+                        }
+                      ],
+                      "queryParams": [
+                        {
+                          "name": "limit",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "integer"
+                          },
+                          "required": false,
+                          "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n",
+                          "default": 20
+                        },
+                        {
+                          "name": "after",
+                          "type": {
+                            "kind": "scalar",
+                            "scalar": "string"
+                          },
+                          "required": false,
+                          "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+                        }
+                      ],
+                      "responses": [
+                        {
+                          "status": "200",
+                          "description": "Project service accounts listed successfully.",
+                          "contentType": "application/json",
+                          "type": {
+                            "kind": "ref",
+                            "name": "ProjectServiceAccountListResponse"
+                          }
+                        },
+                        {
+                          "status": "400",
+                          "description": "Error response when project is archived.",
+                          "contentType": "application/json",
+                          "type": {
+                            "kind": "ref",
+                            "name": "ErrorResponse"
+                          }
+                        }
+                      ],
+                      "primaryResponse": {
+                        "kind": "ref",
+                        "name": "ProjectServiceAccountListResponse"
+                      },
+                      "pagination": {
+                        "style": "cursor",
+                        "itemsField": "data",
+                        "nextField": "has_more",
+                        "itemType": {
+                          "kind": "ref",
+                          "name": "ProjectServiceAccount"
+                        },
+                        "cursorParam": "after",
+                        "limitParam": "limit"
+                      },
+                      "security": [
+                        {
+                          "type": "http",
+                          "kind": "bearer",
+                          "schemeName": "AdminApiKeyAuth",
+                          "scheme": "bearer"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "roles",
+              "methods": [
+                {
+                  "action": "update",
+                  "httpMethod": "post",
+                  "path": "/organization/roles/{role_id}",
+                  "operationId": "update-role",
+                  "description": "Updates an existing organization role.",
+                  "pathParams": [
+                    {
+                      "name": "role_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "The ID of the role to update."
+                    }
+                  ],
+                  "requestBody": {
+                    "contentType": "application/json",
+                    "type": {
+                      "kind": "ref",
+                      "name": "PublicUpdateOrganizationRoleBody"
+                    },
+                    "required": true,
+                    "encoding": "json",
+                    "description": "Fields to update on the role."
+                  },
+                  "responses": [
+                    {
+                      "status": "200",
+                      "description": "Role updated successfully.",
+                      "contentType": "application/json",
+                      "type": {
+                        "kind": "ref",
+                        "name": "Role"
+                      }
+                    }
+                  ],
+                  "primaryResponse": {
+                    "kind": "ref",
+                    "name": "Role"
+                  },
+                  "security": [
+                    {
+                      "type": "http",
+                      "kind": "bearer",
+                      "schemeName": "AdminApiKeyAuth",
+                      "scheme": "bearer"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "users",
+              "methods": [
+                {
+                  "action": "retrieve",
+                  "httpMethod": "get",
+                  "path": "/organization/users/{user_id}",
+                  "operationId": "retrieve-user",
+                  "description": "Retrieves a user by their identifier.",
+                  "pathParams": [
+                    {
+                      "name": "user_id",
+                      "type": {
+                        "kind": "scalar",
+                        "scalar": "string"
+                      },
+                      "required": true,
+                      "description": "The ID of the user."
+                    }
+                  ],
+                  "responses": [
+                    {
+                      "status": "200",
+                      "description": "User retrieved successfully.",
+                      "contentType": "application/json",
+                      "type": {
+                        "kind": "ref",
+                        "name": "User"
+                      }
+                    }
+                  ],
+                  "primaryResponse": {
+                    "kind": "ref",
+                    "name": "User"
+                  },
+                  "security": [
+                    {
+                      "type": "http",
+                      "kind": "bearer",
+                      "schemeName": "AdminApiKeyAuth",
+                      "scheme": "bearer"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "audio",
+      "resources": [
+        {
+          "name": "translations",
+          "methods": [
+            {
+              "action": "create",
+              "httpMethod": "post",
+              "path": "/audio/translations",
+              "operationId": "createTranslation",
+              "description": "Translates audio into English.",
+              "requestBody": {
+                "contentType": "multipart/form-data",
+                "type": {
+                  "kind": "ref",
+                  "name": "CreateTranslationRequest"
+                },
+                "required": true,
+                "encoding": "multipart"
+              },
+              "responses": [
+                {
+                  "status": "200",
+                  "description": "OK",
+                  "contentType": "application/json",
+                  "type": {
+                    "kind": "ref",
+                    "name": "AudioTranslationsCreateResponse"
+                  }
+                }
+              ],
+              "primaryResponse": {
+                "kind": "ref",
+                "name": "AudioTranslationsCreateResponse"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "openai",
+    "version": "2.3.0"
+  },
+  "servers": [
+    "https://api.openai.com/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "ApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    },
+    {
+      "type": "http",
+      "kind": "bearer",
+      "schemeName": "AdminApiKeyAuth",
+      "envVar": "OPENAI_API_KEY",
+      "scheme": "bearer"
+    }
+  ]
+}

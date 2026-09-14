@@ -1,0 +1,16 @@
+{
+  "overlay": "1.0.0",
+  "info": {
+    "title": "both",
+    "version": "1.0.0"
+  },
+  "actions": [
+    {
+      "target": "$.info",
+      "remove": true,
+      "update": {
+        "ignored": true
+      }
+    }
+  ]
+}

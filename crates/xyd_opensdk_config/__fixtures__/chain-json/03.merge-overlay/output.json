@@ -1,0 +1,37 @@
+{
+  "$schema": null,
+  "version": 1,
+  "behavior": null,
+  "publish": null,
+  "sources": {
+    "api": {
+      "inputs": [
+        {
+          "location": "./specs/base.json"
+        },
+        {
+          "location": "./specs/orders.json"
+        }
+      ],
+      "overlays": [
+        {
+          "location": "./overlays/description.json"
+        }
+      ],
+      "output": "./.chain/api.openapi.json"
+    }
+  },
+  "targets": {
+    "api-sdk": {
+      "target": "go",
+      "source": "api",
+      "output": "./sdk/api",
+      "sdkName": "api",
+      "behavior": null,
+      "grouping": null,
+      "options": null,
+      "publish": null,
+      "tests": null
+    }
+  }
+}

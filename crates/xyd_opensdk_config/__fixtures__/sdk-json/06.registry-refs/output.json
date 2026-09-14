@@ -1,0 +1,22 @@
+{
+  "$schema": "https://unpkg.com/@xyd-js/opensdk-schemas/sdk.schema.json",
+  "version": "2",
+  "api": "apis/livesession/petstore@1.0.0",
+  "spec": null,
+  "sdk": "sdks/livesession/petstore-sdk@0.1.0",
+  "sdkName": "petstore",
+  "behavior": null,
+  "grouping": null,
+  "publish": null,
+  "sections": {
+    "node": {
+      "output": "./sdk/node",
+      "behavior": null,
+      "publish": null,
+      "options": {
+        "tests": false
+      }
+    }
+  },
+  "nonSectionKeys": {}
+}

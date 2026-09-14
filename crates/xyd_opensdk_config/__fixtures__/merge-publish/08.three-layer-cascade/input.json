@@ -1,0 +1,17 @@
+{
+  "layers": [
+    {
+      "author": "Base",
+      "license": "MIT",
+      "registry": "https://base.example"
+    },
+    {
+      "license": "Apache-2.0",
+      "homepage": "https://mid.example"
+    },
+    {
+      "registry": "https://top.example",
+      "packageName": "top"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "BucketString",
+    "version": "1"
+  },
+  "paths": {},
+  "components": {
+    "schemas": "not-an-object"
+  }
+}

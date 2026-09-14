@@ -1,0 +1,16 @@
+{
+  "changes": [
+    {
+      "severity": "breaking",
+      "kind": "type-kind-changed",
+      "path": "types.PetStatus",
+      "detail": "enum -> struct"
+    },
+    {
+      "severity": "breaking",
+      "kind": "alias-target-changed",
+      "path": "types.PetId",
+      "detail": "scalar:string -> scalar:integer"
+    }
+  ]
+}

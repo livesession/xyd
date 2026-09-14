@@ -1,0 +1,44 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Tricky",
+    "version": "1.0",
+    "description": "line one\nline two\n",
+    "contact": {
+      "name": "a: b",
+      "url": "it's here",
+      "note": "#hash",
+      "dash": "- leading",
+      "empty": ""
+    }
+  },
+  "paths": {},
+  "x-values": {
+    "numLike": "1.0",
+    "boolLike": "true",
+    "nullLike": "null",
+    "yes": "yes",
+    "nul": null,
+    "t": true,
+    "f": false,
+    "zero": 0,
+    "float": 1.5,
+    "big": 1e+21,
+    "emptyMap": {},
+    "emptyList": [],
+    "nested": [
+      {
+        "a": 1
+      },
+      {
+        "b": [
+          1,
+          2
+        ]
+      }
+    ],
+    "longString": "a very long single-line string that comfortably exceeds the default eighty column line width used by js-yaml when it decides whether to fold",
+    "unicode": "café — ünïcodé",
+    "tab": "has\ttab"
+  }
+}

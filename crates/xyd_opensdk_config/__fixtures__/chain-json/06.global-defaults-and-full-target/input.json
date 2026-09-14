@@ -1,0 +1,79 @@
+{
+  "$schema": "../xyd-opensdk-schemas/chain.schema.json",
+  "version": 1,
+  "behavior": {
+    "retry": {
+      "maxRetries": 5
+    }
+  },
+  "publish": {
+    "author": "Acme",
+    "license": "MIT"
+  },
+  "sources": {
+    "api": {
+      "inputs": [
+        {
+          "location": "./specs/a.yaml"
+        },
+        {
+          "location": "https://example.com/b.yaml"
+        }
+      ],
+      "overlays": [
+        {
+          "location": "./overlays/one.json"
+        },
+        {
+          "location": "./overlays/two.json"
+        }
+      ],
+      "output": "./.chain/api.openapi.json"
+    },
+    "bare": {
+      "inputs": [
+        {
+          "location": "./specs/bare.yaml"
+        }
+      ]
+    }
+  },
+  "targets": {
+    "full": {
+      "target": "csharp",
+      "source": "api",
+      "output": "./sdk/dotnet",
+      "sdkName": "Acme",
+      "behavior": {
+        "timeout": {
+          "defaultTimeoutMs": 1234
+        }
+      },
+      "grouping": {
+        "mountRules": {
+          "threads": "beta/threads"
+        },
+        "operationHints": {
+          "POST /threads/runs": {
+            "mountOn": "beta/threads",
+            "action": "new-and-run"
+          }
+        }
+      },
+      "options": {
+        "namespace": "Acme",
+        "targetFramework": "net8.0"
+      },
+      "publish": {
+        "registry": "https://nuget.example",
+        "tokenEnv": "NUGET_TOKEN"
+      },
+      "tests": false,
+      "unknownTargetKey": "dropped by the typed view"
+    },
+    "bare": {
+      "target": "go",
+      "source": "bare"
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "resolveChain": {
+    "ok": true,
+    "value": {
+      "version": 1,
+      "sources": {
+        "api": {
+          "inputs": [
+            {
+              "location": "./specs/api.json"
+            }
+          ],
+          "overlays": [
+            {
+              "location": "./overlays/hide-internal.json"
+            }
+          ],
+          "output": "./.chain/api.openapi.json"
+        }
+      },
+      "targets": {
+        "api-sdk": {
+          "target": "go",
+          "source": "api",
+          "output": "./sdk/api",
+          "sdkName": "api"
+        }
+      }
+    }
+  },
+  "detectChain": {
+    "ok": true,
+    "value": "<CWD>/chain.json"
+  },
+  "source:api": {
+    "ok": true,
+    "value": {
+      "outPath": "<CWD>/.chain/api.openapi.json",
+      "content": "{\n  \"openapi\": \"3.0.3\",\n  \"info\": {\n    \"title\": \"Api\",\n    \"version\": \"1.0.0\"\n  },\n  \"paths\": {\n    \"/pets\": {\n      \"get\": {\n        \"operationId\": \"listPets\",\n        \"responses\": {\n          \"200\": {\n            \"description\": \"ok\"\n          }\n        }\n      }\n    }\n  }\n}\n"
+    }
+  }
+}

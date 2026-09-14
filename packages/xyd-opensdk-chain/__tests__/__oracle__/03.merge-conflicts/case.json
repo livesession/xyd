@@ -1,0 +1,91 @@
+{
+  "description": "mergeOpenApiDocs: conflict detection + the exact origin pair named in the message",
+  "ops": [
+    {
+      "id": "method-conflict",
+      "op": "mergeOpenApiDocs",
+      "inputs": [
+        "./a.json",
+        "./b.json"
+      ]
+    },
+    {
+      "id": "origin-pair-is-1-and-2",
+      "op": "mergeOpenApiDocs",
+      "inputs": [
+        "./base.json",
+        "./b1.json",
+        "./b2.json"
+      ]
+    },
+    {
+      "id": "field-conflict",
+      "op": "mergeOpenApiDocs",
+      "inputs": [
+        "./field-a.json",
+        "./field-b.json"
+      ]
+    },
+    {
+      "id": "component-conflict",
+      "op": "mergeOpenApiDocs",
+      "inputs": [
+        "./comp-a.json",
+        "./comp-b.json"
+      ]
+    },
+    {
+      "id": "component-dedup-identical",
+      "op": "mergeOpenApiDocs",
+      "inputs": [
+        "./comp-a.json",
+        "./comp-a.json"
+      ]
+    },
+    {
+      "id": "path-item-non-object-vs-object",
+      "op": "mergeOpenApiDocs",
+      "inputs": [
+        "./nonobj-a.json",
+        "./nonobj-b.json"
+      ]
+    },
+    {
+      "id": "path-item-non-object-equal",
+      "op": "mergeOpenApiDocs",
+      "inputs": [
+        "./nonobj-a.json",
+        "./nonobj-same.json"
+      ]
+    },
+    {
+      "id": "components-bucket-not-object-skipped",
+      "op": "mergeOpenApiDocs",
+      "inputs": [
+        "./a.json",
+        "./comp-nonobj.json"
+      ]
+    },
+    {
+      "id": "no-inputs",
+      "op": "mergeOpenApiDocs",
+      "inputs": []
+    },
+    {
+      "id": "target-bucket-not-object",
+      "op": "mergeOpenApiDocs",
+      "inputs": [
+        "./comp-bucket-string-first.json",
+        "./comp-bucket-object-second.json"
+      ]
+    },
+    {
+      "id": "null-paths-components-tags",
+      "op": "mergeOpenApiDocs",
+      "inputs": [
+        "./paths-null.json",
+        "./a.json"
+      ]
+    }
+  ]
+}

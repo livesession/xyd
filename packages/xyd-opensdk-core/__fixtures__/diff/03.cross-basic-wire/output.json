@@ -1,0 +1,106 @@
+{
+  "changes": [
+    {
+      "severity": "breaking",
+      "kind": "method-removed",
+      "path": "pets.list",
+      "detail": "method no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "method-removed",
+      "path": "pets.create",
+      "detail": "method no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "method-removed",
+      "path": "pets.retrieve",
+      "detail": "method no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "method-removed",
+      "path": "pets.download_photo",
+      "detail": "method no longer exists"
+    },
+    {
+      "severity": "safe",
+      "kind": "method-added",
+      "path": "files.upload",
+      "detail": "new method"
+    },
+    {
+      "severity": "safe",
+      "kind": "method-added",
+      "path": "files.list",
+      "detail": "new method"
+    },
+    {
+      "severity": "safe",
+      "kind": "method-added",
+      "path": "files.retrieve",
+      "detail": "new method"
+    },
+    {
+      "severity": "safe",
+      "kind": "method-added",
+      "path": "tokens.create",
+      "detail": "new method"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.PetList",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.Pet",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.PetStatus",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.CreatePetRequest",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "safe",
+      "kind": "type-added",
+      "path": "types.UploadFileRequest",
+      "detail": "new named type"
+    },
+    {
+      "severity": "safe",
+      "kind": "type-added",
+      "path": "types.File",
+      "detail": "new named type"
+    },
+    {
+      "severity": "safe",
+      "kind": "type-added",
+      "path": "types.FileList",
+      "detail": "new named type"
+    },
+    {
+      "severity": "safe",
+      "kind": "type-added",
+      "path": "types.CreateTokenRequest",
+      "detail": "new named type"
+    },
+    {
+      "severity": "safe",
+      "kind": "type-added",
+      "path": "types.Token",
+      "detail": "new named type"
+    }
+  ]
+}

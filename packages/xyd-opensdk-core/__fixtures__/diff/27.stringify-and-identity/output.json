@@ -1,0 +1,16 @@
+{
+  "changes": [
+    {
+      "severity": "breaking",
+      "kind": "body-encoding-changed",
+      "path": "pets.create.requestBody",
+      "detail": "[object Object] -> [object Object]"
+    },
+    {
+      "severity": "breaking",
+      "kind": "security-changed",
+      "path": "security",
+      "detail": "default security requirements changed"
+    }
+  ]
+}

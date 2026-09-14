@@ -1,0 +1,21 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Extra",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/b": {
+      "post": {
+        "operationId": "b"
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "B": {
+        "type": "number"
+      }
+    }
+  }
+}

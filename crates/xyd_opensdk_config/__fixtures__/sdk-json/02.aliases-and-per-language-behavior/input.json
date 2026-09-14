@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "sdkName": "acme",
+  "behavior": {
+    "retry": {
+      "maxRetries": 4
+    }
+  },
+  "grouping": {
+    "mountRules": {
+      "assistants": "beta/assistants"
+    }
+  },
+  "typescript": {
+    "packageName": "acme",
+    "output": "./out/ts",
+    "behavior": {
+      "retry": {
+        "maxRetries": 9
+      }
+    }
+  },
+  "go": {
+    "modulePath": "github.com/acme/acme"
+  }
+}

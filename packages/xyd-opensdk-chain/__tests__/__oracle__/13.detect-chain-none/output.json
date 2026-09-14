@@ -1,0 +1,10 @@
+{
+  "none": {
+    "ok": true,
+    "value": null
+  },
+  "explicit-missing": {
+    "ok": true,
+    "value": null
+  }
+}

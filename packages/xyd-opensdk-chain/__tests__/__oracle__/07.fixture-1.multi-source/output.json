@@ -1,0 +1,58 @@
+{
+  "resolveChain": {
+    "ok": true,
+    "value": {
+      "version": 1,
+      "sources": {
+        "pets": {
+          "inputs": [
+            {
+              "location": "./specs/pets.json"
+            }
+          ],
+          "output": "./.chain/pets.openapi.json"
+        },
+        "catalog": {
+          "inputs": [
+            {
+              "location": "./specs/catalog.json"
+            }
+          ],
+          "output": "./.chain/catalog.openapi.json"
+        }
+      },
+      "targets": {
+        "pets-sdk": {
+          "target": "go",
+          "source": "pets",
+          "output": "./sdk/pets",
+          "sdkName": "pets"
+        },
+        "catalog-sdk": {
+          "target": "go",
+          "source": "catalog",
+          "output": "./sdk/catalog",
+          "sdkName": "catalog"
+        }
+      }
+    }
+  },
+  "detectChain": {
+    "ok": true,
+    "value": "<CWD>/chain.json"
+  },
+  "source:pets": {
+    "ok": true,
+    "value": {
+      "outPath": "<CWD>/.chain/pets.openapi.json",
+      "content": "{\n  \"openapi\": \"3.0.3\",\n  \"info\": {\n    \"title\": \"Pets\",\n    \"version\": \"1.0.0\"\n  },\n  \"paths\": {\n    \"/pets\": {\n      \"get\": {\n        \"operationId\": \"listPets\",\n        \"responses\": {\n          \"200\": {\n            \"description\": \"ok\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/Pet\"\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"Pet\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"id\": {\n            \"type\": \"string\"\n          },\n          \"name\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    }\n  }\n}\n"
+    }
+  },
+  "source:catalog": {
+    "ok": true,
+    "value": {
+      "outPath": "<CWD>/.chain/catalog.openapi.json",
+      "content": "{\n  \"openapi\": \"3.0.3\",\n  \"info\": {\n    \"title\": \"Catalog\",\n    \"version\": \"1.0.0\"\n  },\n  \"paths\": {\n    \"/products\": {\n      \"get\": {\n        \"operationId\": \"listProducts\",\n        \"responses\": {\n          \"200\": {\n            \"description\": \"ok\",\n            \"content\": {\n              \"application/json\": {\n                \"schema\": {\n                  \"$ref\": \"#/components/schemas/Product\"\n                }\n              }\n            }\n          }\n        }\n      }\n    }\n  },\n  \"components\": {\n    \"schemas\": {\n      \"Product\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"sku\": {\n            \"type\": \"string\"\n          }\n        }\n      }\n    }\n  }\n}\n"
+    }
+  }
+}

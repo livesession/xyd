@@ -1,0 +1,327 @@
+{
+  "opensdk": "1.0.0",
+  "info": {
+    "title": "Wire Kitchen",
+    "version": "0.3.0",
+    "description": "Handcrafted IR exercising request encodings, header params and query serialization."
+  },
+  "servers": [
+    "https://api.wire.test/v1"
+  ],
+  "security": [
+    {
+      "type": "http",
+      "kind": "bearer",
+      "envVar": "WIRE_API_KEY",
+      "scheme": "bearer"
+    }
+  ],
+  "types": [
+    {
+      "name": "UploadFileRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "file",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string",
+            "format": "binary"
+          },
+          "required": true,
+          "description": "The file content."
+        },
+        {
+          "name": "purpose",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "description",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "File",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "purpose",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "FileList",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "data",
+          "type": {
+            "kind": "array",
+            "items": {
+              "kind": "ref",
+              "name": "File"
+            }
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "CreateTokenRequest",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "grant_type",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        },
+        {
+          "name": "scope",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "Token",
+      "kind": "struct",
+      "fields": [
+        {
+          "name": "access_token",
+          "type": {
+            "kind": "scalar",
+            "scalar": "string"
+          },
+          "required": true
+        }
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "name": "files",
+      "methods": [
+        {
+          "action": "upload",
+          "httpMethod": "post",
+          "path": "/files",
+          "operationId": "uploadFile",
+          "description": "Upload a file (multipart body with a binary part).",
+          "headerParams": [
+            {
+              "name": "idempotency_key",
+              "wireName": "Idempotency-Key",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": true
+            },
+            {
+              "name": "request_priority",
+              "wireName": "X-Request-Priority",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": false
+            }
+          ],
+          "requestBody": {
+            "contentType": "multipart/form-data",
+            "type": {
+              "kind": "ref",
+              "name": "UploadFileRequest"
+            },
+            "required": true,
+            "encoding": "multipart"
+          },
+          "responses": [
+            {
+              "status": "200",
+              "description": "The uploaded file.",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "File"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "File"
+          }
+        },
+        {
+          "action": "list",
+          "httpMethod": "get",
+          "path": "/files",
+          "operationId": "listFiles",
+          "description": "List files (query serialization: wireName, explode, deepObject).",
+          "queryParams": [
+            {
+              "name": "tags",
+              "wireName": "tags[]",
+              "type": {
+                "kind": "array",
+                "items": {
+                  "kind": "scalar",
+                  "scalar": "string"
+                }
+              },
+              "required": false,
+              "style": "form",
+              "explode": true
+            },
+            {
+              "name": "statuses",
+              "type": {
+                "kind": "array",
+                "items": {
+                  "kind": "scalar",
+                  "scalar": "string"
+                }
+              },
+              "required": false,
+              "style": "form",
+              "explode": false
+            },
+            {
+              "name": "metadata",
+              "type": {
+                "kind": "map",
+                "values": {
+                  "kind": "scalar",
+                  "scalar": "string"
+                }
+              },
+              "required": false,
+              "style": "deepObject",
+              "explode": true
+            },
+            {
+              "name": "purpose",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": false
+            }
+          ],
+          "responses": [
+            {
+              "status": "200",
+              "description": "The files.",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "FileList"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "FileList"
+          }
+        },
+        {
+          "action": "retrieve",
+          "httpMethod": "get",
+          "path": "/files/{file_id}",
+          "operationId": "getFile",
+          "description": "Retrieve a file.",
+          "pathParams": [
+            {
+              "name": "file_id",
+              "type": {
+                "kind": "scalar",
+                "scalar": "string"
+              },
+              "required": true
+            }
+          ],
+          "responses": [
+            {
+              "status": "200",
+              "description": "The file.",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "File"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "File"
+          }
+        }
+      ]
+    },
+    {
+      "name": "tokens",
+      "methods": [
+        {
+          "action": "create",
+          "httpMethod": "post",
+          "path": "/tokens",
+          "operationId": "createToken",
+          "description": "Create a token (application/x-www-form-urlencoded body).",
+          "injectIdempotencyKey": true,
+          "requestBody": {
+            "contentType": "application/x-www-form-urlencoded",
+            "type": {
+              "kind": "ref",
+              "name": "CreateTokenRequest"
+            },
+            "required": true,
+            "encoding": "form"
+          },
+          "responses": [
+            {
+              "status": "200",
+              "description": "The token.",
+              "contentType": "application/json",
+              "type": {
+                "kind": "ref",
+                "name": "Token"
+              }
+            }
+          ],
+          "primaryResponse": {
+            "kind": "ref",
+            "name": "Token"
+          }
+        }
+      ]
+    }
+  ]
+}

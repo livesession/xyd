@@ -1,0 +1,9 @@
+{
+  "description": "The deliberate extension-first branch: a .yaml/.yml whose body starts with `{` must go through the YAML loader, NEVER JSON.parse. Each file here is a valid YAML flow mapping and INVALID JSON, so routing it to the JSON parser fails loudly instead of coincidentally agreeing.",
+  "ops": [
+    { "id": "flow-unquoted-keys", "op": "readRawDoc", "location": "./flow-unquoted.yaml" },
+    { "id": "flow-trailing-comment", "op": "readRawDoc", "location": "./flow-comment.yml" },
+    { "id": "flow-multiline-trailing-comma", "op": "readRawDoc", "location": "./flow-multiline.yaml" },
+    { "id": "process-flow-yaml", "op": "processSource", "source": { "inputs": [{ "location": "./flow-unquoted.yaml" }], "output": "./out/flow.json" } }
+  ]
+}

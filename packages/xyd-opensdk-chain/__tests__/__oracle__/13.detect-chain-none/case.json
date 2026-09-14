@@ -1,0 +1,14 @@
+{
+  "description": "detectChain returns null when nothing is found",
+  "ops": [
+    {
+      "id": "none",
+      "op": "detectChain"
+    },
+    {
+      "id": "explicit-missing",
+      "op": "detectChain",
+      "explicitPath": "chain.json"
+    }
+  ]
+}

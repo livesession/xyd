@@ -1,0 +1,4 @@
+{
+  "source": "./nested/deep/spec.json",
+  "cwd": "__CASE__"
+}

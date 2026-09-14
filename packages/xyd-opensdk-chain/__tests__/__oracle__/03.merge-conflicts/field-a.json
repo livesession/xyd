@@ -1,0 +1,12 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "FieldA",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/pets": {
+      "summary": "one"
+    }
+  }
+}

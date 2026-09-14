@@ -1,0 +1,16 @@
+{
+  "changes": [
+    {
+      "severity": "breaking",
+      "kind": "response-type-changed",
+      "path": "pets.create.primaryResponse",
+      "detail": "ref:Pet -> none"
+    },
+    {
+      "severity": "breaking",
+      "kind": "response-type-changed",
+      "path": "pets.download_photo.primaryResponse",
+      "detail": "scalar:string/binary -> none"
+    }
+  ]
+}

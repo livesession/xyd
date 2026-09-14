@@ -1,0 +1,15 @@
+{
+  "overlay": "1.0.0",
+  "info": {
+    "title": "scalar-obj",
+    "version": "1.0.0"
+  },
+  "actions": [
+    {
+      "target": "$.info.title",
+      "update": {
+        "nested": true
+      }
+    }
+  ]
+}

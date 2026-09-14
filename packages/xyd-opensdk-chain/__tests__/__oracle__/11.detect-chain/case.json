@@ -1,0 +1,24 @@
+{
+  "description": "detectChain: explicit path (must exist) then chain.json then .chain/chain.json",
+  "ops": [
+    {
+      "id": "conventional-root-wins",
+      "op": "detectChain"
+    },
+    {
+      "id": "explicit-existing",
+      "op": "detectChain",
+      "explicitPath": "./custom/my-chain.json"
+    },
+    {
+      "id": "explicit-missing",
+      "op": "detectChain",
+      "explicitPath": "./custom/nope.json"
+    },
+    {
+      "id": "explicit-dot-chain",
+      "op": "detectChain",
+      "explicitPath": ".chain/chain.json"
+    }
+  ]
+}

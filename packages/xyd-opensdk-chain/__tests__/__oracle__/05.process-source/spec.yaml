@@ -1,0 +1,27 @@
+openapi: 3.0.3
+info:
+  title: FromYaml
+  version: '1.0.0'
+  description: |
+    multi-line
+    description
+paths:
+  /y:
+    get:
+      operationId: y
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: ok
+components:
+  schemas:
+    Y:
+      type: object
+      properties:
+        flag: { type: boolean }
+        nothing: { type: 'null' }

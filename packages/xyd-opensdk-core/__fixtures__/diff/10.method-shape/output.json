@@ -1,0 +1,40 @@
+{
+  "changes": [
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "pets.list",
+      "detail": "method marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "binding-changed",
+      "path": "pets.create",
+      "detail": "POST /pets -> PUT /pets"
+    },
+    {
+      "severity": "breaking",
+      "kind": "security-changed",
+      "path": "pets.create.security",
+      "detail": "per-operation security changed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "binding-changed",
+      "path": "pets.retrieve",
+      "detail": "GET /pets/{pet_id} -> GET /v2/pets/{pet_id}"
+    },
+    {
+      "severity": "breaking",
+      "kind": "method-removed",
+      "path": "pets.download_photo",
+      "detail": "method no longer exists"
+    },
+    {
+      "severity": "safe",
+      "kind": "method-added",
+      "path": "pets.archive",
+      "detail": "new method"
+    }
+  ]
+}

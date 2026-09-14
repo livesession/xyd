@@ -1,0 +1,15 @@
+{
+  "overlay": "1.0.0",
+  "info": {
+    "title": "wildcard",
+    "version": "1.0.0"
+  },
+  "actions": [
+    {
+      "target": "$.paths[*][*]",
+      "update": {
+        "x-touched": true
+      }
+    }
+  ]
+}

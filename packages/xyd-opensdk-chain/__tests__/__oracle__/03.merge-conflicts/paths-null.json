@@ -1,0 +1,10 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "PathsNull",
+    "version": "1"
+  },
+  "paths": null,
+  "components": null,
+  "tags": null
+}

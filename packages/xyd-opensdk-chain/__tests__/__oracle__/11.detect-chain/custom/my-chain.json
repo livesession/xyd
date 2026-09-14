@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "sources": {
+    "s3": {
+      "inputs": [
+        {
+          "location": "./x.json"
+        }
+      ]
+    }
+  },
+  "targets": {
+    "t3": {
+      "target": "go",
+      "source": "s3"
+    }
+  }
+}

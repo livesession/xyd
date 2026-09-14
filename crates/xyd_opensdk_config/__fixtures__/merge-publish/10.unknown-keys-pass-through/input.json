@@ -1,0 +1,12 @@
+{
+  "layers": [
+    {
+      "author": "Acme",
+      "futureField": "kept"
+    },
+    {
+      "anotherUnknown": 42,
+      "license": "MIT"
+    }
+  ]
+}

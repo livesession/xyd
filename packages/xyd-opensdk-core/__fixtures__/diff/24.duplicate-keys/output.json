@@ -1,0 +1,64 @@
+{
+  "changes": [
+    {
+      "severity": "breaking",
+      "kind": "binding-changed",
+      "path": "pets.list",
+      "detail": "GET /pets/all -> GET /pets"
+    },
+    {
+      "severity": "safe",
+      "kind": "param-added",
+      "path": "pets.list.queryParams.after",
+      "detail": "new optional parameter"
+    },
+    {
+      "severity": "safe",
+      "kind": "param-added",
+      "path": "pets.list.queryParams.limit",
+      "detail": "new optional parameter"
+    },
+    {
+      "severity": "breaking",
+      "kind": "response-type-changed",
+      "path": "pets.list.primaryResponse",
+      "detail": "none -> ref:PetList"
+    },
+    {
+      "severity": "breaking",
+      "kind": "binding-changed",
+      "path": "pets.create",
+      "detail": "POST /pets/dup -> POST /pets"
+    },
+    {
+      "severity": "breaking",
+      "kind": "body-added",
+      "path": "pets.create.requestBody",
+      "detail": "new required request body"
+    },
+    {
+      "severity": "breaking",
+      "kind": "response-type-changed",
+      "path": "pets.create.primaryResponse",
+      "detail": "none -> ref:Pet"
+    },
+    {
+      "severity": "breaking",
+      "kind": "param-type-changed",
+      "path": "pets.retrieve.pathParams.pet_id",
+      "detail": "scalar:integer -> scalar:string"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.Pet.fields.id",
+      "detail": "scalar:integer -> scalar:string"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.Pet.fields.id",
+      "detail": "optional -> required"
+    }
+  ]
+}

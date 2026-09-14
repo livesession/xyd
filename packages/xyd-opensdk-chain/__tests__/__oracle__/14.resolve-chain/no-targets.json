@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "sources": {
+    "pet": {
+      "inputs": [
+        {
+          "location": "./s.json"
+        }
+      ]
+    }
+  },
+  "targets": {}
+}

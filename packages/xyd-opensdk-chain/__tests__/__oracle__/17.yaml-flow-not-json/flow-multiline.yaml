@@ -1,0 +1,5 @@
+{
+  openapi: 3.0.3,
+  tags: [ {name: a}, {name: b} ],
+  'quoted key': plain value,
+}

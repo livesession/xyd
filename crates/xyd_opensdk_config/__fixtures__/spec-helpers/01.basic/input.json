@@ -1,0 +1,68 @@
+{
+  "spec": {
+    "opensdk": "1.0.0",
+    "info": {
+      "title": "Demo",
+      "version": "1.0.0"
+    },
+    "types": [
+      {
+        "name": "Pet",
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": {
+              "kind": "scalar",
+              "scalar": "string"
+            },
+            "required": true
+          }
+        ]
+      },
+      {
+        "name": "Status",
+        "kind": "enum",
+        "base": "string",
+        "values": [
+          {
+            "value": "a"
+          },
+          {
+            "value": "b"
+          }
+        ]
+      }
+    ],
+    "resources": [
+      {
+        "name": "pets",
+        "methods": [
+          {
+            "action": "list",
+            "httpMethod": "get",
+            "path": "/pets"
+          }
+        ],
+        "resources": [
+          {
+            "name": "tags",
+            "methods": [
+              {
+                "action": "create",
+                "httpMethod": "post",
+                "path": "/pets/{pet_id}/tags"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "lookups": [
+    "Status",
+    "Pet",
+    "Missing",
+    ""
+  ]
+}

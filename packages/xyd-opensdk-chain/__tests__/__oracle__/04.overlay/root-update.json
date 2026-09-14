@@ -1,0 +1,15 @@
+{
+  "overlay": "1.0.0",
+  "info": {
+    "title": "root",
+    "version": "1.0.0"
+  },
+  "actions": [
+    {
+      "target": "$",
+      "update": {
+        "x-root": "added"
+      }
+    }
+  ]
+}

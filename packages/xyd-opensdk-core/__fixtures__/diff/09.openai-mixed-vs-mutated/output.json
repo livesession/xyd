@@ -1,0 +1,1702 @@
+{
+  "changes": [
+    {
+      "severity": "breaking",
+      "kind": "method-removed",
+      "path": "admin.organization.admin-api-keys.create",
+      "detail": "method no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "binding-changed",
+      "path": "admin.organization.certificates.update",
+      "detail": "POST /organization/certificates/{certificate_id} -> POST /organization/certificates/{certificate_id}/v2"
+    },
+    {
+      "severity": "breaking",
+      "kind": "param-required-flip",
+      "path": "admin.organization.groups.users.list.queryParams.limit",
+      "detail": "optional -> required"
+    },
+    {
+      "severity": "risky",
+      "kind": "param-wire-name-changed",
+      "path": "admin.organization.groups.users.list.queryParams.limit",
+      "detail": "limit -> limit[]"
+    },
+    {
+      "severity": "breaking",
+      "kind": "param-removed",
+      "path": "admin.organization.projects.certificates.list.queryParams.limit",
+      "detail": "parameter no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "response-type-changed",
+      "path": "admin.organization.projects.certificates.list.primaryResponse",
+      "detail": "ref:ListProjectCertificatesResponse -> array<ref:ListProjectCertificatesResponse>"
+    },
+    {
+      "severity": "breaking",
+      "kind": "param-added",
+      "path": "admin.organization.projects.service-accounts.list.queryParams.x_new",
+      "detail": "new REQUIRED parameter"
+    },
+    {
+      "severity": "breaking",
+      "kind": "binding-changed",
+      "path": "admin.organization.users.retrieve",
+      "detail": "GET /organization/users/{user_id} -> GET /organization/users/{user_id}/v2"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "audio.translations.create",
+      "detail": "method marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "param-added",
+      "path": "beta.assistants.update.queryParams.x_new",
+      "detail": "new REQUIRED parameter"
+    },
+    {
+      "severity": "breaking",
+      "kind": "binding-changed",
+      "path": "beta.threads.runs.steps.retrieve",
+      "detail": "GET /threads/{thread_id}/runs/{run_id}/steps/{step_id} -> GET /threads/{thread_id}/runs/{run_id}/steps/{step_id}/v2"
+    },
+    {
+      "severity": "breaking",
+      "kind": "param-added",
+      "path": "conversations.update.queryParams.x_new",
+      "detail": "new REQUIRED parameter"
+    },
+    {
+      "severity": "breaking",
+      "kind": "response-type-changed",
+      "path": "conversations.update.primaryResponse",
+      "detail": "ref:ConversationResource -> array<ref:ConversationResource>"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "conversations.update",
+      "detail": "method marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "binding-changed",
+      "path": "files.list",
+      "detail": "GET /files -> GET /files/v2"
+    },
+    {
+      "severity": "breaking",
+      "kind": "pagination-style-changed",
+      "path": "files.list.pagination",
+      "detail": "cursor -> offset"
+    },
+    {
+      "severity": "breaking",
+      "kind": "param-added",
+      "path": "models.list.queryParams.x_new",
+      "detail": "new REQUIRED parameter"
+    },
+    {
+      "severity": "breaking",
+      "kind": "binding-changed",
+      "path": "realtime.calls.hangup",
+      "detail": "POST /realtime/calls/{call_id}/hangup -> POST /realtime/calls/{call_id}/hangup/v2"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "realtime.calls.hangup",
+      "detail": "method marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "param-added",
+      "path": "vector-stores.file-batches.list-files.queryParams.x_new",
+      "detail": "new REQUIRED parameter"
+    },
+    {
+      "severity": "safe",
+      "kind": "method-added",
+      "path": "admin.ping",
+      "detail": "new method"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.AdminOrganizationAdminApiKeysCreateRequest",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-kind-changed",
+      "path": "types.AdminApiKeyCreateResponse",
+      "detail": "struct -> alias"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.AdminApiKeyCreateResponseOwner.fields.type",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.AdminApiKeyCreateResponseOwner.fields.type",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.AdminApiKeyCreateResponseOwner.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.ModifyCertificateRequest.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.Certificate.fields.object",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.CertificateObject.\"organization.project.certificate\"",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.CertificateCertificateDetails.fields.content",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.AdminOrganizationGroupsUsersListOrder.\"desc\"",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.UserListResource.fields.object",
+      "detail": "scalar:string=\"list\" -> any"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.UserListResource.fields.object",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.UserListResource.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.GroupUser.fields.id",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.AdminOrganizationProjectsCertificatesListOrder.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.ListProjectCertificatesResponse.fields.data",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.ListProjectCertificatesResponse.fields.object",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.OrganizationProjectCertificate.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.OrganizationProjectCertificateCertificateDetails.fields.valid_at",
+      "detail": "optional -> required"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.OrganizationProjectCertificateCertificateDetails.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.ProjectServiceAccountListResponse.fields.object",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.ProjectServiceAccount.fields.object",
+      "detail": "scalar:string=\"organization.project.service_account\" -> any"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.ProjectServiceAccountRole.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.ErrorResponse",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.Error.fields.code",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.Error.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.PublicUpdateOrganizationRoleBody.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.Role.fields.object",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.User.fields.object",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.UserUser.fields.banned_at",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.UserProjects.fields.object",
+      "detail": "scalar:string=\"list\" -> any"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.UserProjects.fields.object",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.UserProjects.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.UserProjectsDataItem.fields.id",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.UserProjectsDataItem.fields.id",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.UserProjectsDataItem.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-kind-changed",
+      "path": "types.CreateTranslationRequest",
+      "detail": "struct -> alias"
+    },
+    {
+      "severity": "breaking",
+      "kind": "union-variant-removed",
+      "path": "types.CreateTranslationRequestModel.scalar:string=\"whisper-1\"",
+      "detail": "union variant removed"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.CreateTranslationRequestResponseFormat.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "union-variant-removed",
+      "path": "types.AudioTranslationsCreateResponse.ref:CreateTranslationResponseVerboseJson",
+      "detail": "union variant removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.CreateTranslationResponseJson.fields.text",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.CreateTranslationResponseJson.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.CreateTranslationResponseVerboseJson.fields.language",
+      "detail": "scalar:string -> any"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.CreateTranslationResponseVerboseJson.fields.language",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.TranscriptionSegment.fields.id",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.VoiceConsentResource.fields.object",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.VoiceConsentResource.fields.created_at",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.ModifyAssistantRequest.fields.model",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.ModifyAssistantRequest.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.ModifyAssistantRequestModel",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.AssistantSupportedModels.\"gpt-3.5-turbo-16k-0613\"",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.ReasoningEffort.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "union-variant-removed",
+      "path": "types.ModifyAssistantRequestToolsItem.ref:AssistantToolsFunction",
+      "detail": "union variant removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.AssistantToolsCode.fields.type",
+      "detail": "scalar:string=\"code_interpreter\" -> any"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.AssistantToolsFileSearch.fields.type",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.AssistantToolsFileSearch.fields.type",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.AssistantToolsFileSearch.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.AssistantToolsFileSearchFileSearch.fields.max_num_results",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.AssistantToolsFileSearchFileSearch.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.FileSearchRanker.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.AssistantToolsFunction.fields.type",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.AssistantToolsFunction.fields.function",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.FunctionObject.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "alias-target-changed",
+      "path": "types.FunctionParameters",
+      "detail": "map<any> -> array<map<any>>"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.ModifyAssistantRequestToolResources.fields.code_interpreter",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.ModifyAssistantRequestToolResources.fields.code_interpreter",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.ModifyAssistantRequestToolResourcesFileSearch.fields.vector_store_ids",
+      "detail": "optional -> required"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-kind-changed",
+      "path": "types.Metadata",
+      "detail": "alias -> struct"
+    },
+    {
+      "severity": "safe",
+      "kind": "union-variant-added",
+      "path": "types.AssistantsApiResponseFormatOption.scalar:string",
+      "detail": "union variant added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.ResponseFormatText",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.ResponseFormatJsonObject.fields.type",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.ResponseFormatJsonSchema.fields.type",
+      "detail": "scalar:string=\"json_schema\" -> any"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.ResponseFormatJsonSchema.fields.type",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.ResponseFormatJsonSchemaJsonSchema.fields.description",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.ResponseFormatJsonSchemaJsonSchema.fields.strict",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "alias-target-changed",
+      "path": "types.ResponseFormatJsonSchemaSchema",
+      "detail": "map<any> -> array<map<any>>"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.AssistantObject.fields.id",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.AssistantObject.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.AssistantObjectToolResourcesCodeInterpreter.fields.file_ids",
+      "detail": "optional -> required"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.AssistantObjectToolResourcesFileSearch.fields.vector_store_ids",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.BetaThreadsMessagesListOrder.\"desc\"",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.ListMessagesResponse.fields.object",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.ListMessagesResponse.fields.object",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.ListMessagesResponse.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.MessageObject.fields.id",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.MessageObjectStatus.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.MessageObjectIncompleteDetails.fields.reason",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.MessageObjectIncompleteDetailsReason.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.MessageObjectRole.\"assistant\"",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "safe",
+      "kind": "union-variant-added",
+      "path": "types.MessageObjectContentItem.scalar:string",
+      "detail": "union variant added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.MessageContentImageFileObject",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.MessageContentImageFileObjectImageFile.fields.file_id",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.MessageContentImageFileObjectImageFile.fields.file_id",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.MessageContentImageFileObjectImageFileDetail.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.MessageContentImageUrlObject.fields.type",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.MessageContentImageUrlObject.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.MessageContentImageUrlObjectImageUrl.fields.url",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.MessageContentImageUrlObjectImageUrl.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-kind-changed",
+      "path": "types.MessageContentTextObjectText",
+      "detail": "struct -> alias"
+    },
+    {
+      "severity": "breaking",
+      "kind": "union-variant-removed",
+      "path": "types.MessageContentTextObjectTextAnnotationsItem.ref:MessageContentTextAnnotationsFilePathObject",
+      "detail": "union variant removed"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.MessageContentTextAnnotationsFileCitationObject.fields.type",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.MessageContentTextAnnotationsFileCitationObject.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.MessageContentTextAnnotationsFileCitationObjectFileCitation.fields.file_id",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.MessageContentTextAnnotationsFileCitationObjectFileCitation.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.MessageContentTextAnnotationsFilePathObject.fields.type",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.MessageContentRefusalObject.fields.type",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.MessageContentRefusalObject.fields.refusal",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.MessageObjectAttachmentsItem.fields.file_id",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.MessageObjectAttachmentsItem.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "safe",
+      "kind": "union-variant-added",
+      "path": "types.MessageObjectAttachmentsItemToolsItem.scalar:string",
+      "detail": "union variant added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.AssistantToolsFileSearchTypeOnly.fields.type",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.AssistantToolsFileSearchTypeOnly.fields.type",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.RunStepObject.fields.id",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.RunStepObjectType",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.RunStepObjectStatus.\"expired\"",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "safe",
+      "kind": "union-variant-added",
+      "path": "types.RunStepObjectStepDetails.scalar:string",
+      "detail": "union variant added"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.RunStepDetailsMessageCreationObject.fields.type",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.RunStepDetailsMessageCreationObject.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.RunStepDetailsToolCallsObject.fields.type",
+      "detail": "scalar:string=\"tool_calls\" -> any"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.RunStepDetailsToolCallsObject.fields.type",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "safe",
+      "kind": "union-variant-added",
+      "path": "types.RunStepDetailsToolCallsObjectToolCallsItem.scalar:string",
+      "detail": "union variant added"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.RunStepDetailsToolCallsCodeObject.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.RunStepDetailsToolCallsCodeObjectCodeInterpreter.fields.input",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.RunStepDetailsToolCallsCodeObjectCodeInterpreter.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "union-variant-removed",
+      "path": "types.RunStepDetailsToolCallsCodeObjectCodeInterpreterOutputsItem.ref:RunStepDetailsToolCallsCodeOutputImageObject",
+      "detail": "union variant removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.RunStepDetailsToolCallsCodeOutputImageObject.fields.type",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.RunStepDetailsToolCallsCodeOutputImageObject.fields.image",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.RunStepDetailsToolCallsCodeOutputImageObjectImage.fields.file_id",
+      "detail": "scalar:string -> any"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.RunStepDetailsToolCallsCodeOutputImageObjectImage.fields.file_id",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.RunStepDetailsToolCallsCodeOutputImageObjectImage.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-kind-changed",
+      "path": "types.RunStepDetailsToolCallsFileSearchObject",
+      "detail": "struct -> alias"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.RunStepDetailsToolCallsFileSearchObjectFileSearch.fields.ranking_options",
+      "detail": "optional -> required"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.RunStepDetailsToolCallsFileSearchRankingOptionsObject.fields.ranker",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.RunStepDetailsToolCallsFileSearchResultObject.fields.content",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.RunStepDetailsToolCallsFileSearchResultObjectContentItem",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.RunStepDetailsToolCallsFunctionObject.fields.id",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.RunStepDetailsToolCallsFunctionObject.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.RunStepDetailsToolCallsFunctionObjectFunction.fields.name",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.RunStepDetailsToolCallsFunctionObjectFunction.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.RunStepObjectLastError.fields.code",
+      "detail": "ref:RunStepObjectLastErrorCode -> any"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.RunStepObjectLastErrorCode.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.RunStepCompletionUsage.fields.completion_tokens",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.RunStepCompletionUsage.fields.total_tokens",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.SubmitToolOutputsRunRequest.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.SubmitToolOutputsRunRequestToolOutputsItem.fields.tool_call_id",
+      "detail": "optional -> required"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.SubmitToolOutputsRunRequestToolOutputsItem.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.RunObject.fields.id",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.RunObjectStatus.\"expired\"",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.RunObjectRequiredAction.fields.type",
+      "detail": "scalar:string=\"submit_tool_outputs\" -> any"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.RunObjectRequiredAction.fields.type",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.RunObjectRequiredAction.fields.submit_tool_outputs",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.RunObjectRequiredActionSubmitToolOutputs.fields.tool_calls",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.RunObjectRequiredActionSubmitToolOutputs.fields.tool_calls",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.RunObjectRequiredActionSubmitToolOutputs.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.RunToolCallObject.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.RunToolCallObjectFunction.fields.name",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.RunObjectLastError.fields.code",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.RunObjectLastErrorCode.\"invalid_prompt\"",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.RunObjectIncompleteDetails.fields.reason",
+      "detail": "optional -> required"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.RunObjectIncompleteDetails.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.RunObjectIncompleteDetailsReason",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "union-variant-removed",
+      "path": "types.RunObjectToolsItem.ref:AssistantToolsFunction",
+      "detail": "union variant removed"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.RunCompletionUsage.fields.completion_tokens",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.TruncationObject.fields.type",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-kind-changed",
+      "path": "types.TruncationObjectType",
+      "detail": "enum -> struct"
+    },
+    {
+      "severity": "breaking",
+      "kind": "union-variant-removed",
+      "path": "types.AssistantsApiToolChoiceOption.ref:AssistantsNamedToolChoice",
+      "detail": "union variant removed"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.AssistantsApiToolChoiceOptionString.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.AssistantsNamedToolChoice.fields.type",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.AssistantsNamedToolChoiceType.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.AssistantsNamedToolChoiceFunction.fields.name",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.AssistantsNamedToolChoiceFunction.fields.name",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "alias-target-changed",
+      "path": "types.ParallelToolCalls",
+      "detail": "scalar:boolean -> array<scalar:boolean>"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.ConversationResource.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.UpdateConversationBody.fields.metadata",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.FilesListOrder.\"desc\"",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.ListFilesResponse.fields.has_more",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.OpenAiFile.fields.id",
+      "detail": "scalar:string -> any"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.OpenAiFile.fields.id",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.OpenAiFile.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.OpenAiFilePurpose.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.OpenAiFileStatus",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.FineTuningJobError.fields.code",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.FineTuningJobHyperparameters.fields.batch_size",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.FineTuningJobHyperparameters.fields.n_epochs",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "safe",
+      "kind": "union-variant-added",
+      "path": "types.FineTuningJobHyperparametersBatchSize.scalar:string",
+      "detail": "union variant added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "union-variant-removed",
+      "path": "types.FineTuningJobHyperparametersLearningRateMultiplier.scalar:number",
+      "detail": "union variant removed"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.FineTuningJobStatus.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.FineTuningIntegration.fields.type",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.FineTuningIntegrationWandb.fields.project",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.FineTuningIntegrationWandb.fields.tags",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.FineTuneMethod.fields.type",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.FineTuneMethod.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.FineTuneMethodType.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-kind-changed",
+      "path": "types.FineTuneSupervisedMethod",
+      "detail": "struct -> alias"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.FineTuneSupervisedHyperparameters.fields.batch_size",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.FineTuneDpoMethod.fields.hyperparameters",
+      "detail": "ref:FineTuneDpoHyperparameters -> any"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.FineTuneDpoHyperparameters.fields.beta",
+      "detail": "optional -> required"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.FineTuneDpoHyperparameters.fields.beta",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.FineTuneDpoHyperparameters.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.FineTuneReinforcementMethod.fields.grader",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.FineTuneReinforcementMethod.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "safe",
+      "kind": "union-variant-added",
+      "path": "types.FineTuneReinforcementMethodGrader.scalar:string",
+      "detail": "union variant added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.GraderStringCheck",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.GraderStringCheckOperation.\"ilike\"",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.GraderTextSimilarity.fields.type",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.GraderTextSimilarity.fields.evaluation_metric",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.GraderTextSimilarityEvaluationMetric.\"rouge_l\"",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.GraderPython.fields.type",
+      "detail": "scalar:string=\"python\" -> any"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.GraderPython.fields.type",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.GraderPython.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.GraderScoreModel.fields.type",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.GraderScoreModel.fields.type",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.EvalItem.fields.role",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.EvalItem.fields.type",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.EvalItemRole.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "union-variant-removed",
+      "path": "types.EvalItemContent.ref:EvalItemContentArray",
+      "detail": "union variant removed"
+    },
+    {
+      "severity": "safe",
+      "kind": "union-variant-added",
+      "path": "types.EvalItemContentItem.scalar:string",
+      "detail": "union variant added"
+    },
+    {
+      "severity": "breaking",
+      "kind": "alias-target-changed",
+      "path": "types.EvalItemContentText",
+      "detail": "scalar:string -> array<scalar:string>"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.InputTextContent.fields.type",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.InputTextContent.fields.text",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.EvalItemContentOutputText.fields.type",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.EvalItemContentOutputText.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.EvalItemInputImage.fields.type",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.EvalItemInputImage.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.InputAudioInputAudio.fields.data",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.InputAudioInputAudioFormat",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "alias-target-changed",
+      "path": "types.EvalItemContentArray",
+      "detail": "array<ref:EvalItemContentItem> -> array<array<ref:EvalItemContentItem>>"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-kind-changed",
+      "path": "types.GraderMulti",
+      "detail": "struct -> alias"
+    },
+    {
+      "severity": "breaking",
+      "kind": "union-variant-removed",
+      "path": "types.GraderMultiGraders.ref:GraderLabelModel",
+      "detail": "union variant removed"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.GraderLabelModel.fields.type",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.FineTuneReinforcementHyperparametersReasoningEffort.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.ListModelsResponse.fields.object",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "safe",
+      "kind": "field-added",
+      "path": "types.ListModelsResponse.fields.x_added",
+      "detail": "new optional field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.Model.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.DeletedRoleAssignmentResource.fields.object",
+      "detail": "scalar:string -> any"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.DeletedRoleAssignmentResource.fields.object",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.DeletedSkillVersionResource.fields.object",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.DeletedSkillVersionResource.fields.object",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.VectorStoresFileBatchesListFilesOrder.\"desc\"",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "risky",
+      "kind": "enum-value-added",
+      "path": "types.VectorStoresFileBatchesListFilesFilter.\"x_added_value\"",
+      "detail": "enum value added"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.ListVectorStoreFilesResponse.fields.object",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.ListVectorStoreFilesResponse.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.VectorStoreFileObjectStatus.\"failed\"",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.VectorStoreFileObjectLastError.fields.code",
+      "detail": "ref:VectorStoreFileObjectLastErrorCode -> any"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.VectorStoreFileObjectLastError.fields.code",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.VectorStoreFileObjectLastError.fields.message",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-removed",
+      "path": "types.VectorStoreFileObjectLastErrorCode",
+      "detail": "named type no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "union-variant-removed",
+      "path": "types.VectorStoreFileObjectChunkingStrategy.ref:OtherChunkingStrategyResponseParam",
+      "detail": "union variant removed"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.StaticChunkingStrategyResponseParam.fields.type",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.StaticChunkingStrategyResponseParam.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "risky",
+      "kind": "field-nullable-flip",
+      "path": "types.StaticChunkingStrategy.fields.max_chunk_size_tokens",
+      "detail": "non-null -> nullable"
+    },
+    {
+      "severity": "breaking",
+      "kind": "alias-target-changed",
+      "path": "types.VectorStoreFileAttributes",
+      "detail": "map<ref:VectorStoreFileAttributesValue> -> array<map<ref:VectorStoreFileAttributesValue>>"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-type-changed",
+      "path": "types.UpdateVectorStoreRequest.fields.name",
+      "detail": "scalar:string -> any"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-added",
+      "path": "types.UpdateVectorStoreRequest.fields.x_req",
+      "detail": "new REQUIRED field"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-required-flip",
+      "path": "types.VectorStoreExpirationAfter.fields.anchor",
+      "detail": "required -> optional"
+    },
+    {
+      "severity": "risky",
+      "kind": "deprecated-added",
+      "path": "types.VectorStoreExpirationAfter.fields.anchor",
+      "detail": "field marked deprecated"
+    },
+    {
+      "severity": "breaking",
+      "kind": "type-kind-changed",
+      "path": "types.VectorStoreObject",
+      "detail": "struct -> alias"
+    },
+    {
+      "severity": "breaking",
+      "kind": "field-removed",
+      "path": "types.VectorStoreObjectFileCounts.fields.total",
+      "detail": "field no longer exists"
+    },
+    {
+      "severity": "breaking",
+      "kind": "enum-value-removed",
+      "path": "types.VectorStoreObjectStatus.\"completed\"",
+      "detail": "enum value removed"
+    },
+    {
+      "severity": "safe",
+      "kind": "type-added",
+      "path": "types.BrandNewType",
+      "detail": "new named type"
+    },
+    {
+      "severity": "breaking",
+      "kind": "security-changed",
+      "path": "security",
+      "detail": "default security requirements changed"
+    },
+    {
+      "severity": "safe",
+      "kind": "sdk-behavior-changed",
+      "path": "sdk",
+      "detail": "declared runtime behavior changed"
+    }
+  ]
+}
