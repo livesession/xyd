@@ -337,15 +337,28 @@ pub fn publish_target(lang: &str, dir: &Path, opts: &EmitterPublishOptions) -> R
 
 /// Resolve a token from a publish target's `tokenEnv` (env only; never stored).
 pub fn resolve_token(publish: Option<&PublishTarget>) -> Option<String> {
-    let token_env = publish?.token_env.as_deref()?;
+    // The config's `tokenEnv` names the variable to read. Programmatic callers that have
+    // no sdk.json (the apitoolchain gateway publishes from its own DB) can instead set
+    // OPENSDK_PUBLISH_TOKEN. Deliberately env, never a flag: argv is world-readable via
+    // `ps`, so a token passed as an argument would leak to every user on the host.
+    let ambient = || match std::env::var(AMBIENT_TOKEN_ENV) {
+        Ok(v) if !v.is_empty() => Some(v),
+        _ => None,
+    };
+    let Some(token_env) = publish.and_then(|p| p.token_env.as_deref()) else {
+        return ambient();
+    };
     match std::env::var(token_env) {
         Ok(v) if !v.is_empty() => Some(v),
-        _ => {
+        _ => ambient().or_else(|| {
             eprintln!("Warning: publish.tokenEnv \"{token_env}\" is not set in the environment.");
             None
-        }
+        }),
     }
 }
+
+/// Fallback auth-token variable for callers with no `sdk.json` publish config.
+pub const AMBIENT_TOKEN_ENV: &str = "OPENSDK_PUBLISH_TOKEN";
 
 #[derive(Debug, Clone, Default)]
 pub struct PublishCommandOptions {
@@ -357,6 +370,10 @@ pub struct PublishCommandOptions {
     pub registry: Option<String>,
     /// Pack only — don't push.
     pub dry_run: bool,
+    /// Package version override (wins over the config `publish.version`).
+    pub package_version: Option<String>,
+    /// Dist-tag for registries that support one (npm).
+    pub tag: Option<String>,
 }
 
 /// `opensdk publish` — publish one or every declared language's generated SDK.

@@ -28,14 +28,15 @@
     "pg": "^8.13.1"
   },
   "devDependencies": {
+    "@types/bun": "^1.4.0",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.10.0",
     "@types/pg": "^8.11.10",
     "@typespec/compiler": "latest",
     "@typespec/http": "latest",
     "@typespec/http-server-js": "latest",
-    "typescript": "^5.6.2",
     "@typespec/openapi": "latest",
-    "@typespec/openapi3": "latest"
+    "@typespec/openapi3": "latest",
+    "typescript": "^5.6.2"
   }
 }

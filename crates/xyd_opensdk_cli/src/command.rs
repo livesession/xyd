@@ -220,6 +220,26 @@ pub fn command() -> Command {
                         .help("Registry URL override (wins over the config publish.registry)"),
                 )
                 .arg(
+                    Arg::new("package-version")
+                        .long("package-version")
+                        .value_name("semver")
+                        .help(
+                            "Package version override (wins over the config publish.version). Used \
+                             where the registry takes no manifest version — the Go git tag. Named \
+                             --package-version, not --version, which conventionally prints the \
+                             tool's own version",
+                        ),
+                )
+                .arg(
+                    Arg::new("tag")
+                        .long("tag")
+                        .value_name("dist-tag")
+                        .help(
+                            "Dist-tag for registries that support one (npm). Omit for the registry \
+                             default (latest)",
+                        ),
+                )
+                .arg(
                     Arg::new("dry-run")
                         .long("dry-run")
                         .action(ArgAction::SetTrue)
@@ -453,6 +473,8 @@ pub fn dispatch(matches: &ArgMatches, cwd: &Path) -> Result<i32> {
                     output: opt(m, "output").unwrap_or_else(|| "./sdk".into()),
                     registry: opt(m, "registry"),
                     dry_run: flag(m, "dry-run"),
+                    package_version: opt(m, "package-version"),
+                    tag: opt(m, "tag"),
                 },
                 config,
                 cwd,
