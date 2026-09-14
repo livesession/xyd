@@ -706,6 +706,7 @@ module.exports.buildAccessMap = nativeBinding.buildAccessMap
 module.exports.classify = nativeBinding.classify
 module.exports.compileMdx = nativeBinding.compileMdx
 module.exports.createWatcher = nativeBinding.createWatcher
+module.exports.diffIR = nativeBinding.diffIR
 module.exports.findIndexPage = nativeBinding.findIndexPage
 module.exports.frontmatterBatch = nativeBinding.frontmatterBatch
 module.exports.getThemeColors = nativeBinding.getThemeColors

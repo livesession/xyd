@@ -44,6 +44,14 @@ export declare function compileMdx(source: string, settingsJson: string, baseDir
  */
 export declare function createWatcher(root: string, opts: WatchOpts, onChange: (err: Error | null, batch: JsChange[]) => void): Watcher
 
+/**
+ * Parity target: `diffIR(base, head)` from `@xyd-js/opensdk-core`.
+ *
+ * `js_name` pins the exact export name — napi would otherwise lowercase the
+ * trailing acronym to `diffIr`, and the TypeScript callers spell it `diffIR`.
+ */
+export declare function diffIR(baseJson: string, headJson: string): string
+
 /** `findIndexPage()` — "" when neither index.md nor index.mdx exists under cwd. */
 export declare function findIndexPage(cwd: string): string
 
