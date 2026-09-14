@@ -202,9 +202,26 @@ pub struct RenderedTypeReference {
     pub response: RenderedTypeResponse,
 }
 
+/// One operation's docs payload, keyed by `"<httpmethod> <path>"`.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OperationDocs {
+    pub usage: String,
+    pub type_reference: RenderedTypeReference,
+}
+
+/// Signature of the two docs capabilities.
+///
+/// `(spec, chain, method, options)`: the whole IR (the renderers need the symbol
+/// table), the resource-name path root→owner, the method itself, and the
+/// emitterOptions bag — `baseUrlEnv` is a docs-only option that redirects the
+/// snippet's base URL.
+pub type UsageFn = fn(&Value, &[String], &Value, &Value) -> String;
+pub type TypeReferenceFn = fn(&Value, &[String], &Value, &Value) -> RenderedTypeReference;
+
 /// A language emitter as plain data.
 ///
-/// `#[non_exhaustive]` with a `const fn new` so A2 can add slots without
+/// `#[non_exhaustive]` with a `const fn new` so slots can be added without
 /// breaking all 7 construction sites at once.
 #[non_exhaustive]
 pub struct EmitterFns {
@@ -212,11 +229,11 @@ pub struct EmitterFns {
     /// The whole file map: `fn(&Value) -> BTreeMap<path, content>`. Every
     /// emitter already has exactly this signature.
     pub generate: fn(&Value) -> BTreeMap<String, String>,
-    /// A2. `Option` is load-bearing, not defensive: the Rust TARGET implements
+    /// `Option` is load-bearing, not defensive: the Rust TARGET implements
     /// neither docs capability (it is absent from `SDK_LANGS`), so a required
-    /// slot would break its build on A2 day one.
-    pub generate_usage: Option<fn(&Value, &[String]) -> String>,
-    pub generate_type_reference: Option<fn(&Value, &[String]) -> RenderedTypeReference>,
+    /// slot would not compile for it.
+    pub generate_usage: Option<UsageFn>,
+    pub generate_type_reference: Option<TypeReferenceFn>,
 }
 
 impl EmitterFns {
@@ -231,6 +248,81 @@ impl EmitterFns {
             generate_type_reference: None,
         }
     }
+
+    /// Attach the docs capabilities (const so the whole descriptor stays a
+    /// `const` item at each emitter's definition site).
+    pub const fn with_docs(mut self, usage: UsageFn, type_reference: TypeReferenceFn) -> Self {
+        self.generate_usage = Some(usage);
+        self.generate_type_reference = Some(type_reference);
+        self
+    }
+
+    /// Every operation's docs, keyed the way the docs pipeline indexes them:
+    /// `"<httpmethod-lowercase> <path>"` (mirrors `prepareFromIr`).
+    ///
+    /// BATCH by design. The docs pipeline needs one entry per operation per
+    /// language — 242 × 6 for the OpenAI spec — so a per-operation FFI surface
+    /// would mean ~1450 boundary crossings per build. One call per (language,
+    /// spec) instead.
+    ///
+    /// `None` when this language has no docs capabilities (the Rust target).
+    pub fn docs_map(
+        &self,
+        spec: &Value,
+        options: &Value,
+    ) -> Option<BTreeMap<String, OperationDocs>> {
+        let (usage_fn, tr_fn) = (self.generate_usage?, self.generate_type_reference?);
+        let mut out = BTreeMap::new();
+        for (chain, method) in walk_methods(spec) {
+            let (Some(http), Some(path)) = (
+                method.get("httpMethod").and_then(|v| v.as_str()),
+                method.get("path").and_then(|v| v.as_str()),
+            ) else {
+                continue;
+            };
+            out.insert(
+                format!("{} {}", http.to_ascii_lowercase(), path),
+                OperationDocs {
+                    usage: usage_fn(spec, &chain, method, options),
+                    type_reference: tr_fn(spec, &chain, method, options),
+                },
+            );
+        }
+        Some(out)
+    }
+}
+
+/// Every method in the IR, paired with its resource-name path (root→owner).
+///
+/// Mirrors `spec.ts`'s `walkMethods`: pre-order, a resource's own methods before
+/// its children's. Operates on the raw `Value` so it works for the five emitters
+/// that never deserialize the IR into typed structs.
+pub fn walk_methods(spec: &Value) -> Vec<(Vec<String>, &Value)> {
+    fn visit<'a>(
+        resources: Option<&'a Value>,
+        parent: &[String],
+        out: &mut Vec<(Vec<String>, &'a Value)>,
+    ) {
+        let Some(arr) = resources.and_then(|r| r.as_array()) else {
+            return;
+        };
+        for resource in arr {
+            let Some(name) = resource.get("name").and_then(|n| n.as_str()) else {
+                continue;
+            };
+            let mut chain = parent.to_vec();
+            chain.push(name.to_string());
+            if let Some(methods) = resource.get("methods").and_then(|m| m.as_array()) {
+                for method in methods {
+                    out.push((chain.clone(), method));
+                }
+            }
+            visit(resource.get("resources"), &chain, out);
+        }
+    }
+    let mut out = Vec::new();
+    visit(spec.get("resources"), &[], &mut out);
+    out
 }
 
 /// Canonical language id for a user-supplied name (port of `registry.ts`
@@ -340,6 +432,80 @@ mod tests {
         let json = serde_json::to_string(&out).unwrap();
         assert!(json.contains(r#""writeMode":"mergeJson""#), "{json}");
         assert_eq!(json.matches("writeMode").count(), 1, "{json}");
+    }
+
+    #[test]
+    fn walk_methods_is_pre_order_and_carries_the_chain() {
+        let spec = serde_json::json!({
+            "resources": [{
+                "name": "admin",
+                "methods": [{ "httpMethod": "GET", "path": "/admin" }],
+                "resources": [{
+                    "name": "keys",
+                    "methods": [
+                        { "httpMethod": "POST", "path": "/admin/keys" },
+                        { "httpMethod": "DELETE", "path": "/admin/keys/{id}" }
+                    ]
+                }]
+            }]
+        });
+        let walked: Vec<(Vec<String>, &str)> = walk_methods(&spec)
+            .into_iter()
+            .map(|(c, m)| (c, m["path"].as_str().unwrap()))
+            .collect();
+        // A resource's OWN methods come before its children's.
+        assert_eq!(
+            walked,
+            vec![
+                (vec!["admin".to_string()], "/admin"),
+                (vec!["admin".to_string(), "keys".to_string()], "/admin/keys"),
+                (
+                    vec!["admin".to_string(), "keys".to_string()],
+                    "/admin/keys/{id}"
+                ),
+            ]
+        );
+    }
+
+    #[test]
+    fn docs_map_is_none_without_the_capabilities_and_keys_by_method_and_path() {
+        fn gen(_: &Value) -> BTreeMap<String, String> {
+            BTreeMap::new()
+        }
+        let spec = serde_json::json!({
+            "resources": [{ "name": "pets", "methods": [{ "httpMethod": "GET", "path": "/pets" }] }]
+        });
+
+        // The Rust target has neither capability.
+        assert!(EmitterFns::new("rust", gen)
+            .docs_map(&spec, &Value::Null)
+            .is_none());
+
+        fn usage(_: &Value, chain: &[String], _: &Value, _: &Value) -> String {
+            format!("usage:{}", chain.join("."))
+        }
+        fn tr(_: &Value, _: &[String], _: &Value, _: &Value) -> RenderedTypeReference {
+            RenderedTypeReference {
+                signature: "sig".into(),
+                request: RenderedTypeGroup {
+                    type_name: None,
+                    arg_name: None,
+                    fields: vec![],
+                },
+                response: RenderedTypeResponse {
+                    type_name: None,
+                    fields: None,
+                    lang_type: None,
+                    note: None,
+                },
+            }
+        }
+        let map = EmitterFns::new("go", gen)
+            .with_docs(usage, tr)
+            .docs_map(&spec, &Value::Null)
+            .unwrap();
+        // The key is exactly what prepareFromIr indexes by.
+        assert_eq!(map["get /pets"].usage, "usage:pets");
     }
 
     #[test]

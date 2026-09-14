@@ -351,7 +351,8 @@ fn resource_paginates(resource: &Value, types: &BTreeMap<String, Value>) -> bool
 /// implements them. See `xyd_opensdk_core::emitter` for why this is a data
 /// descriptor rather than a trait.
 pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
-    xyd_opensdk_core::emitter::EmitterFns::new("dotnet", generate_dotnet);
+    xyd_opensdk_core::emitter::EmitterFns::new("dotnet", generate_dotnet)
+        .with_docs(generate_dotnet_usage, generate_dotnet_type_reference);
 
 /// The generated file map WITH per-file write semantics.
 ///

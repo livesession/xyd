@@ -2,6 +2,7 @@ import { openapi2opensdk, openapi2opensdkFromSource } from '@xyd-js/openapi2open
 import { type FlatMethod, type NamedType, type OpensdkSpecJson, walkMethods } from '@xyd-js/opensdk-core';
 import { dotnetEmitter } from '@xyd-js/opensdk-dotnet';
 import type { Emitter, EmitterContext, RenderedTypeField, RenderedTypeReference } from '@xyd-js/opensdk-framework';
+import { nativeOpensdkDocs } from '@xyd-js/opensdk-framework';
 import { goEmitter } from '@xyd-js/opensdk-go';
 import { javaEmitter } from '@xyd-js/opensdk-java';
 import { nodeEmitter } from '@xyd-js/opensdk-node';
@@ -61,6 +62,35 @@ export interface PreparedSdk {
   ir: OpensdkSpecJson;
   ctx: EmitterContext;
   byKey: Map<string, FlatMethod>;
+  /** Native docs, per emitter language id, keyed the same way as `byKey`.
+   * Absent when @xyd-js/native is unavailable — callers then drive the JS
+   * emitter capabilities. Computed ONCE per spec (see `nativeDocs`). */
+  docsByLang: Map<string, Record<string, { usage: string; typeReference: unknown }>>;
+}
+
+/**
+ * Every language's docs, in ONE native call each.
+ *
+ * The alternative — calling the native surface per operation per language — is
+ * 242 × 6 boundary crossings for the OpenAI spec. This runs 6 times total, and
+ * only for languages the native side actually implements; the rest fall through
+ * to the JS emitter at the call sites.
+ */
+function nativeDocs(ir: OpensdkSpecJson): PreparedSdk['docsByLang'] {
+  const out: PreparedSdk['docsByLang'] = new Map();
+  let specJson: string | null = null;
+  for (const lang of SDK_LANGS) {
+    const fn = nativeOpensdkDocs(lang.compileLang);
+    if (!fn) continue;
+    try {
+      specJson ??= JSON.stringify(ir);
+      const map = fn(specJson);
+      if (map) out.set(lang.compileLang, map);
+    } catch {
+      // one language failing must not drop the others — it falls back to JS
+    }
+  }
+  return out;
 }
 
 function prepareFromIr(ir: OpensdkSpecJson): PreparedSdk {
@@ -70,7 +100,7 @@ function prepareFromIr(ir: OpensdkSpecJson): PreparedSdk {
   for (const fm of walkMethods(ir)) {
     byKey.set(`${fm.method.httpMethod.toLowerCase()} ${fm.method.path}`, fm);
   }
-  return { ir, ctx, byKey };
+  return { ir, ctx, byKey, docsByLang: nativeDocs(ir) };
 }
 
 /** Build the prepared SDK state from a RAW un-dereferenced doc
@@ -132,6 +162,34 @@ export function attachSdkExamples(
   attachExamplesPass(references, prepared, resolveLangs(opts.langs));
 }
 
+/**
+ * One operation's docs for one language: the NATIVE batch result when present,
+ * else the JS emitter capability.
+ *
+ * The native map is computed once per spec in `prepareFromIr`; a language the
+ * native side does not implement (or a spec it could not handle) simply has no
+ * entry, and that language falls through to TypeScript. Both paths produce the
+ * same bytes — 1488 golden cases assert it.
+ */
+function operationDocs(
+  prepared: PreparedSdk,
+  lang: SdkLang,
+  fm: FlatMethod,
+  key: string,
+): { usage?: string; typeReference?: RenderedTypeReference } {
+  const native = prepared.docsByLang.get(lang.compileLang)?.[key];
+  if (native) {
+    return {
+      usage: native.usage,
+      typeReference: native.typeReference as RenderedTypeReference,
+    };
+  }
+  return {
+    usage: lang.emitter.generateUsage?.(fm.method, fm.path, prepared.ctx),
+    typeReference: lang.emitter.generateTypeReference?.(fm.method, fm.path, prepared.ctx),
+  };
+}
+
 function attachExamplesPass(references: Reference[], prepared: PreparedSdk, langs: SdkLang[]): void {
   if (!langs.length) return;
   const { ctx, byKey } = prepared;
@@ -139,7 +197,8 @@ function attachExamplesPass(references: Reference[], prepared: PreparedSdk, lang
   for (const ref of references) {
     const rctx = ref.context as OpenAPIReferenceContext | undefined;
     if (!rctx?.method || !rctx?.path) continue; // component schema — no method
-    const fm = byKey.get(`${rctx.method.toLowerCase()} ${rctx.path}`);
+    const key = `${rctx.method.toLowerCase()} ${rctx.path}`;
+    const fm = byKey.get(key);
     if (!fm) continue;
 
     const codeblock = requestCodeblock(ref);
@@ -148,7 +207,7 @@ function attachExamplesPass(references: Reference[], prepared: PreparedSdk, lang
     const sdkTabs = [];
     for (const lang of langs) {
       try {
-        const code = lang.emitter.generateUsage?.(fm.method, fm.path, ctx);
+        const code = operationDocs(prepared, lang, fm, key).usage;
         // `meta` = the tab IDENTITY (`meta || lang` downstream): the language
         // ID, so the page-wide switcher stores ids ("python"), never display
         // titles ("Python") — signatures/variants key off the id.
@@ -335,13 +394,14 @@ function attachTypesPass(
   for (const ref of references) {
     const rctx = ref.context as OpenAPIReferenceContext | undefined;
     if (!rctx?.method || !rctx?.path) continue;
-    const fm = byKey.get(`${rctx.method.toLowerCase()} ${rctx.path}`);
+    const key = `${rctx.method.toLowerCase()} ${rctx.path}`;
+    const fm = byKey.get(key);
     if (!fm) continue;
 
     const perLang: { lang: SdkLang; tref: RenderedTypeReference }[] = [];
     for (const lang of langs) {
       try {
-        const tref = lang.emitter.generateTypeReference?.(fm.method, fm.path, ctx);
+        const tref = operationDocs(prepared, lang, fm, key).typeReference;
         if (tref) perLang.push({ lang, tref });
       } catch {
         // one language failing must not drop the others
@@ -545,20 +605,21 @@ export function embedXSdk(rawDoc: OpenAPIV3.Document, opts: EmbedXSdkOptions = {
     for (const method of HTTP_METHODS) {
       const op = pathItem[method];
       if (!op) continue;
-      const fm = prepared.byKey.get(`${method} ${specPath}`);
+      const key = `${method} ${specPath}`;
+      const fm = prepared.byKey.get(key);
       if (!fm) continue;
 
       const xop: XSdkOperation = {};
       for (const lang of langs) {
         const entry: XSdkOperationLang = {};
         try {
-          const code = lang.emitter.generateUsage?.(fm.method, fm.path, prepared.ctx);
+          const code = operationDocs(prepared, lang, fm, key).usage;
           if (code) entry.usage = code;
         } catch {
           // one language failing must not drop the others
         }
         try {
-          const tref = lang.emitter.generateTypeReference?.(fm.method, fm.path, prepared.ctx);
+          const tref = operationDocs(prepared, lang, fm, key).typeReference;
           if (tref) {
             entry.signature = tref.signature;
             entry.types = { request: tref.request, response: tref.response };

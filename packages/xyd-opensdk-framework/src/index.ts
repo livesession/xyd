@@ -16,6 +16,8 @@ export type {
 } from './types';
 export { registerEmitter, getEmitter, applyConfig, resolveLanguage, languageAliases } from './registry';
 export { generate, generateFileMap } from './orchestrator';
+export { nativeOpensdkDocs, nativeOpensdkGenerate } from './native';
+export type { NativeOperationDocs } from './native';
 export {
   writeProject,
   materializeProject,

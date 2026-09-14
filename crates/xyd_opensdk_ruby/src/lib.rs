@@ -207,7 +207,8 @@ pub fn generate_ruby_with(spec: &Value, options: &Value) -> BTreeMap<String, Str
 /// implements them. See `xyd_opensdk_core::emitter` for why this is a data
 /// descriptor rather than a trait.
 pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
-    xyd_opensdk_core::emitter::EmitterFns::new("ruby", generate_ruby);
+    xyd_opensdk_core::emitter::EmitterFns::new("ruby", generate_ruby)
+        .with_docs(generate_ruby_usage, generate_ruby_type_reference);
 
 /// The generated file map WITH per-file write semantics.
 ///

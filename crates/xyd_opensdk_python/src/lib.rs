@@ -178,7 +178,8 @@ pub fn generate_resources_py(spec: &Value) -> String {
 /// implements them. See `xyd_opensdk_core::emitter` for why this is a data
 /// descriptor rather than a trait.
 pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
-    xyd_opensdk_core::emitter::EmitterFns::new("python", generate_python);
+    xyd_opensdk_core::emitter::EmitterFns::new("python", generate_python)
+        .with_docs(generate_python_usage, generate_python_type_reference);
 
 /// The generated file map WITH per-file write semantics.
 ///

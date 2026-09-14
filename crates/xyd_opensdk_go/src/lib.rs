@@ -229,7 +229,8 @@ pub fn generate_go_type_reference(
 /// implements them. See `xyd_opensdk_core::emitter` for why this is a data
 /// descriptor rather than a trait.
 pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
-    xyd_opensdk_core::emitter::EmitterFns::new("go", generate_go);
+    xyd_opensdk_core::emitter::EmitterFns::new("go", generate_go)
+        .with_docs(generate_go_usage, generate_go_type_reference);
 
 /// The generated file map WITH per-file write semantics.
 ///

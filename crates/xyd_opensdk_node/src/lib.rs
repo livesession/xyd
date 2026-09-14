@@ -187,7 +187,8 @@ pub(crate) fn with_file_header(rel_path: &str, content: String) -> String {
 /// implements them. See `xyd_opensdk_core::emitter` for why this is a data
 /// descriptor rather than a trait.
 pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
-    xyd_opensdk_core::emitter::EmitterFns::new("node", generate_node);
+    xyd_opensdk_core::emitter::EmitterFns::new("node", generate_node)
+        .with_docs(generate_node_usage, generate_node_type_reference);
 
 /// The generated file map WITH per-file write semantics.
 ///

@@ -80,3 +80,72 @@ opensdk_surface!(
     xyd_opensdk_rust::generate_rust_files,
     "xyd_opensdk_rust"
 );
+
+/// Per-language DOCS surface: every operation's usage snippet + type reference,
+/// keyed `"<httpmethod-lowercase> <path>"` — exactly how `prepareFromIr` indexes
+/// them on the JS side.
+///
+/// BATCH by design. The docs pipeline needs one entry per operation per language
+/// (242 × 6 for the OpenAI spec), so a per-operation surface would mean ~1450
+/// boundary crossings per build. One call per (language, spec) instead.
+///
+/// Returns `"null"` for a language with no docs capabilities (the Rust target,
+/// which is absent from SDK_LANGS), letting the JS side fall back cleanly.
+macro_rules! opensdk_docs_surface {
+    ($js_name:literal, $fn_name:ident, $emitter:path, $tag:literal) => {
+        #[napi(js_name = $js_name)]
+        pub fn $fn_name(spec_json: String, options_json: Option<String>) -> Result<String> {
+            let spec: serde_json::Value = serde_json::from_str(&spec_json)
+                .map_err(|e| Error::from_reason(format!(concat!("[", $tag, "] bad spec: {}"), e)))?;
+            let options: serde_json::Value = match options_json {
+                Some(raw) => serde_json::from_str(&raw).map_err(|e| {
+                    Error::from_reason(format!(concat!("[", $tag, "] bad options: {}"), e))
+                })?,
+                None => serde_json::Value::Null,
+            };
+            match $emitter.docs_map(&spec, &options) {
+                Some(map) => serde_json::to_string(&map).map_err(|e| {
+                    Error::from_reason(format!(concat!("[", $tag, "] serialize: {}"), e))
+                }),
+                None => Ok("null".to_string()),
+            }
+        }
+    };
+}
+
+opensdk_docs_surface!(
+    "opensdkDocsGo",
+    opensdk_docs_go,
+    xyd_opensdk_go::EMITTER,
+    "xyd_opensdk_go"
+);
+opensdk_docs_surface!(
+    "opensdkDocsNode",
+    opensdk_docs_node,
+    xyd_opensdk_node::EMITTER,
+    "xyd_opensdk_node"
+);
+opensdk_docs_surface!(
+    "opensdkDocsPython",
+    opensdk_docs_python,
+    xyd_opensdk_python::EMITTER,
+    "xyd_opensdk_python"
+);
+opensdk_docs_surface!(
+    "opensdkDocsRuby",
+    opensdk_docs_ruby,
+    xyd_opensdk_ruby::EMITTER,
+    "xyd_opensdk_ruby"
+);
+opensdk_docs_surface!(
+    "opensdkDocsJava",
+    opensdk_docs_java,
+    xyd_opensdk_java::EMITTER,
+    "xyd_opensdk_java"
+);
+opensdk_docs_surface!(
+    "opensdkDocsDotnet",
+    opensdk_docs_dotnet,
+    xyd_opensdk_dotnet::EMITTER,
+    "xyd_opensdk_dotnet"
+);

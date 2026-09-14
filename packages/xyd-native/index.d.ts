@@ -116,6 +116,18 @@ export declare function opencli2go(specJson: string, optionsJson?: string | unde
 
 export declare function opencli2rust(specJson: string, optionsJson?: string | undefined | null): string
 
+export declare function opensdkDocsDotnet(specJson: string, optionsJson?: string | undefined | null): string
+
+export declare function opensdkDocsGo(specJson: string, optionsJson?: string | undefined | null): string
+
+export declare function opensdkDocsJava(specJson: string, optionsJson?: string | undefined | null): string
+
+export declare function opensdkDocsNode(specJson: string, optionsJson?: string | undefined | null): string
+
+export declare function opensdkDocsPython(specJson: string, optionsJson?: string | undefined | null): string
+
+export declare function opensdkDocsRuby(specJson: string, optionsJson?: string | undefined | null): string
+
 export declare function opensdkGenerateDotnet(specJson: string, optionsJson?: string | undefined | null): string
 
 export declare function opensdkGenerateGo(specJson: string, optionsJson?: string | undefined | null): string

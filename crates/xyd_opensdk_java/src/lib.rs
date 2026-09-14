@@ -115,7 +115,8 @@ pub fn generate_java_with(spec: &Value, options: &Value) -> BTreeMap<String, Str
 /// implements them. See `xyd_opensdk_core::emitter` for why this is a data
 /// descriptor rather than a trait.
 pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
-    xyd_opensdk_core::emitter::EmitterFns::new("java", generate_java);
+    xyd_opensdk_core::emitter::EmitterFns::new("java", generate_java)
+        .with_docs(generate_java_usage, generate_java_type_reference);
 
 /// The generated file map WITH per-file write semantics.
 ///
