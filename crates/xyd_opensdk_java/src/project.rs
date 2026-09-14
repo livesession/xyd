@@ -26,23 +26,36 @@ pub struct JavaCtx {
     pub user_agent: String,
 }
 
-pub fn resolve_java_options(spec: &Value, types: Types) -> JavaCtx {
+/// `emitterOptions` over the spec-derived defaults (mirrors `project.ts`'s
+/// `resolveJavaOptions`). `options` is the TS options bag as JSON; `Value::Null`
+/// means none were supplied, and every field falls back to what it derived
+/// before options existed — so the no-options path is byte-identical.
+pub fn resolve_java_options(spec: &Value, types: Types, options: &Value) -> JavaCtx {
+    use xyd_opensdk_core::emitter::opt_str;
+
     let title = str_field(spec.get("info").unwrap_or(&Value::Null), "title").unwrap_or("");
-    let pkg = java_package_name(title);
-    let base_package = "com.example".to_string();
+    let pkg = opt_str(options, "packageName")
+        .map(str::to_string)
+        .unwrap_or_else(|| java_package_name(title));
+    let base_package = opt_str(options, "basePackage")
+        .unwrap_or("com.example")
+        .to_string();
     let full_package = format!("{base_package}.{pkg}");
     let src_dir = format!(
         "src/main/java/{}/",
         full_package.split('.').collect::<Vec<_>>().join("/")
     );
 
-    let base_url = spec
-        .get("servers")
-        .and_then(|s| s.as_array())
-        .and_then(|a| a.first())
-        .and_then(|s| s.as_str())
-        .unwrap_or("")
-        .to_string();
+    let base_url = opt_str(options, "baseURL")
+        .map(str::to_string)
+        .unwrap_or_else(|| {
+            spec.get("servers")
+                .and_then(|s| s.as_array())
+                .and_then(|a| a.first())
+                .and_then(|s| s.as_str())
+                .unwrap_or("")
+                .to_string()
+        });
     let env_var = spec
         .get("security")
         .and_then(|s| s.as_array())

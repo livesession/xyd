@@ -47,11 +47,19 @@ pub(crate) fn with_py_header(content: &str) -> String {
 /// their project-relative path (the same keys the framework file map uses for
 /// these capabilities). `pyproject.toml` gets no header (`.toml` has no
 /// commentable syntax in the orchestrator's table); every `.py` file does.
+///
+/// Equivalent to [`generate_python_with`] with no emitter options.
 pub fn generate_python(spec: &Value) -> BTreeMap<String, String> {
+    generate_python_with(spec, &Value::Null)
+}
+
+/// [`generate_python`] honoring `emitterOptions` (`packageName`, `baseURL`,
+/// `tests`). Pass `Value::Null` for none.
+pub fn generate_python_with(spec: &Value, options: &Value) -> BTreeMap<String, String> {
     if xyd_opensdk_cli_common::is_cli_spec(spec) {
         return cli::generate_cli(spec);
     }
-    let opts = resolve_options(spec);
+    let opts = resolve_options(spec, options);
     let pkg = &opts.pkg;
     let mut files: BTreeMap<String, String> = BTreeMap::new();
 
@@ -105,27 +113,30 @@ pub fn generate_python(spec: &Value) -> BTreeMap<String, String> {
 
     // generateTests -> tests/utils.py + tests/conftest.py + one
     // tests/test_<resource>.py per top-level resource (skipped when there are no
-    // resources, matching the JS emitter).
-    let resources = arr(spec, "resources");
-    if !resources.is_empty() {
-        let types: std::collections::HashMap<&str, &Value> = arr(spec, "types")
-            .iter()
-            .filter_map(|t| str_field(t, "name").map(|n| (n, t)))
-            .collect();
-        files.insert(
-            "tests/utils.py".to_string(),
-            with_py_header(&test_utils_py()),
-        );
-        files.insert(
-            "tests/conftest.py".to_string(),
-            with_py_header(&test_conftest_py(pkg)),
-        );
-        for r in resources {
-            let name = str_field(r, "name").unwrap_or("");
+    // resources, matching the JS emitter). Opt out with
+    // `emitterOptions.tests === false`.
+    if xyd_opensdk_core::emitter::emit_tests(options) {
+        let resources = arr(spec, "resources");
+        if !resources.is_empty() {
+            let types: std::collections::HashMap<&str, &Value> = arr(spec, "types")
+                .iter()
+                .filter_map(|t| str_field(t, "name").map(|n| (n, t)))
+                .collect();
             files.insert(
-                format!("tests/test_{}.py", crate::naming::snake_case(name)),
-                with_py_header(&resource_test_py(r, pkg, &types)),
+                "tests/utils.py".to_string(),
+                with_py_header(&test_utils_py()),
             );
+            files.insert(
+                "tests/conftest.py".to_string(),
+                with_py_header(&test_conftest_py(pkg)),
+            );
+            for r in resources {
+                let name = str_field(r, "name").unwrap_or("");
+                files.insert(
+                    format!("tests/test_{}.py", crate::naming::snake_case(name)),
+                    with_py_header(&resource_test_py(r, pkg, &types)),
+                );
+            }
         }
     }
 
@@ -170,6 +181,7 @@ pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
 /// shared write-mode table.
 pub fn generate_python_files(
     spec: &serde_json::Value,
+    options: &serde_json::Value,
 ) -> std::collections::BTreeMap<String, xyd_opensdk_core::emitter::GeneratedFile> {
-    xyd_opensdk_core::emitter::attach_write_modes("python", generate_python(spec))
+    xyd_opensdk_core::emitter::attach_write_modes("python", generate_python_with(spec, options))
 }

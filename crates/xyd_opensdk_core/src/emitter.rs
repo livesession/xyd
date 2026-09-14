@@ -18,6 +18,32 @@ use std::collections::BTreeMap;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
+/// An `emitterOptions` string, absent-safe.
+///
+/// The options bag is the TS `ctx.emitterOptions` verbatim, passed as JSON. An
+/// absent bag (`Value::Null`) and an absent key behave identically, so every
+/// call site reads `opt_str(o, "packageName").unwrap_or(derived)` and the
+/// no-options path keeps its existing derived default.
+///
+/// An EMPTY string is treated as present, matching JS `??` semantics — only
+/// `undefined`/`null` fall through to the default, and `""` is a real override.
+pub fn opt_str<'a>(options: &'a Value, key: &str) -> Option<&'a str> {
+    options.get(key).and_then(|v| v.as_str())
+}
+
+/// An `emitterOptions` boolean, absent-safe.
+pub fn opt_bool(options: &Value, key: &str) -> Option<bool> {
+    options.get(key).and_then(|v| v.as_bool())
+}
+
+/// Whether to emit the SDK's own test suite (`tests`, default ON).
+///
+/// Mirrors each TS emitter's `if (ctx.emitterOptions.tests === false) return []`:
+/// ONLY an explicit `false` opts out, so a non-boolean value keeps tests on.
+pub fn emit_tests(options: &Value) -> bool {
+    opt_bool(options, "tests") != Some(false)
+}
+
 /// How `writeProject` treats a generated file that already exists on disk.
 ///
 /// Mirrors the TS `WriteMode` union; `rename_all = "camelCase"` makes the wire
@@ -245,6 +271,26 @@ mod tests {
         ] {
             assert_eq!(resolve_language(input), want, "resolve_language({input:?})");
         }
+    }
+
+    #[test]
+    fn options_are_absent_safe_and_match_js_fallback_semantics() {
+        let none = Value::Null;
+        assert_eq!(opt_str(&none, "packageName"), None);
+        assert_eq!(opt_bool(&none, "tests"), None);
+        assert!(emit_tests(&none), "no options must keep tests ON");
+
+        let o = serde_json::json!({ "packageName": "acme", "empty": "", "tests": false });
+        assert_eq!(opt_str(&o, "packageName"), Some("acme"));
+        assert_eq!(opt_str(&o, "missing"), None);
+        // "" is a real override, not a fallthrough — matches JS `??`.
+        assert_eq!(opt_str(&o, "empty"), Some(""));
+        assert!(!emit_tests(&o));
+
+        // Only an explicit `false` opts out of tests.
+        assert!(emit_tests(&serde_json::json!({ "tests": true })));
+        assert!(emit_tests(&serde_json::json!({ "tests": "no" })));
+        assert!(emit_tests(&serde_json::json!({})));
     }
 
     #[test]

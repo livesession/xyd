@@ -38,7 +38,9 @@ fn timeout_ms(spec: &Value) -> u64 {
 pub fn generate_cli(spec: &Value) -> BTreeMap<String, String> {
     let root = CliRoot::parse(spec).unwrap_or_else(|e| panic!("emitter \"java\": {e}"));
     let types_map = build_types(spec);
-    let ctx = resolve_java_options(spec, types_map);
+    // The CLI branch returns before `generate_java_with` resolves options (same
+    // early return as the Go emitter), so it keeps the spec-derived defaults.
+    let ctx = resolve_java_options(spec, types_map, &Value::Null);
 
     let mut files: BTreeMap<String, String> = BTreeMap::new();
     files.insert("pom.xml".to_string(), pom_xml(&ctx, spec));

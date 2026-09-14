@@ -35,25 +35,38 @@ struct Options {
     base_url: String,
 }
 
-fn resolve_options(spec: &Value) -> Options {
+/// `emitterOptions` over the spec-derived defaults (mirrors `emitter.ts`'s
+/// `resolveOptions`). `options` is the TS options bag as JSON; `Value::Null`
+/// means none were supplied, and every field falls back to what it derived
+/// before options existed — so the no-options path is byte-identical.
+fn resolve_options(spec: &Value, options: &Value) -> Options {
+    use xyd_opensdk_core::emitter::opt_str;
+
     let title = spec
         .get("info")
         .and_then(|i| i.get("title"))
         .and_then(|t| t.as_str())
         .unwrap_or("");
-    let pkg = go_package_name(title);
-    let module_path = format!("github.com/example/{pkg}");
-    let base_url = spec
-        .get("servers")
-        .and_then(|s| s.as_array())
-        .and_then(|a| a.first())
-        .and_then(|s| s.as_str())
-        .unwrap_or("")
-        .to_string();
+    let pkg = opt_str(options, "packageName")
+        .map(str::to_string)
+        .unwrap_or_else(|| go_package_name(title));
+    let module_path = opt_str(options, "modulePath")
+        .map(str::to_string)
+        .unwrap_or_else(|| format!("github.com/example/{pkg}"));
+    let base_url = opt_str(options, "baseURL")
+        .map(str::to_string)
+        .unwrap_or_else(|| {
+            spec.get("servers")
+                .and_then(|s| s.as_array())
+                .and_then(|a| a.first())
+                .and_then(|s| s.as_str())
+                .unwrap_or("")
+                .to_string()
+        });
     Options {
         pkg,
         module_path,
-        go_version: "1.22".to_string(),
+        go_version: opt_str(options, "goVersion").unwrap_or("1.22").to_string(),
         base_url,
     }
 }
@@ -69,11 +82,22 @@ pub(crate) fn with_header(rel: &str, content: String) -> String {
 /// Emit the full generated Go SDK file map (go.mod, client.go, types.go,
 /// per-resource service files, the vendored runtime, and the SDK's own test
 /// suite). Returns a sorted path→content map.
+///
+/// Equivalent to [`generate_go_with`] with no emitter options.
 pub fn generate_go(spec: &Value) -> std::collections::BTreeMap<String, String> {
+    generate_go_with(spec, &Value::Null)
+}
+
+/// [`generate_go`] honoring `emitterOptions` (`modulePath`, `packageName`,
+/// `goVersion`, `baseURL`, `tests`). Pass `Value::Null` for none.
+pub fn generate_go_with(
+    spec: &Value,
+    options: &Value,
+) -> std::collections::BTreeMap<String, String> {
     if xyd_opensdk_cli_common::is_cli_spec(spec) {
         return cli::generate_cli(spec);
     }
-    let opts = resolve_options(spec);
+    let opts = resolve_options(spec, options);
     let types = spec.get("types").and_then(|t| t.as_array());
     let mut type_map: Map<String, Value> = Map::new();
     if let Some(types) = types {
@@ -135,12 +159,15 @@ pub fn generate_go(spec: &Value) -> std::collections::BTreeMap<String, String> {
         files.insert(path, c);
     }
     // generateTests — the SDK's own openai-go-shaped test suite (skipped when
-    // there are no resources with methods, matching the JS emitter).
-    for (path, content) in
-        example_go::generate_go_tests(spec, &type_map, &opts.module_path, &opts.pkg)
-    {
-        let c = with_header(&path, content);
-        files.insert(path, c);
+    // there are no resources with methods, matching the JS emitter). Opt out
+    // with `emitterOptions.tests === false`.
+    if xyd_opensdk_core::emitter::emit_tests(options) {
+        for (path, content) in
+            example_go::generate_go_tests(spec, &type_map, &opts.module_path, &opts.pkg)
+        {
+            let c = with_header(&path, content);
+            files.insert(path, c);
+        }
     }
 
     files
@@ -162,6 +189,7 @@ pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
 /// shared write-mode table.
 pub fn generate_go_files(
     spec: &serde_json::Value,
+    options: &serde_json::Value,
 ) -> std::collections::BTreeMap<String, xyd_opensdk_core::emitter::GeneratedFile> {
-    xyd_opensdk_core::emitter::attach_write_modes("go", generate_go(spec))
+    xyd_opensdk_core::emitter::attach_write_modes("go", generate_go_with(spec, options))
 }

@@ -16,25 +16,40 @@ pub struct ResolvedOptions {
     pub base_url: String,
 }
 
-pub fn resolve_options(spec: &Value) -> ResolvedOptions {
+/// `emitterOptions` over the spec-derived defaults (mirrors `resolvePythonOptions`).
+/// `options` is the TS options bag as JSON; `Value::Null` means none were
+/// supplied, and every field falls back to what it derived before options
+/// existed — so the no-options path is byte-identical.
+///
+/// `env_var` is deliberately derived AFTER `pkg`, so an overridden
+/// `packageName` also moves the default credential env var — exactly like the
+/// JS `screamingSnakeCase(pkg)` fallback.
+pub fn resolve_options(spec: &Value, options: &Value) -> ResolvedOptions {
+    use xyd_opensdk_core::emitter::opt_str;
+
     let title = spec
         .get("info")
         .and_then(|i| str_field(i, "title"))
         .unwrap_or("");
-    let pkg = py_module_name(title);
+    let pkg = opt_str(options, "packageName")
+        .map(str::to_string)
+        .unwrap_or_else(|| py_module_name(title));
     let env_var = spec
         .get("security")
         .and_then(Value::as_array)
         .and_then(|secs| secs.iter().find_map(|s| str_field(s, "envVar")))
         .map(str::to_string)
         .unwrap_or_else(|| format!("{}_API_KEY", screaming_snake_case(&pkg)));
-    let base_url = spec
-        .get("servers")
-        .and_then(Value::as_array)
-        .and_then(|s| s.first())
-        .and_then(Value::as_str)
-        .unwrap_or("")
-        .to_string();
+    let base_url = opt_str(options, "baseURL")
+        .map(str::to_string)
+        .unwrap_or_else(|| {
+            spec.get("servers")
+                .and_then(Value::as_array)
+                .and_then(|s| s.first())
+                .and_then(Value::as_str)
+                .unwrap_or("")
+                .to_string()
+        });
     ResolvedOptions {
         pkg,
         env_var,

@@ -54,7 +54,7 @@ fn cli_usings() -> Vec<String> {
 
 pub fn generate_cli(spec: &Value) -> BTreeMap<String, String> {
     let root = CliRoot::parse(spec).unwrap_or_else(|e| panic!("emitter \"dotnet\": {e}"));
-    let opts = crate::resolve_options(spec);
+    let opts = crate::resolve_options(spec, &Value::Null);
 
     let types_arr = spec
         .get("types")

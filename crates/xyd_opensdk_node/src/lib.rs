@@ -16,6 +16,7 @@
 use std::collections::BTreeMap;
 
 mod behavior;
+mod busybox;
 mod cli;
 mod client;
 mod example;
@@ -36,12 +37,22 @@ use resource::NodeCtx;
 /// document. Returns a virtual file map `{ relativePath: contents }` (the
 /// framework orchestrator's contract, minus the deferred runtime/test files).
 pub fn generate_node(spec_json: &serde_json::Value) -> BTreeMap<String, String> {
+    generate_node_with(spec_json, &serde_json::Value::Null)
+}
+
+/// [`generate_node`] honoring `emitterOptions` (`packageName`, `exportDefault`,
+/// `exportPackage`, `baseURL`, `envVar`, `tests`, `busybox`). Pass `Value::Null`
+/// for none.
+pub fn generate_node_with(
+    spec_json: &serde_json::Value,
+    options: &serde_json::Value,
+) -> BTreeMap<String, String> {
     let spec: Spec = serde_json::from_value(spec_json.clone())
         .expect("OpenSDK IR did not match the expected shape");
     if xyd_opensdk_cli_common::is_cli_spec(spec_json) {
         return cli::generate_cli(&spec, spec_json);
     }
-    generate_from_spec(&spec, spec_json)
+    generate_from_spec(&spec, spec_json, options)
 }
 
 /// Whether some method returns a vendored page container (gates `pagination.ts`).
@@ -54,8 +65,12 @@ fn uses_pagination(resources: &[Resource], types: &[&ir::NamedType]) -> bool {
     })
 }
 
-fn generate_from_spec(spec: &Spec, spec_json: &serde_json::Value) -> BTreeMap<String, String> {
-    let opts = project::resolve_node_options(spec);
+fn generate_from_spec(
+    spec: &Spec,
+    spec_json: &serde_json::Value,
+    options: &serde_json::Value,
+) -> BTreeMap<String, String> {
+    let opts = project::resolve_node_options(spec, options);
     let error_classes = behavior::error_class_names(spec);
     let types: Vec<&ir::NamedType> = spec.types.iter().collect();
     let auto_generate_for_post = spec
@@ -93,12 +108,25 @@ fn generate_from_spec(spec: &Spec, spec_json: &serde_json::Value) -> BTreeMap<St
             &error_classes,
             &opts.client_name,
             opts.default_export,
+            opts.busybox.as_ref(),
         ),
     );
     add(
         "src/client.ts",
-        client::render_client_file(spec, &opts.env_var, &opts.client_name),
+        client::render_client_file(
+            spec,
+            &opts.env_var,
+            &opts.client_name,
+            opts.busybox.as_ref(),
+        ),
     );
+
+    // The error-helper "busybox" — ONE shared definition, exposed per the
+    // configured style (statics on the client / flat exports / a namespace).
+    // Absent unless `emitterOptions.busybox` is set, so goldens are untouched.
+    if opts.busybox.is_some() {
+        add("src/busybox.ts", crate::busybox::render_busybox_file());
+    }
 
     // generateTypes
     add("src/models.ts", model::render_models_file(spec));
@@ -125,13 +153,16 @@ fn generate_from_spec(spec: &Spec, spec_json: &serde_json::Value) -> BTreeMap<St
     }
 
     // generateTests — the SDK's own openai-node-shaped suite (default ON).
-    for (path, content) in tests_gen::test_files(
-        &spec.resources,
-        &ctx,
-        &opts.client_name,
-        opts.default_export,
-    ) {
-        add(&path, content);
+    // Opt out with `emitterOptions.tests === false`.
+    if xyd_opensdk_core::emitter::emit_tests(options) {
+        for (path, content) in tests_gen::test_files(
+            &spec.resources,
+            &ctx,
+            &opts.client_name,
+            opts.default_export,
+        ) {
+            add(&path, content);
+        }
     }
 
     files
@@ -162,6 +193,7 @@ pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
 /// shared write-mode table.
 pub fn generate_node_files(
     spec: &serde_json::Value,
+    options: &serde_json::Value,
 ) -> std::collections::BTreeMap<String, xyd_opensdk_core::emitter::GeneratedFile> {
-    xyd_opensdk_core::emitter::attach_write_modes("node", generate_node(spec))
+    xyd_opensdk_core::emitter::attach_write_modes("node", generate_node_with(spec, options))
 }

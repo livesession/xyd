@@ -41,12 +41,20 @@ use tests_gen::generate_java_tests;
 /// Emit the generated-code file map for a Java SDK from an OpenSDK IR document.
 /// Returns `{ relativePath: contents }` for the covered capabilities only (the
 /// vendored runtime + tests stay with the JS emitter).
+///
+/// Equivalent to [`generate_java_with`] with no emitter options.
 pub fn generate_java(spec: &Value) -> BTreeMap<String, String> {
+    generate_java_with(spec, &Value::Null)
+}
+
+/// [`generate_java`] honoring `emitterOptions` (`packageName`, `basePackage`,
+/// `baseURL`, `tests`). Pass `Value::Null` for none.
+pub fn generate_java_with(spec: &Value, options: &Value) -> BTreeMap<String, String> {
     if xyd_opensdk_cli_common::is_cli_spec(spec) {
         return cli::generate_cli(spec);
     }
     let types_map = build_types(spec);
-    let ctx = resolve_java_options(spec, types_map);
+    let ctx = resolve_java_options(spec, types_map, options);
 
     let mut files: BTreeMap<String, String> = BTreeMap::new();
     let mut put = |path: String, content: String| {
@@ -88,8 +96,10 @@ pub fn generate_java(spec: &Value) -> BTreeMap<String, String> {
     }
 
     // generateTests → the SDK's own assertion suite (one per top-level resource)
-    for f in generate_java_tests(spec, &ctx) {
-        put(f.path, f.content);
+    if xyd_opensdk_core::emitter::emit_tests(options) {
+        for f in generate_java_tests(spec, &ctx) {
+            put(f.path, f.content);
+        }
     }
 
     files
@@ -111,6 +121,7 @@ pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
 /// shared write-mode table.
 pub fn generate_java_files(
     spec: &serde_json::Value,
+    options: &serde_json::Value,
 ) -> std::collections::BTreeMap<String, xyd_opensdk_core::emitter::GeneratedFile> {
-    xyd_opensdk_core::emitter::attach_write_modes("java", generate_java(spec))
+    xyd_opensdk_core::emitter::attach_write_modes("java", generate_java_with(spec, options))
 }

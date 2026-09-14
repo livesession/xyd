@@ -116,19 +116,19 @@ export declare function opencli2go(specJson: string, optionsJson?: string | unde
 
 export declare function opencli2rust(specJson: string, optionsJson?: string | undefined | null): string
 
-export declare function opensdkGenerateDotnet(specJson: string): string
+export declare function opensdkGenerateDotnet(specJson: string, optionsJson?: string | undefined | null): string
 
-export declare function opensdkGenerateGo(specJson: string): string
+export declare function opensdkGenerateGo(specJson: string, optionsJson?: string | undefined | null): string
 
-export declare function opensdkGenerateJava(specJson: string): string
+export declare function opensdkGenerateJava(specJson: string, optionsJson?: string | undefined | null): string
 
-export declare function opensdkGenerateNode(specJson: string): string
+export declare function opensdkGenerateNode(specJson: string, optionsJson?: string | undefined | null): string
 
-export declare function opensdkGeneratePython(specJson: string): string
+export declare function opensdkGeneratePython(specJson: string, optionsJson?: string | undefined | null): string
 
-export declare function opensdkGenerateRuby(specJson: string): string
+export declare function opensdkGenerateRuby(specJson: string, optionsJson?: string | undefined | null): string
 
-export declare function opensdkGenerateRust(specJson: string): string
+export declare function opensdkGenerateRust(specJson: string, optionsJson?: string | undefined | null): string
 
 /** pluginJsonView core: Reference[] JSON → string[] JSON. */
 export declare function pluginJsonView(referencesJson: string): string

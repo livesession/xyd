@@ -53,7 +53,7 @@ fn timeout_ms(spec: &Value) -> u64 {
 
 pub fn generate_cli(spec: &Value) -> BTreeMap<String, String> {
     let root = CliRoot::parse(spec).unwrap_or_else(|e| panic!("emitter \"rust\": {e}"));
-    let crate_ = crate::resolve_crate(spec);
+    let crate_ = crate::resolve_crate(spec, &Value::Null);
     let edition = "2021";
 
     let models = render_cli_models_file(spec);

@@ -13,23 +13,53 @@ pub struct ResolvedNodeOptions {
     pub env_var: String,
     pub client_name: String,
     pub default_export: bool,
+    /// The resolved error-helper "busybox" config, or `None` when disabled.
+    pub busybox: Option<crate::busybox::ResolvedBusybox>,
 }
 
-/// Resolve options. The fork build only exercises the default (no-options) path:
-/// default export, PascalCase client name, env var from security or the pkg stem.
-pub fn resolve_node_options(spec: &Spec) -> ResolvedNodeOptions {
-    let pkg = npm_package_name(&spec.info.title);
-    let client_name = pascal_case(&pkg);
-    let env_var = spec
-        .security
-        .iter()
-        .find_map(|s| s.env_var.clone())
+/// `emitterOptions` over the spec-derived defaults (mirrors `project.ts`'s
+/// `resolve`). `options` is the TS options bag as JSON; `Value::Null` means none
+/// were supplied and every field keeps the default it had before options
+/// existed — default export, PascalCase client name, env var from security or
+/// the pkg stem.
+pub fn resolve_node_options(spec: &Spec, options: &Value) -> ResolvedNodeOptions {
+    use xyd_opensdk_core::emitter::opt_str;
+
+    let pkg = opt_str(options, "packageName")
+        .map(str::to_string)
+        .unwrap_or_else(|| npm_package_name(&spec.info.title));
+
+    // A NAMED export iff `exportPackage` is set to anything but `false`;
+    // otherwise a default export (also when `exportDefault` is set). For
+    // whichever is chosen, a STRING is the symbol verbatim; `true`/unset falls
+    // back to the PascalCase name derived from the package.
+    let export_package = options.get("exportPackage");
+    let named = !matches!(export_package, None | Some(Value::Bool(false)));
+    let name_opt = if named {
+        export_package
+    } else {
+        options.get("exportDefault")
+    };
+    let client_name = name_opt
+        .and_then(|v| v.as_str())
+        .map(str::trim)
+        .filter(|s| !s.is_empty())
+        .map(str::to_string)
+        .unwrap_or_else(|| pascal_case(&pkg));
+
+    let env_var = opt_str(options, "envVar")
+        .map(str::to_string)
+        .or_else(|| spec.security.iter().find_map(|s| s.env_var.clone()))
         .unwrap_or_else(|| format!("{}_API_KEY", screaming_snake_case(&pkg)));
+
     ResolvedNodeOptions {
-        base_url: spec.servers.first().cloned().unwrap_or_default(),
+        base_url: opt_str(options, "baseURL")
+            .map(str::to_string)
+            .unwrap_or_else(|| spec.servers.first().cloned().unwrap_or_default()),
         env_var,
         client_name,
-        default_export: true,
+        default_export: !named,
+        busybox: crate::busybox::resolve_busybox(options.get("busybox")),
         pkg,
     }
 }

@@ -44,28 +44,45 @@ pub(crate) struct ResolvedOptions {
     pub(crate) env_var: Option<String>,
 }
 
-pub(crate) fn resolve_options(spec: &Value) -> ResolvedOptions {
+/// `emitterOptions` over the spec-derived defaults (mirrors `emitter.ts`'s
+/// `resolveOptions`). `options` is the TS options bag as JSON; `Value::Null`
+/// means none were supplied, and every field falls back to what it derived
+/// before options existed — so the no-options path is byte-identical.
+///
+/// `envVar` is spec-derived only (it is not an emitter option in the TS types).
+pub(crate) fn resolve_options(spec: &Value, options: &Value) -> ResolvedOptions {
+    use xyd_opensdk_core::emitter::opt_str;
+
     let title = spec
         .get("info")
         .and_then(|i| i.get("title"))
         .and_then(Value::as_str)
         .unwrap_or("");
-    let sdk = {
-        let p = pascal_case(title);
-        if p.is_empty() {
-            "Client".to_string()
-        } else {
-            p
-        }
-    };
-    let namespace = format!("Example.{sdk}");
-    let base_url = spec
-        .get("servers")
-        .and_then(Value::as_array)
-        .and_then(|s| s.first())
-        .and_then(Value::as_str)
-        .unwrap_or("")
-        .to_string();
+    let sdk = opt_str(options, "sdkName")
+        .map(str::to_string)
+        .unwrap_or_else(|| {
+            let p = pascal_case(title);
+            if p.is_empty() {
+                "Client".to_string()
+            } else {
+                p
+            }
+        });
+    // Derived from the RESOLVED sdk, so an `sdkName` override cascades here
+    // exactly as it does in `emitter.ts`.
+    let namespace = opt_str(options, "namespace")
+        .map(str::to_string)
+        .unwrap_or_else(|| format!("Example.{sdk}"));
+    let base_url = opt_str(options, "baseURL")
+        .map(str::to_string)
+        .unwrap_or_else(|| {
+            spec.get("servers")
+                .and_then(Value::as_array)
+                .and_then(|s| s.first())
+                .and_then(Value::as_str)
+                .unwrap_or("")
+                .to_string()
+        });
     let env_var = spec
         .get("security")
         .and_then(Value::as_array)
@@ -78,7 +95,9 @@ pub(crate) fn resolve_options(spec: &Value) -> ResolvedOptions {
         sdk,
         namespace,
         base_url,
-        target_framework: "net8.0".to_string(),
+        target_framework: opt_str(options, "targetFramework")
+            .unwrap_or("net8.0")
+            .to_string(),
         env_var,
     }
 }
@@ -183,11 +202,19 @@ pub(crate) fn csproj_file(
 
 /// Generate the substantive IR→C# files (`.csproj`, `Client.cs`, `Models.cs`,
 /// `<Resource>Service.cs`). The vendored runtime + tests are out of scope.
+///
+/// Equivalent to [`generate_dotnet_with`] with no emitter options.
 pub fn generate_dotnet(spec: &Value) -> BTreeMap<String, String> {
+    generate_dotnet_with(spec, &Value::Null)
+}
+
+/// [`generate_dotnet`] honoring `emitterOptions` (`sdkName`, `namespace`,
+/// `baseURL`, `targetFramework`, `tests`). Pass `Value::Null` for none.
+pub fn generate_dotnet_with(spec: &Value, options: &Value) -> BTreeMap<String, String> {
     if xyd_opensdk_cli_common::is_cli_spec(spec) {
         return cli::generate_cli(spec);
     }
-    let opts = resolve_options(spec);
+    let opts = resolve_options(spec, options);
 
     // Symbol table for lookups (order-independent; iteration uses the array).
     let types_arr = spec
@@ -271,8 +298,9 @@ pub fn generate_dotnet(spec: &Value) -> BTreeMap<String, String> {
     }
 
     // generateTests → <Sdk>.Tests/** (skipped when there are no resources, matching
-    // the JS emitter's `resources.length === 0` guard).
-    if !resources.is_empty() {
+    // the JS emitter's `resources.length === 0` guard). Opt out with
+    // `emitterOptions.tests === false`.
+    if !resources.is_empty() && xyd_opensdk_core::emitter::emit_tests(options) {
         let tests_ctx = DotnetTestsCtx {
             sdk: &opts.sdk,
             namespace: &opts.namespace,
@@ -321,6 +349,7 @@ pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
 /// shared write-mode table.
 pub fn generate_dotnet_files(
     spec: &serde_json::Value,
+    options: &serde_json::Value,
 ) -> std::collections::BTreeMap<String, xyd_opensdk_core::emitter::GeneratedFile> {
-    xyd_opensdk_core::emitter::attach_write_modes("dotnet", generate_dotnet(spec))
+    xyd_opensdk_core::emitter::attach_write_modes("dotnet", generate_dotnet_with(spec, options))
 }

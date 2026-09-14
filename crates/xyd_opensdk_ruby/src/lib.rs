@@ -35,21 +35,37 @@ struct Resolved {
     env_var: String,
 }
 
-fn resolve_options(spec: &Value) -> Resolved {
+/// `emitterOptions` over the spec-derived defaults (mirrors `emitter.ts`'s
+/// `resolveOptions`). `options` is the TS options bag as JSON; `Value::Null`
+/// means none were supplied, and every field falls back to what it derived
+/// before options existed — so the no-options path is byte-identical.
+///
+/// `envVar` is deliberately NOT an option: like the JS emitter it derives from
+/// the RESOLVED `pkg`, so a `packageName` override moves the env var with it.
+fn resolve_options(spec: &Value, options: &Value) -> Resolved {
+    use xyd_opensdk_core::emitter::opt_str;
+
     let title = spec
         .get("info")
         .and_then(|i| i.get("title"))
         .and_then(|t| t.as_str())
         .unwrap_or("");
-    let pkg = ruby_gem_name(title);
-    let module_name = pascal_case(title);
-    let base_url = spec
-        .get("servers")
-        .and_then(|s| s.as_array())
-        .and_then(|a| a.first())
-        .and_then(|s| s.as_str())
-        .unwrap_or("")
-        .to_string();
+    let pkg = opt_str(options, "packageName")
+        .map(str::to_string)
+        .unwrap_or_else(|| ruby_gem_name(title));
+    let module_name = opt_str(options, "moduleName")
+        .map(str::to_string)
+        .unwrap_or_else(|| pascal_case(title));
+    let base_url = opt_str(options, "baseURL")
+        .map(str::to_string)
+        .unwrap_or_else(|| {
+            spec.get("servers")
+                .and_then(|s| s.as_array())
+                .and_then(|a| a.first())
+                .and_then(|s| s.as_str())
+                .unwrap_or("")
+                .to_string()
+        });
     let env_var = spec
         .get("security")
         .and_then(|s| s.as_array())
@@ -87,11 +103,22 @@ fn with_header(path: &str, content: String) -> String {
 ///
 /// A spec with a root `x-cli` block is CLI-mode: the generated SDK spawns the
 /// real CLI binary instead of speaking HTTP (see `cli.rs`).
+///
+/// Equivalent to [`generate_ruby_with`] with no emitter options.
 pub fn generate_ruby(spec: &Value) -> BTreeMap<String, String> {
+    generate_ruby_with(spec, &Value::Null)
+}
+
+/// [`generate_ruby`] honoring `emitterOptions` (`packageName`, `moduleName`,
+/// `baseURL`, `tests`). Pass `Value::Null` for none.
+///
+/// `packageName` moves generated PATHS (`<pkg>.gemspec`, `lib/<pkg>/**`) as well
+/// as the default API-key env var — that is intended, and matches the JS emitter.
+pub fn generate_ruby_with(spec: &Value, options: &Value) -> BTreeMap<String, String> {
     if xyd_opensdk_cli_common::is_cli_spec(spec) {
         return cli::generate_cli(spec);
     }
-    let opts = resolve_options(spec);
+    let opts = resolve_options(spec, options);
     let types: HashMap<String, Value> = spec
         .get("types")
         .and_then(|t| t.as_array())
@@ -145,22 +172,25 @@ pub fn generate_ruby(spec: &Value) -> BTreeMap<String, String> {
         runtime::render_transport_file(spec, &opts.module_name, &opts.pkg, &opts.base_url),
     );
     // generateTests — the SDK's own minitest suite (skipped when there are no
-    // resources, matching the JS emitter).
-    if let Some(resources) = spec
-        .get("resources")
-        .and_then(|r| r.as_array())
-        .filter(|r| !r.is_empty())
-    {
-        put(
-            "test/test_helper.rb".to_string(),
-            tests_gen::test_helper_rb(&opts.module_name, &opts.pkg),
-        );
-        for resource in resources {
-            let name = resource.get("name").and_then(|n| n.as_str()).unwrap_or("");
+    // resources, matching the JS emitter). Opt out with
+    // `emitterOptions.tests === false`.
+    if xyd_opensdk_core::emitter::emit_tests(options) {
+        if let Some(resources) = spec
+            .get("resources")
+            .and_then(|r| r.as_array())
+            .filter(|r| !r.is_empty())
+        {
             put(
-                format!("test/test_{}.rb", snake_case(name)),
-                tests_gen::resource_test_rb(resource, &opts.module_name, &types),
+                "test/test_helper.rb".to_string(),
+                tests_gen::test_helper_rb(&opts.module_name, &opts.pkg),
             );
+            for resource in resources {
+                let name = resource.get("name").and_then(|n| n.as_str()).unwrap_or("");
+                put(
+                    format!("test/test_{}.rb", snake_case(name)),
+                    tests_gen::resource_test_rb(resource, &opts.module_name, &types),
+                );
+            }
         }
     }
 
@@ -183,6 +213,7 @@ pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
 /// shared write-mode table.
 pub fn generate_ruby_files(
     spec: &serde_json::Value,
+    options: &serde_json::Value,
 ) -> std::collections::BTreeMap<String, xyd_opensdk_core::emitter::GeneratedFile> {
-    xyd_opensdk_core::emitter::attach_write_modes("ruby", generate_ruby(spec))
+    xyd_opensdk_core::emitter::attach_write_modes("ruby", generate_ruby_with(spec, options))
 }

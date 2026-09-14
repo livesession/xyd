@@ -41,9 +41,12 @@ const FN_BY_LANG: Record<string, string> = {
  */
 export function nativeOpensdkGenerate(
   language: string,
-): ((specJson: string) => string) | null {
+): ((specJson: string, optionsJson?: string) => string) | null {
   if (!native) return null;
   const name = FN_BY_LANG[language];
   if (!name || typeof native[name] !== "function") return null;
-  return (specJson: string) => native[name](specJson);
+  // `optionsJson` is the ctx.emitterOptions bag as JSON. Omitted and `{}` behave
+  // identically on the Rust side — every field keeps its spec-derived default.
+  return (specJson: string, optionsJson?: string) =>
+    native[name](specJson, optionsJson);
 }

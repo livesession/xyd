@@ -19,10 +19,18 @@ use napi_derive::napi;
 macro_rules! opensdk_surface {
     ($js_name:literal, $fn_name:ident, $crate_fn:path, $tag:literal) => {
         #[napi(js_name = $js_name)]
-        pub fn $fn_name(spec_json: String) -> Result<String> {
+        pub fn $fn_name(spec_json: String, options_json: Option<String>) -> Result<String> {
             let spec: serde_json::Value = serde_json::from_str(&spec_json)
                 .map_err(|e| Error::from_reason(format!(concat!("[", $tag, "] bad spec: {}"), e)))?;
-            let files = $crate_fn(&spec);
+            // An absent bag and `{}` behave identically; both keep every
+            // spec-derived default, so the no-options path stays byte-exact.
+            let options: serde_json::Value = match options_json {
+                Some(raw) => serde_json::from_str(&raw).map_err(|e| {
+                    Error::from_reason(format!(concat!("[", $tag, "] bad options: {}"), e))
+                })?,
+                None => serde_json::Value::Null,
+            };
+            let files = $crate_fn(&spec, &options);
             serde_json::to_string(&files).map_err(|e| {
                 Error::from_reason(format!(concat!("[", $tag, "] serialize: {}"), e))
             })

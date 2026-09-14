@@ -43,10 +43,12 @@ fn with_header(rel_path: &str, content: String) -> String {
     xyd_opensdk_core::header::with_file_header(rel_path, content)
 }
 
-/// The Cargo package / lib crate name (packageName ?? moduleName ?? crateName).
-fn resolve_crate(spec: &Value) -> String {
-    // Options are folded into the IR call in the JS; the Rust entry takes only
-    // the spec (the emitter tests pass no options), so use the defaults.
+/// The Cargo package / lib crate name (`packageName ?? moduleName ?? crateName`).
+fn resolve_crate(spec: &Value, options: &Value) -> String {
+    use xyd_opensdk_core::emitter::opt_str;
+    if let Some(name) = opt_str(options, "packageName").or_else(|| opt_str(options, "moduleName")) {
+        return name.to_string();
+    }
     let title = spec
         .get("info")
         .and_then(|i| i.get("title"))
@@ -72,19 +74,29 @@ fn resolve_env_var(spec: &Value, crate_: &str) -> String {
 /// Generate the SUBSTANTIVE Rust SDK files from an OpenSDK IR document.
 /// Returns `{ relativePath: contents }` for the emitted (generated-code) files.
 pub fn generate_rust(spec: &Value) -> BTreeMap<String, String> {
+    generate_rust_with(spec, &Value::Null)
+}
+
+/// [`generate_rust`] honoring `emitterOptions` (`packageName`, `moduleName`,
+/// `baseURL`, `edition`, `tests`). Pass `Value::Null` for none.
+pub fn generate_rust_with(spec: &Value, options: &Value) -> BTreeMap<String, String> {
+    use xyd_opensdk_core::emitter::opt_str;
     if xyd_opensdk_cli_common::is_cli_spec(spec) {
         return cli::generate_cli(spec);
     }
-    let crate_ = resolve_crate(spec);
-    let edition = "2021";
+    let crate_ = resolve_crate(spec, options);
+    let edition = opt_str(options, "edition").unwrap_or("2021");
     let env_var = resolve_env_var(spec, &crate_);
-    let base_url = spec
-        .get("servers")
-        .and_then(|s| s.as_array())
-        .and_then(|a| a.first())
-        .and_then(|s| s.as_str())
-        .unwrap_or("")
-        .to_string();
+    let base_url = opt_str(options, "baseURL")
+        .map(str::to_string)
+        .unwrap_or_else(|| {
+            spec.get("servers")
+                .and_then(|s| s.as_array())
+                .and_then(|a| a.first())
+                .and_then(|s| s.as_str())
+                .unwrap_or("")
+                .to_string()
+        });
 
     // Symbol table for the resource emitter (name → NamedType).
     let mut types: Map<String, Value> = Map::new();
@@ -140,6 +152,7 @@ pub fn generate_rust(spec: &Value) -> BTreeMap<String, String> {
         .get("resources")
         .and_then(|r| r.as_array())
         .filter(|r| !r.is_empty())
+        .filter(|_| xyd_opensdk_core::emitter::emit_tests(options))
     {
         files.insert(
             "tests/common/mod.rs".to_string(),
@@ -172,6 +185,7 @@ pub const EMITTER: xyd_opensdk_core::emitter::EmitterFns =
 /// shared write-mode table.
 pub fn generate_rust_files(
     spec: &serde_json::Value,
+    options: &serde_json::Value,
 ) -> std::collections::BTreeMap<String, xyd_opensdk_core::emitter::GeneratedFile> {
-    xyd_opensdk_core::emitter::attach_write_modes("rust", generate_rust(spec))
+    xyd_opensdk_core::emitter::attach_write_modes("rust", generate_rust_with(spec, options))
 }

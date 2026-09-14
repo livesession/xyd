@@ -6,7 +6,12 @@ use crate::jsrt::{camel_case, js_doc, json_string, slug};
 use crate::resource::resource_class_name;
 
 /// Emit `src/client.ts`: the top-level client with a field per top-level resource.
-pub fn render_client_file(spec: &Spec, env_var: &str, client_name: &str) -> String {
+pub fn render_client_file(
+    spec: &Spec,
+    env_var: &str,
+    client_name: &str,
+    busybox: Option<&crate::busybox::ResolvedBusybox>,
+) -> String {
     let resources = &spec.resources;
     let mut imports = vec![
         "import { APIClient, readEnv } from './core/request';".to_string(),
@@ -36,6 +41,12 @@ pub fn render_client_file(spec: &Spec, env_var: &str, client_name: &str) -> Stri
         })
         .collect();
 
+    // 'static' style: the helpers become static members of the client class.
+    let statics = busybox.and_then(crate::busybox::busybox_client_statics);
+    if let Some((import_line, _)) = &statics {
+        imports.push(import_line.clone());
+    }
+
     let mut ctor_lines = vec![format!(
         "    super({{ ...options, apiKey: options.apiKey ?? readEnv({}) }});",
         json_string(env_var)
@@ -54,8 +65,12 @@ pub fn render_client_file(spec: &Spec, env_var: &str, client_name: &str) -> Stri
     } else {
         format!("{}\n\n", fields.join("\n"))
     };
+    let static_block = match &statics {
+        Some((_, lines)) => format!("{}\n\n", lines.join("\n")),
+        None => String::new(),
+    };
     format!(
-        "{imports}\n\n{doc}export class {client_name} extends APIClient {{\n{field_block}  constructor(options: ClientOptions = {{}}) {{\n{ctor}\n  }}\n}}\n",
+        "{imports}\n\n{doc}export class {client_name} extends APIClient {{\n{static_block}{field_block}  constructor(options: ClientOptions = {{}}) {{\n{ctor}\n  }}\n}}\n",
         imports = imports.join("\n"),
         ctor = ctor_lines.join("\n"),
     )
@@ -67,6 +82,7 @@ pub fn render_root_index_file(
     error_classes: &[String],
     client_name: &str,
     default_export: bool,
+    busybox: Option<&crate::busybox::ResolvedBusybox>,
 ) -> String {
     let mut errors = vec!["APIError".to_string()];
     errors.extend(error_classes.iter().cloned());
@@ -83,6 +99,11 @@ pub fn render_root_index_file(
     ];
     if !spec.resources.is_empty() {
         lines.push("export * from './resources/index';".to_string());
+    }
+    // 'static'-style helpers live on the client class, so they get no root
+    // re-export line; 'flat'/'namespace' each add one.
+    if let Some(line) = busybox.and_then(crate::busybox::busybox_index_export) {
+        lines.push(line);
     }
     format!("{}\n", lines.join("\n"))
 }

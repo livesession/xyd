@@ -31,7 +31,7 @@ fn write_modes_match_the_typescript_golden() {
         let spec: Value = serde_json::from_str(&std::fs::read_to_string(&input).unwrap()).unwrap();
 
         // Only NON-default modes are recorded, matching the golden's shape.
-        let got: BTreeMap<String, String> = generate_dotnet_files(&spec)
+        let got: BTreeMap<String, String> = generate_dotnet_files(&spec, &Value::Null)
             .into_iter()
             .filter_map(|(path, f)| {
                 f.write_mode.map(|m| {

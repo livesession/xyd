@@ -71,23 +71,24 @@ export function generateFileMap(
   // drift). Native content already carries the baked ownership header (matches
   // goldens), so withFileHeader is intentionally NOT re-applied here.
   //
-  // The native surface takes ONLY the spec, so it can't honor emitterOptions
-  // (e.g. { tests: false }) — those still take the JS path.
+  // The native path is now unconditional when @xyd-js/native is present. It
+  // used to be gated three ways, and each gate is gone:
   //
-  // A spec carrying `sdk` behavior overrides no longer does. Every crate now
-  // interpolates the resolved block instead of baking defaults, proven by the
-  // `10.sdk-behavior` / `11.sdk-behavior-pagination` fixtures — golden trees
-  // with every policy dimension set to a non-default value — passing in all
-  // seven Rust parity suites. (Go was the last holdout: its runtime came from
-  // static .go.txt templates hardcoding `Default: 2` and `autoPageDelay = 0`.)
-  const nativeGen =
-    Object.keys(emitterOptions).length === 0 ? nativeOpensdkGenerate(emitter.language) : null;
+  //   emitterOptions   the surface took only the spec — it now takes the bag,
+  //                    and every crate threads it through its resolve_options
+  //   sdk overrides    some runtimes baked default sdk-behavior constants —
+  //                    all seven now interpolate the resolved block
+  //   writeMode        the map was rebuilt by calling the TS generateProject —
+  //                    the crates return it
+  const nativeGen = nativeOpensdkGenerate(emitter.language);
   if (nativeGen) {
-    // The native surface now returns `{ content, writeMode? }` directly, so the
-    // whole file map — content AND write semantics — comes from Rust. This used
-    // to call the TypeScript generateProject purely to rebuild the writeMode
-    // map, which is what kept the TS emitters load-bearing at XYD_NATIVE=1.
-    return JSON.parse(nativeGen(JSON.stringify(spec))) as Record<string, GeneratedFileEntry>;
+    // Content AND write semantics come from Rust.
+    const optionsJson =
+      Object.keys(emitterOptions).length > 0 ? JSON.stringify(emitterOptions) : undefined;
+    return JSON.parse(nativeGen(JSON.stringify(spec), optionsJson)) as Record<
+      string,
+      GeneratedFileEntry
+    >;
   }
 
   const files: Record<string, GeneratedFileEntry> = {};
