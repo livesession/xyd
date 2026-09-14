@@ -1,7 +1,19 @@
-//! Full-tree byte-golden parity: `generate_node(input.json)` must reproduce
-//! EVERY file under each fixture's `output/` tree — byte-for-byte — with no
-//! missing and no extra files. Self-contained (no shared parity crate): walks
-//! the fixtures package directly. Diffs report the path + first differing line.
+//! Byte-golden parity for the Node emitter.
+//!
+//! Test 1 (full-tree): `generate_node(input.json)` must reproduce EVERY file
+//! under each fixture's `output/` tree — byte-for-byte — with no missing and no
+//! extra files. Self-contained (no shared parity crate): walks the fixtures
+//! package directly. Diffs report the path + first differing line.
+//!
+//! Test 2 (per-method): the `-2.complex.<name>/<op>/{input.json,output.ts}`
+//! corpora, where `output.ts` is exactly the single top-level
+//! `src/resources/<resource>.ts` for a one-method IR slice. WHY it exists: this
+//! is the ONLY layer that exercises the resources emitter across the ~242 hard
+//! real-world operation shapes (deep resource trees, unions, aliases,
+//! binary/multipart bodies, pagination, idempotency). It was carried by
+//! `packages/xyd-opensdk-node/__tests__/docs.test.ts`, which is being deleted —
+//! without this port that coverage would vanish silently, so the guard also
+//! asserts a corpus floor.
 
 use std::collections::BTreeMap;
 use std::fs;
@@ -127,4 +139,98 @@ fn node_emitter_full_tree_byte_golden_parity() {
         FIXTURES.len()
     );
     assert_eq!(total_match, total_files, "some files diverged");
+}
+
+/// The single top-level resource `.ts` file in a generated project (the
+/// interesting bit) — mirrors `resourceFileKey` in the TypeScript test: anything
+/// under `src/resources/` except the barrel, which excludes the vendored runtime
+/// (`src/core/**`), `src/client.ts` and `src/models.ts`.
+fn resource_file_key(files: &BTreeMap<String, String>) -> Option<&String> {
+    files.keys().find(|k| {
+        k.starts_with("src/resources/") && k.ends_with(".ts") && *k != "src/resources/index.ts"
+    })
+}
+
+/// Per-method complex corpora: `-2.complex.<name>/<op>/{input.json, output.ts}`,
+/// where `output.ts` is exactly the top-level resource file for that one-method
+/// IR slice. Pure (committed OpenSDK IR in → node out), so it needs neither the
+/// OpenAPI converter nor the encrypted oracle spec.
+#[test]
+fn node_per_method_resources_are_byte_exact_vs_goldens() {
+    let root = fixtures_dir();
+    let mut methods: Vec<PathBuf> = Vec::new();
+    for corpus in fs::read_dir(&root).unwrap_or_else(|e| panic!("read {root:?}: {e}")) {
+        let corpus = corpus.unwrap().path();
+        let cname = corpus.file_name().unwrap().to_string_lossy().to_string();
+        if !cname.contains("complex") {
+            continue;
+        }
+        let Ok(sub) = fs::read_dir(&corpus) else {
+            continue;
+        };
+        for op in sub {
+            let op = op.unwrap().path();
+            if op.join("input.json").is_file() && op.join("output.ts").is_file() {
+                methods.push(op);
+            }
+        }
+    }
+    methods.sort();
+
+    // Floor: the corpus is 242 operations today. A handful below that absorbs
+    // legitimate churn in the vendored spec; anything lower means fixtures were
+    // dropped, which must NOT pass silently (this guard replaces the deleted
+    // TypeScript `docs.test.ts` regen guard).
+    assert!(
+        methods.len() >= 235,
+        "only {} per-method fixtures found (expected >= 235) — the corpus shrank",
+        methods.len()
+    );
+
+    let mut matched = 0usize;
+    let mut failures: Vec<String> = Vec::new();
+    for op in &methods {
+        let rel = op
+            .strip_prefix(&root)
+            .unwrap_or(op)
+            .to_string_lossy()
+            .to_string();
+        let input = fs::read_to_string(op.join("input.json"))
+            .unwrap_or_else(|e| panic!("[{rel}] read input.json: {e}"));
+        let spec: serde_json::Value = serde_json::from_str(&input)
+            .unwrap_or_else(|e| panic!("[{rel}] parse input.json: {e}"));
+
+        let emitted = generate_node(&spec);
+        let Some(key) = resource_file_key(&emitted) else {
+            failures.push(format!("[{rel}] no resource .ts generated"));
+            continue;
+        };
+        let got = &emitted[key];
+        let want = fs::read_to_string(op.join("output.ts"))
+            .unwrap_or_else(|e| panic!("[{rel}] read output.ts: {e}"));
+        if *got == want {
+            matched += 1;
+        } else {
+            failures.push(format!(
+                "[{rel}] {key} MISMATCH — {}",
+                first_divergence(got, &want)
+            ));
+        }
+    }
+
+    println!(
+        "PER-METHOD PARITY: {matched}/{} resource .ts byte-exact",
+        methods.len()
+    );
+    assert!(
+        failures.is_empty(),
+        "{} per-method file(s) diverged from golden (showing up to 10):\n{}",
+        failures.len(),
+        failures
+            .iter()
+            .take(10)
+            .cloned()
+            .collect::<Vec<_>>()
+            .join("\n")
+    );
 }

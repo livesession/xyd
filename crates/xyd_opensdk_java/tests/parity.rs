@@ -1,12 +1,22 @@
-//! Full-tree golden parity: `generate_java(input.json)` reproduces each fixture's
+//! Byte-golden parity for the Java emitter.
+//!
+//! Test 1 (full-tree): `generate_java(input.json)` reproduces each fixture's
 //! ENTIRE `output/` tree byte-exact — the generated code AND the vendored runtime
 //! (Json, Transport, the status-mapped exception hierarchy, page containers) AND
 //! the SDK's own test suite. Bidirectional: (a) every golden is emitted and
 //! byte-identical, (b) nothing extra is emitted, (c) counts match. Diffs report
 //! the path + first differing line.
+//!
+//! Test 2 (per-method): the `-2.complex.<name>/<op>/{input.json,output.java}`
+//! corpora, where `output.java` is exactly the leaf `<Qualifier>Service.java` for
+//! a one-method IR slice — the ~242-case oracle the deleted TypeScript
+//! `__tests__/docs.test.ts` regen guard used to own. It exercises the service
+//! emitter over the hard forms (deep nested resource trees, unions, aliases,
+//! binary/multipart bodies, pagination, idempotency) against real emitter output.
 
 use serde_json::Value;
 use std::collections::{BTreeMap, BTreeSet};
+use std::fs;
 use std::path::{Path, PathBuf};
 
 use xyd_opensdk_java::generate_java;
@@ -135,4 +145,158 @@ fn sdk_behavior() {
 #[test]
 fn sdk_behavior_pagination() {
     check("11.sdk-behavior-pagination");
+}
+
+// ---- Test 2: per-method regen guard (`<op>/output.java`) ------------------
+
+/// The depth of the first method in the IR — i.e. how many resources sit on the
+/// chain from the root to the one declaring it (the TS `firstMethod` walk). A
+/// one-method slice emits exactly one service file per link of that chain.
+fn first_method_depth(resources: Option<&Vec<Value>>, depth: usize) -> Option<usize> {
+    for r in resources? {
+        let here = depth + 1;
+        if r.get("methods")
+            .and_then(Value::as_array)
+            .is_some_and(|m| !m.is_empty())
+        {
+            return Some(here);
+        }
+        if let Some(found) = first_method_depth(r.get("resources").and_then(Value::as_array), here)
+        {
+            return Some(found);
+        }
+    }
+    None
+}
+
+/// The leaf resource's `<Qualifier>Service.java` — the file that actually declares
+/// this operation's method, i.e. the same selection `resourceFileKey()` made in the
+/// TypeScript `docs.test.ts`. Java emits ONE service file per resource along the
+/// chain (`AdminService`, `AdminOrganizationService`,
+/// `AdminOrganizationAdminApiKeyService`), and each parent qualifier is a proper
+/// prefix of its child's, so the leaf is the unique candidate whose qualifier
+/// starts with every other candidate's. `<Qualifier>ServiceTest.java` (the SDK's
+/// own suite) and the fixed runtime files are not `…Service.java`, so they never
+/// match.
+fn leaf_service_key(files: &BTreeMap<String, String>) -> Result<String, String> {
+    // (key, qualifier) — the class name with the `Service.java` suffix stripped.
+    let candidates: Vec<(&String, &str)> = files
+        .keys()
+        .filter_map(|k| {
+            let file = k.rsplit('/').next().unwrap_or(k);
+            file.strip_suffix("Service.java").map(|q| (k, q))
+        })
+        .collect();
+    if candidates.is_empty() {
+        return Err("no <Qualifier>Service.java generated".to_string());
+    }
+    let leaf: Vec<&(&String, &str)> = candidates
+        .iter()
+        .filter(|(_, q)| candidates.iter().all(|(_, other)| q.starts_with(other)))
+        .collect();
+    match leaf.as_slice() {
+        [only] => Ok(only.0.clone()),
+        _ => Err(format!(
+            "ambiguous leaf service among {:?}",
+            candidates.iter().map(|(_, q)| *q).collect::<Vec<_>>()
+        )),
+    }
+}
+
+/// Per-method complex corpora: `-2.complex.<name>/<op>/{input.json, output.java}`.
+/// The IR slice carries exactly one operation, so its leaf service file is the whole
+/// generated surface for that operation — byte equality against the committed golden
+/// is the regen guard. Ported from the TypeScript `docs.test.ts` "regen guard" block
+/// so that coverage survives the deletion of `packages/xyd-opensdk-java`.
+#[test]
+fn java_per_method_service_files_are_byte_exact_vs_goldens() {
+    let root = fixtures_dir();
+    let mut methods: Vec<PathBuf> = Vec::new();
+    for corpus in fs::read_dir(&root).unwrap_or_else(|e| panic!("read {root:?}: {e}")) {
+        let corpus = corpus.unwrap().path();
+        let cname = corpus.file_name().unwrap().to_string_lossy().to_string();
+        if !cname.contains("complex") {
+            continue;
+        }
+        let Ok(sub) = fs::read_dir(&corpus) else {
+            continue;
+        };
+        for op in sub {
+            let op = op.unwrap().path();
+            if op.join("input.json").is_file() && op.join("output.java").is_file() {
+                methods.push(op);
+            }
+        }
+    }
+    methods.sort();
+
+    // A floor, not an equality: the corpus may grow, but a silently shrinking one
+    // would quietly narrow the oracle without failing anything. 242 dirs carry both
+    // files today; 238 leaves a small margin for churn (same margin as the Go crate).
+    assert!(
+        methods.len() >= 238,
+        "only {} per-method java fixtures found (expected >= 238) — the corpus shrank",
+        methods.len()
+    );
+
+    let mut matched = 0usize;
+    let mut failures: Vec<String> = Vec::new();
+    for op in &methods {
+        let rel = op
+            .strip_prefix(&root)
+            .unwrap_or(op)
+            .to_string_lossy()
+            .to_string();
+        let input = fs::read_to_string(op.join("input.json"))
+            .unwrap_or_else(|e| panic!("[{rel}] read input.json: {e}"));
+        let spec: Value = serde_json::from_str(&input)
+            .unwrap_or_else(|e| panic!("[{rel}] parse input.json: {e}"));
+
+        let emitted = generate_java(&spec);
+        let key = match leaf_service_key(&emitted) {
+            Ok(k) => k,
+            Err(why) => {
+                failures.push(format!("[{rel}] {why}"));
+                continue;
+            }
+        };
+        // Tie the string-shape selection back to the IR: one service file per link
+        // of the chain, so a dropped (or spurious) service would not pass silently.
+        let depth = first_method_depth(spec.get("resources").and_then(Value::as_array), 0);
+        let services = emitted
+            .keys()
+            .filter(|k| k.ends_with("Service.java"))
+            .count();
+        if depth != Some(services) {
+            failures.push(format!(
+                "[{rel}] {services} service file(s) for a chain of depth {depth:?}"
+            ));
+            continue;
+        }
+
+        let golden = fs::read_to_string(op.join("output.java"))
+            .unwrap_or_else(|e| panic!("[{rel}] read output.java: {e}"));
+        let got = &emitted[&key];
+        if got == &golden {
+            matched += 1;
+        } else {
+            failures.push(format!("[{rel}] {key}: {}", first_diff(got, &golden)));
+        }
+    }
+
+    eprintln!(
+        "PER-METHOD PARITY: {matched}/{} leaf Service.java byte-exact",
+        methods.len()
+    );
+    assert!(
+        failures.is_empty(),
+        "{} per-method file(s) diverged from golden (showing up to 10):\n{}",
+        failures.len(),
+        failures
+            .iter()
+            .take(10)
+            .cloned()
+            .collect::<Vec<_>>()
+            .join("\n")
+    );
 }
