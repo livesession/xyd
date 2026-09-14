@@ -15,6 +15,7 @@ members = [
     "xyd_mcp_uniform",
     "xyd_settings",
     "xyd_openapi2opencli",
+    "xyd_opencli_uniform",
     "xyd_opencli2go",
     "xyd_opencli2rust",
     "xyd_opencli2opensdk",
