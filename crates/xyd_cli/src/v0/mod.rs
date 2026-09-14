@@ -83,7 +83,7 @@ impl Commands for Cli {
     ) -> Pin<Box<dyn Future<Output = Result<(), Error>>>> {
         Box::pin(async move {
             match m.get_one::<String>("component").map(String::as_str) {
-                Some("opensdk") => opensdk::install(),
+                Some("opensdk") => opensdk::install().await,
                 _ => engine::forward_to_engine().await,
             }
         })

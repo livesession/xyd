@@ -50,14 +50,17 @@ jobs:
             bun-target: bun-linux-x64
             engine: xyd-linux-x64
             artifact: xyd-native-linux-x64
+            opensdk: opensdk-linux-x64
           - os: ubuntu-24.04-arm
             bun-target: bun-linux-arm64
             engine: xyd-linux-arm64
             artifact: xyd-native-linux-arm64
+            opensdk: opensdk-linux-arm64
           - os: macos-14
             bun-target: bun-darwin-arm64
             engine: xyd-darwin-arm64
             artifact: xyd-native-darwin-arm64
+            opensdk: opensdk-darwin-arm64
     steps:
       - uses: actions/checkout@v4
         with:
@@ -198,4 +201,50 @@ jobs:
         with:
           name: ${{ matrix.artifact }}
           path: crates/target/release/${{ matrix.artifact }}
+          if-no-files-found: error
+
+      # The opensdk TOOLCHAIN binary (~5.6 MB, no embedded engine — it neither renders
+      # docs nor spawns bun, so none of the engine staging above applies to it). Shipping
+      # it as a release asset is what lets `xyd components install opensdk` download a
+      # node-free binary instead of npm-installing @xyd-js/opensdk-cli — see
+      # crates/xyd_cli/src/v0/opensdk.rs. Reuses this job's Rust toolchain + cargo cache.
+      - name: Build the opensdk toolchain binary
+        working-directory: crates
+        run: cargo build -p xyd_opensdk_cli --bin opensdk --release
+
+      - name: Stage opensdk under the artifact name
+        shell: bash
+        run: cp crates/target/release/opensdk "crates/target/release/${{ matrix.opensdk }}"
+
+      # Same darwin constraint as the outer xyd binary: an unsigned arm64 Mach-O won't
+      # run at all. No `allow-jit` needed — it's a pure codegen CLI.
+      - name: 'Codesign + verify opensdk (darwin)'
+        if: matrix.os == 'macos-14'
+        run: |
+          codesign -s - --force "crates/target/release/${{ matrix.opensdk }}"
+          codesign --verify --strict --verbose=2 "crates/target/release/${{ matrix.opensdk }}"
+          echo "opensdk codesign ok"
+
+      # Node-free proof: generate a real SDK from a spec in a clean temp dir with no
+      # node_modules and no repo on PATH. Asserts the binary actually emitted files
+      # rather than merely exiting 0.
+      - name: 'Smoke: node-free opensdk generate'
+        shell: bash
+        run: |
+          BIN="$PWD/crates/target/release/${{ matrix.opensdk }}"
+          WORK="$RUNNER_TEMP/opensdk-smoke"
+          rm -rf "$WORK"; mkdir -p "$WORK"
+          cp packages/xyd-openapi2opensdk/__fixtures__/1.basic/input.json "$WORK/openapi.json"
+          cd "$WORK"
+          "$BIN" --help > /dev/null
+          "$BIN" generate --lang go --spec ./openapi.json --output ./out
+          test -f ./out/go.mod
+          test -f ./out/client.go
+          echo "opensdk smoke ok: $(find ./out -type f | wc -l) files generated"
+
+      - name: Upload opensdk artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.opensdk }}
+          path: crates/target/release/${{ matrix.opensdk }}
           if-no-files-found: error
