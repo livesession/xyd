@@ -1,0 +1,41 @@
+{
+  "isCliTarget": true,
+  "backendKeys": [
+    "modulePath",
+    "binName",
+    "goVersion",
+    "baseURL"
+  ],
+  "converterKeys": [
+    "cliName",
+    "version",
+    "grouping",
+    "bodyStrategy",
+    "includeMethods",
+    "includeHeaders",
+    "flagCase",
+    "actionAliases",
+    "verbMap",
+    "customActionVerbs",
+    "includePaths",
+    "maxBodyDepth",
+    "authEnvVar"
+  ],
+  "split": {
+    "converter": {},
+    "backend": {
+      "modulePath": "github.com/acme/x",
+      "binName": "acme",
+      "goVersion": "1.22",
+      "baseURL": "https://api.acme.dev"
+    },
+    "converterOrder": [],
+    "backendOrder": [
+      "modulePath",
+      "binName",
+      "goVersion",
+      "baseURL"
+    ]
+  },
+  "error": null
+}

@@ -1,0 +1,26 @@
+{
+  "isCliTarget": true,
+  "backendKeys": [
+    "modulePath",
+    "binName",
+    "goVersion",
+    "baseURL"
+  ],
+  "converterKeys": [
+    "cliName",
+    "version",
+    "grouping",
+    "bodyStrategy",
+    "includeMethods",
+    "includeHeaders",
+    "flagCase",
+    "actionAliases",
+    "verbMap",
+    "customActionVerbs",
+    "includePaths",
+    "maxBodyDepth",
+    "authEnvVar"
+  ],
+  "split": null,
+  "error": "Unknown option(s) for \"go-cli\": packageName. Valid: cliName, version, grouping, bodyStrategy, includeMethods, includeHeaders, flagCase, actionAliases, verbMap, customActionVerbs, includePaths, maxBodyDepth, authEnvVar, modulePath, binName, goVersion, baseURL"
+}

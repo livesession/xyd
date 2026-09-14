@@ -1,0 +1,19 @@
+{
+  "info": {
+    "title": "petstore",
+    "version": "9.9.9",
+    "contact": {
+      "email": "api@acme.dev"
+    },
+    "license": {
+      "name": "Proprietary"
+    }
+  },
+  "infoKeys": [
+    "title",
+    "version",
+    "contact",
+    "license"
+  ],
+  "inputUnchanged": true
+}

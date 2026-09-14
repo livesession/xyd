@@ -1,0 +1,43 @@
+{
+  "isCliTarget": true,
+  "backendKeys": [
+    "modulePath",
+    "binName",
+    "goVersion",
+    "baseURL"
+  ],
+  "converterKeys": [
+    "cliName",
+    "version",
+    "grouping",
+    "bodyStrategy",
+    "includeMethods",
+    "includeHeaders",
+    "flagCase",
+    "actionAliases",
+    "verbMap",
+    "customActionVerbs",
+    "includePaths",
+    "maxBodyDepth",
+    "authEnvVar"
+  ],
+  "split": {
+    "converter": {
+      "cliName": "acme",
+      "flagCase": "kebab"
+    },
+    "backend": {
+      "modulePath": "github.com/acme/acme-cli",
+      "baseURL": "https://api.acme.dev"
+    },
+    "converterOrder": [
+      "cliName",
+      "flagCase"
+    ],
+    "backendOrder": [
+      "modulePath",
+      "baseURL"
+    ]
+  },
+  "error": null
+}

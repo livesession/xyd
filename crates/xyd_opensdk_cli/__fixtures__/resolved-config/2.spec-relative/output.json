@@ -1,0 +1,37 @@
+{
+  "config": {
+    "spec": "__CASE__/openapi/api.yaml",
+    "sdkName": null,
+    "sdk": null,
+    "mountRules": null,
+    "mountRuleKeys": null,
+    "operationHints": null,
+    "publish": null,
+    "publishKeys": null,
+    "merge": null,
+    "hasEmitterOptions": true,
+    "hasTargets": true,
+    "declaredLanguages": [
+      "node"
+    ],
+    "emitterOptions": [
+      {
+        "lang": "node",
+        "options": {},
+        "optionKeys": []
+      }
+    ],
+    "targets": [
+      {
+        "lang": "node",
+        "output": "./out/ts",
+        "behavior": null,
+        "publish": null,
+        "publishKeys": null,
+        "merge": null
+      }
+    ],
+    "sourceKind": "sdk-json",
+    "sourceFilePath": "__CASE__/sdk.json"
+  }
+}

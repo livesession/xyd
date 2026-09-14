@@ -1,0 +1,15 @@
+{
+  "info": {
+    "title": "petstore",
+    "version": "1.0.0",
+    "contact": {
+      "email": "api@acme.dev"
+    },
+    "license": {
+      "name": "Proprietary"
+    }
+  },
+  "publish": {
+    "author": "Acme Inc"
+  }
+}

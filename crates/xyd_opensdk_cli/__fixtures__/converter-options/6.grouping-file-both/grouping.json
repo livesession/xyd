@@ -1,0 +1,11 @@
+{
+  "_note": "extra keys are ignored",
+  "mountRules": {
+    "fromFile": "c/d"
+  },
+  "operationHints": {
+    "POST /y": {
+      "mountOn": "z"
+    }
+  }
+}

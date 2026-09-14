@@ -5,7 +5,7 @@ export { main, registerBuiltinEmitters } from './cli/index';
 export { parseCommand } from './cli/parse';
 export { xsdkCommand } from './cli/xsdk';
 export type { XsdkCommandOptions } from './cli/xsdk';
-export { generateCommand, generateTargets, loadIR } from './cli/generate';
+export { applyPublishIdentity, generateCommand, generateTargets, loadIR } from './cli/generate';
 // CLI output targets: the OpenCLI pipeline (openapi2opencli → opencli2go/rust)
 // surfaced as go-cli / rust-cli pseudo-language target ids.
 export { isCliTarget, generateCliTarget, splitCliOptions, cliBackendKeys, CLI_CONVERTER_KEYS } from './cli/cli-targets';

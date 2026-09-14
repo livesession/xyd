@@ -1,0 +1,8 @@
+{
+  "mode": "single",
+  "lang": "typescript",
+  "sdkName": "petstore",
+  "emitterOptions": {
+    "packageName": "petstore"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "reportLines": [
+    "RISKY (1)",
+    "  deprecated-added  pets.list — method marked deprecated",
+    "",
+    "0 breaking, 1 risky, 0 safe (1 change)"
+  ],
+  "exit": {
+    "breaking": 1,
+    "risky": 1,
+    "any": 1
+  }
+}

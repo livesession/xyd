@@ -1,0 +1,5 @@
+{
+  "mode": "single",
+  "lang": "go-cli",
+  "sdkName": "petstore"
+}

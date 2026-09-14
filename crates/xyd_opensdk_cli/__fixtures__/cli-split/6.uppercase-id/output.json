@@ -1,0 +1,35 @@
+{
+  "isCliTarget": true,
+  "backendKeys": [
+    "crateName",
+    "binName",
+    "edition",
+    "baseURL"
+  ],
+  "converterKeys": [
+    "cliName",
+    "version",
+    "grouping",
+    "bodyStrategy",
+    "includeMethods",
+    "includeHeaders",
+    "flagCase",
+    "actionAliases",
+    "verbMap",
+    "customActionVerbs",
+    "includePaths",
+    "maxBodyDepth",
+    "authEnvVar"
+  ],
+  "split": {
+    "converter": {},
+    "backend": {
+      "crateName": "c"
+    },
+    "converterOrder": [],
+    "backendOrder": [
+      "crateName"
+    ]
+  },
+  "error": null
+}

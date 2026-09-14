@@ -1,0 +1,6 @@
+{
+  "mode": "single",
+  "lang": "go",
+  "sdkName": "petstore",
+  "noTests": true
+}

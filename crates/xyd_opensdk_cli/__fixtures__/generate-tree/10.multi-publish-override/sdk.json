@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "sdkName": "petstore",
+  "publish": {
+    "author": "Acme",
+    "license": "MIT",
+    "repository": "https://github.com/acme/petstore"
+  },
+  "typescript": {},
+  "python": {
+    "packageName": "petstore",
+    "publish": {
+      "license": "Apache-2.0"
+    }
+  }
+}

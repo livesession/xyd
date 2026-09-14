@@ -1,0 +1,33 @@
+{
+  "files": {
+    "sdk/node/.sdk/sdk.lock": "eb2808bedbb5f0ed0197749b04f4bc38b6ac67c1327fdb5e7739e334f7877c54",
+    "sdk/node/package.json": "539b7fdb5030a7648a9339cd543f07d013669cb3554ae1e85f8c0d10a8869914",
+    "sdk/node/README.md": "be7c51351c0a91846bd4c64a28f49a8b535355edcc0bfa63efeb6b94b76a1e18",
+    "sdk/node/src/client.ts": "712b4311f91fdba0a87add5a59e61d3c51e7c02b8a52dc01197c41e65b8b6102",
+    "sdk/node/src/core/error.ts": "ad431ace43b3b9e66c092e6dd402b5b7e90f696b34d113e48d808a575287ddda",
+    "sdk/node/src/core/pagination.ts": "7abf1e1520fa4fe3a13154ba890afbc1c592f2002f14cb13e543c1debcdf897c",
+    "sdk/node/src/core/request.ts": "e5c8ba8e49015cbf6f551479bbbec072a52c512756899ad7be128dafd4d681e4",
+    "sdk/node/src/core/resource.ts": "c0806533c9270415c9ec85a2bfc09f060aa08536cfe92adb07b10f1103c1a971",
+    "sdk/node/src/index.ts": "4853c40fa017ab2e4260025efbc49e8c9440b7e4125c0d73b98c77be79b9d724",
+    "sdk/node/src/models.ts": "9a5a5a13edc2e8ed3a01b7df7bfdd5c9e56ffdc72f92309cdabed7c29c218f8b",
+    "sdk/node/src/resources/index.ts": "9435b5fb3acc93489349e0716db566b21aaf98c437e990888e6ee40b77c8015d",
+    "sdk/node/src/resources/pets.ts": "4a3de049ad931259551a4b7ec1482f41bbaaf5ce6d9753df1fc675a4e72287a1",
+    "sdk/node/tests/_shims.d.ts": "3c3ee090b2db5332c7a3c5c59305e83bbe643480f8e4fae72c55adf9ab148432",
+    "sdk/node/tests/pets.test.ts": "b13c3cd6c57f2a01f011503aa970fd62371082706447f208d1a54ebc07cfdcad",
+    "sdk/node/tests/setup.ts": "4c79d3f3ed0d49cb5933ca62cea6f22ae086d92579a1fc4c472136f036f41eeb",
+    "sdk/node/tsconfig.json": "f0ea9c28c38a4e87c4783c2e2fcb86ad571b1f2843680d43c670b17bf238afff",
+    "sdk/node/tsconfig.test.json": "7f5af0bca922b5bfbe6abea23a95a6116d593d9f018657c84295b528707f435b",
+    "sdk/python/.sdk/sdk.lock": "2a717dbc1e09334a1f18c6324898649d640c0d52f0d4c12932d3577333e3255e",
+    "sdk/python/petstore/__init__.py": "f9c2c458fc85a7f0d1516c00bd3ac4c8c690b18a85ac62af715f76bc4a03ca22",
+    "sdk/python/petstore/_client.py": "98718d1012b513d8add99da123ff8912529df2f17f912cc94d4fe2271c3484d4",
+    "sdk/python/petstore/_pagination.py": "61f447ab5c125156595e3cde17caee28dbb72ab881fde2b39e6446c7afcb67f1",
+    "sdk/python/petstore/_transport.py": "378aed7fcf251547e79e18e40b00d7eda5b07320e7b8bb78e3d557aa5a256e25",
+    "sdk/python/petstore/models.py": "2976ca5a39b331776971f6aec55a6c35c38c240332142e221a811c20e8a4ad74",
+    "sdk/python/petstore/resources.py": "2ecd79507b549278370c2dbbbad63da8cdb339700d684cdc66fed798c199bb9d",
+    "sdk/python/pyproject.toml": "56b1e139156b9a7cfd8802ce9791b374604cc3ff57d07af2d27a8340daac6ded",
+    "sdk/python/tests/conftest.py": "d7348e61e136b392f125653c985be78c984a0c0a3d1a9c0dc01749e0b8df24b1",
+    "sdk/python/tests/test_pets.py": "17d7e38fab0f42e86c0cf5b4ca281372e25a6986d349bc9ea863ab980760a75f",
+    "sdk/python/tests/utils.py": "028c41d4125978a7a82ee15d2603c4cd9d3b82fad8758e80811da0bd33b185c3"
+  },
+  "fileCount": 28
+}

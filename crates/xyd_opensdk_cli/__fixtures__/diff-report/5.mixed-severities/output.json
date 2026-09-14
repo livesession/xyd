@@ -1,0 +1,19 @@
+{
+  "reportLines": [
+    "BREAKING (1)",
+    "  method-removed  pets.retrieve — method no longer exists",
+    "",
+    "RISKY (1)",
+    "  deprecated-added  pets.list — method marked deprecated",
+    "",
+    "SAFE (1)",
+    "  param-added  pets.list.queryParams.verbose — new optional parameter",
+    "",
+    "1 breaking, 1 risky, 1 safe (3 changes)"
+  ],
+  "exit": {
+    "breaking": 2,
+    "risky": 2,
+    "any": 2
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "mountRules": {
+    "a": "b/a"
+  },
+  "operationHints": null,
+  "mountRuleKeys": [
+    "a"
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "mountRules": {
+    "fromFile": "c/d"
+  }
+}

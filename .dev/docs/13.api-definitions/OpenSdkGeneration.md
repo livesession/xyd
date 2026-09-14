@@ -198,6 +198,45 @@ sections with `output`/`behavior`/`publish` + emitter options) wins over
 **`opensdk.config.{ts,js,mjs}`** (JS plugin bundle — the place to register custom emitters).
 `--grouping <file>` loads `{ mountRules, operationHints }` to reshape the resource tree.
 
+### The Rust port (`crates/xyd_opensdk_cli`)
+
+The CLI also exists as a Rust crate — a lib plus a `[[bin]] name = "opensdk"` — alongside the
+TypeScript one (which is unchanged and still the DISTRIBUTED binary; `xyd components install
+opensdk` continues to npm-install it). The crate is the CLI layer only; everything below it was
+already ported and is depended on, not re-implemented: `xyd_opensdk_framework` (the `writeProject`
+regen lifecycle + `merge3`), `xyd_opensdk_diff` (`diff_ir`), `xyd_opensdk_config` (sdk.json /
+chain.json shapes, `merge_publish_targets`), `xyd_opensdk_chain` (detect/resolve/merge/overlay/
+`process_source`), the converters, and the seven emitters.
+
+Two things live in this crate specifically because nothing lower could hold them:
+
+* **The emitter registry.** A `static EMITTERS` in `xyd_opensdk_core` would make core depend on the
+  seven emitter crates that already depend on it — a cycle. Alias handling still comes from
+  `xyd_opensdk_core::emitter::resolve_language`, so the CLI and the emitters cannot drift.
+* **`runChain`'s target loop.** `xyd_opensdk_chain` deliberately stops at `process_source`; the loop
+  needs `generate_command`/`publish_target`, which need the emitters. Where the TS injects those as
+  closures, the Rust calls them directly — the injection existed only to keep the chain package
+  emitter-free.
+
+| Divergence | Why |
+|---|---|
+| `opensdk.config.{ts,js,mjs}` is NOT loaded | It is `await import()`ed JS whose whole point is shipping a custom `Emitter`; a Rust binary has no JS engine. It is reported, not ignored: when that file would have been the winning source, the CLI errors and points at `opensdk init --format json`. An `sdk.json` alongside it still wins (unchanged precedence), and `init` still scaffolds the `.mjs` template. |
+| `generate --spec` is optional | commander declares it `requiredOption`, which makes the TS's own `opts.spec ?? config?.spec` fallback unreachable from the CLI. Making it optional lets the documented sdk.json `api`/`spec` key work; passing `--spec` behaves identically. |
+| `xsdk` rejects `http(s)` specs | The crate stays HTTP-free, like every other ported converter — pre-fetch and pass a local path. |
+| `xsdk --output *.yaml` byte layout | js-yaml `dump` vs `serde_yaml`; the contract is that the output re-parses to the same document and carries no `&ref` anchors. |
+| The seven `publish<Lang>()` bodies live in this crate | The Rust emitter crates are pure (IR in, file map out) and are linked into the `@xyd-js/native` cdylib; a `std::process::Command` dependency must not follow them there. |
+
+**What gates it.** `packages/xyd-opensdk-cli/__tests__/rust-oracle.test.ts` (the repo's usual
+`O2S_BUILD_DOCS=1` generate/guard switch) runs the REAL TypeScript over every committed
+`__fixtures__/<group>/<case>/input.json` and writes `output.json` into the crate; `cargo test -p
+xyd_opensdk_cli` asserts the Rust reproduces them. Seven groups freeze pure values
+(`converter-options`, `load-grouping`, `resolved-config`, `cli-split`, `diff-report`,
+`init-templates`, `publish-identity`); the eighth, `generate-tree`, is behavioural — `generate`
+writes a tree, so the golden is a manifest of `path → sha256` for the tree the TypeScript produced,
+which covers option threading, the multi-target loop, CLI-target routing and the `writeProject`
+lifecycle in one comparison. `tests/behavior.rs` additionally re-makes every assertion the TS's own
+suite makes, and drives the compiled binary for the console/exit-code surface.
+
 ### CLI output targets (`go-cli` / `rust-cli`)
 
 The toolchain can also output **command-line tools** via the

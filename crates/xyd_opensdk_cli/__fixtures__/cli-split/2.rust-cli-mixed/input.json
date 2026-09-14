@@ -1,0 +1,9 @@
+{
+  "lang": "rust-cli",
+  "bag": {
+    "cliName": "acme",
+    "flagCase": "kebab",
+    "crateName": "acme-cli",
+    "baseURL": "https://api.acme.dev"
+  }
+}

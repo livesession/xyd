@@ -1,0 +1,12 @@
+{
+  "info": {
+    "title": "t",
+    "version": "1"
+  },
+  "publish": {
+    "author": "Acme",
+    "license": "MIT",
+    "homepage": "https://h",
+    "repository": "https://r"
+  }
+}

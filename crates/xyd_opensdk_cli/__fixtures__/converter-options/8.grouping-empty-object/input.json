@@ -1,0 +1,13 @@
+{
+  "inputs": {
+    "mountRules": {
+      "fromConfig": "a/b"
+    },
+    "operationHints": {
+      "GET /x": {
+        "action": "fetch"
+      }
+    },
+    "grouping": "__CASE__/grouping.json"
+  }
+}

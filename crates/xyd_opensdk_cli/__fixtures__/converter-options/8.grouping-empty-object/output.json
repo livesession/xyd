@@ -1,0 +1,16 @@
+{
+  "options": {
+    "mountRules": {
+      "fromConfig": "a/b"
+    },
+    "operationHints": {
+      "GET /x": {
+        "action": "fetch"
+      }
+    }
+  },
+  "optionKeys": [
+    "mountRules",
+    "operationHints"
+  ]
+}

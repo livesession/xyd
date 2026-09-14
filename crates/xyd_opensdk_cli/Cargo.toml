@@ -1,0 +1,49 @@
+[package]
+name = "xyd_opensdk_cli"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+publish = false
+description = "Rust port of @xyd-js/opensdk-cli: the `opensdk` binary (parse | generate | diff | publish | run | init | xsdk) plus the emitter registry"
+
+# THE EMITTER REGISTRY LIVES HERE, not in xyd_opensdk_core. A `static EMITTERS`
+# in core would make core depend on the 7 emitter crates, which all depend on
+# core — a cycle. This crate is the one place where "every emitter" is in scope,
+# exactly like the TS `registerBuiltinEmitters()` lives in the CLI package.
+[[bin]]
+name = "opensdk"
+path = "src/main.rs"
+
+[dependencies]
+serde = { workspace = true }
+# MANDATORY `workspace = true`: `preserve_order` is load-bearing. sdk.json
+# language-section order decides the multi-target generate order, and
+# `grouping.mountRules` is scanned longest-prefix-first with a strict `>` so a
+# re-sort silently changes which rule applies. Every golden in __fixtures__ was
+# captured from JS object key order.
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+clap = { workspace = true }
+# `xsdk --output x.yaml` serialises the enriched spec (js-yaml `dump` analog).
+serde_yaml = "0.9"
+
+# ── already ported; depended on, never re-implemented ────────────────────────
+xyd_opensdk_core = { path = "../xyd_opensdk_core" }
+xyd_opensdk_config = { path = "../xyd_opensdk_config" }
+xyd_opensdk_chain = { path = "../xyd_opensdk_chain" }
+xyd_opensdk_diff = { path = "../xyd_opensdk_diff" }
+xyd_opensdk_framework = { path = "../xyd_opensdk_framework" }
+xyd_openapi = { path = "../xyd_openapi" }
+xyd_openapi2opensdk = { path = "../xyd_openapi2opensdk" }
+xyd_openapi2opencli = { path = "../xyd_openapi2opencli" }
+xyd_opencli2go = { path = "../xyd_opencli2go" }
+xyd_opencli2rust = { path = "../xyd_opencli2rust" }
+
+# ── the 7 emitters (the registry table) ──────────────────────────────────────
+xyd_opensdk_go = { path = "../xyd_opensdk_go" }
+xyd_opensdk_python = { path = "../xyd_opensdk_python" }
+xyd_opensdk_node = { path = "../xyd_opensdk_node" }
+xyd_opensdk_ruby = { path = "../xyd_opensdk_ruby" }
+xyd_opensdk_java = { path = "../xyd_opensdk_java" }
+xyd_opensdk_dotnet = { path = "../xyd_opensdk_dotnet" }
+xyd_opensdk_rust = { path = "../xyd_opensdk_rust" }

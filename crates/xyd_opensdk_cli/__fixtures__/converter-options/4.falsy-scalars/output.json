@@ -1,0 +1,12 @@
+{
+  "options": {
+    "mountRules": {},
+    "operationHints": {},
+    "sdkBehavior": {}
+  },
+  "optionKeys": [
+    "mountRules",
+    "operationHints",
+    "sdkBehavior"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "mountRules": {
+    "assistants": "beta/assistants"
+  },
+  "operationHints": {
+    "POST /assistants": {
+      "mountOn": "beta/assistants",
+      "action": "create"
+    }
+  }
+}

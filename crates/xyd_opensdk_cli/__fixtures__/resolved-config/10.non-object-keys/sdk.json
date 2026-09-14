@@ -1,0 +1,12 @@
+{
+  "$schema": "x",
+  "version": 1,
+  "weird": "string",
+  "list": [
+    1,
+    2
+  ],
+  "nope": null,
+  "go": {},
+  "sdkName": "acme"
+}

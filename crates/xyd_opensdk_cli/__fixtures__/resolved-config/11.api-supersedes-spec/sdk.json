@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "api": "a.yaml",
+  "spec": "b.yaml",
+  "java": {
+    "basePackage": "dev.acme"
+  }
+}

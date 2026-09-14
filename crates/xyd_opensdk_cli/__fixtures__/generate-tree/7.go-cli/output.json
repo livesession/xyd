@@ -1,0 +1,11 @@
+{
+  "files": {
+    "sdk/.sdk/sdk.lock": "f51c0b222e8903e12602fde1e809063f451f4bbfb7f1df787d9938e8725d2d77",
+    "sdk/cmd/petstore/main.go": "58120caf5607abb5bb85f976361c167a77a100d0e99f9d9ec9d921ab965cc437",
+    "sdk/go.mod": "97ca1a649941ea208b4c05335aa30ff6b88b8fc8dbedc5f907b9533fb205d8a8",
+    "sdk/internal/runtime/config.go": "12ad7b02c6a60b77b2c922c45dabe9b9abb540ba58707195062ece3244ad3cd8",
+    "sdk/internal/runtime/runtime.go": "f5713762e6bdb3c35273c758155654c58341627ed00cfd7dd69d6e4f4c92d227",
+    "sdk/pkg/cmd/pets.go": "bc69aac3ae803073ecd9755391c01c2daa5604e48d437575df7c49fe30ae4c72"
+  },
+  "fileCount": 6
+}

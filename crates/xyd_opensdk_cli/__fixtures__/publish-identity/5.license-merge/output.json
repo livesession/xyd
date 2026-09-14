@@ -1,0 +1,20 @@
+{
+  "info": {
+    "title": "petstore",
+    "version": "1.0.0",
+    "contact": {
+      "email": "api@acme.dev"
+    },
+    "license": {
+      "name": "Proprietary",
+      "identifier": "Apache-2.0"
+    }
+  },
+  "infoKeys": [
+    "title",
+    "version",
+    "contact",
+    "license"
+  ],
+  "inputUnchanged": true
+}

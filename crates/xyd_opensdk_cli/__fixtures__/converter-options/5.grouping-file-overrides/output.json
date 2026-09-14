@@ -1,0 +1,18 @@
+{
+  "options": {
+    "sdkName": "acme",
+    "mountRules": {
+      "fromFile": "c/d"
+    },
+    "operationHints": {
+      "GET /x": {
+        "action": "fetch"
+      }
+    }
+  },
+  "optionKeys": [
+    "sdkName",
+    "mountRules",
+    "operationHints"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "relPath": ".chain/chain.json",
+  "body": "{\n  \"$schema\": \"https://unpkg.com/@xyd-js/opensdk-schemas/chain.schema.json\",\n  \"version\": 1,\n  \"publish\": {\n    \"author\": \"Acme\",\n    \"license\": \"MIT\",\n    \"repository\": \"https://github.com/acme/acme\"\n  },\n  \"sources\": {\n    \"main\": {\n      \"inputs\": [\n        {\n          \"location\": \"./openapi.yaml\"\n        }\n      ],\n      \"output\": \"./.chain/main.openapi.json\"\n    }\n  },\n  \"targets\": {\n    \"rust-cli-sdk\": {\n      \"target\": \"rust-cli\",\n      \"source\": \"main\",\n      \"output\": \"./sdk/rust-cli\",\n      \"publish\": {\n        \"registry\": \"https://registry.npmjs.org\",\n        \"tokenEnv\": \"NPM_TOKEN\"\n      }\n    }\n  }\n}\n",
+  "logged": [
+    "Created __CASE__/.chain/chain.json"
+  ],
+  "rerunError": "Project already initialized — chain.json exists"
+}

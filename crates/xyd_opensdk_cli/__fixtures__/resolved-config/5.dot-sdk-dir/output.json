@@ -1,0 +1,32 @@
+{
+  "config": {
+    "spec": null,
+    "sdkName": null,
+    "sdk": null,
+    "mountRules": null,
+    "mountRuleKeys": null,
+    "operationHints": null,
+    "publish": null,
+    "publishKeys": null,
+    "merge": null,
+    "hasEmitterOptions": true,
+    "hasTargets": false,
+    "declaredLanguages": [
+      "python"
+    ],
+    "emitterOptions": [
+      {
+        "lang": "python",
+        "options": {
+          "packageName": "x"
+        },
+        "optionKeys": [
+          "packageName"
+        ]
+      }
+    ],
+    "targets": [],
+    "sourceKind": "sdk-json",
+    "sourceFilePath": "__CASE__/.sdk/sdk.json"
+  }
+}

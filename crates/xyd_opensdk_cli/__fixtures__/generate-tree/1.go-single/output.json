@@ -1,0 +1,19 @@
+{
+  "files": {
+    "sdk/.sdk/sdk.lock": "e4988539d39c6017273f9bc54758f0269956f4013d5c08849663cabfd887a580",
+    "sdk/client.go": "689e701e0aa62b7240acb1fb9d17e4baa7d772ad530dc7317a068c95a297b36a",
+    "sdk/go.mod": "0a78280ad5ec5b14adbf9b28d97c2b037e9c019492e2cd0545c4ed2857927481",
+    "sdk/internal/requestconfig/config.go": "ddf39f30ed11057a2d1dc7eda036a18a28534b33969fcf7689796bcdd7436406",
+    "sdk/internal/requestconfig/errors.go": "9e13ca283b9970eb1ae864ecdf5bf227cc1f03e7bc7f78a1b3dcaa2241a8ce57",
+    "sdk/internal/requestconfig/requestconfig.go": "70b1f59cc3bc8a40ad23e3617833f379bf20214299b97d4fda945ce4e588b1b1",
+    "sdk/internal/testutil/testutil.go": "8d3fd5b3fa3cd6de619365d1db0b2ab74991c870d1741d123681c9241136219f",
+    "sdk/option/option.go": "1f64587ee5c28135ad182298edb2f39f262c881994180afb8cf0af42ac549113",
+    "sdk/packages/apijson/apijson.go": "6fd869b558c761c833980bebe0f96c23c56024bc8fa0493b65475da69db0470e",
+    "sdk/packages/pagination/pagination.go": "60107511a7afcb43a627f5754c9d79f93fb1206b387fa211ce9334946516666d",
+    "sdk/packages/param/param.go": "cebe11ca12d45690fc49c0e42f3d0672ef0cad5e474d20dbb75dfbc1667778c6",
+    "sdk/pets_test.go": "7acc3daadfc2d1a0d026be0e163c313d0421286e44ea1eebff3db1cd4800eba1",
+    "sdk/pets.go": "9efef59090c47173621dd091d610a2a9708cb1666b0ce73a0fd5c4688732d812",
+    "sdk/types.go": "6d25f723803aa931c14cb917985b1178bff004cce03fda95046f30dc3bdc2d3c"
+  },
+  "fileCount": 14
+}

@@ -1,0 +1,7 @@
+{
+  "mode": "single",
+  "lang": "go",
+  "mountRules": {
+    "pets": "beta/pets"
+  }
+}

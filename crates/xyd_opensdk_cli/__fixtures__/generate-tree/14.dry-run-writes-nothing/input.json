@@ -1,0 +1,5 @@
+{
+  "mode": "single",
+  "lang": "rust-cli",
+  "dryRun": true
+}

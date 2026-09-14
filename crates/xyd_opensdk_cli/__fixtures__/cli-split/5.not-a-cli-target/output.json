@@ -1,0 +1,21 @@
+{
+  "isCliTarget": false,
+  "backendKeys": [],
+  "converterKeys": [
+    "cliName",
+    "version",
+    "grouping",
+    "bodyStrategy",
+    "includeMethods",
+    "includeHeaders",
+    "flagCase",
+    "actionAliases",
+    "verbMap",
+    "customActionVerbs",
+    "includePaths",
+    "maxBodyDepth",
+    "authEnvVar"
+  ],
+  "split": null,
+  "error": "Not a CLI target: go"
+}

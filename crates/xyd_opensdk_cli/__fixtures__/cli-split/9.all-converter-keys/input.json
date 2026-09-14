@@ -1,0 +1,27 @@
+{
+  "lang": "go-cli",
+  "bag": {
+    "cliName": "acme",
+    "version": "2.0.0",
+    "grouping": "path",
+    "bodyStrategy": "flatten",
+    "includeMethods": [
+      "get",
+      "post"
+    ],
+    "includeHeaders": true,
+    "flagCase": "camel",
+    "actionAliases": true,
+    "verbMap": {
+      "listCollection": "ls"
+    },
+    "customActionVerbs": [
+      "cancel"
+    ],
+    "includePaths": [
+      "/v1"
+    ],
+    "maxBodyDepth": 3,
+    "authEnvVar": "ACME_API_KEY"
+  }
+}

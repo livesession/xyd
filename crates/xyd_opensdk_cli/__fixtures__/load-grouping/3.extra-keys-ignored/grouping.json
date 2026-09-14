@@ -1,0 +1,10 @@
+{
+  "_note": "openai grouping",
+  "mountRules": {
+    "z": "y/z"
+  },
+  "unrelated": [
+    1,
+    2
+  ]
+}

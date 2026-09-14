@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "sdkName": "petstore",
+  "behavior": {
+    "retry": {
+      "maxRetries": 3
+    }
+  },
+  "typescript": {
+    "behavior": {
+      "retry": {
+        "maxRetries": 7
+      }
+    }
+  },
+  "go": {
+    "modulePath": "github.com/acme/petstore"
+  }
+}

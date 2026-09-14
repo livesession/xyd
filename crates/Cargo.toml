@@ -32,6 +32,7 @@ members = [
     "xyd_opensdk_dotnet",
     "xyd_opensdk_rust",
     "xyd_opensdk_ruby",
+    "xyd_opensdk_cli",
     "xyd_oas_snippet",
     "xyd_cli",
 ]

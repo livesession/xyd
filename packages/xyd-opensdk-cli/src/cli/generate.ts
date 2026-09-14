@@ -19,7 +19,7 @@ import { reportWriteResult } from './write-report';
  * controls what every manifest renders. Returns a NEW SdkInfo (never mutates the
  * converter's `info`, so per-language calls in `generateTargets` don't leak).
  */
-function applyPublishIdentity(info: SdkInfo, publish?: PublishTarget): SdkInfo {
+export function applyPublishIdentity(info: SdkInfo, publish?: PublishTarget): SdkInfo {
   if (!publish) return info;
   const next: SdkInfo = { ...info };
   if (publish.version) next.version = publish.version;

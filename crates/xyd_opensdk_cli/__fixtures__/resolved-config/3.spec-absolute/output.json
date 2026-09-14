@@ -1,0 +1,20 @@
+{
+  "config": {
+    "spec": "/abs/elsewhere/api.yaml",
+    "sdkName": null,
+    "sdk": null,
+    "mountRules": null,
+    "mountRuleKeys": null,
+    "operationHints": null,
+    "publish": null,
+    "publishKeys": null,
+    "merge": null,
+    "hasEmitterOptions": false,
+    "hasTargets": false,
+    "declaredLanguages": [],
+    "emitterOptions": [],
+    "targets": [],
+    "sourceKind": "sdk-json",
+    "sourceFilePath": "__CASE__/sdk.json"
+  }
+}

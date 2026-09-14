@@ -1,0 +1,8 @@
+{
+  "mode": "single",
+  "lang": "rust-cli",
+  "emitterOptions": {
+    "cliName": "petstore",
+    "crateName": "petstore_cli"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "options": {
+    "mountRules": {
+      "zeta": "z/zeta",
+      "alpha": "a/alpha",
+      "mid": "m/mid"
+    }
+  },
+  "optionKeys": [
+    "mountRules"
+  ]
+}

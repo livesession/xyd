@@ -1,0 +1,22 @@
+{
+  "inputs": {
+    "sdkName": "acme",
+    "mountRules": {
+      "assistants": "beta/assistants",
+      "vector_stores": "beta/vector_stores"
+    },
+    "operationHints": {
+      "POST /assistants": {
+        "mountOn": "beta/assistants"
+      }
+    },
+    "sdk": {
+      "retry": {
+        "maxRetries": 5
+      },
+      "timeout": {
+        "defaultTimeoutMs": 30000
+      }
+    }
+  }
+}

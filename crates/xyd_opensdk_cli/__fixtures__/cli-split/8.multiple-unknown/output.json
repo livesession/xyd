@@ -1,0 +1,26 @@
+{
+  "isCliTarget": true,
+  "backendKeys": [
+    "crateName",
+    "binName",
+    "edition",
+    "baseURL"
+  ],
+  "converterKeys": [
+    "cliName",
+    "version",
+    "grouping",
+    "bodyStrategy",
+    "includeMethods",
+    "includeHeaders",
+    "flagCase",
+    "actionAliases",
+    "verbMap",
+    "customActionVerbs",
+    "includePaths",
+    "maxBodyDepth",
+    "authEnvVar"
+  ],
+  "split": null,
+  "error": "Unknown option(s) for \"rust-cli\": modulePath, packageName. Valid: cliName, version, grouping, bodyStrategy, includeMethods, includeHeaders, flagCase, actionAliases, verbMap, customActionVerbs, includePaths, maxBodyDepth, authEnvVar, crateName, binName, edition, baseURL"
+}

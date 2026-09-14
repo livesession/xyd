@@ -1,0 +1,22 @@
+{
+  "files": {
+    "sdk/.sdk/sdk.lock": "d5e91dcf46006aa81eb0d530820c0081846bda1dbe2127ddc13f2364190dd187",
+    "sdk/package.json": "709e20491f32f32a57c1fdb4f58823d1547475bb960cc02c3ae7d8608447dc73",
+    "sdk/README.md": "be7c51351c0a91846bd4c64a28f49a8b535355edcc0bfa63efeb6b94b76a1e18",
+    "sdk/src/client.ts": "712b4311f91fdba0a87add5a59e61d3c51e7c02b8a52dc01197c41e65b8b6102",
+    "sdk/src/core/error.ts": "ad431ace43b3b9e66c092e6dd402b5b7e90f696b34d113e48d808a575287ddda",
+    "sdk/src/core/pagination.ts": "7abf1e1520fa4fe3a13154ba890afbc1c592f2002f14cb13e543c1debcdf897c",
+    "sdk/src/core/request.ts": "176afdcfb9ec3b0d3baa5c718f1ebc3ee20470342d6c9633b66bce26735a2134",
+    "sdk/src/core/resource.ts": "c0806533c9270415c9ec85a2bfc09f060aa08536cfe92adb07b10f1103c1a971",
+    "sdk/src/index.ts": "4853c40fa017ab2e4260025efbc49e8c9440b7e4125c0d73b98c77be79b9d724",
+    "sdk/src/models.ts": "9a5a5a13edc2e8ed3a01b7df7bfdd5c9e56ffdc72f92309cdabed7c29c218f8b",
+    "sdk/src/resources/index.ts": "9435b5fb3acc93489349e0716db566b21aaf98c437e990888e6ee40b77c8015d",
+    "sdk/src/resources/pets.ts": "4a3de049ad931259551a4b7ec1482f41bbaaf5ce6d9753df1fc675a4e72287a1",
+    "sdk/tests/_shims.d.ts": "3c3ee090b2db5332c7a3c5c59305e83bbe643480f8e4fae72c55adf9ab148432",
+    "sdk/tests/pets.test.ts": "b13c3cd6c57f2a01f011503aa970fd62371082706447f208d1a54ebc07cfdcad",
+    "sdk/tests/setup.ts": "4c79d3f3ed0d49cb5933ca62cea6f22ae086d92579a1fc4c472136f036f41eeb",
+    "sdk/tsconfig.json": "f0ea9c28c38a4e87c4783c2e2fcb86ad571b1f2843680d43c670b17bf238afff",
+    "sdk/tsconfig.test.json": "7f5af0bca922b5bfbe6abea23a95a6116d593d9f018657c84295b528707f435b"
+  },
+  "fileCount": 17
+}

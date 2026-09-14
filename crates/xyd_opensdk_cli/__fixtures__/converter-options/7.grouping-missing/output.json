@@ -1,0 +1,3 @@
+{
+  "error": "Grouping file not found: __CASE__/nope.grouping.json. Check the path passed to --grouping."
+}

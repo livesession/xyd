@@ -1,0 +1,6 @@
+{
+  "lang": "go-cli",
+  "bag": {
+    "packageName": "x"
+  }
+}

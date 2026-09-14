@@ -1,0 +1,77 @@
+{
+  "config": {
+    "spec": null,
+    "sdkName": null,
+    "sdk": null,
+    "mountRules": null,
+    "mountRuleKeys": null,
+    "operationHints": null,
+    "publish": {
+      "author": "Acme",
+      "license": "MIT",
+      "repository": "https://github.com/acme/acme"
+    },
+    "publishKeys": [
+      "author",
+      "license",
+      "repository"
+    ],
+    "merge": null,
+    "hasEmitterOptions": true,
+    "hasTargets": true,
+    "declaredLanguages": [
+      "node",
+      "python"
+    ],
+    "emitterOptions": [
+      {
+        "lang": "node",
+        "options": {
+          "packageName": "acme"
+        },
+        "optionKeys": [
+          "packageName"
+        ]
+      },
+      {
+        "lang": "python",
+        "options": {
+          "packageName": "acme"
+        },
+        "optionKeys": [
+          "packageName"
+        ]
+      }
+    ],
+    "targets": [
+      {
+        "lang": "node",
+        "output": null,
+        "behavior": null,
+        "publish": {
+          "registry": "https://npm.acme.dev",
+          "tokenEnv": "NPM_TOKEN"
+        },
+        "publishKeys": [
+          "registry",
+          "tokenEnv"
+        ],
+        "merge": null
+      },
+      {
+        "lang": "python",
+        "output": null,
+        "behavior": null,
+        "publish": {
+          "license": "Apache-2.0"
+        },
+        "publishKeys": [
+          "license"
+        ],
+        "merge": null
+      }
+    ],
+    "sourceKind": "sdk-json",
+    "sourceFilePath": "__CASE__/sdk.json"
+  }
+}

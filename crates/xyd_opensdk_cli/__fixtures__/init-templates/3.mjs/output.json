@@ -1,0 +1,8 @@
+{
+  "relPath": "opensdk.config.mjs",
+  "body": "// opensdk plugin bundle. The built-in emitters (go/python/node/ruby/java/dotnet)\n// are registered automatically; register your OWN emitter here — it must\n// implement the @xyd-js/opensdk-framework Emitter contract. (For declarative\n// config without custom emitters, prefer sdk.json — run `opensdk init`.)\n//\n// import { myEmitter } from './src/my-emitter.mjs';\n\n/** @type {import('@xyd-js/opensdk-cli').OpensdkCliConfig} */\nexport default {\n  emitters: [\n    // myEmitter,\n  ],\n  emitterOptions: {\n    // go: { modulePath: 'github.com/acme/acme-go' },\n    // python: { packageName: 'acme' },\n    // Generated SDKs ship a self-test suite by default. Opt a language out with\n    // <lang>.tests: false (same effect as `generate --no-tests`):\n    // go: { tests: false },\n  },\n  // Declarative runtime behavior, deep-merged over the canonical defaults\n  // (@xyd-js/opensdk-core defaultSdkBehavior()); arrays replace entirely.\n  //\n  // sdk: {\n  //   retry: { maxRetries: 3 },\n  //   timeout: { defaultTimeoutMs: 30000 },\n  // },\n  //\n  // Spec-external resource grouping (Stainless-style beta/admin namespacing).\n  // mountRules: { assistants: 'beta/assistants' },\n  // operationHints: { 'POST /assistants': { mountOn: 'beta/assistants' } },\n};\n",
+  "logged": [
+    "Created __CASE__/opensdk.config.mjs"
+  ],
+  "rerunError": "Project already initialized — opensdk.config.mjs exists"
+}
