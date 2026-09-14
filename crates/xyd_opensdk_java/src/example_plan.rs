@@ -137,7 +137,7 @@ fn scalar_example(r: &Value, hint: Option<&str>, realistic: bool) -> ExampleValu
         Some("number") => ExampleValue::Number(if realistic { 1.0 } else { 0.0 }),
         Some("boolean") => ExampleValue::Boolean(true),
         _ => ExampleValue::Str(if realistic {
-            realistic_string(&fmt, hint)
+            xyd_opensdk_core::example::realistic_string(&fmt, hint)
         } else {
             hint.unwrap_or("x").to_string()
         }),
@@ -145,20 +145,6 @@ fn scalar_example(r: &Value, hint: Option<&str>, realistic: bool) -> ExampleValu
 }
 
 /// A believable string sample for a known `format`, else the hint or "string".
-fn realistic_string(fmt: &str, hint: Option<&str>) -> String {
-    match fmt {
-        "date-time" => "2024-01-01T00:00:00Z",
-        "date" => "2024-01-01",
-        "email" => "user@example.com",
-        "uri" | "url" => "https://example.com",
-        "uuid" => "123e4567-e89b-12d3-a456-426614174000",
-        "hostname" => "example.com",
-        "ipv4" => "192.0.2.1",
-        _ => return hint.unwrap_or("string").to_string(),
-    }
-    .to_string()
-}
-
 fn ref_example(
     r: &Value,
     types: &HashMap<String, Value>,

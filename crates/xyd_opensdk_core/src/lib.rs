@@ -32,4 +32,5 @@
 
 pub mod behavior;
 pub mod emitter;
+pub mod example;
 pub mod header;
