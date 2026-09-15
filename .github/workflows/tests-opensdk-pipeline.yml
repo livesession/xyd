@@ -37,7 +37,6 @@ on:
       - 'packages/xyd-opensdk-dotnet/**'
       - 'packages/xyd-opensdk-rust/**'
       - 'packages/xyd-opensdk-chain/**'
-      - 'packages/xyd-opensdk-cli/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
   pull_request:
     branches: [ master, canary, canary2 ]
@@ -54,7 +53,6 @@ on:
       - 'packages/xyd-opensdk-dotnet/**'
       - 'packages/xyd-opensdk-rust/**'
       - 'packages/xyd-opensdk-chain/**'
-      - 'packages/xyd-opensdk-cli/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
 
 jobs:
@@ -156,7 +154,6 @@ jobs:
         --filter "@xyd-js/opensdk-dotnet..."
         --filter "@xyd-js/opensdk-rust..."
         --filter "@xyd-js/opensdk-chain..."
-        --filter "@xyd-js/opensdk-cli..."
         build
 
     - name: Test @xyd-js/opensdk-core (IR loader/helpers)
@@ -248,8 +245,6 @@ jobs:
         O2S_RUST_SMOKE: '1'
         E2E_SDK_TESTS: '1'
 
-    - name: Test @xyd-js/opensdk-cli (parse/generate/init + plugin config)
-      run: pnpm --filter @xyd-js/opensdk-cli ci:test
 
     # Chain unit + fixture goldens (offline): sources merge/overlay engine,
     # resolveChain, and the chain.json → committed-output golden fixtures.
@@ -265,10 +260,6 @@ jobs:
       env:
         E2E_SDK_CHAIN: '1'
 
-    - name: "Chain e2e — CLI output targets (opensdk run: go-cli + rust-cli, each compiles)"
-      run: pnpm --filter @xyd-js/opensdk-cli exec vitest run __tests__/e2e/cli-chain.test.ts
-      env:
-        E2E_SDK_CHAIN: '1'
 
     # ── Publish e2e ──────────────────────────────────────────────────────────
     # Prove each generated SDK can be published → installed back → loaded. The 3
