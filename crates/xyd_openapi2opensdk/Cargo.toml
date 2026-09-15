@@ -12,5 +12,4 @@ thiserror = { workspace = true }
 xyd_opensdk_core = { path = "../xyd_opensdk_core" }
 
 [dev-dependencies]
-xyd_parity = { path = "../xyd_parity" }
-xyd_uniform = { path = "../xyd_uniform" }
+xyd_parity_kit = { path = "../xyd_parity_kit" }

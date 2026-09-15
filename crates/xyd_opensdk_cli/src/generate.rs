@@ -322,7 +322,7 @@ pub fn load_ir(source: &str, options: &Map<String, Value>) -> Result<Value> {
         }
         return convert(&doc, options);
     }
-    let doc = xyd_openapi::read_spec(source).map_err(|e| Error::msg(e.to_string()))?;
+    let doc = xyd_oas_doc::read_spec(source).map_err(|e| Error::msg(e.to_string()))?;
     convert(&doc, options)
 }
 

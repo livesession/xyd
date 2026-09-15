@@ -214,7 +214,7 @@ pub fn xsdk_command(opts: &XsdkCommandOptions) -> Result<()> {
     let doc: Value = if json {
         serde_json::from_str(&content).map_err(|e| Error::msg(format!("json: {e}")))?
     } else {
-        xyd_openapi::parse_spec(&content, &opts.spec).map_err(|e| Error::msg(e.to_string()))?
+        xyd_oas_doc::parse_spec(&content, &opts.spec).map_err(|e| Error::msg(e.to_string()))?
     };
 
     let result = embed_xsdk(&doc, opts.langs.as_deref())?;

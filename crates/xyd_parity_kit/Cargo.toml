@@ -1,0 +1,11 @@
+[package]
+name = "xyd_parity_kit"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+# Deliberately serde_json ONLY. This crate exists so the moving toolchain's test
+# tier does not reach into xyd_uniform (see the module docs) — adding a path dep
+# back into xyd would defeat its entire purpose.
+[dependencies]
+serde_json = { workspace = true }

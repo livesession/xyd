@@ -5,7 +5,7 @@
 use serde_json::Value;
 use std::collections::HashSet;
 
-use xyd_openapi::DocCtx;
+use xyd_oas_doc::DocCtx;
 
 use crate::action::derive_target;
 use crate::body::map_request_body;

@@ -1,0 +1,15 @@
+[package]
+name = "xyd_oas_doc"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+# A LEAF, and it must stay one. This crate is shared across the xyd/opensdk
+# repo boundary, so anything added here is added to both sides at once. In
+# particular: no xyd_uniform. The docs data model stays in xyd.
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+# js-yaml number semantics (see the JsValue visitor) — not interchangeable with
+# a stricter YAML reader: the OpenAI spec carries out-of-i64-range bounds.
+serde_yaml = "0.9"

@@ -17,8 +17,7 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 
 [dev-dependencies]
-# tests/golden.rs gates on the JS-owned fixtures in packages/xyd-opensdk-core.
-xyd_parity = { path = "../xyd_parity" }
+# tests/golden.rs gates on the frozen fixtures, in-crate since the A5 sweep.
+xyd_parity_kit = { path = "../xyd_parity_kit" }
 # `canon_eq` = vitest `toEqual` semantics, used to count ALL failing cases
-# before delegating to xyd_parity for the detailed first-divergence report.
-xyd_uniform = { path = "../xyd_uniform" }
+# before delegating to assert_parity for the first-divergence report.

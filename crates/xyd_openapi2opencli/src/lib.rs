@@ -26,7 +26,7 @@ use jsrt::{js_object_keys, slug};
 use model::{Command, Info, Spec, XOpenApiRoot};
 use security::security_schemes_to_x_openapi;
 use tree::CommandTree;
-use xyd_openapi::DocCtx;
+use xyd_oas_doc::DocCtx;
 
 pub use options::Options;
 
@@ -212,7 +212,7 @@ pub fn openapi2opencli(doc: &Value, options: Option<Options>) -> Spec {
 
 /// Read + deref an OpenAPI spec file, then convert (tier-1 fixtures + napi).
 pub fn openapi2opencli_from_file(path: &str, options: Option<Options>) -> Result<Spec, Error> {
-    let raw = xyd_openapi::read_spec(path).map_err(|e| Error::Io(e.to_string()))?;
+    let raw = xyd_oas_doc::read_spec(path).map_err(|e| Error::Io(e.to_string()))?;
     Ok(openapi2opencli(&raw, options))
 }
 

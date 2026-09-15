@@ -33,7 +33,7 @@ xyd_opensdk_config = { path = "../xyd_opensdk_config" }
 xyd_opensdk_chain = { path = "../xyd_opensdk_chain" }
 xyd_opensdk_diff = { path = "../xyd_opensdk_diff" }
 xyd_opensdk_framework = { path = "../xyd_opensdk_framework" }
-xyd_openapi = { path = "../xyd_openapi" }
+xyd_oas_doc = { path = "../xyd_oas_doc" }
 xyd_openapi2opensdk = { path = "../xyd_openapi2opensdk" }
 xyd_openapi2opencli = { path = "../xyd_openapi2opencli" }
 xyd_opencli2go = { path = "../xyd_opencli2go" }

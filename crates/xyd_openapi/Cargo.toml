@@ -16,6 +16,7 @@ publish = false
 serde = { workspace = true }
 serde_json = { workspace = true }
 serde_yaml = "0.9"
+xyd_oas_doc = { path = "../xyd_oas_doc" }
 xyd_uniform = { path = "../xyd_uniform" }
 
 [dev-dependencies]

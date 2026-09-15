@@ -4,7 +4,7 @@
 
 use serde_json::Value;
 use xyd_openapi2opensdk::openapi2opensdk_from_json_file;
-use xyd_uniform::canon;
+use xyd_parity_kit::canon;
 
 fn run_case(name: &str) {
     let fixtures = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__");
@@ -16,7 +16,7 @@ fn run_case(name: &str) {
         .unwrap_or_else(|e| panic!("{name}: convert failed: {e}"));
     let actual = serde_json::to_value(&spec).expect("serialize");
 
-    let oracle: Value = xyd_parity::read_oracle(&case);
+    let oracle: Value = xyd_parity_kit::read_oracle(&case);
 
     if std::env::var("XYD_PARITY_DUMP").as_deref() == Ok("1") {
         std::fs::write(

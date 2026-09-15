@@ -50,7 +50,7 @@ fn load_pair(corpus: &Path, case_dir: &Path) -> (Value, Value) {
 #[test]
 fn matches_the_typescript_oracle() {
     let corpus = corpus_dir();
-    let cases = xyd_parity::fixture_cases(&corpus);
+    let cases = xyd_parity_kit::fixture_cases(&corpus);
     assert_eq!(cases.len(), 27, "unexpected corpus size: {cases:?}");
 
     // Collect every failing case first: when a semantic regresses, the COUNT of
@@ -60,7 +60,7 @@ fn matches_the_typescript_oracle() {
     for case_dir in &cases {
         let (base, head) = load_pair(&corpus, case_dir);
         let actual = serde_json::to_value(diff_ir(&base, &head)).expect("serialize diff");
-        if !xyd_uniform::canon::canon_eq(&actual, &xyd_parity::read_oracle(case_dir)) {
+        if !xyd_parity_kit::canon::canon_eq(&actual, &xyd_parity_kit::read_oracle(case_dir)) {
             failed.push(case_dir);
         }
     }
@@ -79,7 +79,7 @@ fn matches_the_typescript_oracle() {
         // Re-run the first failure through the parity harness for a pointered diff.
         let (base, head) = load_pair(&corpus, first);
         let actual = serde_json::to_value(diff_ir(&base, &head)).expect("serialize diff");
-        xyd_parity::assert_parity(first, &actual);
+        xyd_parity_kit::assert_parity(first, &actual);
         unreachable!("assert_parity must panic on a known-bad case");
     }
 }
@@ -95,7 +95,7 @@ fn matches_the_typescript_oracle() {
 fn oracle_covers_every_change_kind() {
     let corpus = corpus_dir();
     let mut seen: BTreeSet<String> = BTreeSet::new();
-    for case_dir in xyd_parity::fixture_cases(&corpus) {
+    for case_dir in xyd_parity_kit::fixture_cases(&corpus) {
         let (base, head) = load_pair(&corpus, &case_dir);
         for change in diff_ir(&base, &head).changes {
             let severity = serde_json::to_value(change.severity).unwrap();

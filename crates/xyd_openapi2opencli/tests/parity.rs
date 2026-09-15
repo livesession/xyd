@@ -5,11 +5,12 @@
 
 use serde_json::Value;
 use xyd_openapi2opencli::openapi2opencli_from_file;
-use xyd_uniform::canon;
+use xyd_parity_kit::canon;
 
 fn run_case(name: &str) {
     // Fixtures live IN the crate (relocated when the TS package was deleted);
-    // xyd_parity::fixtures_dir still serves the packages that remain.
+    // In-crate since the A5 sweep — the old xyd_parity::fixtures_dir resolved
+    // ../../packages/<pkg>/__fixtures__, which no longer exists.
     let fixtures = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__");
     let case = fixtures.join(name);
     let input = case.join("input.yaml");
@@ -18,7 +19,7 @@ fn run_case(name: &str) {
     let spec = openapi2opencli_from_file(input.to_str().unwrap(), None)
         .unwrap_or_else(|e| panic!("{name}: convert failed: {e}"));
     let actual = serde_json::to_value(&spec).expect("serialize");
-    let oracle: Value = xyd_parity::read_oracle(&case);
+    let oracle: Value = xyd_parity_kit::read_oracle(&case);
 
     if std::env::var("XYD_PARITY_DUMP").as_deref() == Ok("1") {
         std::fs::write(
