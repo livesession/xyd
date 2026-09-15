@@ -7,12 +7,21 @@
 //! emitters' HTTP `plan_operation`) — so the seven emitters never re-parse
 //! `from:` strings and cannot drift on the contract. Code generation stays
 //! per-emitter.
+//!
+//! It is also this workspace's home for the other cross-emitter test-support
+//! that must exist exactly once: [`testkit`] (shared CLI-mode fixtures + golden
+//! trees) and [`e2e`] (the language-agnostic half of the e2e offline binding
+//! guard — `expected_request`, ported from `@xyd-js/opensdk-ci`).
 
+pub mod e2e;
 pub mod plan;
 pub mod testkit;
 
 use serde_json::Value;
 
+pub use e2e::{
+    expected_request, first_method, load_per_method_fixtures, PerMethodFixture, RecordedRequest,
+};
 pub use plan::{CliArg, CliOpt, CliPlan, Encoding};
 
 /// A spec is CLI-mode iff it carries a root `x-cli` object.

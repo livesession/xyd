@@ -20,7 +20,12 @@ mod example_plan;
 mod ir;
 mod javatype;
 mod javawriter;
-mod jsrt;
+// The naming helpers the generated Java is built from. Exposed (hidden from the
+// docs) so the e2e binding guard in `tests/e2e_binding.rs` can NAME a call with
+// the very functions the emitter uses, instead of re-deriving — a copy would
+// drift from the client shape it is supposed to describe.
+#[doc(hidden)]
+pub mod jsrt;
 mod model;
 mod plan;
 mod project;

@@ -28,9 +28,14 @@ mod writer;
 use serde_json::Value;
 use std::collections::{BTreeMap, HashMap};
 
-use naming::{pascal_case, ruby_gem_name, screaming_snake_case, snake_case};
+use naming::{pascal_case, ruby_gem_name, screaming_snake_case};
 
 pub use docs::{generate_ruby_type_reference, generate_ruby_usage};
+/// Ruby's identifier casing. Public so the e2e offline binding guard
+/// (`tests/e2e_binding.rs`) builds its call key from the SAME helper the
+/// emitter uses for `attr_reader` / method names — a copy there would drift
+/// from the client-access shape it is supposed to describe.
+pub use naming::snake_case;
 
 pub(crate) struct Resolved {
     pkg: String,

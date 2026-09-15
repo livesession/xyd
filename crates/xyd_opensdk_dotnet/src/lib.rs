@@ -27,6 +27,16 @@ mod type_plan;
 
 pub use docs::{generate_dotnet_type_reference, generate_dotnet_usage};
 
+/// The C# identifier helpers, re-exported so the e2e offline binding guard
+/// (`tests/e2e_binding.rs`) can NAME a call exactly the way the emitter does.
+///
+/// The guard's `callKey` is `<PascalCase resource chain>.<methodName(action)>`;
+/// re-exporting keeps it wired to the same functions `service.rs`/`client.rs`
+/// use, instead of a copy that could silently drift from the emitted API.
+pub mod naming {
+    pub use crate::jsrt::{method_name, pascal_case};
+}
+
 use std::collections::BTreeMap;
 
 use serde_json::Value;

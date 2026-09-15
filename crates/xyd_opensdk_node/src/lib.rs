@@ -36,6 +36,10 @@ use ir::{Resource, Spec};
 use resource::NodeCtx;
 
 pub use docs::{generate_node_type_reference, generate_node_usage};
+/// The naming seam the e2e offline binding guard's call key is built from —
+/// re-exported so `tests/e2e_binding.rs` names calls with the SAME helpers the
+/// emitter does (a copy would drift from the client shape it describes).
+pub use jsrt::{camel_case, node_method_name};
 
 /// Generate the buildable Node SDK's generated-code files from an OpenSDK IR
 /// document. Returns a virtual file map `{ relativePath: contents }` (the

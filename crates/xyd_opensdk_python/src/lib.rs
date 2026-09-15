@@ -18,7 +18,14 @@ mod cli;
 mod docs;
 mod example;
 mod example_plan;
-mod naming;
+/// The Python identifier helpers, made public so the e2e offline binding guard
+/// (`tests/e2e_binding.rs`) can NAME a call exactly the way the emitter does.
+///
+/// The guard's `callKey` is `<snake_case resource chain>.<snake_case action>`;
+/// exporting the module keeps it wired to the same `snake_case` that
+/// `resources.py` emits, instead of a copy that could silently drift from the
+/// generated client's attribute names.
+pub mod naming;
 mod project;
 mod pytype;
 mod resources;

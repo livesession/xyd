@@ -244,3 +244,26 @@ pub fn generate_go_files(
 ) -> std::collections::BTreeMap<String, xyd_opensdk_core::emitter::GeneratedFile> {
     xyd_opensdk_core::emitter::attach_write_modes("go", generate_go_with(spec, options))
 }
+
+/// The GO half of the e2e offline binding guard: the dotted key that names ONE
+/// operation on the generated client — `Resource.Sub.Method`, e.g.
+/// `Chat.Completions.New`.
+///
+/// Exact port of `callKey` in
+/// `packages/xyd-opensdk-go/__tests__/e2e/harness.ts`
+/// (`segments.map(pascalCase).join('.') + '.' + goMethodName(method.action)`).
+/// It calls this crate's OWN naming, so it cannot drift from the service code
+/// the emitter actually generates — which is the whole point of asserting it
+/// against the committed `recorded.json` call keys (see `tests/e2e_binding.rs`).
+pub fn call_key(segments: &[String], method: &Value) -> String {
+    let recv = segments
+        .iter()
+        .map(|s| naming::pascal_case(s))
+        .collect::<Vec<_>>()
+        .join(".");
+    let action = method
+        .get("action")
+        .and_then(Value::as_str)
+        .unwrap_or_default();
+    format!("{recv}.{}", naming::go_method_name(action))
+}
