@@ -7,7 +7,7 @@ use xyd_openapi2opensdk::openapi2opensdk_from_json_file;
 use xyd_uniform::canon;
 
 fn run_case(name: &str) {
-    let fixtures = xyd_parity::fixtures_dir(env!("CARGO_MANIFEST_DIR"), "xyd-openapi2opensdk");
+    let fixtures = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__");
     let case = fixtures.join(name);
     let input = case.join("input.json");
     assert!(input.exists(), "{name}: no input.json");

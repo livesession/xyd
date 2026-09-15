@@ -7,7 +7,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const corePath = resolve(here, '../../xyd-opensdk-core/opensdk-spec.json');
+const corePath = resolve(here, '../../../crates/xyd_opensdk_core/opensdk-spec.json');
 const outPath = resolve(here, '../sdk.schema.json');
 
 const str = (description) => ({ type: 'string', description });

@@ -11,8 +11,7 @@ use serde_json::{json, Value};
 use xyd_opensdk_python::{generate_python, generate_python_with};
 
 fn fixture() -> Value {
-    let p: PathBuf = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../packages/xyd-opensdk-python/__fixtures__/1.basic/input.json");
+    let p: PathBuf = Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__/1.basic/input.json");
     serde_json::from_str(&std::fs::read_to_string(p).unwrap()).unwrap()
 }
 

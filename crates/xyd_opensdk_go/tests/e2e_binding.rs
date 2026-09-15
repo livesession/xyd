@@ -26,8 +26,7 @@ use xyd_opensdk_go::call_key;
 const FLOOR: usize = 238;
 
 fn corpus_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../packages/xyd-opensdk-go/__fixtures__/-2.complex.openai")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__/-2.complex.openai")
 }
 
 #[test]

@@ -19,7 +19,7 @@ use xyd_opensdk_python::{generate_python, generate_resources_py};
 
 /// `packages/xyd-opensdk-python/__fixtures__` relative to this crate.
 fn fixtures_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packages/xyd-opensdk-python/__fixtures__")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__")
 }
 
 /// Full-tree fixtures: a dir with both `input.json` and `output/pyproject.toml`

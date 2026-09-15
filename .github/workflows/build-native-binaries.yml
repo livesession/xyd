@@ -234,7 +234,7 @@ jobs:
           BIN="$PWD/crates/target/release/${{ matrix.opensdk }}"
           WORK="$RUNNER_TEMP/opensdk-smoke"
           rm -rf "$WORK"; mkdir -p "$WORK"
-          cp packages/xyd-openapi2opensdk/__fixtures__/1.basic/input.json "$WORK/openapi.json"
+          cp crates/xyd_openapi2opensdk/__fixtures__/1.basic/input.json "$WORK/openapi.json"
           cd "$WORK"
           "$BIN" --help > /dev/null
           "$BIN" generate --lang go --spec ./openapi.json --output ./out

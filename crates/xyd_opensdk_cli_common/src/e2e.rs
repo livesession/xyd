@@ -241,7 +241,7 @@ mod tests {
     /// from (the `request` object is language-agnostic).
     fn openai_corpus() -> PathBuf {
         Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("../../packages/xyd-opensdk-go/__fixtures__/-2.complex.openai")
+            .join("../xyd_opensdk_go/__fixtures__/-2.complex.openai")
     }
 
     #[test]

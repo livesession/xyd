@@ -13,7 +13,7 @@ use serde_json::Value;
 use xyd_opensdk_go::generate_go_files;
 
 fn fixtures_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packages/xyd-opensdk-go/__fixtures__")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__")
 }
 
 #[test]

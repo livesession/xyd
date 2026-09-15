@@ -44,8 +44,7 @@ fn call_key(segments: &[String], method: &Value) -> String {
 /// `packages/xyd-opensdk-python/__fixtures__/-2.complex.openai` relative to this
 /// crate. Nothing has moved yet — the fixtures still live in the TS package.
 fn corpus_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../packages/xyd-opensdk-python/__fixtures__/-2.complex.openai")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__/-2.complex.openai")
 }
 
 #[test]

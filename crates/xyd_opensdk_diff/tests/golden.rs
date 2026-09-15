@@ -22,7 +22,7 @@ use serde_json::Value;
 use xyd_opensdk_diff::diff_ir;
 
 fn corpus_dir() -> PathBuf {
-    xyd_parity::fixtures_dir(env!("CARGO_MANIFEST_DIR"), "xyd-opensdk-core").join("diff")
+    std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../xyd_opensdk_core/__fixtures__/diff")
 }
 
 fn read_json(path: &Path) -> Value {

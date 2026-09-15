@@ -366,7 +366,7 @@ fn repo_root() -> PathBuf {
         .expect("repo root")
 }
 
-const PETSTORE: &str = "packages/xyd-openapi2opensdk/__fixtures__/1.basic/input.json";
+const PETSTORE: &str = "crates/xyd_openapi2opensdk/__fixtures__/1.basic/input.json";
 
 fn sha256_hex(bytes: &[u8]) -> String {
     // The framework already owns a sha256 over UTF-8; generated SDKs are all

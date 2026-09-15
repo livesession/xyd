@@ -33,7 +33,7 @@ use xyd_opensdk_cli::xsdk::{xsdk_command, XsdkCommandOptions};
 /// the same spec every TypeScript test drives.
 fn spec() -> String {
     Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../packages/xyd-openapi2opensdk/__fixtures__/1.basic/input.json")
+        .join("../xyd_openapi2opensdk/__fixtures__/1.basic/input.json")
         .canonicalize()
         .expect("petstore fixture")
         .to_string_lossy()
