@@ -20,6 +20,10 @@
 //! Ported from `packages/xyd-opensdk-ci/src/compile-smoke.ts`; recover the
 //! original with `git show 4c9ae3b1^:packages/xyd-opensdk-ci/src/compile-smoke.ts`.
 
+pub mod record;
+pub use record::{body_field_names, diff_request, normalize_recorded, RawRequest, RecordingServer};
+pub use xyd_opensdk_cli_common::{expected_request, load_per_method_fixtures, RecordedRequest};
+
 use std::path::{Path, PathBuf};
 use std::process::Command;
 

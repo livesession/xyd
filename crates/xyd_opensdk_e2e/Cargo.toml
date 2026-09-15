@@ -15,3 +15,10 @@ license.workspace = true
 #   git show 4c9ae3b1^:packages/xyd-opensdk-ci/src/compile-smoke.ts
 [dependencies]
 serde_json = { workspace = true }
+# The recording server. Small + blocking on purpose — a test harness has no
+# reason to pull an async HTTP stack in.
+tiny_http = { workspace = true }
+# RecordedRequest + expected_request live here already (the offline binding guard
+# uses them). Depend rather than redefine — two copies of that shape would drift,
+# and it is the contract the committed recorded.json files are written in.
+xyd_opensdk_cli_common = { path = "../xyd_opensdk_cli_common" }
