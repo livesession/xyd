@@ -36,7 +36,7 @@ const DECLARED_DIVERGENCES: &[(&str, &str, &str)] = &[(
 
 fn oracle_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../packages/xyd-opensdk-chain/__tests__/__oracle__")
+        .join("__oracle__")
         .canonicalize()
         .expect("the TS oracle corpus must be present")
 }

@@ -107,7 +107,7 @@ const EXPECTED_DIVERGENT: &[(&str, &str)] = &[
 
 fn sweep_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../packages/xyd-opensdk-chain/__tests__/__oracle__/jsonpath")
+        .join("__oracle__/jsonpath")
         .canonicalize()
         .expect("the TS sweep corpus must be present")
 }

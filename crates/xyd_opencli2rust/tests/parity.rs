@@ -9,8 +9,8 @@ use serde_json::Value;
 use xyd_opencli2rust::{flatten, opencli2rust};
 
 fn fixtures_dir() -> PathBuf {
-    // crate manifest dir → ../../packages/xyd-opencli2rust/__fixtures__
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packages/xyd-opencli2rust/__fixtures__")
+    // Fixtures live IN the crate (relocated when the TS package was deleted).
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__")
 }
 
 fn list_tree(dir: &Path, base: &Path, out: &mut BTreeMap<String, String>) {

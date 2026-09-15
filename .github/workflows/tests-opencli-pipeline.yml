@@ -21,16 +21,12 @@ on:
     paths:
       - 'packages/xyd-opencli/**'
       - 'packages/xyd-openapi2opencli/**'
-      - 'packages/xyd-opencli2go/**'
-      - 'packages/xyd-opencli2rust/**'
       - '.github/workflows/tests-opencli-pipeline.yml'
   pull_request:
     branches: [ master, canary, canary2 ]
     paths:
       - 'packages/xyd-opencli/**'
       - 'packages/xyd-openapi2opencli/**'
-      - 'packages/xyd-opencli2go/**'
-      - 'packages/xyd-opencli2rust/**'
       - '.github/workflows/tests-opencli-pipeline.yml'
 
 jobs:
@@ -79,7 +75,7 @@ jobs:
           ~/.cargo/registry
           ~/.cargo/git
           /tmp/o2r-target
-        key: ${{ runner.os }}-o2r-cargo-${{ hashFiles('packages/xyd-opencli2rust/src/runtime.ts') }}
+        key: ${{ runner.os }}-o2r-cargo-${{ hashFiles('crates/xyd_opencli2rust/src/runtime.rs') }}
         restore-keys: |
           ${{ runner.os }}-o2r-cargo-
 
@@ -104,8 +100,6 @@ jobs:
         pnpm
         --filter "@xyd-js/opencli..."
         --filter "@xyd-js/openapi2opencli..."
-        --filter "@xyd-js/opencli2go..."
-        --filter "@xyd-js/opencli2rust..."
         build
 
     - name: Test @xyd-js/opencli (core model + schema round-trip)
@@ -129,14 +123,10 @@ jobs:
     - name: Test @xyd-js/openapi2opencli (Stage A + conformance)
       run: pnpm --filter @xyd-js/openapi2opencli ci:test
 
-    - name: Test @xyd-js/opencli2go (regen guard + Go build + e2e CLI)
-      run: pnpm --filter @xyd-js/opencli2go ci:test
       env:
         O2G_GO_SMOKE: '1'
         E2E_CLI: '1'
 
-    - name: Test @xyd-js/opencli2rust (regen guard + cargo check + e2e CLI)
-      run: pnpm --filter @xyd-js/opencli2rust ci:test
       env:
         O2R_CARGO_SMOKE: '1'
         E2E_CLI: '1'

@@ -10,8 +10,8 @@ use std::path::{Path, PathBuf};
 use xyd_opencli2go::opencli2go;
 
 fn fixtures_dir() -> PathBuf {
-    // crates/xyd_opencli2go -> ../../packages/xyd-opencli2go/__fixtures__
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packages/xyd-opencli2go/__fixtures__")
+    // Fixtures live IN the crate (relocated when the TS package was deleted).
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__")
 }
 
 fn list_golden(dir: &Path, base: &Path, out: &mut BTreeMap<String, String>) {

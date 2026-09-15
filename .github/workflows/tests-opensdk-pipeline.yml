@@ -35,8 +35,6 @@ on:
       - 'packages/xyd-opensdk-ruby/**'
       - 'packages/xyd-opensdk-java/**'
       - 'packages/xyd-opensdk-dotnet/**'
-      - 'packages/xyd-opensdk-rust/**'
-      - 'packages/xyd-opensdk-chain/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
   pull_request:
     branches: [ master, canary, canary2 ]
@@ -51,8 +49,6 @@ on:
       - 'packages/xyd-opensdk-ruby/**'
       - 'packages/xyd-opensdk-java/**'
       - 'packages/xyd-opensdk-dotnet/**'
-      - 'packages/xyd-opensdk-rust/**'
-      - 'packages/xyd-opensdk-chain/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
 
 jobs:
@@ -152,8 +148,6 @@ jobs:
         --filter "@xyd-js/opensdk-ruby..."
         --filter "@xyd-js/opensdk-java..."
         --filter "@xyd-js/opensdk-dotnet..."
-        --filter "@xyd-js/opensdk-rust..."
-        --filter "@xyd-js/opensdk-chain..."
         build
 
     - name: Test @xyd-js/opensdk-core (IR loader/helpers)
@@ -237,8 +231,6 @@ jobs:
         E2E_SDK: '1'
         E2E_SDK_TESTS: '1'
 
-    - name: Test @xyd-js/opensdk-rust (golden trees + cargo compile smoke + generated-test run)
-      run: pnpm --filter @xyd-js/opensdk-rust ci:test
       env:
         # cargo test --no-run compiles the generated crate + its integration tests;
         # E2E_SDK_TESTS runs the emitted #[tokio::test] suite against a spec-shaped mock.
@@ -248,17 +240,11 @@ jobs:
 
     # Chain unit + fixture goldens (offline): sources merge/overlay engine,
     # resolveChain, and the chain.json → committed-output golden fixtures.
-    - name: Test @xyd-js/opensdk-chain (sources engine + resolveChain + fixture goldens)
-      run: pnpm --filter @xyd-js/opensdk-chain ci:test
 
     # ── Chain e2e ────────────────────────────────────────────────────────────
     # Prove `opensdk run` + chain.json: one chain (a merge source + an overlay +
     # a target per language) generates every SDK and each COMPILES. All 6
     # toolchains are set up above; no registries needed (generate + compile only).
-    - name: "Chain e2e (opensdk run: merge + overlay → all-language SDKs, each compiles)"
-      run: pnpm --filter @xyd-js/opensdk-chain exec vitest run __tests__/e2e/chain.test.ts
-      env:
-        E2E_SDK_CHAIN: '1'
 
 
     # ── Publish e2e ──────────────────────────────────────────────────────────
