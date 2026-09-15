@@ -33,6 +33,7 @@ members = [
     "xyd_opensdk_rust",
     "xyd_opensdk_ruby",
     "xyd_opensdk_cli",
+    "xyd_opensdk_e2e",
     "xyd_oas_snippet",
     "xyd_cli",
 ]

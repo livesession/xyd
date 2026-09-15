@@ -1,0 +1,17 @@
+[package]
+name = "xyd_opensdk_e2e"
+edition.workspace = true
+version.workspace = true
+license.workspace = true
+
+# DEV-ONLY test support. Every emitter crate takes this as a [dev-dependencies]
+# entry, never a real one: it shells out to language toolchains, and the emitter
+# crates are linked into the @xyd-js/native cdylib. A std::process::Command
+# dependency must not follow them there — the same reason the publishers were
+# kept out of the emitters (see crates/xyd_opensdk_cli/src/publish.rs).
+#
+# Port of the deleted `@xyd-js/opensdk-ci` harness. Recover the TypeScript it was
+# ported from with:
+#   git show 4c9ae3b1^:packages/xyd-opensdk-ci/src/compile-smoke.ts
+[dependencies]
+serde_json = { workspace = true }
