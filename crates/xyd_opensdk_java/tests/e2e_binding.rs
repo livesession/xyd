@@ -29,8 +29,7 @@ use xyd_opensdk_java::jsrt::{camel_case, java_method_name};
 const FLOOR: usize = 238;
 
 fn corpus_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../packages/xyd-opensdk-java/__fixtures__/-2.complex.openai")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__/-2.complex.openai")
 }
 
 /// harness.ts:

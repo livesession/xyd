@@ -31,10 +31,6 @@ on:
       - 'packages/xyd-openapi2opensdk/**'
       - 'packages/xyd-opensdk-go/**'
       - 'packages/xyd-opensdk-python/**'
-      - 'packages/xyd-opensdk-node/**'
-      - 'packages/xyd-opensdk-ruby/**'
-      - 'packages/xyd-opensdk-java/**'
-      - 'packages/xyd-opensdk-dotnet/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
   pull_request:
     branches: [ master, canary, canary2 ]
@@ -45,10 +41,6 @@ on:
       - 'packages/xyd-openapi2opensdk/**'
       - 'packages/xyd-opensdk-go/**'
       - 'packages/xyd-opensdk-python/**'
-      - 'packages/xyd-opensdk-node/**'
-      - 'packages/xyd-opensdk-ruby/**'
-      - 'packages/xyd-opensdk-java/**'
-      - 'packages/xyd-opensdk-dotnet/**'
       - '.github/workflows/tests-opensdk-pipeline.yml'
 
 jobs:
@@ -144,10 +136,6 @@ jobs:
         --filter "@xyd-js/openapi2opensdk..."
         --filter "@xyd-js/opensdk-go..."
         --filter "@xyd-js/opensdk-python..."
-        --filter "@xyd-js/opensdk-node..."
-        --filter "@xyd-js/opensdk-ruby..."
-        --filter "@xyd-js/opensdk-java..."
-        --filter "@xyd-js/opensdk-dotnet..."
         build
 
     - name: Test @xyd-js/opensdk-core (IR loader/helpers)
@@ -203,29 +191,21 @@ jobs:
         # tests EXECUTE and PASS (not just py_compile).
         E2E_SDK_TESTS: '1'
 
-    - name: Test @xyd-js/opensdk-node (golden trees + tsc smoke + e2e real request diff + snippet run + generated-test run)
-      run: pnpm --filter @xyd-js/opensdk-node ci:test
       env:
         O2S_NODE_SMOKE: '1'
         E2E_SDK: '1'
         E2E_SDK_TESTS: '1'
 
-    - name: Test @xyd-js/opensdk-ruby (golden trees + ruby -c smoke + e2e real request diff + snippet run + generated-test run)
-      run: pnpm --filter @xyd-js/opensdk-ruby ci:test
       env:
         O2S_RUBY_SMOKE: '1'
         E2E_SDK: '1'
         E2E_SDK_TESTS: '1'
 
-    - name: Test @xyd-js/opensdk-java (golden trees + javac smoke + e2e real request diff + snippet run + generated-test run)
-      run: pnpm --filter @xyd-js/opensdk-java ci:test
       env:
         O2S_JAVA_SMOKE: '1'
         E2E_SDK: '1'
         E2E_SDK_TESTS: '1'
 
-    - name: Test @xyd-js/opensdk-dotnet (golden trees + dotnet build smoke + e2e real request diff + snippet run + generated-test run)
-      run: pnpm --filter @xyd-js/opensdk-dotnet ci:test
       env:
         O2S_DOTNET_SMOKE: '1'
         E2E_SDK: '1'

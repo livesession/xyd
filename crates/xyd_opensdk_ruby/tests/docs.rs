@@ -12,7 +12,7 @@ use serde_json::Value;
 use xyd_opensdk_ruby::{generate_ruby_type_reference, generate_ruby_usage};
 
 fn fixtures_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packages/xyd-opensdk-ruby/__fixtures__")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__")
 }
 
 /// Every dir carrying BOTH `input.json` and `docs.json`, at either depth.

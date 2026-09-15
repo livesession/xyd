@@ -37,7 +37,7 @@ const FIXTURES: &[&str] = &[
 ];
 
 fn fixtures_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packages/xyd-opensdk-node/__fixtures__")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__")
 }
 
 /// Collect every golden file under `output/` as `{ relPath: contents }`.

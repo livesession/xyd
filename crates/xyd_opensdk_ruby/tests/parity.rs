@@ -23,7 +23,7 @@ use serde_json::Value;
 use xyd_opensdk_ruby::generate_ruby;
 
 fn fixtures_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packages/xyd-opensdk-ruby/__fixtures__")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__")
 }
 
 /// Every file under `root`, keyed by its path relative to `root` (posix slashes).

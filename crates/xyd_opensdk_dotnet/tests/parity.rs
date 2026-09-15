@@ -23,7 +23,7 @@ use serde_json::Value;
 use xyd_opensdk_dotnet::generate_dotnet;
 
 fn fixtures_root() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../packages/xyd-opensdk-dotnet/__fixtures__")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("__fixtures__")
 }
 
 /// Every file under `root`, keyed by its path relative to `root` (posix slashes).

@@ -20,13 +20,11 @@ on:
     branches: [ master, canary, canary2 ]
     paths:
       - 'packages/xyd-opencli/**'
-      - 'packages/xyd-openapi2opencli/**'
       - '.github/workflows/tests-opencli-pipeline.yml'
   pull_request:
     branches: [ master, canary, canary2 ]
     paths:
       - 'packages/xyd-opencli/**'
-      - 'packages/xyd-openapi2opencli/**'
       - '.github/workflows/tests-opencli-pipeline.yml'
 
 jobs:
@@ -99,7 +97,6 @@ jobs:
       run: >-
         pnpm
         --filter "@xyd-js/opencli..."
-        --filter "@xyd-js/openapi2opencli..."
         build
 
     - name: Test @xyd-js/opencli (core model + schema round-trip)
@@ -109,25 +106,3 @@ jobs:
     # conformance + docs-oracle suites actually RUN. Needs the XYD_CONTENT_SECRET
     # repo secret; without it this is a no-op and those suites SKIP gracefully
     # (the tests lazy-load ../oracle/* behind existence guards).
-    - name: Decrypt openapi2opencli oracle
-      continue-on-error: true
-      env:
-        XYD_CONTENT_SECRET: ${{ secrets.XYD_CONTENT_SECRET }}
-      run: |
-        if [ -n "$XYD_CONTENT_SECRET" ]; then
-          bash packages/xyd-openapi2opencli/oracle/decrypt.sh
-        else
-          echo "XYD_CONTENT_SECRET not set — skipping oracle decryption (conformance tests will skip)."
-        fi
-
-    - name: Test @xyd-js/openapi2opencli (Stage A + conformance)
-      run: pnpm --filter @xyd-js/openapi2opencli ci:test
-
-      env:
-        O2G_GO_SMOKE: '1'
-        E2E_CLI: '1'
-
-      env:
-        O2R_CARGO_SMOKE: '1'
-        E2E_CLI: '1'
-        CARGO_TARGET_DIR: /tmp/o2r-target

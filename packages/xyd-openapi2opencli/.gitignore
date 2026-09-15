@@ -1,6 +1,0 @@
-# Oracle content — a single encrypted archive (oracle.enc); the plaintext is
-# gitignored and restored via oracle/decrypt.sh (XYD_CONTENT_SECRET).
-oracle/*
-!oracle/oracle.enc
-!oracle/encrypt.sh
-!oracle/decrypt.sh

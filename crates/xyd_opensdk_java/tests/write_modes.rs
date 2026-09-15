@@ -13,7 +13,7 @@ use serde_json::Value;
 use xyd_opensdk_java::generate_java_files;
 
 fn fixtures_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packages/xyd-opensdk-java/__fixtures__")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__")
 }
 
 #[test]

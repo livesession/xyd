@@ -1,5 +1,5 @@
 {
-  "specFile": "packages/xyd-opensdk-node/__fixtures__/-2.complex.openai/responses__create/input.json",
+  "specFile": "crates/xyd_opensdk_node/__fixtures__/-2.complex.openai/responses__create/input.json",
   "lookups": [
     "CreateResponse",
     "Metadata",

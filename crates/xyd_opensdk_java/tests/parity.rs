@@ -22,7 +22,7 @@ use std::path::{Path, PathBuf};
 use xyd_opensdk_java::generate_java;
 
 fn fixtures_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packages/xyd-opensdk-java/__fixtures__")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__")
 }
 
 /// Every file under `output/`, relative to it.

@@ -8,7 +8,7 @@ use serde_json::Value;
 use xyd_opensdk_dotnet::{generate_dotnet_type_reference, generate_dotnet_usage};
 
 fn fixtures_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../packages/xyd-opensdk-dotnet/__fixtures__")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__")
 }
 
 fn has(dir: &Path, file: &str) -> bool {

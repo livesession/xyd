@@ -25,8 +25,7 @@ use xyd_opensdk_ruby::snake_case;
 
 /// Committed corpus (nothing has moved out of `packages/` yet).
 fn corpus_dir() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../packages/xyd-opensdk-ruby/__fixtures__/-2.complex.openai")
+    Path::new(env!("CARGO_MANIFEST_DIR")).join("__fixtures__/-2.complex.openai")
 }
 
 /// A shrinking corpus must not be able to pass: 242 fixtures are committed.

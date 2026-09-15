@@ -24,7 +24,6 @@ on:
       - 'packages/xyd-gql/**'
       - 'packages/xyd-openapi/**'
       - 'packages/xyd-openapi2opensdk/**'
-      - 'packages/xyd-openapi2opencli/**'
       - 'packages/xyd-uniform/**'
       - 'packages/xyd-mcp-uniform/**'
       - 'packages/xyd-content/**'
@@ -49,7 +48,6 @@ on:
       - 'packages/xyd-gql/**'
       - 'packages/xyd-openapi/**'
       - 'packages/xyd-openapi2opensdk/**'
-      - 'packages/xyd-openapi2opencli/**'
       - 'packages/xyd-uniform/**'
       - 'packages/xyd-mcp-uniform/**'
       - 'packages/xyd-content/**'
@@ -334,11 +332,11 @@ jobs:
           # M1 highlighter: xyd-content carries the both-mode highlight shim test
           # (__tests__/highlight-native.test.ts) — native xyd_highlight ⇄ codehike
           # fallback; the crate's own cargo tests (cargo job) gate byte-parity.
-          SHIM_PKGS="xyd-gql xyd-openapi xyd-openapi2opensdk xyd-openapi2opencli xyd-uniform xyd-mcp-uniform xyd-content xyd-plugin-docs xyd-opensdk-framework"
+          SHIM_PKGS="xyd-gql xyd-openapi xyd-openapi2opensdk xyd-uniform xyd-mcp-uniform xyd-content xyd-plugin-docs xyd-opensdk-framework"
           # xyd-opensdk-uniform is here for its uniform-golden*.test.ts: running
           # them in BOTH modes turns the committed uniform goldens into a
           # native-vs-JS differential for the SDK docs enrichment path.
-          TRANSITIVE_PKGS="xyd-opensdk-go xyd-opensdk-node xyd-opensdk-python xyd-opensdk-ruby xyd-opensdk-java xyd-opensdk-dotnet xyd-opensdk-uniform"
+          TRANSITIVE_PKGS="xyd-opensdk-go xyd-opensdk-python xyd-opensdk-uniform"
           for pkg in $SHIM_PKGS $TRANSITIVE_PKGS; do
             if [ -d "packages/$pkg/__tests__" ]; then
               echo "=== $pkg (native=1) ==="; (cd "packages/$pkg" && XYD_NATIVE=1 npx vitest run)

@@ -35,8 +35,7 @@ use xyd_opensdk_dotnet::naming::{method_name, pascal_case};
 /// The corpus is not vendored into `crates/` yet — it still lives beside the
 /// (about to be deleted) TypeScript package.
 fn corpus_dir() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../packages/xyd-opensdk-dotnet/__fixtures__/-2.complex.openai")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("__fixtures__/-2.complex.openai")
 }
 
 /// A shrinking corpus must not quietly turn this guard into a no-op. 242 dirs
