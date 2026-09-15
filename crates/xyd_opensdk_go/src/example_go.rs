@@ -1202,3 +1202,97 @@ pub fn generate_go_tests(
     );
     files
 }
+
+// ── e2e driver ──────────────────────────────────────────────────────────────
+//
+// A generated program that constructs the client against `E2E_BASE_URL` and
+// switch-dispatches ONE method per call key, so the harness can drive every
+// operation and diff the request the SDK actually made.
+//
+// Port of `generateDriver` in the deleted
+// `packages/xyd-opensdk-go/__tests__/e2e/harness.ts`.
+//
+// It reuses `params_struct_expr` — the emitter's OWN example-param assembly —
+// rather than passing a bare `Params{}`. That is load-bearing: a zero-valued
+// struct drops required fields, and for a multipart method it drops the file
+// part's io.Reader entirely, so the request the SDK makes would be missing its
+// upload field and the diff would blame the emitter for a defect in the driver.
+
+/// Generate the e2e driver `main.go` for `spec`.
+pub fn generate_go_e2e_driver(spec: &Value, pkg: &str, module_path: &str) -> String {
+    let empty = Map::new();
+    let types: Map<String, Value> = spec
+        .get("types")
+        .and_then(Value::as_array)
+        .map(|a| {
+            a.iter()
+                .filter_map(|t| {
+                    t.get("name")
+                        .and_then(Value::as_str)
+                        .map(|n| (n.to_string(), t.clone()))
+                })
+                .collect()
+        })
+        .unwrap_or(empty);
+
+    let mut imports = Imports::new();
+    imports.add("context", None);
+    imports.add("os", None);
+    let pkg_q = imports.add(module_path, Some(pkg));
+    let option_q = imports.add(&format!("{module_path}/option"), None);
+    let mut ctx = GoExampleCtx {
+        types: &types,
+        module_path: module_path.to_string(),
+        pkg: pkg_q.clone(),
+        option_q: option_q.clone(),
+        imports,
+    };
+
+    let mut cases: Vec<String> = Vec::new();
+    walk_driver(spec.get("resources"), &[], &mut ctx, &mut cases);
+
+    let main_fn = format!(
+        "func main() {{\n\tclient := {pkg_q}.NewClient({option_q}.WithBaseURL(os.Getenv(\"E2E_BASE_URL\")))\n\tctx := context.Background()\n\t_ = ctx\n\t_ = client\n\tswitch os.Args[1] {{\n{}\n\t}}\n}}",
+        cases.join("\n")
+    );
+    let imports = std::mem::replace(&mut ctx.imports, Imports::new());
+    go_file("main", &imports, &[main_fn])
+}
+
+fn walk_driver(
+    resources: Option<&Value>,
+    segments: &[String],
+    ctx: &mut GoExampleCtx,
+    cases: &mut Vec<String>,
+) {
+    let Some(list) = resources.and_then(Value::as_array) else {
+        return;
+    };
+    for r in list {
+        let name = s(r, "name").to_string();
+        let mut seg = segments.to_vec();
+        seg.push(name);
+        for m in arr(r, "methods") {
+            let recv = seg
+                .iter()
+                .map(|x| pascal_case(x))
+                .collect::<Vec<_>>()
+                .join(".");
+            let mname = go_method_name(s(m, "action"));
+            let op = plan_operation(m, ctx.types);
+            let mut args = vec!["ctx".to_string()];
+            // Path params are positional; any non-empty value satisfies the route.
+            for _ in arr(m, "pathParams") {
+                args.push("\"EXAMPLE\"".to_string());
+            }
+            if let Some(expr) = params_struct_expr(&seg, m, &op, false, &mname, ctx, false) {
+                args.push(expr.text);
+            }
+            cases.push(format!(
+                "\tcase \"{recv}.{mname}\":\n\t\tclient.{recv}.{mname}({})",
+                args.join(", ")
+            ));
+        }
+        walk_driver(r.get("resources"), &seg, ctx, cases);
+    }
+}

@@ -15,3 +15,4 @@ xyd_opensdk_core = { path = "../xyd_opensdk_core" }
 # DEV-ONLY: spawns language toolchains; must never become a real dependency
 # (these crates link into the @xyd-js/native cdylib).
 xyd_opensdk_e2e = { path = "../xyd_opensdk_e2e" }
+xyd_opensdk_cli_common = { path = "../xyd_opensdk_cli_common" }

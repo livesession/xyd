@@ -12,6 +12,9 @@
 mod cli;
 mod client;
 mod example_go;
+/// The e2e driver generator — public so the request-diff test can synthesize a
+/// program that exercises every operation. Test-only in practice.
+pub use example_go::generate_go_e2e_driver;
 mod example_plan;
 mod gotype;
 mod gowriter;
