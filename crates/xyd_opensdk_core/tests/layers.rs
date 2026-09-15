@@ -15,7 +15,9 @@
 //!   moves and xyd depends on it through the submodule.
 //! * `xyd_parity_kit` — a vendored copy of the parity harness, because the
 //!   original depends on `xyd_uniform` (xyd's docs data model, which does not
-//!   move) for a 185-line JSON comparator.
+//!   move) for a 185-line JSON comparator. That copy's drift check lives in
+//!   `xyd_parity` on the xyd side, NOT here: this file moves to opensdk, where
+//!   `xyd_uniform` does not exist to compare against.
 //!
 //! Checked statically against `Cargo.toml` rather than `cargo metadata`: no
 //! toolchain invocation, and it reads the same text a human would.
@@ -123,33 +125,5 @@ fn the_moving_cluster_depends_on_nothing_outside_itself() {
          move to the opensdk repo while this holds:\n{}",
         leaks.len(),
         leaks.join("\n")
-    );
-}
-
-/// `xyd_parity_kit::canon` is a byte-identical vendored copy of
-/// `xyd_uniform::canon`. Duplication is the deliberate choice (see that crate's
-/// docs), but undetected DRIFT is not — the two must stay identical so the
-/// toolchain's parity tier keeps comparing JSON the way xyd does.
-#[test]
-fn the_vendored_canon_has_not_drifted() {
-    let dir = crates_dir();
-    let original = dir.join("xyd_uniform/src/canon.rs");
-    let vendored = dir.join("xyd_parity_kit/src/canon.rs");
-    let a = std::fs::read_to_string(&original).expect("read xyd_uniform canon");
-    let b = std::fs::read_to_string(&vendored).expect("read vendored canon");
-    assert!(
-        a.len() > 1000,
-        "canon.rs is {} bytes — too small to be the real comparator; this test \
-         would compare two stubs and pass",
-        a.len()
-    );
-    assert_eq!(
-        a,
-        b,
-        "xyd_parity_kit/src/canon.rs has drifted from xyd_uniform/src/canon.rs. \
-         It is a deliberate byte-identical vendor: re-copy it rather than \
-         editing one side.\n  cp {} {}",
-        original.display(),
-        vendored.display()
     );
 }

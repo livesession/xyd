@@ -20,17 +20,36 @@ fn gated() -> bool {
     std::env::var("XYD_CLI_SMOKE_NODE").is_err()
 }
 
-fn repo_root() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../..")
+/// The nearest ancestor carrying an installed `node_modules/.bin/tsc`.
+///
+/// This used to be a fixed `../..` hop to the repo root, which is correct only
+/// while this crate lives at `<repo>/crates/<crate>`. These crates are headed
+/// for the `opensdk` repo, consumed back by xyd as a submodule — and there
+/// `../..` lands on `<xyd>/opensdk/`, which has no `node_modules` of its own.
+/// The same fixed hop is also wrong for anyone vendoring the crates deeper.
+///
+/// Walking up instead is correct in every arrangement: standalone opensdk finds
+/// its own install, and a submodule checkout falls through to the parent repo's.
+fn node_root() -> PathBuf {
+    let start = Path::new(env!("CARGO_MANIFEST_DIR"))
         .canonicalize()
-        .expect("repo root")
+        .expect("canonicalize manifest dir");
+    for dir in start.ancestors() {
+        if dir.join("node_modules/.bin/tsc").exists() {
+            return dir.to_path_buf();
+        }
+    }
+    panic!(
+        "no ancestor of {} contains node_modules/.bin/tsc — run the repo's \
+         package install before XYD_CLI_SMOKE_NODE=1",
+        start.display()
+    );
 }
 
 /// The repo's TypeScript compiler (absolute path — the generated project is
 /// compiled OUTSIDE the repo, in a temp dir).
 fn tsc_path() -> PathBuf {
-    repo_root().join("node_modules/.bin/tsc")
+    node_root().join("node_modules/.bin/tsc")
 }
 
 fn shared_input(case: &str) -> Value {
@@ -61,7 +80,7 @@ fn fresh_dir(name: &str) -> PathBuf {
 /// for bundlers, so the smoke compiles SDK + driver together as CommonJS
 /// (which Node runs directly) and pulls @types/node from the repo.
 fn driver_tsconfig() -> String {
-    let type_roots = repo_root().join("node_modules/@types");
+    let type_roots = node_root().join("node_modules/@types");
     format!(
         r#"{{
   "compilerOptions": {{
