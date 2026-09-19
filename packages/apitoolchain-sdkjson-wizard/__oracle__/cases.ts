@@ -53,7 +53,7 @@ const MULTI_RESOURCE_DOC = {
 };
 
 /** Deliberately invalid: no `openapi` field. Freezes the `{files: [], error}` shape AND
- * the exact message, including the native converter's `[xyd_openapi2opensdk] ` prefix —
+ * the exact message, including the native converter's `[openapi2opensdk] ` prefix —
  * which is already today's live behavior, not something the rewire introduces. */
 const INVALID_DOC = { info: { title: "Bad", version: "1" }, paths: {} };
 

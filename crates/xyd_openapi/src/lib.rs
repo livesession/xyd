@@ -16,12 +16,12 @@ use serde::Deserialize;
 use serde_json::Value;
 use xyd_uniform::Reference;
 
-// `xyd_oas_doc` is the extracted leaf (DocCtx + spec loading) shared with the
+// `oas_doc` is the extracted leaf (DocCtx + spec loading) shared with the
 // opensdk repo. Aliasing it as `doc` keeps every internal `crate::doc::DocCtx`
 // resolving unchanged, and the re-export keeps `xyd_openapi::DocCtx` — the
 // path five call sites outside this crate already use — working verbatim.
-use xyd_oas_doc as doc;
-pub use xyd_oas_doc::{parse_spec, read_spec, DocCtx, OasError};
+use oas_doc as doc;
+pub use oas_doc::{parse_spec, read_spec, DocCtx, OasError};
 
 const SUPPORTED_HTTP_METHODS: &[&str] = &["get", "put", "patch", "post", "delete"];
 

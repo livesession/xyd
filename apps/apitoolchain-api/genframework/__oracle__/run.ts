@@ -21,9 +21,11 @@ import { CASES, LANGUAGES } from "./cases";
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const GOLDEN = path.join(HERE, "golden");
 const FREEZE = process.argv.includes("--freeze");
+// The converter's own basic fixture, now in the `opensdk` submodule (its
+// TypeScript twin was deleted with the rest of the TS cluster).
 const SPEC = path.resolve(
   HERE,
-  "../../../../packages/xyd-openapi2opensdk/__fixtures__/1.basic/input.json",
+  "../../../../opensdk/crates/openapi2opensdk/__fixtures__/1.basic/input.json",
 );
 
 /** Fail loudly if the native addon is missing: the compute already routes through it

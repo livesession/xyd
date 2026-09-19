@@ -1,6 +1,0 @@
-{
-  "lang": "go-cli",
-  "bag": {
-    "tests": false
-  }
-}

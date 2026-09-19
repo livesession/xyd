@@ -1,8 +1,0 @@
-openapi: 3.0.3
-info:
-  title: Yml
-  version: '2.0'
-tags:
-  - name: one
-  - name: two
-paths: {}

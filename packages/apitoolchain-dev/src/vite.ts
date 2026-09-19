@@ -86,9 +86,14 @@ async function startLocalRegistries(
   for (const d of [nugetFeed, mavenFeed, goproxyFeed])
     mkdirSync(d, { recursive: true });
 
+  // Lives in THIS package. It used to be borrowed from @xyd-js/opensdk-ci, which
+  // went away with the TypeScript cluster — and because the container start is
+  // wrapped in tryStart, the missing file degraded to a logged "verdaccio did not
+  // start" rather than anything that looked like a broken reference.
   const verdaccioCfg = resolve(
     pkgs,
-    "xyd-opensdk-ci/e2e/publish/verdaccio-config.yaml",
+    "apitoolchain-dev",
+    "verdaccio-config.yaml",
   );
   // FIXED host ports (env-overridable) so a published SDK's registry URL stays
   // valid across dev-server restarts + snapshot restores — random ports would go

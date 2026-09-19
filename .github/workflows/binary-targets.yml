@@ -14,11 +14,13 @@ on:
     branches: [ master, canary ]
     paths:
       - 'crates/**'
-      # The submodule GITLINK. A change INSIDE xwrite appears in this repo as a
-      # modification of the path `xwrite` itself (mode 160000), NOT as
-      # `xwrite/**` — there are no parent-tracked files under it, so `xwrite/**`
-      # would never match and the native gate would silently skip.
+      # The submodule GITLINKS. A change INSIDE xwrite/opensdk appears in this
+      # repo as a modification of the path `xwrite` / `opensdk` itself (mode
+      # 160000), NOT as `xwrite/**` — there are no parent-tracked files under
+      # them, so a `/**` glob would never match and the native gate would
+      # silently skip.
       - 'xwrite'
+      - 'opensdk'
       - '.gitmodules'
       - 'packages/xyd-native/**'
       - 'packages/xyd-cli/**'
@@ -30,11 +32,13 @@ on:
     branches: [ master, canary ]
     paths:
       - 'crates/**'
-      # The submodule GITLINK. A change INSIDE xwrite appears in this repo as a
-      # modification of the path `xwrite` itself (mode 160000), NOT as
-      # `xwrite/**` — there are no parent-tracked files under it, so `xwrite/**`
-      # would never match and the native gate would silently skip.
+      # The submodule GITLINKS. A change INSIDE xwrite/opensdk appears in this
+      # repo as a modification of the path `xwrite` / `opensdk` itself (mode
+      # 160000), NOT as `xwrite/**` — there are no parent-tracked files under
+      # them, so a `/**` glob would never match and the native gate would
+      # silently skip.
       - 'xwrite'
+      - 'opensdk'
       - '.gitmodules'
       - 'packages/xyd-native/**'
       - 'packages/xyd-cli/**'
@@ -72,9 +76,12 @@ jobs:
             cli:
               - 'crates/xyd_cli/**'
               - 'crates/Cargo.toml'
-              # xyd_cli compiles against the submodule's markdown fork, so a
-              # gitlink bump changes the binary. `xwrite`, not `xwrite/**`.
+              # xyd_cli compiles against xwrite's markdown fork, and the same
+              # matrix also ships the `opensdk` toolchain binary built from the
+              # opensdk submodule, so either gitlink bump changes a released
+              # binary. The gitlink paths, not `<name>/**`.
               - 'xwrite'
+              - 'opensdk'
               - '.gitmodules'
               - '.github/workflows/build-native-binaries.yml'
               - '.github/workflows/binary-targets.yml'

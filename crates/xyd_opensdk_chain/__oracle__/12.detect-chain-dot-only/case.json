@@ -1,9 +1,0 @@
-{
-  "description": "detectChain falls through to .chain/chain.json",
-  "ops": [
-    {
-      "id": "dot-chain",
-      "op": "detectChain"
-    }
-  ]
-}

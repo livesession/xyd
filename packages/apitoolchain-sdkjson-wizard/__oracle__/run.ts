@@ -27,7 +27,7 @@ const FREEZE = process.argv.includes("--freeze");
 /** Fail loudly if the native addon is missing.
  *
  * Without this, a freeze on a machine with no addon would silently bake the JS-impl
- * error string (case 5 differs by a `[xyd_openapi2opensdk] ` prefix) and every later
+ * error string (case 5 differs by a `[openapi2opensdk] ` prefix) and every later
  * check would go red for the wrong reason. */
 function assertNative(): void {
   if (process.env.XYD_NATIVE === "0") {

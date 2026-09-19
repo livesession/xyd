@@ -9,8 +9,11 @@
 //   - the committed `specs/xyd-cli/opencli.json` (imported by the TS xyd-cli via
 //     `@xyd-js/cli-spec/opencli.json`) is refreshed by hand from this output;
 //   - the Rust crate is self-sufficient — it owns its committed
-//     `crates/xyd_cli/opencli.json` and syncs it via
-//     `cargo run -p xyd_opencli2rust --bin regen -- crates/xyd_cli --spec specs/xyd-cli/dist/opencli.json`.
+//     `crates/xyd_cli/opencli.json` and syncs it via (from the repo root)
+//     `cargo run --manifest-path opensdk/Cargo.toml -p opencli2rust --bin regen \
+//        -- crates/xyd_cli --spec specs/xyd-cli/dist/opencli.json`
+//     — a two-workspace invocation, since the regen driver now lives in the
+//     `opensdk` submodule while its target stays here.
 //
 // `info.version` is injected at compile time from the @xyd-js/cli package version
 // (specs/xyd-cli intentionally has no version of its own for the CLI surface).

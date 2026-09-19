@@ -1,12 +1,22 @@
 # OpenSDK Generation
 
 This document describes the **OpenAPI → OpenSDK IR → SDK** pipeline: how xyd turns an OpenAPI
-3.x spec into typed, functional client SDKs for seven languages. It covers the `xyd-opensdk-*`
-package family, the IR, the emitter plugin contract, the regen-safe write lifecycle, the
+3.x spec into typed, functional client SDKs for seven languages. It covers the `opensdk_*`
+crate family, the IR, the emitter contract, the regen-safe write lifecycle, the
 `opensdk` CLI, the chain pipeline, and the test/CI setup.
 
+The toolchain is its own repo — [github.com/livesession/opensdk](https://github.com/livesession/opensdk) —
+pinned here as a submodule at `<repo>/opensdk`, the same arrangement as `xwrite` for the content
+engine. Its cargo workspace is rooted at the **submodule root** (`opensdk/Cargo.toml`, members
+`crates/*` plus the root-level `cli`, which the glob does not reach), not at `opensdk/crates/`,
+so every `cargo` invocation below runs from `opensdk/` and builds into `opensdk/target/`. xyd reaches into it from two places: `packages/xyd-native`
+path-deps twelve of the crates into the napi addon, and `crates/xyd_openapi` path-deps
+`oas_doc`. Out-of-workspace path deps build normally but are NOT covered by
+`cargo fmt --all` / `cargo clippy --workspace` in xyd — opensdk's own CI lints them.
+
 > Sibling pipeline: [OpenCLI CLI generation](./OpenCliCliGeneration.md) turns specs into
-> command-line tools; both share the regen-safe `writeProject` lifecycle described below.
+> command-line tools; it lives in the same submodule and shares the regen-safe `write_project`
+> lifecycle described below.
 
 ## Overview
 
@@ -17,11 +27,11 @@ and a declarative runtime-behavior block.
 
 ```mermaid
 graph LR
-    OAS["OpenAPI 3.x"] -->|"@xyd-js/openapi2opensdk\n(Stage A)"| IR["OpenSDK IR\n(OpensdkSpecJson)"]
-    IR -->|"framework orchestrator\n+ emitter plugins"| SDKS["SDK projects\n(go · node · python · ruby\n· java · dotnet · rust)"]
+    OAS["OpenAPI 3.x"] -->|"openapi2opensdk\n(Stage A)"| IR["OpenSDK IR\n(OpensdkSpecJson)"]
+    IR -->|"emitter crates\n+ write lifecycle"| SDKS["SDK projects\n(go · node · python · ruby\n· java · dotnet · rust)"]
 
-    CHAIN["@xyd-js/opensdk-chain\n(multi-source + overlays)"] --> OAS
-    CORE["@xyd-js/opensdk-core\n(IR types + behavior + config + diff)"] --- IR
+    CHAIN["opensdk_chain\n(multi-source + overlays)"] --> OAS
+    CORE["opensdk_core\n(IR schema + behavior)"] --- IR
     CLI["opensdk CLI"] -.->|"parse / generate / run\n/ diff / publish"| IR
     IR -->|"@xyd-js/opensdk-uniform"| DOCS["docs code samples\n(Uniform References)"]
 
@@ -34,28 +44,45 @@ graph LR
     style DOCS fill:#fd79a8,color:#fff,stroke:#d4608a
 ```
 
-## Packages
+## Crates
+
+All under `opensdk/crates/` except the binary, which sits at `opensdk/cli/` — one level from
+the submodule root, not two. That depth matters: anything resolving a path from
+`CARGO_MANIFEST_DIR` in that crate walks up once, and its dependencies are reached as
+`../crates/<name>` rather than as siblings.
+
+| Crate | Role |
+|-------|------|
+| `oas_doc` | `DocCtx` — OpenAPI loading + `$ref` resolution. The shared leaf: xyd's own `crates/xyd_openapi` depends on it too |
+| `opensdk_core` | Layer-0: `opensdk-spec.json` (the IR schema), `SdkBehavior` defaults + merge, the machine-ownership header, the data-only emitter descriptor, language-neutral example values |
+| `opensdk_config` | Config shapes (`SdkJson`, `ChainJson`) + `merge_publish_targets`; `load_opensdk_spec`, `find_type`, `walk_methods` |
+| `openapi2opensdk` | **Stage A** — OpenAPI → OpenSDK IR |
+| `opensdk_framework` | The regen-safe `write_project` lifecycle + `merge3` |
+| `opensdk_{go,node,python,ruby,java,dotnet,rust}` | Per-language emitters (7) |
+| `opensdk_diff` | `diff_ir` breaking-change classifier |
+| `opensdk` | The `opensdk` binary: `parse` / `xsdk` / `generate` / `diff` / `publish` / `run` / `init`, plus the emitter registry |
+| `opensdk_chain` | `chain.json` pipeline: multi-source OpenAPI merge + Overlay 1.0.0 |
+| `opencli2opensdk` | OpenCLI → OpenSDK IR carrying `x-cli` argv bindings — SDKs that spawn a CLI instead of making HTTP calls |
+| `opensdk_cli_common` | The consume side of the `x-cli` contract (`is_cli_spec`, `CliRoot`, `CliPlan`) + the cross-emitter `testkit` and the language-neutral half of the e2e binding guard |
+| `opensdk_e2e` / `parity_kit` | Test harnesses: compile/CLI smokes + recording server · the vendored fixture-parity comparator |
+
+Two TypeScript packages sit on the docs side of the boundary, in xyd:
 
 | Package | Role |
 |---------|------|
-| `@xyd-js/opensdk-core` | Layer-0: IR types (`OpensdkSpecJson`), `SdkBehavior` defaults + merge, spec helpers (`loadOpensdkSpec`, `walkMethods`), config shapes (`SdkJson`, `ChainJson`), `diffIR` breaking-change classifier |
-| `@xyd-js/opensdk-schemas` | JSON Schemas: `sdk.schema.json` (validates sdk.json) + `chain.schema.json` (validates chain.json), generated from core's `opensdk-spec.json` |
-| `@xyd-js/openapi2opensdk` | **Stage A** — OpenAPI → OpenSDK IR; also the conformance "surface" utilities |
-| `@xyd-js/opensdk-framework` | The `Emitter` plugin contract, orchestrator, language registry, `planOperation`/`planExample`, and the regen-safe `writeProject` lifecycle |
-| `@xyd-js/opensdk-{go,node,python,ruby,java,dotnet,rust}` | Per-language emitters (7) |
-| `@xyd-js/opensdk-cli` | The `opensdk` binary: `parse` / `generate` / `diff` / `publish` / `run` / `init` |
-| `@xyd-js/opensdk-chain` | `chain.json` pipeline: multi-source OpenAPI merge + Overlay 1.0.0, then generate/publish per target |
-| `@xyd-js/opensdk-merge` | `merge3(base, ours, theirs)` — the 3-way line merge behind `{ merge: true }` regeneration |
-| `@xyd-js/opensdk-ci` | Shared test infra: goldens, compile smokes, recording/mock servers, behavior parity, publish round-trips |
-| `@xyd-js/opensdk-uniform` | Docs integration: enrich Uniform References with per-language SDK snippets + type references |
+| `@xyd-js/opensdk-schemas` | JSON Schemas for editor validation: `sdk.schema.json` (validates sdk.json) + `chain.schema.json`, lifted from `opensdk/crates/opensdk_core/opensdk-spec.json` |
+| `@xyd-js/opensdk-uniform` | Docs integration: enrich Uniform References with per-language SDK snippets + type references, through the napi addon |
 
-## The OpenSDK IR (`@xyd-js/opensdk-core`)
+## The OpenSDK IR (`opensdk_core`)
 
-`opensdk-spec.json` (JSON Schema) is the single source of truth: `src/types.ts` is generated
-from it via `json-schema-to-typescript`, and `xyd-opensdk-schemas` lifts its `$defs` into the
-config schemas.
+`opensdk-spec.json` (JSON Schema) is the single source of truth for the IR document shape, and
+`@xyd-js/opensdk-schemas` lifts its `$defs` into the config schemas. There is no shared typed IR
+struct behind it: five emitters read `serde_json::Value` directly and three different map
+orderings are already baked into three sets of goldens, so a single shared map type would move
+bytes.
 
 ```ts
+// the document shape, per opensdk-spec.json
 interface OpensdkSpecJson {
   opensdk: string;          // format version
   info: SdkInfo;
@@ -76,70 +103,64 @@ interface OpensdkSpecJson {
 | `Pagination` | `style: cursor \| page \| offset` + items/cursor/offset/limit/next field names |
 
 **`SdkBehavior`** is the declarative "how SDKs behave at runtime" block, resolved by
-`sdkBehavior(spec)` (defaults deep-merged with overrides; arrays replace): retry
+`opensdk_core::behavior` (defaults deep-merged with overrides; arrays replace): retry
 (maxRetries=2, retryable status codes, exponential backoff + jitter), timeout (60s), error
 mapping, user-agent (incl. AI-agent env detection: `CLAUDE_CODE`, `CURSOR_AGENT`, …),
 telemetry headers, logging, idempotency-key injection for retried POSTs, auto-page delay, and
-request-guard (misplaced-option detection). Every emitter must render the same behavior — see
-"parity" under Tests.
+request-guard (misplaced-option detection). Every emitter renders the same resolved block into
+its vendored runtime, substituted into `__XYD_*__` seams in an otherwise fixed source file.
 
-**`diffIR(base, head)`** classifies IR changes as `breaking | risky | safe` across ~30 kinds
-(`method-removed`, `param-type-changed`, `field-required-flip`, `enum-value-removed`, …) —
-this powers `opensdk diff --fail-on breaking`.
+**`diff_ir(base, head)`** (in `opensdk_diff`) classifies IR changes as
+`breaking | risky | safe` across ~30 kinds (`method-removed`, `param-type-changed`,
+`field-required-flip`, `enum-value-removed`, …) — this powers `opensdk diff --fail-on breaking`.
 
-## Stage A: `@xyd-js/openapi2opensdk`
+## Stage A: `openapi2opensdk`
 
-```ts
-openapi2opensdk(doc: OpenAPIV3.Document, options?: OpenApi2OpenSdkOptions): OpensdkSpecJson
-openapi2opensdkFromSource(source: string, options?): Promise<OpensdkSpecJson>
+```rust
+openapi2opensdk(doc: &Value, options: Option<Options>) -> Result<Spec, Error>
+openapi2opensdk_from_json_file(path: &str, options: Option<Options>) -> Result<Spec, Error>
 ```
 
-Options: `sdkName`, `includeMethods`/`includePaths`, `verbMap`/`customActionVerbs`,
-`authEnvVar`, `operationHints`, `mountRules` (resource-tree regrouping), `sdkBehavior`.
+Pure and synchronous, and it works on the RAW (un-dereferenced) document so component identity
+survives into named types. Options: `sdkName`, `includeMethods`/`includePaths`,
+`verbMap`/`customActionVerbs`, `authEnvVar`, `operationHints`, `mountRules` (resource-tree
+regrouping), `sdkBehavior`.
 
 | Module | Purpose |
 |--------|---------|
-| `nominal.ts` | `SymbolTable` — resolves `$ref`-keyed component schemas into `NamedType[]`, preserving nominal identity (works on the RAW, un-dereferenced doc) |
-| `resourceTree.ts` | Builds the nested `Resource[]` tree from operations |
-| `action.ts` | `deriveTarget()` — resource path + action verb from method + URL shape (list/retrieve/create/update/delete + trailing verbs) |
-| `method.ts` / `schema.ts` / `security.ts` | Per-operation `Method` construction · OpenAPI schema helpers · security normalization |
-| `surface.ts` | `opensdkToSurface()` + `diffSurfaces()` — reduce the IR and a real SDK's parsed surface to a canonical shape and diff them (the conformance oracle mechanism, same idea as the OpenCLI pipeline's) |
+| `nominal.rs` | `SymbolTable` — resolves `$ref`-keyed component schemas into `NamedType[]`, preserving nominal identity |
+| `resource_tree.rs` | Builds the nested `Resource[]` tree from operations |
+| `action.rs` | `derive_target()` — resource path + action verb from method + URL shape (list/retrieve/create/update/delete + trailing verbs) |
+| `method.rs` / `schema.rs` | Per-operation `Method` construction · OpenAPI schema helpers, including security normalization |
+| `jsrt.rs` | The JS-semantics helpers (casing, truthiness) the goldens were frozen under |
 
-## The framework (`@xyd-js/opensdk-framework`)
+## The emitter contract
 
-Emitters are **plugins** implementing the `Emitter` contract; capability methods are PURE
-(IR in, files out — no IO):
+Each emitter crate exposes one pure `generate_<lang>(spec, options)` — IR in, virtual file map
+out, no IO — plus a data-only `EmitterFns` descriptor (`opensdk_core::emitter`) carrying the
+language id and the optional docs capabilities (usage snippet, type reference). There is
+deliberately no `trait Emitter` mirroring the six capability methods of a plugin contract: each
+`generate_<lang>` inlines the interleave in one function, the capability boundaries survive as
+comments and file order, and the only consumers (the CLI registry and the napi
+`opensdk_surface!` macro) want the whole map anyway.
 
-```ts
-interface Emitter {
-  language: string;
-  fileHeader?(ctx): string | null;                     // optional ownership header
-  generateProject(spec, ctx): GeneratedFile[];         // manifest, README, configs
-  generateClient(spec, ctx): GeneratedFile[];
-  generateTypes(types, ctx): GeneratedFile[];
-  generateResources(resources, ctx): GeneratedFile[];
-  generateRuntime(spec, ctx): GeneratedFile[];
-  generateTests?(spec, ctx): GeneratedFile[];          // optional
-  generateUsage?(method, chain, ctx): string;          // optional: docs snippets
-  generateTypeReference?(method, chain, ctx): RenderedTypeReference; // optional: docs types
-}
-```
+The registry is a `static EMITTERS` table in `opensdk`, not in core — core is what the
+seven emitter crates depend on, so holding the table there would be a cycle. Alias resolution
+(`ts`/`typescript`/`js` → node, `rs` → rust, `c#`/`.net` → dotnet, …) stays in
+`opensdk_core::emitter::resolve_language`, so the CLI and the emitters cannot drift.
 
-- `orchestrator.ts` — `generate()` / `generateFileMap()` drive the capabilities in order,
-  prepend the file header, and assemble the virtual file map (duplicate paths throw).
-- `registry.ts` — `registerEmitter()` / `getEmitter()` / `resolveLanguage()` with aliases
-  (`ts`/`typescript`/`js` → node, `rs` → rust, `c#`/`.net` → dotnet, …). `applyConfig()` lets
-  an `opensdk.config.*` file register **custom emitters as plugins**.
-- `operation-plan.ts` — `planOperation(method, types)` → semantic plan (page class name,
-  `encoding: json | multipart | form`, param groups, primary-response classification,
-  idempotency injection) so emitters share one interpretation of a Method.
-- `example-plan.ts` — language-neutral example values, shared by `generateTests` and
-  `generateUsage` so every language exercises identical shapes.
+Each emitter carries its own `plan_operation` — the semantic read of a Method (page class name,
+`encoding: json | multipart | form`, param groups, primary-response classification, idempotency
+injection). They stay per-crate on purpose: six distinct signatures over four different
+representations of `types`, so unifying them would change HOW five crates read the IR — on
+exactly the code paths that produce every byte-exact golden. What IS shared is the
+format→sample table in `opensdk_core::example`, so a `uuid` or `date-time` sample cannot
+drift between languages in the docs snippets.
 
 ### The write lifecycle (regen safety)
 
-`writeProject(files, outDir, { generator, merge })` is the ONLY fs-touching entry point,
-shared by every generator (including `opencli2rust`):
+`write_project(files, out_dir, { generator, merge })` in `opensdk_framework` is the ONLY
+fs-touching entry point, shared by every generator (including `opencli2rust`):
 
 1. **`.sdkignore`** — user-authored, gitignore-style: matched paths are user-owned (never
    overwritten or pruned; divergence reported in `conflicts`). Wins over any writeMode.
@@ -148,10 +169,9 @@ shared by every generator (including `opencli2rust`):
 3. **`.sdk/sdk.lock`** — hash manifest of pristine generated content; enables the guarded
    stale-prune (only pristine orphans are deleted; modified ones are kept → `keptModified`)
    and byte-stable no-op regens.
-4. **`{ merge: true }`** — hand-edits to `overwrite` files survive regeneration via
-   `merge3` from `@xyd-js/opensdk-merge` (base = the `.sdk/base/<sha256>` content-addressed
-   snapshot, ours = on-disk, theirs = new generation); conflicts get git-style markers →
-   `mergeConflicts`.
+4. **`{ merge: true }`** — hand-edits to `overwrite` files survive regeneration via the same
+   crate's `merge3` (base = the `.sdk/base/<sha256>` content-addressed snapshot, ours =
+   on-disk, theirs = new generation); conflicts get git-style markers → `mergeConflicts`.
 
 Result buckets: `written / skipped / unchanged / pruned / keptModified / conflicts / merged /
 mergeConflicts`.
@@ -161,81 +181,72 @@ mergeConflicts`.
 All generated SDKs are **dependency-light by design** — stdlib HTTP wherever the platform
 allows:
 
-| Package | Generated stack | Smoke gate |
-|---------|-----------------|------------|
-| `xyd-opensdk-go` | stdlib `net/http` (zero deps) | `O2S_GO_SMOKE` |
-| `xyd-opensdk-node` | global `fetch` + built-ins (zero deps, Node 18+) | `O2S_NODE_SMOKE` |
-| `xyd-opensdk-python` | stdlib `urllib` | `O2S_PY_SMOKE` |
-| `xyd-opensdk-ruby` | stdlib `net/http` + `json` | `O2S_RUBY_SMOKE` |
-| `xyd-opensdk-java` | `java.net.http.HttpClient` + hand-rolled JSON codec | `O2S_JAVA_SMOKE` |
-| `xyd-opensdk-dotnet` | `System.Net.Http` + `System.Text.Json` | `O2S_DOTNET_SMOKE` |
-| `xyd-opensdk-rust` | async `reqwest` (rustls) + `tokio` + `serde` + `thiserror` | `O2S_RUST_SMOKE` |
+| Crate | Generated stack | Smoke gate |
+|-------|-----------------|------------|
+| `opensdk_go` | stdlib `net/http` (zero deps) | `XYD_SMOKE_GO` |
+| `opensdk_node` | global `fetch` + built-ins (zero deps, Node 18+) | `XYD_SMOKE_NODE` |
+| `opensdk_python` | stdlib `urllib` | `XYD_SMOKE_PYTHON` |
+| `opensdk_ruby` | stdlib `net/http` + `json` | `XYD_SMOKE_RUBY` |
+| `opensdk_java` | `java.net.http.HttpClient` + hand-rolled JSON codec | `XYD_SMOKE_JAVA` |
+| `opensdk_dotnet` | `System.Net.Http` + `System.Text.Json` | `XYD_SMOKE_DOTNET` |
+| `opensdk_rust` | async `reqwest` (rustls) + `tokio` + `serde` + `thiserror` | `XYD_SMOKE_RUST` |
 
 Each emitter follows the same internal layout (a writer module with language-literal helpers,
-`naming.ts` with keyword guards, per-capability renderers) and ships golden fixtures
+`naming.rs` with keyword guards, per-capability renderers) and ships golden fixtures
 (`__fixtures__/<n>/input.json` → `output/` tree) plus per-method complex-corpus fixtures.
 Representative generated layout (go): `go.mod`, `client.go`, `types.go`, `<resource>.go` +
 `_test.go`, `option/`, `internal/requestconfig/`, `packages/{apijson,pagination,param}/`.
 
-## The `opensdk` CLI (`@xyd-js/opensdk-cli`)
+A spec carrying a root `x-cli` block (produced by `opencli2opensdk`) puts the same emitters
+in **CLI mode**: instead of an HTTP transport, the generated client spawns a real CLI binary and
+assembles argv from the per-method `x-cli` bindings — `xyd --version` → `xyd.optVersion()`,
+`xyd build --port 3000` → `xyd.build({ port: 3000 })`. The contract is parsed once by
+`opensdk_cli_common` (`CliPlan::for_method`, the CLI analog of `plan_operation`) so the
+seven emitters never re-interpret `from:` strings.
 
-Also reachable through the main `xyd` CLI as an opt-in component: `xyd components install
-opensdk` downloads the toolchain into `~/.config/xyd/components/`, after which
-`xyd opensdk <command>` passes through to it (the default `xyd` install ships none of it —
-see `3.cli/InstallationAndCli.md` § Optional Components).
+## The `opensdk` CLI (`opensdk`)
+
+A lib plus a `[[bin]] name = "opensdk"`. Also reachable through the main `xyd` CLI as an opt-in
+component: `xyd components install opensdk` downloads the binary into
+`~/.config/xyd/components/`, after which `xyd opensdk <command>` passes through to it (the
+default `xyd` install ships none of it — see `3.cli/InstallationAndCli.md` § Optional
+Components).
 
 | Command | Purpose / key flags |
 |---------|---------------------|
 | `opensdk parse` | OpenAPI → IR JSON. `--spec` (required), `--output`, `--sdk-name`, `--grouping` |
+| `opensdk xsdk` | Embed `x-sdk` docs (signature, usage sample, type reference per language) into an OpenAPI spec through the emitters' docs capabilities, so a docs site renders SDK-native docs without running the generator. `--spec` (required), `--output`, `--langs` |
 | `opensdk generate` | Generate one language (`--lang`, incl. the CLI targets `go-cli`/`rust-cli`) or all configured. `--spec`, `--output`, `--dry-run`, `--no-tests`, **`--merge`** (3-way merge regen) |
 | `opensdk diff <base> <head>` | IR-to-IR breaking-change diff. `--fail-on breaking\|risky\|any`, `--json` |
 | `opensdk publish` | Publish a generated SDK. `--lang`, `--output`, `--registry`, `--dry-run` |
 | `opensdk run` | Execute a `chain.json` pipeline. `--chain`, `--target`, `--source`, `--publish`, `--dry-run` |
 | `opensdk init` | Scaffold config. `--format json\|mjs`, `--lang`, `--chain` |
 
-Config resolution (root `--config` overrides discovery): **`sdk.json`** (declarative; per-language
-sections with `output`/`behavior`/`publish` + emitter options) wins over
-**`opensdk.config.{ts,js,mjs}`** (JS plugin bundle — the place to register custom emitters).
-`--grouping <file>` loads `{ mountRules, operationHints }` to reshape the resource tree.
+Config resolution (root `--config` overrides discovery): **`sdk.json`** — declarative;
+per-language sections with `output`/`behavior`/`publish` + emitter options. `--grouping <file>`
+loads `{ mountRules, operationHints }` to reshape the resource tree.
 
-### The Rust port (`crates/xyd_opensdk_cli`)
+Two things live in this crate specifically because nothing lower can hold them:
 
-The CLI also exists as a Rust crate — a lib plus a `[[bin]] name = "opensdk"` — alongside the
-TypeScript one (which is unchanged and still the DISTRIBUTED binary; `xyd components install
-opensdk` continues to npm-install it). The crate is the CLI layer only; everything below it was
-already ported and is depended on, not re-implemented: `xyd_opensdk_framework` (the `writeProject`
-regen lifecycle + `merge3`), `xyd_opensdk_diff` (`diff_ir`), `xyd_opensdk_config` (sdk.json /
-chain.json shapes, `merge_publish_targets`), `xyd_opensdk_chain` (detect/resolve/merge/overlay/
-`process_source`), the converters, and the seven emitters.
+* **The emitter registry.** A `static EMITTERS` in `opensdk_core` would make core depend on
+  the seven emitter crates that already depend on it — a cycle.
+* **The chain target loop.** `opensdk_chain` deliberately stops at `process_source`; the loop
+  needs `generate_command`/`publish_target`, which need the emitters.
 
-Two things live in this crate specifically because nothing lower could hold them:
-
-* **The emitter registry.** A `static EMITTERS` in `xyd_opensdk_core` would make core depend on the
-  seven emitter crates that already depend on it — a cycle. Alias handling still comes from
-  `xyd_opensdk_core::emitter::resolve_language`, so the CLI and the emitters cannot drift.
-* **`runChain`'s target loop.** `xyd_opensdk_chain` deliberately stops at `process_source`; the loop
-  needs `generate_command`/`publish_target`, which need the emitters. Where the TS injects those as
-  closures, the Rust calls them directly — the injection existed only to keep the chain package
-  emitter-free.
-
-| Divergence | Why |
+| Behavior worth knowing | Why |
 |---|---|
-| `opensdk.config.{ts,js,mjs}` is NOT loaded | It is `await import()`ed JS whose whole point is shipping a custom `Emitter`; a Rust binary has no JS engine. It is reported, not ignored: when that file would have been the winning source, the CLI errors and points at `opensdk init --format json`. An `sdk.json` alongside it still wins (unchanged precedence), and `init` still scaffolds the `.mjs` template. |
-| `generate --spec` is optional | commander declares it `requiredOption`, which makes the TS's own `opts.spec ?? config?.spec` fallback unreachable from the CLI. Making it optional lets the documented sdk.json `api`/`spec` key work; passing `--spec` behaves identically. |
-| `xsdk` rejects `http(s)` specs | The crate stays HTTP-free, like every other ported converter — pre-fetch and pass a local path. |
-| `xsdk --output *.yaml` byte layout | js-yaml `dump` vs `serde_yaml`; the contract is that the output re-parses to the same document and carries no `&ref` anchors. |
-| The seven `publish<Lang>()` bodies live in this crate | The Rust emitter crates are pure (IR in, file map out) and are linked into the `@xyd-js/native` cdylib; a `std::process::Command` dependency must not follow them there. |
+| `opensdk.config.{ts,js,mjs}` is NOT loaded | It is `await import()`ed JS whose whole point was shipping a custom `Emitter`; a Rust binary has no JS engine. It is reported, not ignored: when that file would have been the winning config source, the CLI errors and points at `opensdk init --format json`. An `sdk.json` alongside it still wins, and `init` still scaffolds the `.mjs` template. |
+| `generate --spec` is optional | So the documented sdk.json `api`/`spec` key is reachable from the CLI; passing `--spec` behaves identically. |
+| `xsdk` rejects `http(s)` specs | The crate stays HTTP-free, like every other converter — pre-fetch and pass a local path. |
+| The seven `publish_<lang>()` bodies live in this crate | The emitter crates are pure (IR in, file map out) and are linked into the `@xyd-js/native` cdylib; a `std::process::Command` dependency must not follow them there. |
 
-**What gates it.** `packages/xyd-opensdk-cli/__tests__/rust-oracle.test.ts` (the repo's usual
-`O2S_BUILD_DOCS=1` generate/guard switch) runs the REAL TypeScript over every committed
-`__fixtures__/<group>/<case>/input.json` and writes `output.json` into the crate; `cargo test -p
-xyd_opensdk_cli` asserts the Rust reproduces them. Seven groups freeze pure values
-(`converter-options`, `load-grouping`, `resolved-config`, `cli-split`, `diff-report`,
-`init-templates`, `publish-identity`); the eighth, `generate-tree`, is behavioural — `generate`
-writes a tree, so the golden is a manifest of `path → sha256` for the tree the TypeScript produced,
-which covers option threading, the multi-target loop, CLI-target routing and the `writeProject`
-lifecycle in one comparison. `tests/behavior.rs` additionally re-makes every assertion the TS's own
-suite makes, and drives the compiled binary for the console/exit-code surface.
+**What gates it.** `__fixtures__/<group>/<case>/` goldens, compared by `tests/oracle.rs`. Seven
+groups freeze pure values (`converter-options`, `load-grouping`, `resolved-config`, `cli-split`,
+`diff-report`, `init-templates`, `publish-identity`); the eighth, `generate-tree`, is
+behavioural — `generate` writes a tree, so the golden is a manifest of `path → sha256`, which
+covers option threading, the multi-target loop, CLI-target routing and the `write_project`
+lifecycle in one comparison. `tests/behavior.rs` adds the console/exit-code surface by driving
+the compiled binary.
 
 ### CLI output targets (`go-cli` / `rust-cli`)
 
@@ -244,8 +255,8 @@ The toolchain can also output **command-line tools** via the
 surfaced as pseudo-language target ids usable anywhere a language is: `--lang rust-cli`,
 `"rust-cli": {...}` sdk.json sections, and `target: "rust-cli"` chain targets. Because CLI
 generation consumes the **raw OpenAPI doc** (not the OpenSDK IR), these are NOT emitters —
-`generateCommand` routes them before the registry (`src/cli/cli-targets.ts`), which also covers
-chain targets since the chain engine injects that same function. Mechanics: a section is one
+`generate_command` routes them before the registry (`src/cli_targets.rs`), which also covers
+chain targets since the chain loop calls that same function. Mechanics: a section is one
 flat option bag split by allowlist (converter keys like `cliName`/`bodyStrategy`/`flagCase` vs
 backend keys like `binName`/`crateName`/`modulePath` — disjoint, unit-tested); a pre-parsed IR
 `--spec` is rejected with a pointer to pass the OpenAPI doc; SDK-tree grouping
@@ -254,62 +265,99 @@ and the full framework write lifecycle apply to both backends (Go included — i
 is bypassed); `opensdk publish` and chain `--publish` skip CLI targets with a note (no registry
 publisher). Real-world example: `packages/apitoolchain-sdk-chain/chain.json`'s `api-cli` target.
 
-## Chain (`@xyd-js/opensdk-chain`)
+## Chain (`opensdk_chain`)
 
-`chain.json` (`detectChain`: explicit path → `chain.json` → `.chain/chain.json`) declares
+`chain.json` (`detect_chain`: explicit path → `chain.json` → `.chain/chain.json`) declares
 named `sources` and `targets`:
 
 - **Sources**: multiple OpenAPI `inputs` merged at **operation granularity** (paths union per
   HTTP method, components union per name, conflicts throw) + `overlays` applied as
-  **OpenAPI Overlay 1.0.0** documents (JSONPath `target` via `jsonpath-plus`; `remove` deletes,
-  `update` deep-merges). Overlays are the spec-level customization knob — modify the API
-  surface BEFORE codegen, complementing the code-level merge story.
+  **OpenAPI Overlay 1.0.0** documents (JSONPath `target`; `remove` deletes, `update`
+  deep-merges). Overlays are the spec-level customization knob — modify the API surface BEFORE
+  codegen, complementing the code-level merge story.
 - **Targets**: `{ target: <language | go-cli | rust-cli>, source: <name>, output, behavior, options, publish }`.
-- `runChain()` processes each referenced source once, generates every target, optionally
-  publishes (CLI targets are skipped by publish).
+- The crate stops at `process_source`; the target loop (in `opensdk`) processes each
+  referenced source once, generates every target, and optionally publishes (CLI targets are
+  skipped by publish).
 
 ## Docs integration (`@xyd-js/opensdk-uniform`)
 
 Bridges SDK generation into the docs site: `attachSdkExamples(references, rawDoc)` enriches
-Uniform `Reference`s in place with per-language usage snippets (each emitter's
-`generateUsage`), replacing curl-only tabs; `attachSdkTypes` swaps REST param/response
-definitions for SDK type references (`generateTypeReference`) with per-language signatures.
-`SDK_LANGS` fixes the switcher order (go, python, typescript, ruby, java, csharp). Consumed by
-`apps/apitoolchain-web` (`app/lib/openapi/sdkExamples.server.ts`); exposed to plugins as
-`opensdkUniformPlugin` / `opensdkTypesUniformPlugin`.
+Uniform `Reference`s in place with per-language usage snippets, replacing curl-only tabs;
+`attachSdkTypes` swaps REST param/response definitions for SDK type references with
+per-language signatures. Both go through the napi addon — the converter and the emitters' docs
+capabilities are Rust, and this package is the docs-side reader (`x-sdk` embedding, the
+CI/CD-side writer, is `opensdk xsdk`). `SDK_LANGS` fixes the switcher order (go, python,
+typescript, ruby, java, csharp). Consumed by `apps/apitoolchain-web`
+(`app/lib/openapi/sdkExamples.server.ts`); exposed to plugins as `opensdkUniformPlugin` /
+`opensdkTypesUniformPlugin`.
 
 ## Tests and CI
 
-`@xyd-js/opensdk-ci` is the shared harness (imported by every emitter's tests):
+Everything is `cargo test`, run from `opensdk/`. Fixtures live in the crate that owns them
+(`crates/<crate>/__fixtures__/`). Three crates carry the test support that must exist exactly
+once:
 
-| Module | Provides |
-|--------|----------|
-| `golden.ts` / `corpus.ts` | Fixture primitives + discovery of `<order>.complex.<name>` per-method corpora |
-| `compile-smoke.ts` | `compileSmoke(lang, dir)` for all 7 languages (tsc / go build / py_compile / ruby -c / javac / dotnet build / cargo build) |
-| `e2e.ts` / `sdk-e2e.ts` | `RecordingServer` + request-binding diff: build the real SDK, drive it, diff the actual HTTP request against committed `recorded.json` |
-| `mock.ts` | Spec-shaped mock API (in-repo Prism analog) for running each SDK's own generated test suite |
-| `parity.ts` | Cross-language behavior parity: distinctive `SdkBehavior` overrides + containment markers every runtime must render |
-| `publish.ts` | Publish round-trips: Verdaccio (npm), pypiserver, gemstash; file feeds for dotnet/Maven/Go/Rust |
-| `usage-compile.ts` / `snippet-run.ts` | Compile + run the docs usage snippets |
+| Crate | Provides |
+|-------|----------|
+| `parity_kit` | `canon` (the canonicalizing JSON comparator, a byte-identical vendored copy of `xyd_uniform/src/canon.rs`) + `read_oracle` |
+| `opensdk_cli_common` | `testkit` (the shared CLI-mode fixtures + golden trees) and `expected_request` (the language-agnostic IR→HTTP binding) |
+| `opensdk_e2e` | `compile_smoke(lang, dir)` for all 7 languages (tsc / go build / py_compile / ruby -c / javac / dotnet build / cargo build), the `RecordingServer`, and the request diff |
+
+Each emitter crate then runs the same tiers:
+
+| Test | What it proves | Gate |
+|------|----------------|------|
+| `parity.rs` | the generated tree is byte-identical to the committed `__fixtures__/<n>/output/`, plus the per-method `-2.complex.<name>/<op>/` corpus | — |
+| `docs.rs` | the docs capabilities (usage snippet, type reference) match the per-operation `docs.json` oracle — the six languages the docs switcher renders | — |
+| `options.rs` / `write_modes.rs` | emitter-option threading · the per-file write modes | — |
+| `e2e_binding.rs` | for every committed per-method fixture, `expected_request(ir, method)` equals its `request` and the emitter's own naming produces its `call` — with a corpus floor so a shrinking fixture set cannot pass (same six) | — |
+| `compile_smoke.rs` | the generated SDK actually compiles — the check a golden cannot make, since a consistently-emitted syntax error matches its golden perfectly | `XYD_SMOKE_<LANG>` |
+| `cli_golden.rs` / `cli_smoke.rs` | CLI mode: the golden tree, then compile-and-run it against a recording CLI and diff the ACTUAL argv, plus error mapping and the timeout kill | `XYD_CLI_SMOKE_<LANG>` |
+| `request_diff.rs` (go) | build the real SDK, drive it against the `RecordingServer`, diff the request it actually sent against `recorded.json` | `XYD_E2E_GO` |
+
+`opensdk_e2e/tests/request_contract.rs` ties the corpora together: the `request` halves of
+all six languages' `recorded.json` files are byte-identical (only `call` differs, being that
+language's method-chain naming), which is what makes Go's proven-real request a statement about
+the shared contract rather than about Go — and what catches someone re-blessing one language's
+fixtures out from under the other five.
 
 ### Env gates
 
+Toolchain-dependent tiers SKIP when their language is absent so a default
+`cargo test --workspace` stays offline. That is also how they go dark: `cargo test` prints `ok`
+while seven "does this compile?" tiers do nothing. The gates turn a missing toolchain into a
+failure, which is why CI sets all of them.
+
 | Env var | Effect | Runs in CI? |
 |---------|--------|-------------|
-| `O2S_<LANG>_SMOKE=1` | whole-SDK compile + usage-snippet compile for that language | Yes |
-| `E2E_SDK=1` | real-SDK request-binding diff vs `recorded.json` | Yes |
-| `E2E_SDK_TESTS=1` | run each generated SDK's own test suite against the mock server | Yes |
-| `E2E_SDK_CHAIN=1` | `opensdk run` + chain.json end-to-end (merge + overlay → all languages compile) | Yes |
-| `E2E_SDK_PUBLISH=1` | generate → publish to isolated local registry → install back → load | Yes |
-| `O2S_BUILD_DOCS=1` | **regenerate** per-method fixture goldens from the oracle | No |
+| `XYD_SMOKE_<LANG>=1` | whole-SDK compile smoke for that language; missing toolchain = failure | Yes (all 7) |
+| `XYD_CLI_SMOKE_<LANG>=1` | CLI mode: the generated SDK drives a recording CLI, argv diffed | Yes (all 7) |
+| `XYD_E2E_GO=1` | real Go SDK → recording server, request diffed against `recorded.json` | Yes (dispatch/schedule) |
+| `XYD_PARITY_DUMP=1` | write the actual converter output beside the fixture for inspection | No |
+| `XYD_BLESS=1` | **regenerate** goldens instead of checking them — never set it in CI | No |
 
-### Workflow
+### Workflows
 
-`.github/workflows/tests-opensdk-pipeline.yml` (`tests:opensdk-pipeline`) — paths-scoped to the
-opensdk packages; sets up Node + pnpm + Bun + **Go 1.22 + Python 3.11 + Ruby 3.1 + Java 17 +
-.NET 8 + Rust stable**, local registries (verdaccio :4873, pypiserver :8081, gemstash :9292),
-and runs each package's `ci:test` with the gates above. The conformance oracle (vendored
-encrypted spec + reference surfaces under `packages/xyd-openapi2opensdk/oracle/`) is decrypted
-via the `XYD_CONTENT_SECRET` repo secret; without it those suites skip gracefully. As with the
-OpenCLI job, the root `tests:unit` vitest run covers the offline layers and excludes
-`**/__tests__/e2e/**`.
+| Workflow | Job | Covers |
+|----------|-----|--------|
+| `opensdk/.github/workflows/ci.yml` | `rust` | `cargo fmt --all --check`, `cargo clippy --workspace --all-targets -D warnings`, `cargo test --workspace` with all seven `XYD_SMOKE_<LANG>=1`, then `scripts/check-standalone.sh` — the guard that this repo never reaches back into xyd |
+| | `cli-smokes` | the seven `XYD_CLI_SMOKE_<LANG>=1` tiers, with Go 1.22 + Python 3.11 + Ruby 3.1 + Java 17 + .NET 8 installed |
+| | `e2e` | `XYD_E2E_GO=1`, on dispatch/schedule only |
+| `xyd/.github/workflows/tests-native.yml` | `opensdk` | fmt + clippy + `cargo test --workspace` inside the submodule |
+
+The `rust` and `cli-smokes` jobs run `npm ci` from `opensdk/`: the node emitter's smokes
+typecheck generated SDKs with the local `tsc` and read `node_modules/@types`, and installing at
+the xyd root would let the ancestor walk find xyd's `node_modules` — making the gate pass under
+xyd and fail in a standalone clone.
+
+xyd's `opensdk` job duplicates opensdk's own CI deliberately: it is the only thing that catches
+a gitlink bump that is green standalone but red under xyd's toolchain/feature unification. It
+leaves `XYD_SMOKE_*` / `XYD_CLI_SMOKE_*` unset — those need five extra language toolchains and
+are owned by opensdk's `ci.yml`. Its `paths` filter lists the submodule as `opensdk`, not
+`opensdk/**`: a change inside a submodule appears in the parent as a modification of the
+gitlink path itself, so a `/**` glob would never match and the gate would silently skip.
+
+The vendored conformance corpora the per-method fixtures were minted from stay encrypted
+(`opensdk/crates/openapi2{opencli,opensdk}/oracle/oracle.enc`);
+`oracle/decrypt.sh` restores the plaintext with `XYD_CONTENT_SECRET`.

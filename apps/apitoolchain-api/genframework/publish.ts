@@ -114,7 +114,9 @@ function resolveOpensdkBin(): string {
       "opensdk",
       "opensdk",
     ),
-    join(process.cwd(), "..", "..", "crates", "target", "release", "opensdk"),
+    // The toolchain lives in the `opensdk` submodule, whose workspace is rooted
+    // at the submodule root — so `opensdk/target/`, not this repo's `crates/target/`.
+    join(process.cwd(), "..", "..", "opensdk", "target", "release", "opensdk"),
   ];
   return candidates.find((c) => existsSync(c)) ?? "opensdk";
 }

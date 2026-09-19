@@ -25,7 +25,9 @@ import { buildGolden } from './goldenSerialize';
 // generator and the guard skip when it's absent, so CI without the decrypted oracle
 // just skips (mirrors the opensdk docs-corpus tests).
 
-const ORACLE_SPEC = path.join(__dirname, '../../xyd-openapi2opensdk/oracle/openai-openapi.yaml');
+// The encrypted oracle travelled with the converter into the `opensdk` submodule;
+// `oracle/decrypt.sh` there is what materializes this plaintext path.
+const ORACLE_SPEC = path.join(__dirname, '../../../opensdk/crates/openapi2opensdk/oracle/openai-openapi.yaml');
 const OUT_DIR = path.join(__dirname, '../__fixtures__/-2.complex.openai');
 const GOLDEN = path.join(OUT_DIR, 'uniform.json');
 

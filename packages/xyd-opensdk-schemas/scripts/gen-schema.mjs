@@ -1,13 +1,20 @@
 #!/usr/bin/env node
 // Generate sdk.schema.json (editor validation for sdk.json) by lifting the
-// SdkBehavior sub-schemas from @xyd-js/opensdk-core's opensdk-spec.json — the
-// single source of truth for the behavior shape. Run: pnpm gen:schema.
-import { readFileSync, writeFileSync } from 'node:fs';
+// SdkBehavior sub-schemas from opensdk_core's opensdk-spec.json — the single
+// source of truth for the behavior shape. That crate lives in the `opensdk`
+// submodule, so this needs a checked-out `opensdk/`. Run: pnpm gen:schema.
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const corePath = resolve(here, '../../../crates/xyd_opensdk_core/opensdk-spec.json');
+const corePath = resolve(here, '../../../opensdk/crates/opensdk_core/opensdk-spec.json');
+if (!existsSync(corePath)) {
+  console.error(
+    `\nopensdk-spec.json not found at ${corePath}.\n\n  git submodule update --init opensdk\n`,
+  );
+  process.exit(1);
+}
 const outPath = resolve(here, '../sdk.schema.json');
 
 const str = (description) => ({ type: 'string', description });

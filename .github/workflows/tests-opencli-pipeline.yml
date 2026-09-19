@@ -1,19 +1,20 @@
 name: tests:opencli-pipeline
 
-# Verifies the OpenAPI → OpenCLI → CLI pipeline end to end:
-#   @xyd-js/opencli (core model) · @xyd-js/openapi2opencli (Stage A)
-#   · @xyd-js/opencli2go (Go generator) · @xyd-js/opencli2rust (Rust generator)
+# Verifies the part of the OpenAPI → OpenCLI → CLI pipeline that still lives in
+# this repo: @xyd-js/opencli, the core model + schema round-trip.
 #
-# The root vitest config (tests:unit) already runs each package's offline unit
-# tests, but it EXCLUDES `**/__tests__/e2e/**`. This job adds Go + Rust
-# toolchains so the gated layers can run where generated binaries actually
-# execute (Linux):
-#   - O2G_GO_SMOKE=1    — a sample of generated Go projects `go build`/`go vet`
-#   - O2R_CARGO_SMOKE=1 — generated Rust projects `cargo check`
-#   - E2E_CLI=1         — assemble the whole CLI, run it against a recording server,
-#                         diff the real HTTP requests against the committed fixtures
-# (O2G_BUILD_DOCS / O2R_BUILD_DOCS / E2E_RECORD regenerate goldens and are
-# deliberately NOT set.)
+# Everything downstream of it — Stage A and the Go and Rust generators — is Rust
+# now and lives in the `opensdk` submodule (openapi2opencli, opencli2go,
+# opencli2rust), gated by opensdk's own ci.yml and re-run by tests-native.yml's
+# `opensdk` job on every gitlink bump.
+#
+# COVERAGE GAP, stated plainly so it is not mistaken for a clean migration: the
+# old O2G_GO_SMOKE / O2R_CARGO_SMOKE / E2E_CLI tiers — "does the generated CLI
+# compile, and does it send the right HTTP request?" — were TypeScript and were
+# DROPPED, not ported. opencli2go and opencli2rust ship only parity.rs, a
+# byte-golden compare, and a consistently-emitted syntax error matches its golden
+# perfectly. The opensdk EMITTERS do have compile/cli smokes (XYD_SMOKE_<LANG>,
+# XYD_CLI_SMOKE_<LANG>); the two CLI GENERATORS have no equivalent yet.
 
 on:
   push:
@@ -54,28 +55,9 @@ jobs:
       with:
         bun-version: 'latest'
 
-    - name: Setup Go
-      uses: actions/setup-go@v5
-      with:
-        go-version: '1.22'
-        # The generated CLIs vendor urfave/cli v3; cache its module downloads.
-        cache: false
-
-    - name: Setup Rust
-      uses: dtolnay/rust-toolchain@stable
-
-    # The generated Rust CLIs share one target dir so clap/reqwest/tokio compile
-    # once across the cargo-check smoke samples and the e2e CLI build.
-    - name: Setup cargo cache
-      uses: actions/cache@v4
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          /tmp/o2r-target
-        key: ${{ runner.os }}-o2r-cargo-${{ hashFiles('crates/xyd_opencli2rust/src/runtime.rs') }}
-        restore-keys: |
-          ${{ runner.os }}-o2r-cargo-
+    # No Go/Rust toolchain here any more: the generators that needed them went to
+    # the opensdk submodule, and with them the cargo cache over /tmp/o2r-target.
+    # What remains is a TypeScript package with one vitest suite.
 
     - name: Get pnpm store directory
       shell: bash
@@ -101,8 +83,3 @@ jobs:
 
     - name: Test @xyd-js/opencli (core model + schema round-trip)
       run: pnpm --filter @xyd-js/opencli ci:test
-
-    # Decrypt the vendored oracle (openai-cli surface, docs methods, spec) so the
-    # conformance + docs-oracle suites actually RUN. Needs the XYD_CONTENT_SECRET
-    # repo secret; without it this is a no-op and those suites SKIP gracefully
-    # (the tests lazy-load ../oracle/* behind existence guards).

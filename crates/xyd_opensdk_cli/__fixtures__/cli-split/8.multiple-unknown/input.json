@@ -1,8 +1,0 @@
-{
-  "lang": "rust-cli",
-  "bag": {
-    "modulePath": "m",
-    "packageName": "p",
-    "crateName": "ok"
-  }
-}

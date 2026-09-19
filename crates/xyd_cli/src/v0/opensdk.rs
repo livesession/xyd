@@ -6,7 +6,8 @@
 //!
 //! # Two payload kinds
 //!
-//! The toolchain is now a Rust binary (`crates/xyd_opensdk_cli`, ~5.6 MB, node-free),
+//! The toolchain is now a Rust binary (`opensdk/cli` in the
+//! pinned `opensdk` submodule, ~5.6 MB, node-free),
 //! published as an `opensdk-<triple>` GitHub release asset next to `xyd-<triple>`.
 //! [`install`] downloads that. Until a release carrying those assets exists, it falls
 //! back to the LEGACY npm payload (`@xyd-js/opensdk-cli`, a `cli.js` needing a JS
@@ -29,9 +30,14 @@ use crate::opencli::runtime::Error;
 
 const OPENSDK_PACKAGE: &str = "@xyd-js/opensdk-cli";
 
-/// Release assets live beside the `xyd-<triple>` ones — see
-/// `.github/workflows/build-native-binaries.yml`.
-const OPENSDK_ASSET_BASE: &str = "https://github.com/livesession/xyd/releases/latest/download";
+/// The toolchain releases itself now: `opensdk/.github/workflows/release.yml`
+/// publishes `opensdk-<triple>` on a tag push. This used to point at xyd's own
+/// releases, where the assets were built but attached to nothing — every install
+/// 404'd and silently took the npm fallback below.
+///
+/// `/releases/latest/` resolves to the newest NON-prerelease release, so this URL
+/// stays 404 until opensdk ships a stable (no `-` in the tag) version.
+const OPENSDK_ASSET_BASE: &str = "https://github.com/livesession/opensdk/releases/latest/download";
 
 /// The `opensdk-<triple>` asset for the host, or `None` on a platform whose binary is
 /// not built yet (darwin-x64, windows — `compile.ts` supports them; no matrix leg yet).
@@ -59,26 +65,24 @@ fn resolve_opensdk_bin() -> Option<PathBuf> {
 
 /// Dev mode: the monorepo's built opensdk, found by walking up from this binary.
 ///
-/// Prefers the native `crates/target/{release,debug}/opensdk` (what ships) and falls
-/// back to the legacy `packages/xyd-opensdk-cli/dist/cli.js`, so a dev tree that has
-/// only run `pnpm build` still resolves.
+/// The toolchain lives in the `opensdk` submodule, whose cargo workspace is rooted
+/// at the submodule root — so its target dir is `opensdk/target/`, not this repo's
+/// `crates/target/`. The legacy `packages/xyd-opensdk-cli/dist/cli.js` candidate is
+/// gone with the TypeScript cluster; keeping it would only mean a dev tree silently
+/// resolving to a path that can no longer exist.
 fn find_monorepo_opensdk_bin() -> Option<PathBuf> {
     let exe = std::env::current_exe().ok()?;
     let mut dir = exe.parent()?.to_path_buf();
     for _ in 0..6 {
         let candidates = [
-            dir.join("crates")
+            dir.join("opensdk")
                 .join("target")
                 .join("release")
                 .join("opensdk"),
-            dir.join("crates")
+            dir.join("opensdk")
                 .join("target")
                 .join("debug")
                 .join("opensdk"),
-            dir.join("packages")
-                .join("xyd-opensdk-cli")
-                .join("dist")
-                .join("cli.js"),
         ];
         if let Some(found) = candidates.into_iter().find(|c| c.exists()) {
             return Some(found);
@@ -179,8 +183,9 @@ pub async fn install() -> Result<(), Error> {
             None => {
                 return Err(Error::Invalid(
                     "XYD_DEV_MODE is set but no opensdk build was found — run \
-                     `cargo build -p xyd_opensdk_cli --bin opensdk` (or `pnpm build` for \
-                     the legacy JS toolchain) first."
+                     `cargo build --manifest-path opensdk/Cargo.toml -p opensdk \
+                     --bin opensdk --release` first (the toolchain lives in the opensdk \
+                     submodule; `git submodule update --init opensdk` if it is empty)."
                         .into(),
                 ));
             }
@@ -371,7 +376,7 @@ mod tests {
         // Native binary — extensionless, which is how the release asset lands.
         assert!(!needs_js_runtime(Path::new("/c/opensdk/opensdk")));
         assert!(!needs_js_runtime(Path::new(
-            "/repo/crates/target/release/opensdk"
+            "/repo/opensdk/target/release/opensdk"
         )));
         // A dir named like the asset must not be mistaken for JS.
         assert!(!needs_js_runtime(Path::new("/c/opensdk-darwin-arm64")));

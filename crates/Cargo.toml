@@ -9,44 +9,33 @@ members = [
     "xyd_watch",
     "xyd_uniform",
     "xyd_parity",
-    "xyd_parity_kit",
     "xyd_gql",
-    "xyd_oas_doc",
     "xyd_openapi",
-    "xyd_openapi2opensdk",
     "xyd_mcp_uniform",
     "xyd_settings",
-    "xyd_openapi2opencli",
     "xyd_opencli_uniform",
-    "xyd_opencli2go",
-    "xyd_opencli2rust",
-    "xyd_opencli2opensdk",
-    "xyd_opensdk_cli_common",
-    "xyd_opensdk_chain",
-    "xyd_opensdk_config",
-    "xyd_opensdk_core",
-    "xyd_opensdk_diff",
-    "xyd_opensdk_framework",
-    "xyd_opensdk_go",
-    "xyd_opensdk_python",
-    "xyd_opensdk_node",
-    "xyd_opensdk_java",
-    "xyd_opensdk_dotnet",
-    "xyd_opensdk_rust",
-    "xyd_opensdk_ruby",
-    "xyd_opensdk_cli",
-    "xyd_opensdk_e2e",
     "xyd_oas_snippet",
     "xyd_cli",
 ]
+# The 22 SDK/CLI-toolchain crates that used to be listed above now live in the
+# `opensdk` submodule (github.com/livesession/opensdk) and are consumed from
+# `../opensdk/crates/*`. Two of them are depended on from THIS workspace:
+# `oas_doc` (the shared spec loader/dereferencer, a production dep of
+# xyd_openapi) and `parity_kit` (whose vendored copy xyd_parity drift-checks).
+# Like the xwrite forks below, out-of-workspace path deps build normally but are
+# NOT covered by `cargo fmt --all` / `cargo clippy --workspace` here — opensdk's
+# own CI owns linting them.
 # The napi adapter crate lives co-located in packages/xyd-native (idiomatic
 # napi-rs layout: crate + package.json together). It path-depends on
 # crates/xyd_core_rs and is built standalone by @napi-rs/cli, so it is NOT a
-# member of this workspace. RULE (S6+, amended for the xwrite extraction): the
-# napi crate may depend only on napi/napi-derive/napi-build/serde_json +
-# path-deps on (a) crates/* here and (b) xwrite/crates/xwrite_* — the pinned
-# `xwrite` submodule (github.com/livesession/xwrite), which owns the content
-# engine (frontmatter/highlight/math/mdx + the vendored markdown/mdxjs forks).
+# member of this workspace. RULE (S6+, amended for the xwrite and opensdk
+# extractions): the napi crate may depend only on
+# napi/napi-derive/napi-build/serde_json + path-deps on (a) crates/* here,
+# (b) xwrite/crates/xwrite_* — the pinned `xwrite` submodule
+# (github.com/livesession/xwrite), which owns the content engine
+# (frontmatter/highlight/math/mdx + the vendored markdown/mdxjs forks) — and
+# (c) opensdk/crates/xyd_* — the pinned `opensdk` submodule
+# (github.com/livesession/opensdk), which owns the SDK/CLI toolchain.
 # All logic/parser/IO deps still live in pure crates on both sides, so the dual
 # lockfile (crates/Cargo.lock vs packages/xyd-native/Cargo.lock) can't skew
 # behavior.

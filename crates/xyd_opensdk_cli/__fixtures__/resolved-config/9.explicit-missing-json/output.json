@@ -1,3 +1,0 @@
-{
-  "error": "Unsupported config file: __CASE__/not-here.json. Expected sdk.json or opensdk.config.{ts,js,mjs}."
-}

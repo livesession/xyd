@@ -8,15 +8,15 @@ use napi_derive::napi;
 #[napi(js_name = "opencli2go")]
 pub fn opencli2go(spec_json: String, options_json: Option<String>) -> Result<String> {
     let spec: serde_json::Value = serde_json::from_str(&spec_json)
-        .map_err(|e| Error::from_reason(format!("[xyd_opencli2go] bad spec: {e}")))?;
-    let options: Option<xyd_opencli2go::Options> = match options_json.as_deref() {
+        .map_err(|e| Error::from_reason(format!("[opencli2go] bad spec: {e}")))?;
+    let options: Option<opencli2go::Options> = match options_json.as_deref() {
         Some(s) => Some(
             serde_json::from_str(s)
-                .map_err(|e| Error::from_reason(format!("[xyd_opencli2go] bad options: {e}")))?,
+                .map_err(|e| Error::from_reason(format!("[opencli2go] bad options: {e}")))?,
         ),
         None => None,
     };
-    let files = xyd_opencli2go::opencli2go(&spec, options);
+    let files = opencli2go::opencli2go(&spec, options);
     serde_json::to_string(&files)
-        .map_err(|e| Error::from_reason(format!("[xyd_opencli2go] serialize: {e}")))
+        .map_err(|e| Error::from_reason(format!("[opencli2go] serialize: {e}")))
 }

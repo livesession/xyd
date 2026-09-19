@@ -1,6 +1,0 @@
-{
-  "version": 1,
-  "rust-cli": {
-    "cliName": "petstore"
-  }
-}

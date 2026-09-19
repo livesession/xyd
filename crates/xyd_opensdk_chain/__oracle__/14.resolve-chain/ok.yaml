@@ -1,9 +1,0 @@
-version: 1
-sources:
-  pet:
-    inputs:
-      - location: ./spec.json
-targets:
-  pet-go:
-    target: go
-    source: pet

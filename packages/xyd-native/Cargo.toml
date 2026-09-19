@@ -18,23 +18,28 @@ xyd_watch = { path = "../../crates/xyd_watch" }
 xyd_gql = { path = "../../crates/xyd_gql" }
 xyd_openapi = { path = "../../crates/xyd_openapi" }
 xyd_oas_snippet = { path = "../../crates/xyd_oas_snippet" }
-xyd_openapi2opensdk = { path = "../../crates/xyd_openapi2opensdk" }
-xyd_opensdk_diff = { path = "../../crates/xyd_opensdk_diff" }
-xyd_openapi2opencli = { path = "../../crates/xyd_openapi2opencli" }
 xyd_opencli_uniform = { path = "../../crates/xyd_opencli_uniform" }
 xyd_uniform = { path = "../../crates/xyd_uniform" }
 xyd_mcp_uniform = { path = "../../crates/xyd_mcp_uniform" }
 xyd_settings = { path = "../../crates/xyd_settings" }
-# S6+ W7 codegen generators (opencli + opensdk emitters)
-xyd_opencli2go = { path = "../../crates/xyd_opencli2go" }
-xyd_opencli2rust = { path = "../../crates/xyd_opencli2rust" }
-xyd_opensdk_go = { path = "../../crates/xyd_opensdk_go" }
-xyd_opensdk_node = { path = "../../crates/xyd_opensdk_node" }
-xyd_opensdk_python = { path = "../../crates/xyd_opensdk_python" }
-xyd_opensdk_ruby = { path = "../../crates/xyd_opensdk_ruby" }
-xyd_opensdk_java = { path = "../../crates/xyd_opensdk_java" }
-xyd_opensdk_dotnet = { path = "../../crates/xyd_opensdk_dotnet" }
-xyd_opensdk_rust = { path = "../../crates/xyd_opensdk_rust" }
+
+# ── SDK/CLI toolchain (the pinned `opensdk` submodule at <repo>/opensdk) ─────
+# github.com/livesession/opensdk. The converters + the seven emitters + the
+# breaking-change differ: everything reachable from `xyd opensdk` and from the
+# api-toolchain codegen. They keep their `xyd_*` names — the extraction
+# preserved every git tree hash, and renaming would have discarded that proof.
+openapi2opensdk = { path = "../../opensdk/crates/openapi2opensdk" }
+openapi2opencli = { path = "../../opensdk/crates/openapi2opencli" }
+opensdk_diff = { path = "../../opensdk/crates/opensdk_diff" }
+opencli2go = { path = "../../opensdk/crates/opencli2go" }
+opencli2rust = { path = "../../opensdk/crates/opencli2rust" }
+opensdk_go = { path = "../../opensdk/crates/opensdk_go" }
+opensdk_node = { path = "../../opensdk/crates/opensdk_node" }
+opensdk_python = { path = "../../opensdk/crates/opensdk_python" }
+opensdk_ruby = { path = "../../opensdk/crates/opensdk_ruby" }
+opensdk_java = { path = "../../opensdk/crates/opensdk_java" }
+opensdk_dotnet = { path = "../../opensdk/crates/opensdk_dotnet" }
+opensdk_rust = { path = "../../opensdk/crates/opensdk_rust" }
 
 # ── content engine (the pinned `xwrite` submodule at <repo>/xwrite) ──────────
 # github.com/livesession/xwrite. xwrite_math arrives transitively via

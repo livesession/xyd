@@ -178,15 +178,22 @@ installed on demand into `~/.config/xyd/components/` (override: `XYD_COMPONENTS_
 surface as new `xyd` subcommands:
 
 ```bash
-xyd components install opensdk   # downloads @xyd-js/opensdk-cli into the components dir
+xyd components install opensdk   # downloads the opensdk binary into the components dir
 xyd opensdk generate --lang typescript --spec ./openapi.yaml   # passthrough to the toolchain
 xyd components uninstall opensdk # removes it again
 ```
 
+The payload is the native `opensdk-<triple>` binary (~5.6 MB, node-free), published as a GitHub
+release asset next to `xyd-<triple>`. Until a release carries those assets, install falls back
+to the legacy npm payload (`@xyd-js/opensdk-cli`, a `cli.js` needing a JS runtime) so the
+command keeps working mid-rollout; the runner tells them apart by file extension rather than by
+a manifest field, so installs written by either CLI stay interoperable.
+
 Before installation, `xyd opensdk ...` prints an install hint and exits non-zero. Under
-`XYD_DEV_MODE=1` the component resolves from the monorepo build instead of npm. The
-"lean by default" contract is enforced by tests (`packages/xyd-cli/src/__tests__/bundle-size.test.ts`:
-dist budget, zero opensdk dependencies, footprint appears only after install). See
+`XYD_DEV_MODE=1` the component resolves from the monorepo build
+(`opensdk/target/{release,debug}/opensdk`) instead of downloading. The "lean by default"
+contract is enforced by tests (`packages/xyd-cli/src/__tests__/bundle-size.test.ts`: dist
+budget, zero opensdk dependencies, footprint appears only after install). See
 `13.api-definitions/OpenSdkGeneration.md` for the toolchain itself.
 
 (`xyd components install diagrams` remains the docs-project component flow — it installs

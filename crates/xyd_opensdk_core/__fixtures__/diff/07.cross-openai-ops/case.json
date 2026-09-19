@@ -1,4 +1,0 @@
-{
-  "base": "openai-conversations-update",
-  "head": "openai-conversations-items-delete"
-}

@@ -1,9 +1,0 @@
-{
-  "version": 1,
-  "targets": {
-    "x": {
-      "target": "go",
-      "source": "pet"
-    }
-  }
-}

@@ -1,9 +1,0 @@
-{
-  "lang": "go-cli",
-  "bag": {
-    "cliName": "acme",
-    "flagCase": "kebab",
-    "modulePath": "github.com/acme/acme-cli",
-    "baseURL": "https://api.acme.dev"
-  }
-}

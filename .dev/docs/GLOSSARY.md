@@ -63,7 +63,7 @@ docs.json / docs.ts
 ## E
 
 Emitter
-: The plugin contract in `@xyd-js/opensdk-framework` that a per-language SDK generator implements (`generateProject/Client/Types/Resources/Runtime` + optional `generateTests/Usage/TypeReference`). Capability methods are pure (IR in, files out); the orchestrator drives them and assembles the virtual file map. See `13.api-definitions/OpenSdkGeneration.md`.
+: A per-language SDK generator crate (`opensdk_<lang>`). Each exposes one pure `generate_<lang>(spec, options)` — IR in, virtual file map out, no IO — plus a data-only `EmitterFns` descriptor in `opensdk_core::emitter` carrying the language id and the optional docs capabilities. The registry is a static table in `opensdk`. See `13.api-definitions/OpenSdkGeneration.md`.
 
 ExampleGroup
 : A Uniform data type that groups related code examples with a description. Contains an array of `Example` objects, each with a `CodeBlock` of multi-language tabs.
@@ -159,19 +159,19 @@ OpenAPI
 : The `@xyd-js/openapi` package. Converts OpenAPI 3.x specifications into the Uniform `Reference[]` format via `oapSchemaToReferences()`. Handles dereferencing, circular references, schema composition, and code sample generation.
 
 OpenCLI
-: An open specification ([opencli.org](https://opencli.org)) describing a CLI's surface — command tree, arguments, options. The `@xyd-js/opencli` package owns the (extended) schema, generated types, and helpers. Used as the neutral intermediate format in the OpenAPI → CLI pipeline. See `13.api-definitions/OpenCliCliGeneration.md`.
+: An open specification ([opencli.org](https://opencli.org)) describing a CLI's surface — command tree, arguments, options. The `@xyd-js/opencli` package owns the (extended) schema, generated types, and helpers; the converters that read and write the format live in the `opensdk` submodule. Used as the neutral intermediate format in the OpenAPI → CLI pipeline. See `13.api-definitions/OpenCliCliGeneration.md`.
 
 openapi2opencli
-: The `@xyd-js/openapi2opencli` package (Stage A of CLI generation). Converts an OpenAPI 3.x document into an OpenCLI document, emitting the `x-openapi` request binding. Conformance-tested against OpenAI's spec and `openai-cli`.
+: The `openapi2opencli` crate (Stage A of CLI generation). Converts an OpenAPI 3.x document into an OpenCLI document, emitting the `x-openapi` request binding. Its per-method fixture corpus is derived from OpenAI's spec and `openai-cli`.
 
 opencli2go
-: The `@xyd-js/opencli2go` package. Generates a buildable Go CLI project (urfave/cli v3) from an OpenCLI document as a pure virtual file map. Functional handlers read `x-openapi` to make real HTTP requests.
+: The `opencli2go` crate. Generates a buildable Go CLI project (urfave/cli v3) from an OpenCLI document as a pure virtual file map. Functional handlers read `x-openapi` to make real HTTP requests.
 
 opencli2rust
-: The `@xyd-js/opencli2rust` package. Generates a buildable Rust CLI project (clap v4 + async reqwest) from an OpenCLI document, with regen-safe custom-code seams: a `src/gen/**` vs `src/custom/` split, the `CliOverrides` hook trait, custom-command grafting, and opt-in 3-way merge of hand-edits. See `13.api-definitions/OpenCliCliGeneration.md`.
+: The `opencli2rust` crate. Generates a buildable Rust CLI project (clap v4 + async reqwest) from an OpenCLI document, with regen-safe custom-code seams: a `src/gen/**` vs `src/custom/` split, the `CliOverrides` hook trait, custom-command grafting, and opt-in 3-way merge of hand-edits. Its `regen` bin drives the whole lifecycle for a generated crate (xyd's own `crates/xyd_cli` among them). See `13.api-definitions/OpenCliCliGeneration.md`.
 
 OpenSDK
-: The SDK-generation toolchain (`xyd-opensdk-*`): OpenAPI → OpenSDK IR (`OpensdkSpecJson`) → per-language SDKs via Emitter plugins (go, node, python, ruby, java, dotnet, rust), driven by the `opensdk` CLI, with declarative runtime behavior (`SdkBehavior`), chain pipelines + OpenAPI Overlays, and the regen-safe `writeProject` lifecycle. See `13.api-definitions/OpenSdkGeneration.md`.
+: The SDK/CLI-generation toolchain, a standalone repo (github.com/livesession/opensdk) pinned here as a submodule at `<repo>/opensdk`: OpenAPI → OpenSDK IR (`OpensdkSpecJson`) → per-language SDKs (go, node, python, ruby, java, dotnet, rust), driven by the `opensdk` binary, with declarative runtime behavior (`SdkBehavior`), chain pipelines + OpenAPI Overlays, and the regen-safe `write_project` lifecycle. See `13.api-definitions/OpenSdkGeneration.md`.
 
 ## P
 

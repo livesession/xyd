@@ -15,15 +15,13 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 const pkgRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const CLI = path.join(pkgRoot, 'dist/index.js');
 
-// Mirrors findMonorepoOpensdkBin() in src/components/opensdk.ts: the native
-// binary is what ships now; the legacy `packages/xyd-opensdk-cli/dist/cli.js`
-// is only a fallback for a dev tree that predates the Rust port (that package
-// is deleted, so it resolves only in old checkouts).
+// Mirrors findMonorepoOpensdkBin() in src/components/opensdk.ts. The toolchain
+// lives in the `opensdk` submodule, whose workspace is rooted at the submodule
+// root — hence `opensdk/target/`, not this repo's `crates/target/`.
 const repoRoot = path.resolve(pkgRoot, '../..');
 const DEV_BIN = [
-    path.join(repoRoot, 'crates/target/release/opensdk'),
-    path.join(repoRoot, 'crates/target/debug/opensdk'),
-    path.join(repoRoot, 'packages/xyd-opensdk-cli/dist/cli.js'),
+    path.join(repoRoot, 'opensdk/target/release/opensdk'),
+    path.join(repoRoot, 'opensdk/target/debug/opensdk'),
 ].find((c) => fs.existsSync(c));
 
 // The passthrough tier needs a REAL opensdk bin, which only exists where the
@@ -35,7 +33,7 @@ const REQUIRE_DEV_BIN = process.env.XYD_OPENSDK_DEV_BIN === '1';
 if (REQUIRE_DEV_BIN && !DEV_BIN) {
     throw new Error(
         'XYD_OPENSDK_DEV_BIN=1 but no opensdk bin found — build it with ' +
-            '`cd crates && cargo build -p xyd_opensdk_cli`.',
+            '`cargo build --manifest-path opensdk/Cargo.toml -p opensdk --bin opensdk`.',
     );
 }
 

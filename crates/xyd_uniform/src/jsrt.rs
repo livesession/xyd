@@ -1,6 +1,6 @@
 //! Shared JS-runtime semantics helpers for converter crates (S6+ W3).
 //! These reproduce load-bearing JavaScript behaviors the JS oracles encode.
-//! (xyd_openapi / xyd_openapi2opensdk carry local copies from earlier waves —
+//! (xyd_openapi / openapi2opensdk carry local copies from earlier waves —
 //! consolidation onto this module is a reap-time cleanup, not a blocker.)
 
 use serde_json::{Map, Value};

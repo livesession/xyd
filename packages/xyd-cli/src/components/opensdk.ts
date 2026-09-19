@@ -95,16 +95,17 @@ export function resolveOpensdkBin(): string | null {
 
 /** Dev mode: the monorepo's built opensdk, found by walking up from this module.
  *
- * Prefers the native `crates/target/{release,debug}/opensdk` (what ships) and falls
- * back to the legacy `packages/xyd-opensdk-cli/dist/cli.js`, so a dev tree that has
- * only run `pnpm build` still resolves. */
+ * The toolchain lives in the `opensdk` submodule, whose cargo workspace is rooted at
+ * the submodule root — so its target dir is `opensdk/target/`, not this repo's
+ * `crates/target/`. The legacy `packages/xyd-opensdk-cli/dist/cli.js` candidate is
+ * gone with the TypeScript cluster. Kept in lockstep with `find_monorepo_opensdk_bin`
+ * in crates/xyd_cli/src/v0/opensdk.rs — the two CLIs must resolve the same bin. */
 function findMonorepoOpensdkBin(): string | null {
     let dir = path.dirname(fileURLToPath(import.meta.url));
     for (let i = 0; i < 6; i++) {
         const candidates = [
-            path.join(dir, 'crates', 'target', 'release', 'opensdk'),
-            path.join(dir, 'crates', 'target', 'debug', 'opensdk'),
-            path.join(dir, 'packages', 'xyd-opensdk-cli', 'dist', 'cli.js'),
+            path.join(dir, 'opensdk', 'target', 'release', 'opensdk'),
+            path.join(dir, 'opensdk', 'target', 'debug', 'opensdk'),
         ];
         const found = candidates.find((c) => fs.existsSync(c));
         if (found) return found;
@@ -143,7 +144,11 @@ export async function installOpensdk(): Promise<boolean> {
         const devBin = findMonorepoOpensdkBin();
         if (!devBin) {
             console.error(
-                colors.red('XYD_DEV_MODE is set but packages/xyd-opensdk-cli/dist/cli.js was not found — run `pnpm build` first.'),
+                colors.red(
+                    'XYD_DEV_MODE is set but no opensdk build was found — run ' +
+                        '`cargo build --manifest-path opensdk/Cargo.toml -p opensdk --bin opensdk --release` ' +
+                        'first (`git submodule update --init opensdk` if that directory is empty).',
+                ),
             );
             return false;
         }

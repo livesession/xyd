@@ -1,8 +1,0 @@
-{
-  "relPath": ".sdk/sdk.json",
-  "body": "{\n  \"$schema\": \"https://unpkg.com/@xyd-js/opensdk-schemas/sdk.schema.json\",\n  \"version\": 1,\n  \"sdkName\": \"acme\",\n  \"behavior\": {\n    \"retry\": {\n      \"maxRetries\": 3\n    },\n    \"timeout\": {\n      \"defaultTimeoutMs\": 30000\n    }\n  },\n  \"publish\": {\n    \"author\": \"Acme\",\n    \"license\": \"MIT\",\n    \"repository\": \"https://github.com/acme/acme\"\n  },\n  \"typescript\": {\n    \"packageName\": \"acme\",\n    \"output\": \"./sdk/typescript\",\n    \"publish\": {\n      \"registry\": \"https://registry.npmjs.org\",\n      \"tokenEnv\": \"NPM_TOKEN\"\n    }\n  }\n}\n",
-  "logged": [
-    "Created __CASE__/.sdk/sdk.json"
-  ],
-  "rerunError": "Project already initialized — sdk.json exists"
-}

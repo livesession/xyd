@@ -79,7 +79,7 @@ test("the flags this builds exist on the real CLI", async () => {
   const { existsSync } = await import("node:fs");
   const bin =
     process.env.XYD_OPENSDK_BIN ??
-    `${process.cwd()}/../../crates/target/release/opensdk`;
+    `${process.cwd()}/../../opensdk/target/release/opensdk`;
   if (!existsSync(bin)) return; // binary not built here — covered in CI
   const { spawnSync } = await import("node:child_process");
   const help =

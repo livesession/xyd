@@ -4,10 +4,15 @@ set -e
 # Public submodules
 git submodule update --init examples
 
-# xwrite — the content engine (frontmatter/highlight/math/mdx + the vendored
-# markdown/mdxjs forks). NOT optional: crates/xyd_cli and packages/xyd-native
-# path-depend on it, so without it cargo cannot load the workspace at all.
-git submodule update --init xwrite
+# The two Rust-side submodules. NEITHER is optional: crates/ and
+# packages/xyd-native path-depend on both, so without them cargo cannot load the
+# workspace at all.
+#
+#   xwrite  — the content engine (frontmatter/highlight/math/mdx + the vendored
+#             markdown/mdxjs forks).
+#   opensdk — the SDK/CLI toolchain, including the shared spec loader
+#             `oas_doc` that crates/xyd_openapi depends on.
+git submodule update --init xwrite opensdk
 
 # Private repo (not a submodule — requires access to xyd-js/.research)
 if [ ! -d .research ]; then

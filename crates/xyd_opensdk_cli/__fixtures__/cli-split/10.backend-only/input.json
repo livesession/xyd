@@ -1,9 +1,0 @@
-{
-  "lang": "go-cli",
-  "bag": {
-    "modulePath": "github.com/acme/x",
-    "binName": "acme",
-    "goVersion": "1.22",
-    "baseURL": "https://api.acme.dev"
-  }
-}

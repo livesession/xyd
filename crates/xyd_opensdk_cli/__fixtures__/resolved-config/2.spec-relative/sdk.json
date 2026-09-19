@@ -1,7 +1,0 @@
-{
-  "version": 1,
-  "spec": "openapi/api.yaml",
-  "typescript": {
-    "output": "./out/ts"
-  }
-}
