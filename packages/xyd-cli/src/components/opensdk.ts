@@ -101,14 +101,22 @@ export function resolveOpensdkBin(): string | null {
  * gone with the TypeScript cluster. Kept in lockstep with `find_monorepo_opensdk_bin`
  * in crates/xyd_cli/src/v0/opensdk.rs — the two CLIs must resolve the same bin. */
 function findMonorepoOpensdkBin(): string | null {
+    // Anchor on the repo root FIRST, then look only inside it. Scanning for a
+    // directory named `opensdk` at every ancestor escapes the repo after three
+    // hops, and on a machine with the standalone opensdk clone checked out
+    // beside xyd it resolved to THAT — an unrelated tree at whatever revision
+    // happened to be there, not the pinned submodule. It then passed locally and
+    // failed in CI, where no such sibling exists.
     let dir = path.dirname(fileURLToPath(import.meta.url));
     for (let i = 0; i < 6; i++) {
-        const candidates = [
-            path.join(dir, 'opensdk', 'target', 'release', 'opensdk'),
-            path.join(dir, 'opensdk', 'target', 'debug', 'opensdk'),
-        ];
-        const found = candidates.find((c) => fs.existsSync(c));
-        if (found) return found;
+        if (fs.existsSync(path.join(dir, '.gitmodules'))) {
+            return (
+                [
+                    path.join(dir, 'opensdk', 'target', 'release', 'opensdk'),
+                    path.join(dir, 'opensdk', 'target', 'debug', 'opensdk'),
+                ].find((c) => fs.existsSync(c)) ?? null
+            );
+        }
         const parent = path.dirname(dir);
         if (parent === dir) break;
         dir = parent;

@@ -74,18 +74,23 @@ fn find_monorepo_opensdk_bin() -> Option<PathBuf> {
     let exe = std::env::current_exe().ok()?;
     let mut dir = exe.parent()?.to_path_buf();
     for _ in 0..6 {
-        let candidates = [
-            dir.join("opensdk")
-                .join("target")
-                .join("release")
-                .join("opensdk"),
-            dir.join("opensdk")
-                .join("target")
-                .join("debug")
-                .join("opensdk"),
-        ];
-        if let Some(found) = candidates.into_iter().find(|c| c.exists()) {
-            return Some(found);
+        // Anchor on the repo root FIRST, then look only inside it. Scanning for
+        // a directory named `opensdk` at every ancestor escapes the repo after a
+        // few hops, and on a machine with the standalone opensdk clone checked
+        // out beside xyd it resolves to THAT — an unrelated tree at whatever
+        // revision happens to be there, not the pinned submodule.
+        if dir.join(".gitmodules").exists() {
+            let candidates = [
+                dir.join("opensdk")
+                    .join("target")
+                    .join("release")
+                    .join("opensdk"),
+                dir.join("opensdk")
+                    .join("target")
+                    .join("debug")
+                    .join("opensdk"),
+            ];
+            return candidates.into_iter().find(|c| c.exists());
         }
         match dir.parent() {
             Some(parent) if parent != dir => dir = parent.to_path_buf(),
