@@ -60,31 +60,57 @@ fn crates_dir() -> PathBuf {
     Path::new(env!("CARGO_MANIFEST_DIR")).join("..")
 }
 
-/// Every `path = "../<crate>"` a manifest declares, in any dependency section.
+/// Every `path = "…"` a manifest declares, in any dependency section.
 /// Sections are not distinguished on purpose: a dev-dependency escaping the set
 /// breaks extraction exactly as hard as a real one, because the tests move too.
-fn path_deps(manifest: &Path) -> Vec<String> {
+///
+/// A SIBLING (`../<crate>`) is an intra-`crates/` edge and is returned by name.
+/// Anything else — `../../packages/x`, `../../xwrite/crates/x` — already points
+/// outside `crates/`, so it can never be satisfied from the opensdk repo. Those
+/// are returned VERBATIM rather than dropped: the earlier version silently
+/// skipped them, which meant the one dep shape that most obviously breaks
+/// extraction was the one shape this test could not see.
+fn path_deps(manifest: &Path) -> Vec<PathDep> {
     let text = std::fs::read_to_string(manifest)
         .unwrap_or_else(|e| panic!("read {}: {e}", manifest.display()));
-    let mut out = Vec::new();
+    let mut out: Vec<PathDep> = Vec::new();
     for line in text.lines() {
         let line = line.trim_start();
         if line.starts_with('#') {
             continue; // a commented-out dep is not a dep
         }
         let Some(i) = line.find("path") else { continue };
+        // `path` must be a KEY, not a suffix of one: `serde_json_path = "0.7"`
+        // would otherwise parse as a path dep on "0.7".
+        if i > 0 {
+            let prev = line.as_bytes()[i - 1];
+            if prev.is_ascii_alphanumeric() || prev == b'_' || prev == b'-' {
+                continue;
+            }
+        }
         let rest = &line[i + 4..];
         let Some(j) = rest.find('"') else { continue };
         let rest = &rest[j + 1..];
         let Some(k) = rest.find('"') else { continue };
         let p = &rest[..k];
-        if let Some(name) = p.strip_prefix("../") {
-            if !name.contains('/') {
-                out.push(name.to_string());
-            }
+        // In-crate paths (`[[bin]] path = "src/bin/regen.rs"`) never leave the
+        // crate, so they are irrelevant here. Only a `../` prefix reaches out.
+        match p.strip_prefix("../") {
+            Some(name) if !name.contains('/') => out.push(PathDep::Sibling(name.to_string())),
+            Some(_) => out.push(PathDep::Escaping(p.to_string())),
+            None => {}
         }
     }
     out
+}
+
+/// A manifest's `path` dependency, classified by whether it stays inside
+/// `crates/` (and can therefore move) or already reaches outside it.
+enum PathDep {
+    /// `../<crate>` — an edge to a sibling crate.
+    Sibling(String),
+    /// Anything with more hops or a nested path: unsatisfiable after extraction.
+    Escaping(String),
 }
 
 #[test]
@@ -102,9 +128,15 @@ fn the_moving_cluster_depends_on_nothing_outside_itself() {
             manifest.display()
         );
         for dep in path_deps(&manifest) {
-            edges += 1;
-            if !MOVING.contains(&dep.as_str()) {
-                leaks.push(format!("  {c} -> {dep}"));
+            match dep {
+                PathDep::Sibling(name) => {
+                    edges += 1;
+                    if !MOVING.contains(&name.as_str()) {
+                        leaks.push(format!("  {c} -> {name}"));
+                    }
+                }
+                // Not counted toward the floor: it is not an intra-cluster edge.
+                PathDep::Escaping(p) => leaks.push(format!("  {c} -> {p} (escapes crates/)")),
             }
         }
     }

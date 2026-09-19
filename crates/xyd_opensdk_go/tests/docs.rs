@@ -102,6 +102,13 @@ fn docs_match_the_typescript_golden() {
         !cases.is_empty(),
         "no docs.json found — the oracle would pass vacuously"
     );
+    // A floor, not an equality: the corpus may grow, but a silently shrinking
+    // one would quietly narrow the oracle without failing anything.
+    assert!(
+        cases.len() >= 248,
+        "only {} docs fixtures found (expected >= 248) — the corpus shrank",
+        cases.len()
+    );
 
     let mut failures: Vec<String> = Vec::new();
     for (id, dir) in &cases {
