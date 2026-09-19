@@ -1,10 +1,7 @@
-import { walkMethods } from '@xyd-js/opensdk-core';
-import type { EmitterContext } from '@xyd-js/opensdk-framework';
-import { openapi2opensdk } from '@xyd-js/openapi2opensdk';
 import type { Definition, OpenAPIReferenceContext, Reference } from '@xyd-js/uniform';
 import type { OpenAPIV3 } from 'openapi-types';
 import { describe, expect, it } from 'vitest';
-import { SDK_LANGS, attachSdkTypes } from '../src/index';
+import { SDK_LANGS, attachSdkTypes, prepareSdk } from '../src/index';
 
 // A doc covering the shapes that matter for a type reference: a required scalar +
 // enum + array + nested object body (create), an all-optional query list, and a
@@ -161,11 +158,16 @@ describe('opensdk-uniform: attachSdkTypes', () => {
   });
 });
 
-// Sanity: the IR the bridge builds actually has the operations.
+// Sanity: the IR the bridge builds actually has the operations. Goes through
+// the package's own public seam — `prepareSdk` builds the IR natively and keys
+// every method as "<httpMethod> <path>", which is the same guarantee the old
+// walkMethods(openapi2opensdk(doc)) assertion made against the (now deleted)
+// TypeScript converter.
 describe('opensdk-uniform: sdk-types IR sanity', () => {
   it('converts the doc to an IR with all three operations', () => {
-    const ir = openapi2opensdk(doc);
-    const keys = walkMethods(ir).map((m) => `${m.method.httpMethod.toLowerCase()} ${m.method.path}`);
+    const prepared = prepareSdk(doc);
+    expect(prepared).not.toBeNull();
+    const keys = [...prepared!.byKey.keys()];
     expect(keys).toContain('post /items');
     expect(keys).toContain('get /items');
     expect(keys).toContain('get /items/{id}');

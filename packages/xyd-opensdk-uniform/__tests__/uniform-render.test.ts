@@ -1,8 +1,7 @@
-import type { OpensdkSpecJson } from '@xyd-js/opensdk-core';
 import type { Reference } from '@xyd-js/uniform';
 import type { OpenAPIV3 } from 'openapi-types';
 import { describe, expect, it } from 'vitest';
-import { SDK_LANGS, SDK_TAB_LANGUAGES, attachSdkExamples, extractSdkTabs, resolveCompileLang } from '../src/index';
+import { SDK_LANGS, SDK_TAB_LANGUAGES, attachSdkExamples, extractSdkTabs, prepareSdk, resolveCompileLang } from '../src/index';
 
 // A small RAW ($ref-carrying) OpenAPI doc: a GET with an OPTIONAL query param that
 // has a spec `example` (20), and a POST whose body has a required scalar, an enum,
@@ -147,14 +146,16 @@ describe('opensdk-uniform: Uniform JSON is renderable per language', () => {
   });
 });
 
-// Guard: the IR the bridge builds is well-formed (the enrichment silently no-ops
-// on a bad IR, so a smoke of openapi2opensdk here keeps that failure visible).
+// Guard: the IR the bridge builds is well-formed (the enrichment silently
+// no-ops on a bad IR, so smoking the conversion here keeps that failure
+// visible). Driven through `prepareSdk`, the package's own seam onto the
+// native converter — the TypeScript openapi2opensdk/opensdk-core it used to
+// import are gone.
 describe('opensdk-uniform: IR sanity', () => {
-  it('the raw doc converts to an IR with both operations', async () => {
-    const { openapi2opensdk } = await import('@xyd-js/openapi2opensdk');
-    const { walkMethods } = await import('@xyd-js/opensdk-core');
-    const ir: OpensdkSpecJson = openapi2opensdk(rawDoc);
-    const keys = walkMethods(ir).map((m) => `${m.method.httpMethod.toLowerCase()} ${m.method.path}`);
+  it('the raw doc converts to an IR with both operations', () => {
+    const prepared = prepareSdk(rawDoc);
+    expect(prepared).not.toBeNull();
+    const keys = [...prepared!.byKey.keys()];
     expect(keys).toContain('post /pets');
     expect(keys).toContain('get /pets');
   });

@@ -310,6 +310,118 @@ fn path_matches(actual: &str, pattern: &str) -> bool {
     })
 }
 
+// ── whole-API IR assembly ───────────────────────────────────────────────────
+
+/// Merge `source` resources into `target`, in place.
+///
+/// Methods dedupe by ACTION, not by name: two spec operations can land on the
+/// same action within one resource, and emitting both would produce a duplicate
+/// method in the generated client.
+pub fn merge_resources(target: &mut Vec<serde_json::Value>, source: &[serde_json::Value]) {
+    use serde_json::Value;
+    for s in source {
+        let name = s.get("name").and_then(Value::as_str).unwrap_or("");
+        let idx = target
+            .iter()
+            .position(|t| t.get("name").and_then(Value::as_str) == Some(name));
+        let idx = match idx {
+            Some(i) => i,
+            None => {
+                let mut fresh = serde_json::json!({
+                    "name": name, "resources": [], "methods": []
+                });
+                if let Some(d) = s.get("description") {
+                    fresh["description"] = d.clone();
+                }
+                target.push(fresh);
+                target.len() - 1
+            }
+        };
+        if let Some(methods) = s.get("methods").and_then(Value::as_array) {
+            for m in methods {
+                let action = m.get("action").and_then(Value::as_str);
+                let existing = target[idx]
+                    .get("methods")
+                    .and_then(Value::as_array)
+                    .map(|a| {
+                        a.iter()
+                            .any(|x| x.get("action").and_then(Value::as_str) == action)
+                    })
+                    .unwrap_or(false);
+                if !existing {
+                    target[idx]["methods"]
+                        .as_array_mut()
+                        .expect("methods array")
+                        .push(m.clone());
+                }
+            }
+        }
+        if let Some(subs) = s.get("resources").and_then(Value::as_array) {
+            if !subs.is_empty() {
+                let mut nested = target[idx]["resources"]
+                    .as_array()
+                    .cloned()
+                    .unwrap_or_default();
+                merge_resources(&mut nested, subs);
+                target[idx]["resources"] = Value::Array(nested);
+            }
+        }
+    }
+}
+
+/// Fold every per-method fixture IR into ONE document describing the whole API.
+///
+/// Essential, not an optimization: the alternative is building 242 separate SDKs
+/// to exercise 242 operations. One merged SDK plus 242 driver calls is the whole
+/// reason this tier is runnable.
+pub fn full_ir(corpus_dir: &Path, sdk_name: &str) -> serde_json::Value {
+    use serde_json::Value;
+    let cases = xyd_opensdk_cli_common::load_per_method_fixtures(corpus_dir);
+    let first = cases.first().map(|c| c.ir.clone());
+    let mut root = serde_json::json!({
+        "opensdk": first.as_ref().and_then(|f| f.get("opensdk").cloned())
+            .unwrap_or(Value::String("1.0.0".into())),
+        "info": first.as_ref().and_then(|f| f.get("info").cloned())
+            .unwrap_or(serde_json::json!({ "title": sdk_name, "version": "1.0.0" })),
+        "types": [],
+        "resources": [],
+    });
+    for key in ["servers", "security"] {
+        if let Some(v) = first.as_ref().and_then(|f| f.get(key).cloned()) {
+            root[key] = v;
+        }
+    }
+
+    // First definition of a type name wins — the corpora slice one spec, so
+    // repeats are the same shape.
+    let mut seen: Vec<String> = Vec::new();
+    let mut types: Vec<Value> = Vec::new();
+    let mut resources: Vec<Value> = Vec::new();
+    for c in &cases {
+        if let Some(ts) = c.ir.get("types").and_then(Value::as_array) {
+            for t in ts {
+                let n = t
+                    .get("name")
+                    .and_then(Value::as_str)
+                    .unwrap_or("")
+                    .to_string();
+                if !n.is_empty() && !seen.contains(&n) {
+                    seen.push(n);
+                    types.push(t.clone());
+                }
+            }
+        }
+        if let Some(rs) = c.ir.get("resources").and_then(Value::as_array) {
+            merge_resources(&mut resources, rs);
+        }
+    }
+    root["types"] = Value::Array(types);
+    root["resources"] = Value::Array(resources);
+    root
+}
+
+// Unit tests last: clippy's `items_after_test_module` (denied in CI via
+// --all-targets) requires the test module to be the final item.
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -422,114 +534,4 @@ mod tests {
         assert_eq!(norm.auth, "bearer");
         assert_eq!(norm.content_type.as_deref(), Some("application/json"));
     }
-}
-
-// ── whole-API IR assembly ───────────────────────────────────────────────────
-
-/// Merge `source` resources into `target`, in place.
-///
-/// Methods dedupe by ACTION, not by name: two spec operations can land on the
-/// same action within one resource, and emitting both would produce a duplicate
-/// method in the generated client.
-pub fn merge_resources(target: &mut Vec<serde_json::Value>, source: &[serde_json::Value]) {
-    use serde_json::Value;
-    for s in source {
-        let name = s.get("name").and_then(Value::as_str).unwrap_or("");
-        let idx = target
-            .iter()
-            .position(|t| t.get("name").and_then(Value::as_str) == Some(name));
-        let idx = match idx {
-            Some(i) => i,
-            None => {
-                let mut fresh = serde_json::json!({
-                    "name": name, "resources": [], "methods": []
-                });
-                if let Some(d) = s.get("description") {
-                    fresh["description"] = d.clone();
-                }
-                target.push(fresh);
-                target.len() - 1
-            }
-        };
-        if let Some(methods) = s.get("methods").and_then(Value::as_array) {
-            for m in methods {
-                let action = m.get("action").and_then(Value::as_str);
-                let existing = target[idx]
-                    .get("methods")
-                    .and_then(Value::as_array)
-                    .map(|a| {
-                        a.iter()
-                            .any(|x| x.get("action").and_then(Value::as_str) == action)
-                    })
-                    .unwrap_or(false);
-                if !existing {
-                    target[idx]["methods"]
-                        .as_array_mut()
-                        .expect("methods array")
-                        .push(m.clone());
-                }
-            }
-        }
-        if let Some(subs) = s.get("resources").and_then(Value::as_array) {
-            if !subs.is_empty() {
-                let mut nested = target[idx]["resources"]
-                    .as_array()
-                    .cloned()
-                    .unwrap_or_default();
-                merge_resources(&mut nested, subs);
-                target[idx]["resources"] = Value::Array(nested);
-            }
-        }
-    }
-}
-
-/// Fold every per-method fixture IR into ONE document describing the whole API.
-///
-/// Essential, not an optimization: the alternative is building 242 separate SDKs
-/// to exercise 242 operations. One merged SDK plus 242 driver calls is the whole
-/// reason this tier is runnable.
-pub fn full_ir(corpus_dir: &Path, sdk_name: &str) -> serde_json::Value {
-    use serde_json::Value;
-    let cases = xyd_opensdk_cli_common::load_per_method_fixtures(corpus_dir);
-    let first = cases.first().map(|c| c.ir.clone());
-    let mut root = serde_json::json!({
-        "opensdk": first.as_ref().and_then(|f| f.get("opensdk").cloned())
-            .unwrap_or(Value::String("1.0.0".into())),
-        "info": first.as_ref().and_then(|f| f.get("info").cloned())
-            .unwrap_or(serde_json::json!({ "title": sdk_name, "version": "1.0.0" })),
-        "types": [],
-        "resources": [],
-    });
-    for key in ["servers", "security"] {
-        if let Some(v) = first.as_ref().and_then(|f| f.get(key).cloned()) {
-            root[key] = v;
-        }
-    }
-
-    // First definition of a type name wins — the corpora slice one spec, so
-    // repeats are the same shape.
-    let mut seen: Vec<String> = Vec::new();
-    let mut types: Vec<Value> = Vec::new();
-    let mut resources: Vec<Value> = Vec::new();
-    for c in &cases {
-        if let Some(ts) = c.ir.get("types").and_then(Value::as_array) {
-            for t in ts {
-                let n = t
-                    .get("name")
-                    .and_then(Value::as_str)
-                    .unwrap_or("")
-                    .to_string();
-                if !n.is_empty() && !seen.contains(&n) {
-                    seen.push(n);
-                    types.push(t.clone());
-                }
-            }
-        }
-        if let Some(rs) = c.ir.get("resources").and_then(Value::as_array) {
-            merge_resources(&mut resources, rs);
-        }
-    }
-    root["types"] = Value::Array(types);
-    root["resources"] = Value::Array(resources);
-    root
 }
