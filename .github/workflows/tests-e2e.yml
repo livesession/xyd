@@ -122,8 +122,16 @@ jobs:
           # published. Retry with --prefer-online so each attempt re-fetches the
           # packument instead of replaying the cached miss.
           for attempt in 1 2 3 4 5; do
+            # No --prefer-online here: `npm` accepts that flag but `pnpm add`
+            # does not ("Unknown option: 'prefer-online'. Did you mean
+            # 'prefer-offline'?"), so every attempt failed instantly on argument
+            # parsing rather than on the registry — five retries in a couple of
+            # seconds, reported as if the package were unresolvable. It is not
+            # needed anyway: the discovery step above already confirmed the
+            # version is visible, and a version published minutes ago cannot be
+            # in this runner's cold pnpm cache.
             if pnpm add -g "@xyd-js/cli@${LATEST_BUILD_VERSION}" \
-                 --registry=https://registry.npmjs.org --prefer-online; then
+                 --registry=https://registry.npmjs.org; then
               break
             fi
             if [ "$attempt" -eq 5 ]; then
