@@ -8,9 +8,12 @@
   "files": [
     "xyd-native.darwin-x64.node"
   ],
-  "description": "xyd Rust core (napi) — the one native module embedded into the bun-compiled binary",
+  "description": "xyd Rust core (napi) \u2014 the one native module embedded into the bun-compiled binary",
   "license": "MIT",
   "os": [
     "darwin"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

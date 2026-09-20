@@ -8,12 +8,15 @@
   "files": [
     "xyd-native.linux-x64-musl.node"
   ],
-  "description": "xyd Rust core (napi) — the one native module embedded into the bun-compiled binary",
+  "description": "xyd Rust core (napi) \u2014 the one native module embedded into the bun-compiled binary",
   "license": "MIT",
   "os": [
     "linux"
   ],
   "libc": [
     "musl"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
