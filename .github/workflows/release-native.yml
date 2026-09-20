@@ -132,7 +132,13 @@ jobs:
       - name: Stamp version
         working-directory: packages/xyd-native
         run: |
-          npm version ${{ inputs.version }} --no-git-tag-version --allow-same-version
+          # `npm pkg set`, NOT `npm version`. `npm version` re-resolves dependencies,
+          # and from inside this pnpm workspace that walks up to the root and hits
+          # pnpm's `workspace:*` protocol, which npm cannot parse:
+          #   npm error code EUNSUPPORTEDPROTOCOL
+          #   npm error Unsupported URL Type "workspace:": workspace:*
+          # That is exactly how the first dry run of this workflow failed.
+          npm pkg set version=${{ inputs.version }}
           for p in npm/*/package.json; do
             node -e "
               const fs = require('fs');
@@ -146,20 +152,40 @@ jobs:
           # `pnpm i --frozen-lockfile` in dev/CI. Generate them HERE from the npm/*
           # platform dirs (stamped just above), pinned to the release version, so the
           # published @xyd-js/native resolves the right .node on each platform.
+          
+      - name: Move artifacts into platform dirs
+        working-directory: packages/xyd-native
+        run: pnpm exec napi artifacts --output-dir artifacts
+
+      - name: Generate optionalDependencies from the artifacts that EXIST
+        working-directory: packages/xyd-native
+        run: |
+          # Deliberately AFTER `napi artifacts`, and gated on the .node being
+          # present. npm/ carries 7 platform stubs but the matrix builds 4 (musl
+          # x2 and win32 have no leg — see the TODO at the top of this file).
+          # Listing all 7 would advertise three packages that are never
+          # published; npm tolerates a missing OPTIONAL dependency, so the
+          # symptom would not be an install error but a silent fallback to the
+          # JS implementation on those platforms — the exact failure this
+          # pipeline exists to end.
           node -e "
             const fs = require('fs');
             const j = JSON.parse(fs.readFileSync('package.json', 'utf8'));
             j.optionalDependencies = {};
+            const skipped = [];
             for (const d of fs.readdirSync('npm')) {
               const pj = JSON.parse(fs.readFileSync('npm/' + d + '/package.json', 'utf8'));
+              if (!fs.readdirSync('npm/' + d).some(x => x.endsWith('.node'))) { skipped.push(pj.name); continue; }
               j.optionalDependencies[pj.name] = '${{ inputs.version }}';
             }
             fs.writeFileSync('package.json', JSON.stringify(j, null, 2) + '\n');
+            console.log('optionalDependencies:', Object.keys(j.optionalDependencies).join(', '));
+            if (skipped.length) console.log('skipped (no .node built):', skipped.join(', '));
+            if (!Object.keys(j.optionalDependencies).length) {
+              console.error('::error::no platform artifacts found — @xyd-js/native would publish with no bindings');
+              process.exit(1);
+            }
           "
-
-      - name: Move artifacts into platform dirs
-        working-directory: packages/xyd-native
-        run: pnpm exec napi artifacts --output-dir artifacts
 
       - name: Publish platform packages + @xyd-js/native
         working-directory: packages/xyd-native
