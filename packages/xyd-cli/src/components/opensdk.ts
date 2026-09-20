@@ -14,9 +14,16 @@ import colors from 'picocolors';
 
 const OPENSDK_PACKAGE = '@xyd-js/opensdk-cli';
 
-/** Release assets live beside the `xyd-<triple>` ones — see
- * `.github/workflows/build-native-binaries.yml`. */
-const OPENSDK_ASSET_BASE = 'https://github.com/livesession/xyd/releases/latest/download';
+/** The toolchain releases itself: `opensdk/.github/workflows/release.yml` publishes
+ * `opensdk-<triple>` on a tag push. This pointed at xyd's own releases, where the
+ * assets were built but attached to nothing, so every install 404'd and silently
+ * took the npm fallback below — which is how it kept installing a stale
+ * `0.1.0-build.342` long after the Rust toolchain existed.
+ *
+ * Kept in lockstep with OPENSDK_ASSET_BASE in crates/xyd_cli/src/v0/opensdk.rs:
+ * two CLIs, one download URL, and updating only one of them is exactly the bug
+ * this comment exists to prevent a second time. */
+const OPENSDK_ASSET_BASE = 'https://github.com/livesession/opensdk/releases/latest/download';
 
 interface OpensdkManifest {
     name: 'opensdk';
