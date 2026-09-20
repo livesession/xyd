@@ -25,9 +25,9 @@
   "scripts": {
     "dev": "pnpm lerna watch -- lerna run build",
     "dev:styles": "pnpm --filter \"@xyd-js/components\" --filter \"@xyd-js/ui\" --parallel dev",
-    "build": "pnpm run --filter=\"./packages/**/*\" build",
-    "build:storybook": "pnpm run build && pnpm run --filter=\"./packages/**/*\" build:storybook",
-    "build:apidocs-demo": "pnpm --filter \"./packages/**/*\" --filter \"@xyd-js/apidocs-demo\" build",
+    "build": "pnpm run --filter=\"./packages/**/*\" --filter=\"./apitoolchain/packages/**/*\" build",
+    "build:storybook": "pnpm run build && pnpm run --filter=\"./packages/**/*\" --filter=\"./apitoolchain/packages/**/*\" build:storybook",
+    "build:apidocs-demo": "pnpm --filter \"./packages/**/*\" --filter \"./apitoolchain/packages/**/*\" --filter \"@xyd-js/apidocs-demo\" build",
     "schema:docs.json": "node scripts/generate-schema.mjs",
     "clean": "./clear.sh",
     "prepare": "husky",
