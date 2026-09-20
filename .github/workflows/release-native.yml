@@ -102,6 +102,11 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        # This job runs `pnpm i`, and apitoolchain is a pnpm workspace MEMBER
+        # (it holds the five converter shims) — without it the install fails
+        # with ERR_PNPM_WORKSPACE_PKG_NOT_FOUND on @xyd-js/gql.
+        with:
+          submodules: true
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
