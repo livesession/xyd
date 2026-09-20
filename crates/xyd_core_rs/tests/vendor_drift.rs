@@ -26,7 +26,7 @@ fn repo() -> PathBuf {
 #[test]
 fn the_vendored_canon_has_not_drifted() {
     let root = repo();
-    let original = root.join("apitoolchain/crates/xyd_uniform/src/canon.rs");
+    let original = root.join("apitoolchain/crates/uniform/src/canon.rs");
     let vendored = root.join("opensdk/crates/parity_kit/src/canon.rs");
 
     // Deliberately NOT skip-if-absent. Both submodules are hard requirements of

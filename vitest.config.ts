@@ -12,8 +12,8 @@ export default defineConfig({
             // They are pnpm workspace members here, their dist/ is what ~16 xyd
             // packages import, and xyd is where the napi addon exists — so their
             // tests keep running in THIS suite, not only in apitoolchain's.
-            'apitoolchain/packages/xyd-*/**/*.test.ts',
-            'apitoolchain/packages/xyd-*/__tests__/**/*.test.ts'
+            'apitoolchain/packages/*/**/*.test.ts',
+            'apitoolchain/packages/*/__tests__/**/*.test.ts'
         ],
         exclude: [
             '__tests__/e2e/**',
@@ -30,21 +30,17 @@ export default defineConfig({
             // kysely etc.), and apitoolchain-release-man uses `bun test`
             // (`bun:test`). The root pnpm Vitest can't resolve their bun deps, so
             // never collect them here.
-            // The rest of the submodule: twelve standalone bun packages (bun:test
-            // or a local vitest with its own node_modules) and five apps. They
-            // were excluded here under their old packages/apitoolchain-* paths
-            // for exactly the same reason; apitoolchain's own CI runs them.
-            'apitoolchain/packages/api-*/**',
-            'apitoolchain/packages/auth-design-system/**',
-            'apitoolchain/packages/design-system/**',
-            'apitoolchain/packages/dev/**',
-            'apitoolchain/packages/filters/**',
-            'apitoolchain/packages/gitprovider-node/**',
-            'apitoolchain/packages/registry-api-node/**',
-            'apitoolchain/packages/release-man/**',
-            'apitoolchain/packages/schemas/**',
-            'apitoolchain/packages/sdk-chain/**',
-            'apitoolchain/packages/sdkjson-wizard/**',
+            // The rest of the submodule: the eleven standalone bun packages
+            // (bun:test, or a local vitest with its own node_modules) and the
+            // apps. Same reason as always — the root pnpm Vitest cannot resolve
+            // their bun deps; apitoolchain's own CI runs them.
+            //
+            // ONE pattern rather than eleven: every app-side package now carries
+            // the `apitoolchainapp-` prefix, so a package added over there is
+            // excluded by construction instead of by someone remembering to add
+            // a line here. The converter shims are exactly what is left
+            // unprefixed, which is what the include above collects.
+            'apitoolchain/packages/apitoolchainapp-*/**',
             'apitoolchain/apps/**',
             'apitoolchain/opensdk/**',
             'apitoolchain/cli/**',

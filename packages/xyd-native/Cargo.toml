@@ -15,12 +15,12 @@ napi-derive = "3"
 serde_json = { version = "1", features = ["preserve_order"] }
 xyd_core_rs = { path = "../../crates/xyd_core_rs" }
 xyd_watch = { path = "../../crates/xyd_watch" }
-xyd_gql = { path = "../../apitoolchain/crates/xyd_gql" }
-xyd_openapi = { path = "../../apitoolchain/crates/xyd_openapi" }
-xyd_oas_snippet = { path = "../../apitoolchain/crates/xyd_oas_snippet" }
-xyd_opencli_uniform = { path = "../../apitoolchain/crates/xyd_opencli_uniform" }
-xyd_uniform = { path = "../../apitoolchain/crates/xyd_uniform" }
-xyd_mcp_uniform = { path = "../../apitoolchain/crates/xyd_mcp_uniform" }
+gql = { path = "../../apitoolchain/crates/gql" }
+openapi = { path = "../../apitoolchain/crates/openapi" }
+oas_snippet = { path = "../../apitoolchain/crates/oas_snippet" }
+opencli_uniform = { path = "../../apitoolchain/crates/opencli_uniform" }
+uniform = { path = "../../apitoolchain/crates/uniform" }
+mcp_uniform = { path = "../../apitoolchain/crates/mcp_uniform" }
 xyd_settings = { path = "../../crates/xyd_settings" }
 
 # ── SDK/CLI toolchain (the pinned `opensdk` submodule at <repo>/opensdk) ─────

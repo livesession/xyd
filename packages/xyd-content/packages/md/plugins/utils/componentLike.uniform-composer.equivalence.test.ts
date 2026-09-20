@@ -50,8 +50,8 @@ const fx = (p: string) => {
     }
     return full;
 };
-const oapFx = (n: string) => fx(path.join('xyd-openapi/__fixtures__', n, 'input.yaml'));
-const gqlFx = (n: string) => fx(path.join('xyd-gql/__fixtures__', n, 'input.graphql'));
+const oapFx = (n: string) => fx(path.join('openapi/__fixtures__', n, 'input.yaml'));
+const gqlFx = (n: string) => fx(path.join('gql/__fixtures__', n, 'input.graphql'));
 
 const theme = { name: 'poetry' } as any;
 const settings = { theme } as any;

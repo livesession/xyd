@@ -1,6 +1,6 @@
 //! `@xyd-js/openapi` endpoint-snippet native surface. JSON-string transport:
 //! `{ spec, path, method, values, lang }` in → the request code sample string
-//! out. Delegates to `crates/xyd_oas_snippet` (the Rust port of
+//! out. Delegates to `crates/oas_snippet` (the Rust port of
 //! `@readme/oas-to-snippet` + the four httpsnippet clients xyd emits). The shim
 //! (`packages/xyd-openapi/src/impl-js/converters/oas-examples.ts`) calls this
 //! per (operation, language) and falls back to the JS `oasToSnippet` when the
@@ -16,7 +16,7 @@ use napi_derive::napi;
 #[napi]
 pub fn oas_to_snippet(input_json: String) -> Result<String> {
     let input: serde_json::Value = serde_json::from_str(&input_json)
-        .map_err(|e| Error::from_reason(format!("[xyd_oas_snippet] bad input: {e}")))?;
+        .map_err(|e| Error::from_reason(format!("[oas_snippet] bad input: {e}")))?;
 
     let spec = input
         .get("spec")
@@ -34,7 +34,7 @@ pub fn oas_to_snippet(input_json: String) -> Result<String> {
             .to_string()
     };
 
-    let snippet = xyd_oas_snippet::oas_to_snippet(
+    let snippet = oas_snippet::oas_to_snippet(
         &spec,
         &str_of("path"),
         &str_of("method"),

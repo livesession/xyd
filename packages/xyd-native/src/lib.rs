@@ -1,6 +1,6 @@
 //! `@xyd-js/native` — the ONLY napi-aware crate in xyd. It is a thin adapter:
 //! types cross the FFI boundary once here as `#[napi]` items; all real logic
-//! lives in the pure crates (`xyd_core_rs`, `xyd_watch`, later `xyd_openapi`).
+//! lives in the pure crates (`xyd_core_rs`, `xyd_watch`, later `openapi`).
 
 mod content;
 mod frontmatter;
