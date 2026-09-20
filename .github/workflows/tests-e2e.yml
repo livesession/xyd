@@ -94,7 +94,30 @@ jobs:
           fi
 
           echo "📦 Installing @xyd-js/cli@${LATEST_BUILD_VERSION}"
-          pnpm add -g @xyd-js/cli@${LATEST_BUILD_VERSION} --registry=https://registry.npmjs.org
+          # This job starts seconds after Build Release finishes publishing ~53
+          # packages, and npm can serve a stale packument for a while afterwards.
+          # The observed failure is asymmetric and confusing: @xyd-js/cli resolves
+          # at the new version while its SAME-VERSION dependency @xyd-js/host
+          # still appears absent —
+          #   ERR_PNPM_NO_MATCHING_VERSION  No matching version found for
+          #   @xyd-js/host@0.0.0-build-<sha>-<ts>
+          # with npm reporting a "latest" from weeks earlier. Both were in fact
+          # published. Retry with --prefer-online so each attempt re-fetches the
+          # packument instead of replaying the cached miss.
+          for attempt in 1 2 3 4 5; do
+            if pnpm add -g "@xyd-js/cli@${LATEST_BUILD_VERSION}" \
+                 --registry=https://registry.npmjs.org --prefer-online; then
+              break
+            fi
+            if [ "$attempt" -eq 5 ]; then
+              echo "::error::@xyd-js/cli@${LATEST_BUILD_VERSION} still unresolvable after 5 attempts."
+              echo "::error::If its dependencies are genuinely missing, the publish was partial — check Build Release."
+              exit 1
+            fi
+            delay=$((attempt * 15))
+            echo "attempt ${attempt} failed; registry likely still stale, retrying in ${delay}s"
+            sleep "${delay}"
+          done
         fi
 
         echo "✅ Installed version:"

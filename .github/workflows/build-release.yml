@@ -63,11 +63,25 @@ jobs:
         run: pnpm run build
 
       - name: 🔐 Setup npm auth
-        run: |
-          echo "registry=https://registry.npmjs.org" >> ~/.npmrc
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # Read the token from the environment rather than interpolating
+          # ${{ secrets.* }} into the script body, so it is not written into the
+          # step's shell file on the runner.
+          #
+          # An unset or empty secret writes a bare `_authToken=` line, which npm
+          # treats as anonymous — and an anonymous PUT is answered with 404, not
+          # 401, because npm will not confirm whether a package exists. The first
+          # symptom is then 50+ "is not in this registry" errors about packages
+          # that plainly are.
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "::error::NPM_TOKEN is empty. Every publish would fail with E404."
+            exit 1
+          fi
+          echo "registry=https://registry.npmjs.org" >> ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" >> ~/.npmrc
+
 
       - name: 🕵️ Check for changes
         id: version
