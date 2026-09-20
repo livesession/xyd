@@ -309,10 +309,18 @@ jobs:
           # M1 highlighter: xyd-content carries the both-mode highlight shim test
           # (__tests__/highlight-native.test.ts) — native xyd_highlight ⇄ codehike
           # fallback; the crate's own cargo tests (cargo job) gate byte-parity.
+          #
+          # XYD_REQUIRE_NATIVE=1 on the =1 leg is load-bearing. Every shim loader
+          # ends in `catch { return null }` and every call site is `if (native?.fn)`,
+          # so without it a failed addon load makes the "native" leg run impl-js
+          # and report green — the two legs become the SAME run. Verified by
+          # hiding packages/xyd-native/*.node and re-running: `XYD_NATIVE=1` still
+          # said "14 passed", identical to the real native run. With the flag the
+          # same experiment fails at import. Never drop it from this line.
           SHIM_PKGS="xyd-gql xyd-openapi xyd-uniform xyd-mcp-uniform xyd-content xyd-plugin-docs"
           for pkg in $SHIM_PKGS; do
             if [ -d "packages/$pkg/__tests__" ]; then
-              echo "=== $pkg (native=1) ==="; (cd "packages/$pkg" && XYD_NATIVE=1 npx vitest run)
+              echo "=== $pkg (native=1) ==="; (cd "packages/$pkg" && XYD_NATIVE=1 XYD_REQUIRE_NATIVE=1 npx vitest run)
               echo "=== $pkg (native=0) ==="; (cd "packages/$pkg" && XYD_NATIVE=0 npx vitest run)
             else
               echo "$pkg — no __tests__, skipping"
@@ -326,4 +334,8 @@ jobs:
       # than in tests:unit because it needs the .node built above, and the root
       # vitest config excludes it for the same reason.
       - name: vitest xyd-opensdk-uniform (native only)
+        # No XYD_REQUIRE_NATIVE here: this package resolves @xyd-js/native
+        # eagerly and THROWS on failure already (src/index.ts:55-64), so it has
+        # no loader reading that flag — setting it would imply a guard that
+        # isn't there.
         run: cd packages/xyd-opensdk-uniform && XYD_NATIVE=1 npx vitest run

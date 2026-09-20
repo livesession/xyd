@@ -10,12 +10,19 @@ function load(): any | null {
   if (process.env.XYD_NATIVE === '0') return null;
   const embedded = (globalThis as any).__xydNativeCore;
   if (embedded?.opencliToReferences) return embedded;
+  let mod: any = null;
   try {
     const require = createRequire(import.meta.url);
-    return require('@xyd-js/native');
+    mod = require('@xyd-js/native');
   } catch {
-    return null;
+    mod = null;
   }
+  // See the note in @xyd-js/gql's loader: XYD_REQUIRE_NATIVE=1 makes a failed
+  // load fatal, so a "native" CI leg can't silently be a second JS run.
+  if (process.env.XYD_REQUIRE_NATIVE === '1' && typeof mod?.opencliToReferences !== 'function') {
+    throw new Error('XYD_REQUIRE_NATIVE=1 but @xyd-js/native.opencliToReferences is unavailable');
+  }
+  return mod;
 }
 
 const native = load();

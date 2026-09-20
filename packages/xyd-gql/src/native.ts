@@ -11,12 +11,24 @@ function load(): any | null {
     if (process.env.XYD_NATIVE === "0") return null;
     const embedded = (globalThis as any).__xydNativeCore;
     if (embedded?.gqlSchemaToReferences) return embedded;
+    let mod: any = null;
     try {
         const require = createRequire(import.meta.url);
-        return require("@xyd-js/native");
+        mod = require("@xyd-js/native");
     } catch {
-        return null;
+        mod = null;
     }
+    // XYD_REQUIRE_NATIVE=1 turns a failed load into a HARD failure instead of a
+    // silent downgrade to impl-js. Without it the two CI legs are
+    // indistinguishable: hiding the .node and running `XYD_NATIVE=1 vitest run`
+    // here reported "14 passed", byte-identical to the real native run — i.e. a
+    // native leg that never touched the native code would still be green. Assert
+    // the SYMBOL, not just the module, so "loaded but missing an export" (a
+    // dropped #[napi] fn) fails here too rather than at the `native?.fn` call site.
+    if (process.env.XYD_REQUIRE_NATIVE === "1" && typeof mod?.gqlSchemaToReferences !== "function") {
+        throw new Error("XYD_REQUIRE_NATIVE=1 but @xyd-js/native.gqlSchemaToReferences is unavailable");
+    }
+    return mod;
 }
 
 export const native = load();
