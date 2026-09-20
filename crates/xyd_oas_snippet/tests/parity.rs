@@ -110,7 +110,23 @@ fn truncate(s: &str) -> String {
 #[test]
 fn byte_parity_all_cases() {
     let cases = cases();
-    assert!(!cases.is_empty(), "no fixture cases found");
+    // An EXACT count, not `!is_empty()`. That floor was vacuous: deleting 19 of
+    // the 20 committed cases still reported "ok. 1 passed" while coverage
+    // silently fell from 160 snippets to 8. A corpus that shrinks — because a
+    // move dropped directories, or a glob skipped the `-`-prefixed ones — must
+    // fail here rather than quietly test less.
+    const EXPECTED_CASES: usize = 20;
+    assert_eq!(
+        cases.len(),
+        EXPECTED_CASES,
+        "expected the {EXPECTED_CASES} committed fixture cases in {}, found {}: {:?}",
+        fixtures_dir().display(),
+        cases.len(),
+        cases
+            .iter()
+            .map(|c| c.file_name().unwrap().to_string_lossy().to_string())
+            .collect::<Vec<_>>()
+    );
 
     let mut total = 0usize;
     let mut ok = 0usize;

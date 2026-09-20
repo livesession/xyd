@@ -64,11 +64,28 @@ describe.runIf(BUILD && cases.length > 0)('generate opencliToReferences goldens'
   });
 });
 
-describe.skipIf(BUILD || cases.length === 0)('opencliToReferences (regen guard)', () => {
+// The corpus size is ASSERTED, not merely enumerated. `skipIf(cases.length === 0)`
+// meant a missing or relocated __fixtures__/references made the whole suite
+// vanish and still report green — the failure mode this file exists to prevent.
+// Rust's crates/xyd_opencli_uniform/tests/references.rs asserts the same 17
+// against the same corpus; keep the two numbers in step.
+const EXPECTED_CASES = 17;
+
+describe('opencliToReferences corpus', () => {
+  it(`discovers all ${EXPECTED_CASES} committed fixture cases`, () => {
+    expect({ count: cases.length, dir: FIXTURES }).toEqual({ count: EXPECTED_CASES, dir: FIXTURES });
+  });
+});
+
+describe.skipIf(BUILD)('opencliToReferences (regen guard)', () => {
   for (const name of cases) {
     for (const mode of MODES) {
       const goldenPath = path.join(FIXTURES, name, mode.file);
-      it.skipIf(!fs.existsSync(goldenPath))(`${name} — ${mode.file}`, () => {
+      // Was `it.skipIf(!fs.existsSync(goldenPath))`: a golden that failed to
+      // land skipped its own case silently. All 17 × 2 goldens are committed,
+      // so a missing one is damage, not a legitimate gap — assert it.
+      it(`${name} — ${mode.file}`, () => {
+        expect(fs.existsSync(goldenPath), `missing golden ${goldenPath}`).toBe(true);
         expect(convert(name, mode.options)).toEqual(JSON.parse(fs.readFileSync(goldenPath, 'utf8')));
       });
     }
