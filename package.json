@@ -5,9 +5,11 @@
     "node": ">=22.12.0"
   },
   "packageManager": "pnpm@9.10.0",
+  "_workspaces_note": "pnpm reads pnpm-workspace.yaml, NOT this field — keep the two in sync anyway so any tool that does read it (bun, editors) sees the same set. Drift found and fixed: specs/* and !packages/apitoolchain-release-man were missing here.",
   "workspaces": [
     "apps/apidocs-demo",
     "packages/*",
+    "specs/*",
     "packages/xyd-ask-ai/examples/*",
     "!packages/xyd-js",
     "!packages/apitoolchain-design-system",
@@ -15,6 +17,7 @@
     "!packages/apitoolchain-auth-design-system",
     "!packages/apitoolchain-schemas",
     "!packages/apitoolchain-dev",
+    "!packages/apitoolchain-release-man",
     "!packages/apitoolchain-filters",
     "!packages/apitoolchain-sdk-chain",
     "!packages/apitoolchain-gitprovider-node",
