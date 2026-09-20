@@ -1,8 +1,0 @@
-{
-  "name": "Scratch",
-  "description": "Empty slate — no APIs, SDKs or connections. The local Gitea provider stays wired.",
-  "order": 1,
-  "apis": [],
-  "sdks": [],
-  "connect": false
-}

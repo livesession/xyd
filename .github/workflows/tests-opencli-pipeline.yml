@@ -20,12 +20,12 @@ on:
   push:
     branches: [ master, canary, canary2 ]
     paths:
-      - 'packages/xyd-opencli/**'
+      - 'apitoolchain'
       - '.github/workflows/tests-opencli-pipeline.yml'
   pull_request:
     branches: [ master, canary, canary2 ]
     paths:
-      - 'packages/xyd-opencli/**'
+      - 'apitoolchain'
       - '.github/workflows/tests-opencli-pipeline.yml'
 
 jobs:

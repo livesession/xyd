@@ -7,7 +7,13 @@ export default defineConfig({
         include: [
             'packages/**/*.test.ts',
             'packages/**/__tests__/**/*.test.ts',
-            '__tests__/**/*.test.ts'
+            '__tests__/**/*.test.ts',
+            // The five converter shims live in the `apitoolchain` submodule now.
+            // They are pnpm workspace members here, their dist/ is what ~16 xyd
+            // packages import, and xyd is where the napi addon exists — so their
+            // tests keep running in THIS suite, not only in apitoolchain's.
+            'apitoolchain/packages/xyd-*/**/*.test.ts',
+            'apitoolchain/packages/xyd-*/__tests__/**/*.test.ts'
         ],
         exclude: [
             '__tests__/e2e/**',
@@ -24,7 +30,24 @@ export default defineConfig({
             // kysely etc.), and apitoolchain-release-man uses `bun test`
             // (`bun:test`). The root pnpm Vitest can't resolve their bun deps, so
             // never collect them here.
-            'packages/apitoolchain-*/**',
+            // The rest of the submodule: twelve standalone bun packages (bun:test
+            // or a local vitest with its own node_modules) and five apps. They
+            // were excluded here under their old packages/apitoolchain-* paths
+            // for exactly the same reason; apitoolchain's own CI runs them.
+            'apitoolchain/packages/api-*/**',
+            'apitoolchain/packages/auth-design-system/**',
+            'apitoolchain/packages/design-system/**',
+            'apitoolchain/packages/dev/**',
+            'apitoolchain/packages/filters/**',
+            'apitoolchain/packages/gitprovider-node/**',
+            'apitoolchain/packages/registry-api-node/**',
+            'apitoolchain/packages/release-man/**',
+            'apitoolchain/packages/schemas/**',
+            'apitoolchain/packages/sdk-chain/**',
+            'apitoolchain/packages/sdkjson-wizard/**',
+            'apitoolchain/apps/**',
+            'apitoolchain/opensdk/**',
+            'apitoolchain/cli/**',
             // xyd-opensdk-uniform is NATIVE-ONLY: its src throws on XYD_NATIVE=0
             // because the JS emitters it used to fall back to were deleted with
             // the TypeScript cluster. `pnpm build` does NOT build the napi addon

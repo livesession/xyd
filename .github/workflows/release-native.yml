@@ -78,7 +78,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             packages/xyd-native/target
-          key: ${{ runner.os }}-${{ matrix.target }}-cargo-release-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'opensdk/Cargo.lock', 'packages/xyd-native/Cargo.toml') }}
+          key: ${{ runner.os }}-${{ matrix.target }}-cargo-release-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'opensdk/Cargo.lock', 'apitoolchain/Cargo.lock', 'packages/xyd-native/Cargo.toml') }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.target }}-cargo-release-
 

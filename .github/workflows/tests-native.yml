@@ -21,12 +21,9 @@ on:
       # silently skip.
       - 'xwrite'
       - 'opensdk'
+      - 'apitoolchain'
       - '.gitmodules'
       - 'packages/xyd-native/**'
-      - 'packages/xyd-gql/**'
-      - 'packages/xyd-openapi/**'
-      - 'packages/xyd-uniform/**'
-      - 'packages/xyd-mcp-uniform/**'
       - 'packages/xyd-content/**'
       - 'packages/xyd-plugin-docs/**'
       - 'packages/xyd-opensdk-*/**'
@@ -45,12 +42,9 @@ on:
       # silently skip.
       - 'xwrite'
       - 'opensdk'
+      - 'apitoolchain'
       - '.gitmodules'
       - 'packages/xyd-native/**'
-      - 'packages/xyd-gql/**'
-      - 'packages/xyd-openapi/**'
-      - 'packages/xyd-uniform/**'
-      - 'packages/xyd-mcp-uniform/**'
       - 'packages/xyd-content/**'
       - 'packages/xyd-plugin-docs/**'
       - 'packages/xyd-opensdk-*/**'
@@ -87,7 +81,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             crates/target
-          key: ${{ runner.os }}-cargo-crates-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'opensdk/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-crates-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'opensdk/Cargo.lock', 'apitoolchain/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-crates-
 
@@ -199,7 +193,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             opensdk/target
-          key: ${{ runner.os }}-cargo-opensdk-${{ hashFiles('opensdk/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-opensdk-${{ hashFiles('opensdk/Cargo.lock', 'apitoolchain/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-opensdk-
 
@@ -277,7 +271,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             packages/xyd-native/target
-          key: ${{ runner.os }}-cargo-native-debug-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'opensdk/Cargo.lock', 'packages/xyd-native/Cargo.toml') }}
+          key: ${{ runner.os }}-cargo-native-debug-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'opensdk/Cargo.lock', 'apitoolchain/Cargo.lock', 'packages/xyd-native/Cargo.toml') }}
           restore-keys: |
             ${{ runner.os }}-cargo-native-debug-
 
@@ -317,13 +311,20 @@ jobs:
           # hiding packages/xyd-native/*.node and re-running: `XYD_NATIVE=1` still
           # said "14 passed", identical to the real native run. With the flag the
           # same experiment fails at import. Never drop it from this line.
-          SHIM_PKGS="xyd-gql xyd-openapi xyd-uniform xyd-mcp-uniform xyd-content xyd-plugin-docs"
+          # Four of the six moved to the `apitoolchain` submodule with the crates
+          # behind them. They stay in THIS loop rather than moving to
+          # apitoolchain's CI: the addon is built here (it compiles those very
+          # crates), so xyd is the only place where BOTH halves of the
+          # differential exist. apitoolchain's own CI runs the =0 half only, and
+          # says so.
+          SHIM_PKGS="apitoolchain/packages/xyd-gql apitoolchain/packages/xyd-openapi apitoolchain/packages/xyd-uniform apitoolchain/packages/xyd-mcp-uniform packages/xyd-content packages/xyd-plugin-docs"
           for pkg in $SHIM_PKGS; do
-            if [ -d "packages/$pkg/__tests__" ]; then
-              echo "=== $pkg (native=1) ==="; (cd "packages/$pkg" && XYD_NATIVE=1 XYD_REQUIRE_NATIVE=1 npx vitest run)
-              echo "=== $pkg (native=0) ==="; (cd "packages/$pkg" && XYD_NATIVE=0 npx vitest run)
+            if [ -d "$pkg/__tests__" ]; then
+              echo "=== $pkg (native=1) ==="; (cd "$pkg" && XYD_NATIVE=1 XYD_REQUIRE_NATIVE=1 npx vitest run)
+              echo "=== $pkg (native=0) ==="; (cd "$pkg" && XYD_NATIVE=0 npx vitest run)
             else
-              echo "$pkg — no __tests__, skipping"
+              echo "::error::$pkg has no __tests__ — the path is wrong, so this leg tested nothing."
+              exit 1
             fi
           done
 

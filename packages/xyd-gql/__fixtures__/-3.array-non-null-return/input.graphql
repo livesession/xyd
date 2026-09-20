@@ -1,9 +1,0 @@
-type Book {
-    book_id: ID!
-}
-
-type Query {
-    books(
-        book_id: ID!
-    ): [Book!]!
-}

@@ -219,7 +219,7 @@ vendored and encrypted as a single opaque archive —
 | `xyd/.github/workflows/tests-native.yml` (`opensdk`) | the same suite re-run inside the submodule on every gitlink bump — the gate that catches a bump which is green standalone but red under xyd's toolchain/feature unification | Rust stable |
 | `xyd/.github/workflows/tests-opencli-pipeline.yml` (`tests:opencli-pipeline`) | `@xyd-js/opencli` — the core model + schema round-trip | Node + pnpm |
 
-`tests-opencli-pipeline.yml` is `paths`-scoped to `packages/xyd-opencli/**` and needs no Go or
+`tests-opencli-pipeline.yml` is `paths`-scoped to the bare `apitoolchain` gitlink and needs no Go or
 Rust toolchain: what would require them are the generator crates, which opensdk's own CI owns.
 `tests-native.yml`'s `paths` list spells the submodule `opensdk`, not `opensdk/**` — a change
 inside a submodule appears in the parent as a modification of the gitlink path itself, so a

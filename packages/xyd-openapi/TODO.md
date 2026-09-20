@@ -1,1 +1,0 @@
-1. make jsonschema -> uniform as a separate package

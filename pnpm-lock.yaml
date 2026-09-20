@@ -6,6 +6,7 @@ settings:
 
 overrides:
   typescript@^6: 5.9.3
+  '@xyd-js/native': workspace:*
 
 importers:
 
@@ -142,6 +143,192 @@ importers:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.9.3)(vite@7.3.3(@types/node@24.12.3)(jiti@2.7.0)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)(yaml@2.8.4))
 
+  apitoolchain/packages/xyd-gql:
+    dependencies:
+      '@graphql-tools/merge':
+        specifier: ^8.4.0
+        version: 8.4.2(graphql@16.14.0)
+      '@graphql-tools/schema':
+        specifier: ^10.0.0
+        version: 10.0.33(graphql@16.14.0)
+      '@xyd-js/uniform':
+        specifier: workspace:*
+        version: link:../xyd-uniform
+      github-slugger:
+        specifier: ^2.0.0
+        version: 2.0.0
+      graphql:
+        specifier: ^16.8.1
+        version: 16.14.0
+    optionalDependencies:
+      '@xyd-js/native':
+        specifier: workspace:*
+        version: link:../../../packages/xyd-native
+    devDependencies:
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      tsup:
+        specifier: ^8.3.0
+        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@4.9.5)(yaml@2.8.4)
+      typescript:
+        specifier: ^4.5.5
+        version: 4.9.5
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@24.12.3)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
+
+  apitoolchain/packages/xyd-mcp-uniform:
+    dependencies:
+      '@xyd-js/openapi':
+        specifier: workspace:*
+        version: link:../xyd-openapi
+      '@xyd-js/uniform':
+        specifier: workspace:*
+        version: link:../xyd-uniform
+    optionalDependencies:
+      '@xyd-js/native':
+        specifier: workspace:*
+        version: link:../../../packages/xyd-native
+    devDependencies:
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      tsup:
+        specifier: ^8.3.0
+        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@5.8.3)(yaml@2.8.4)
+      typescript:
+        specifier: ^5.6.2
+        version: 5.8.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@24.12.3)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
+
+  apitoolchain/packages/xyd-openapi:
+    dependencies:
+      '@apidevtools/json-schema-ref-parser':
+        specifier: ^12.0.2
+        version: 12.0.2
+      '@har-sdk/openapi-sampler':
+        specifier: ^2.4.2
+        version: 2.4.2
+      '@readme/oas-to-snippet':
+        specifier: ^28.0.0
+        version: 28.0.4
+      '@xyd-js/openapi-sampler':
+        specifier: 0.0.0-build-e80ab83-20260920140634
+        version: 0.0.0-build-e80ab83-20260920140634
+      '@xyd-js/uniform':
+        specifier: workspace:*
+        version: link:../xyd-uniform
+      github-slugger:
+        specifier: ^2.0.0
+        version: 2.0.0
+      js-yaml:
+        specifier: ^4.1.1
+        version: 4.3.1
+      oas:
+        specifier: ^25.0.3
+        version: 25.3.0
+      openapi-types:
+        specifier: ^12.1.3
+        version: 12.1.3
+    optionalDependencies:
+      '@xyd-js/native':
+        specifier: workspace:*
+        version: link:../../../packages/xyd-native
+    devDependencies:
+      '@types/js-yaml':
+        specifier: ^4.0.9
+        version: 4.0.9
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      tsup:
+        specifier: ^8.3.0
+        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@5.8.3)(yaml@2.8.4)
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@24.12.3)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
+
+  apitoolchain/packages/xyd-opencli:
+    optionalDependencies:
+      '@xyd-js/native':
+        specifier: workspace:*
+        version: link:../../../packages/xyd-native
+    devDependencies:
+      '@types/node':
+        specifier: ^20.9.0
+        version: 20.9.0
+      json-schema-to-typescript:
+        specifier: ^14.0.1
+        version: 14.1.0
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      tsup:
+        specifier: ^8.3.0
+        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@5.8.3)(yaml@2.8.4)
+      typescript:
+        specifier: ^5.6.2
+        version: 5.8.3
+      vitest:
+        specifier: ^2.1.1
+        version: 2.1.9(@types/node@20.9.0)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
+
+  apitoolchain/packages/xyd-uniform:
+    dependencies:
+      '@mdx-js/mdx':
+        specifier: ^3.1.0
+        version: 3.1.1
+      codehike:
+        specifier: ^1.0.3
+        version: 1.1.0
+      mdast-util-from-markdown:
+        specifier: ^2.0.2
+        version: 2.0.3
+      remark:
+        specifier: ^15.0.1
+        version: 15.0.1
+      remark-stringify:
+        specifier: ^11.0.0
+        version: 11.0.0
+      unist-builder:
+        specifier: ^4.0.0
+        version: 4.0.0
+      unist-util-visit:
+        specifier: ^5.0.0
+        version: 5.1.0
+    optionalDependencies:
+      '@xyd-js/native':
+        specifier: workspace:*
+        version: link:../../../packages/xyd-native
+    devDependencies:
+      '@types/node':
+        specifier: ^22.10.5
+        version: 22.19.18
+      '@vitest/coverage-v8':
+        specifier: ^1.3.1
+        version: 1.6.1(vitest@1.6.1(@types/node@22.19.18)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1))
+      '@xyd-js/core':
+        specifier: 0.0.0-build-e80ab83-20260920140634
+        version: 0.0.0-build-e80ab83-20260920140634(vite@7.3.3(@types/node@22.19.18)(jiti@2.7.0)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)(yaml@2.8.4))
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      tsup:
+        specifier: ^8.3.0
+        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@5.8.3)(yaml@2.8.4)
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+      vitest:
+        specifier: ^1.3.1
+        version: 1.6.1(@types/node@22.19.18)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
+
   apps/apidocs-demo:
     dependencies:
       '@netlify/vite-plugin-react-router':
@@ -173,10 +360,10 @@ importers:
         version: link:../../packages/xyd-framework
       '@xyd-js/gql':
         specifier: workspace:*
-        version: link:../../packages/xyd-gql
+        version: link:../../apitoolchain/packages/xyd-gql
       '@xyd-js/openapi':
         specifier: workspace:*
-        version: link:../../packages/xyd-openapi
+        version: link:../../apitoolchain/packages/xyd-openapi
       '@xyd-js/theme-cosmo':
         specifier: workspace:*
         version: link:../../packages/xyd-theme-cosmo
@@ -203,7 +390,7 @@ importers:
         version: link:../../packages/xyd-ui
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../../packages/xyd-uniform
+        version: link:../../apitoolchain/packages/xyd-uniform
       gestalt:
         specifier: ^177.0.0
         version: 177.0.12(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -291,7 +478,7 @@ importers:
         version: link:../xyd-core
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../xyd-uniform
+        version: link:../../apitoolchain/packages/xyd-uniform
       openux-js:
         specifier: 0.0.0-pre.1
         version: 0.0.0-pre.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -551,7 +738,7 @@ importers:
         version: link:../xyd-plugins
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../xyd-uniform
+        version: link:../../apitoolchain/packages/xyd-uniform
       codehike:
         specifier: ^1.0.2
         version: 1.1.0
@@ -697,7 +884,7 @@ importers:
         version: link:../../specs/xyd-cli
       '@xyd-js/opencli':
         specifier: workspace:*
-        version: link:../xyd-opencli
+        version: link:../../apitoolchain/packages/xyd-opencli
       '@xyd-js/opencli-completion':
         specifier: workspace:*
         version: link:../xyd-opencli-completion
@@ -846,7 +1033,7 @@ importers:
         version: link:../xyd-native
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../xyd-uniform
+        version: link:../../apitoolchain/packages/xyd-uniform
       codehike:
         specifier: ^1.0.7
         version: 1.1.0
@@ -907,19 +1094,19 @@ importers:
         version: link:../xyd-core
       '@xyd-js/gql':
         specifier: workspace:*
-        version: link:../xyd-gql
+        version: link:../../apitoolchain/packages/xyd-gql
       '@xyd-js/mcp-uniform':
         specifier: workspace:*
-        version: link:../xyd-mcp-uniform
+        version: link:../../apitoolchain/packages/xyd-mcp-uniform
       '@xyd-js/native':
         specifier: workspace:*
         version: link:../xyd-native
       '@xyd-js/openapi':
         specifier: workspace:*
-        version: link:../xyd-openapi
+        version: link:../../apitoolchain/packages/xyd-openapi
       '@xyd-js/opencli':
         specifier: workspace:*
-        version: link:../xyd-opencli
+        version: link:../../apitoolchain/packages/xyd-opencli
       '@xyd-js/sources':
         specifier: workspace:*
         version: link:../xyd-sources
@@ -1104,7 +1291,7 @@ importers:
         version: link:../xyd-router
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../xyd-uniform
+        version: link:../../apitoolchain/packages/xyd-uniform
       cli-spinners:
         specifier: ^3.0.0
         version: 3.4.0
@@ -1301,43 +1488,6 @@ importers:
         specifier: ^7.0.0
         version: 7.3.3(@types/node@22.5.5)(jiti@2.7.0)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)(yaml@2.8.4)
 
-  packages/xyd-gql:
-    dependencies:
-      '@graphql-tools/merge':
-        specifier: ^8.4.0
-        version: 8.4.2(graphql@16.14.0)
-      '@graphql-tools/schema':
-        specifier: ^10.0.0
-        version: 10.0.33(graphql@16.14.0)
-      '@xyd-js/core':
-        specifier: workspace:*
-        version: link:../xyd-core
-      '@xyd-js/native':
-        specifier: workspace:*
-        version: link:../xyd-native
-      '@xyd-js/uniform':
-        specifier: workspace:*
-        version: link:../xyd-uniform
-      github-slugger:
-        specifier: ^2.0.0
-        version: 2.0.0
-      graphql:
-        specifier: ^16.8.1
-        version: 16.14.0
-    devDependencies:
-      rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
-      tsup:
-        specifier: ^8.3.0
-        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@4.9.5)(yaml@2.8.4)
-      typescript:
-        specifier: ^4.5.5
-        version: 4.9.5
-      vitest:
-        specifier: ^2.1.8
-        version: 2.1.9(@types/node@24.12.3)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
-
   packages/xyd-host:
     dependencies:
       '@react-router/dev':
@@ -1454,19 +1604,19 @@ importers:
         version: link:../xyd-framework
       '@xyd-js/gql':
         specifier: workspace:*
-        version: link:../xyd-gql
+        version: link:../../apitoolchain/packages/xyd-gql
       '@xyd-js/native':
         specifier: workspace:*
         version: link:../xyd-native
       '@xyd-js/openapi':
         specifier: workspace:*
-        version: link:../xyd-openapi
+        version: link:../../apitoolchain/packages/xyd-openapi
       '@xyd-js/plugins':
         specifier: workspace:*
         version: link:../xyd-plugins
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../xyd-uniform
+        version: link:../../apitoolchain/packages/xyd-uniform
       json-schema-to-zod:
         specifier: ^2.6.1
         version: 2.8.1
@@ -1539,36 +1689,11 @@ importers:
         specifier: ^5.6.2
         version: 5.8.3
 
-  packages/xyd-mcp-uniform:
-    dependencies:
-      '@xyd-js/native':
-        specifier: workspace:*
-        version: link:../xyd-native
-      '@xyd-js/openapi':
-        specifier: workspace:*
-        version: link:../xyd-openapi
-      '@xyd-js/uniform':
-        specifier: workspace:*
-        version: link:../xyd-uniform
-    devDependencies:
-      rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
-      tsup:
-        specifier: ^8.3.0
-        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@5.8.3)(yaml@2.8.4)
-      typescript:
-        specifier: ^5.6.2
-        version: 5.8.3
-      vitest:
-        specifier: ^2.1.8
-        version: 2.1.9(@types/node@24.12.3)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
-
   packages/xyd-native:
     devDependencies:
       '@napi-rs/cli':
         specifier: ^3.8.2
-        version: 3.8.2(@emnapi/runtime@1.11.2)(@types/node@24.12.3)(node-addon-api@7.1.1)
+        version: 3.8.2(@emnapi/runtime@1.9.2)(@types/node@24.12.3)(node-addon-api@7.1.1)
 
   packages/xyd-next-plugin:
     dependencies:
@@ -1586,82 +1711,11 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@24.12.3)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
 
-  packages/xyd-openapi:
-    dependencies:
-      '@apidevtools/json-schema-ref-parser':
-        specifier: ^12.0.2
-        version: 12.0.2
-      '@har-sdk/openapi-sampler':
-        specifier: ^2.4.2
-        version: 2.4.2
-      '@readme/oas-to-snippet':
-        specifier: ^28.0.0
-        version: 28.0.4
-      '@xyd-js/native':
-        specifier: workspace:*
-        version: link:../xyd-native
-      '@xyd-js/openapi-sampler':
-        specifier: workspace:*
-        version: link:../openapi-sampler
-      '@xyd-js/uniform':
-        specifier: workspace:*
-        version: link:../xyd-uniform
-      js-yaml:
-        specifier: ^4.1.1
-        version: 4.1.1
-      oas:
-        specifier: ^25.0.3
-        version: 25.3.0
-      openapi-types:
-        specifier: ^12.1.3
-        version: 12.1.3
-    devDependencies:
-      '@types/js-yaml':
-        specifier: ^4.0.9
-        version: 4.0.9
-      rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
-      tsup:
-        specifier: ^8.3.0
-        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@5.8.3)(yaml@2.8.4)
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-      vitest:
-        specifier: ^2.1.8
-        version: 2.1.9(@types/node@24.12.3)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
-
-  packages/xyd-opencli:
-    dependencies:
-      '@xyd-js/native':
-        specifier: workspace:*
-        version: link:../xyd-native
-    devDependencies:
-      '@types/node':
-        specifier: ^20.9.0
-        version: 20.9.0
-      json-schema-to-typescript:
-        specifier: ^14.0.1
-        version: 14.1.0
-      rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
-      tsup:
-        specifier: ^8.3.0
-        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@5.8.3)(yaml@2.8.4)
-      typescript:
-        specifier: ^5.6.2
-        version: 5.8.3
-      vitest:
-        specifier: ^2.1.1
-        version: 2.1.9(@types/node@20.9.0)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
-
   packages/xyd-opencli-completion:
     dependencies:
       '@xyd-js/opencli':
         specifier: workspace:*
-        version: link:../xyd-opencli
+        version: link:../../apitoolchain/packages/xyd-opencli
     devDependencies:
       '@types/node':
         specifier: ^20.9.0
@@ -1683,7 +1737,7 @@ importers:
     dependencies:
       '@xyd-js/opencli':
         specifier: workspace:*
-        version: link:../xyd-opencli
+        version: link:../../apitoolchain/packages/xyd-opencli
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.1
@@ -1737,7 +1791,7 @@ importers:
     dependencies:
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../xyd-uniform
+        version: link:../../apitoolchain/packages/xyd-uniform
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.1
@@ -1750,7 +1804,7 @@ importers:
         version: 20.9.0
       '@xyd-js/openapi':
         specifier: workspace:*
-        version: link:../xyd-openapi
+        version: link:../../apitoolchain/packages/xyd-openapi
       openapi-types:
         specifier: ^12.1.3
         version: 12.1.3
@@ -1894,19 +1948,19 @@ importers:
         version: link:../xyd-framework
       '@xyd-js/gql':
         specifier: workspace:*
-        version: link:../xyd-gql
+        version: link:../../apitoolchain/packages/xyd-gql
       '@xyd-js/mcp-uniform':
         specifier: workspace:*
-        version: link:../xyd-mcp-uniform
+        version: link:../../apitoolchain/packages/xyd-mcp-uniform
       '@xyd-js/native':
         specifier: workspace:*
         version: link:../xyd-native
       '@xyd-js/openapi':
         specifier: workspace:*
-        version: link:../xyd-openapi
+        version: link:../../apitoolchain/packages/xyd-openapi
       '@xyd-js/opencli':
         specifier: workspace:*
-        version: link:../xyd-opencli
+        version: link:../../apitoolchain/packages/xyd-opencli
       '@xyd-js/opensdk-uniform':
         specifier: workspace:*
         version: link:../xyd-opensdk-uniform
@@ -1918,7 +1972,7 @@ importers:
         version: link:../xyd-themes
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../xyd-uniform
+        version: link:../../apitoolchain/packages/xyd-uniform
       codehike:
         specifier: ^1.0.3
         version: 1.1.0
@@ -2150,7 +2204,7 @@ importers:
         version: link:../xyd-framework
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../xyd-uniform
+        version: link:../../apitoolchain/packages/xyd-uniform
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^1.3.1
@@ -2193,10 +2247,10 @@ importers:
     dependencies:
       '@xyd-js/openapi':
         specifier: workspace:*
-        version: link:../xyd-openapi
+        version: link:../../apitoolchain/packages/xyd-openapi
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../xyd-uniform
+        version: link:../../apitoolchain/packages/xyd-uniform
       typia:
         specifier: ^12.0.0
         version: 12.1.1(@types/node@24.12.3)(typescript@5.8.3)
@@ -2260,7 +2314,7 @@ importers:
         version: 19.2.14
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../xyd-uniform
+        version: link:../../apitoolchain/packages/xyd-uniform
       react-docgen:
         specifier: ^7.1.1
         version: 7.1.1
@@ -2865,7 +2919,7 @@ importers:
         version: 1.15.0(@types/node@24.12.3)
       '@xyd-js/opencli':
         specifier: workspace:*
-        version: link:../xyd-opencli
+        version: link:../../apitoolchain/packages/xyd-opencli
       typescript:
         specifier: ^5.6.2
         version: 5.8.3
@@ -2966,55 +3020,6 @@ importers:
       tsup:
         specifier: ^8.3.0
         version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@6.0.3)(yaml@2.8.4)
-
-  packages/xyd-uniform:
-    dependencies:
-      '@mdx-js/mdx':
-        specifier: ^3.1.0
-        version: 3.1.1
-      '@xyd-js/core':
-        specifier: workspace:*
-        version: link:../xyd-core
-      '@xyd-js/native':
-        specifier: workspace:*
-        version: link:../xyd-native
-      codehike:
-        specifier: ^1.0.3
-        version: 1.1.0
-      mdast-util-from-markdown:
-        specifier: ^2.0.2
-        version: 2.0.3
-      remark:
-        specifier: ^15.0.1
-        version: 15.0.1
-      remark-stringify:
-        specifier: ^11.0.0
-        version: 11.0.0
-      unist-builder:
-        specifier: ^4.0.0
-        version: 4.0.0
-      unist-util-visit:
-        specifier: ^5.0.0
-        version: 5.1.0
-    devDependencies:
-      '@types/node':
-        specifier: ^22.10.5
-        version: 22.19.18
-      '@vitest/coverage-v8':
-        specifier: ^1.3.1
-        version: 1.6.1(vitest@1.6.1(@types/node@22.19.18)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1))
-      rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
-      tsup:
-        specifier: ^8.3.0
-        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@5.8.3)(yaml@2.8.4)
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-      vitest:
-        specifier: ^1.3.1
-        version: 1.6.1(@types/node@22.19.18)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
 
   packages/xyd-vite-plugin:
     devDependencies:
@@ -9316,6 +9321,17 @@ packages:
   '@xhmikosr/downloader@13.0.1':
     resolution: {integrity: sha512-mBvWew1kZJHfNQVVfVllMjUDwCGN9apPa0t4/z1zaUJ9MzpXjRL3w8fsfJKB8gHN/h4rik9HneKfDbh2fErN+w==}
     engines: {node: ^14.14.0 || >=16.0.0}
+
+  '@xyd-js/core@0.0.0-build-e80ab83-20260920140634':
+    resolution: {integrity: sha512-Q9jNx4JYNa3/r4xtqP/bTtPdcfESlG5Kkx7FdgkLDvgFXKgvOqjup0Q3dK7lW1f9ab8PjO5Rh+6gFdPaqnlGWA==}
+    peerDependencies:
+      vite: ^7.0.0
+    peerDependenciesMeta:
+      vite:
+        optional: true
+
+  '@xyd-js/openapi-sampler@0.0.0-build-e80ab83-20260920140634':
+    resolution: {integrity: sha512-jCgyv78MMd+tWAY9f/dNgTDmwZ03QSSrD5RAxMVWx7U5f8fxKjzwXROzQMTes8hj8IFy08JXoDpR/W8K7mb2rg==}
 
   '@yarnpkg/lockfile@1.1.0':
     resolution: {integrity: sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==}
@@ -20905,7 +20921,7 @@ snapshots:
 
   '@msgpack/msgpack@3.1.3': {}
 
-  '@napi-rs/cli@3.8.2(@emnapi/runtime@1.11.2)(@types/node@24.12.3)(node-addon-api@7.1.1)':
+  '@napi-rs/cli@3.8.2(@emnapi/runtime@1.9.2)(@types/node@24.12.3)(node-addon-api@7.1.1)':
     dependencies:
       '@inquirer/prompts': 8.5.2(@types/node@24.12.3)
       '@napi-rs/cross-toolchain': 1.0.3
@@ -20921,7 +20937,7 @@ snapshots:
       typanion: 3.14.0
       typescript: 5.9.3
     optionalDependencies:
-      '@emnapi/runtime': 1.11.2
+      '@emnapi/runtime': 1.9.2
     transitivePeerDependencies:
       - '@napi-rs/cross-toolchain-arm64-target-aarch64'
       - '@napi-rs/cross-toolchain-arm64-target-armv7'
@@ -24087,7 +24103,7 @@ snapshots:
     dependencies:
       es-toolkit: 1.46.1
       estraverse: 5.3.0
-      prettier: 3.8.3
+      prettier: 3.9.6
       storybook: 8.6.18(prettier@3.9.6)
 
   '@storybook/test@8.6.15(storybook@8.6.18(prettier@3.9.6))':
@@ -24344,7 +24360,7 @@ snapshots:
       '@tanstack/virtual-file-routes': 1.161.7
       jiti: 2.7.0
       magic-string: 0.30.21
-      prettier: 3.8.3
+      prettier: 3.9.6
       zod: 3.25.76
     transitivePeerDependencies:
       - supports-color
@@ -25379,6 +25395,12 @@ snapshots:
       - bare-buffer
       - react-native-b4a
 
+  '@xyd-js/core@0.0.0-build-e80ab83-20260920140634(vite@7.3.3(@types/node@22.19.18)(jiti@2.7.0)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)(yaml@2.8.4))':
+    optionalDependencies:
+      vite: 7.3.3(@types/node@22.19.18)(jiti@2.7.0)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)(yaml@2.8.4)
+
+  '@xyd-js/openapi-sampler@0.0.0-build-e80ab83-20260920140634': {}
+
   '@yarnpkg/lockfile@1.1.0': {}
 
   '@yarnpkg/parsers@3.0.2':
@@ -25771,17 +25793,9 @@ snapshots:
       '@fastify/error': 3.4.1
       fastq: 1.20.1
 
-  axios@1.15.2:
-    dependencies:
-      follow-redirects: 1.16.0(debug@4.3.7)
-      form-data: 4.0.5
-      proxy-from-env: 2.1.0
-    transitivePeerDependencies:
-      - debug
-
   axios@1.15.2(debug@4.3.4):
     dependencies:
-      follow-redirects: 1.16.0(debug@4.3.4)
+      follow-redirects: 1.16.0(debug@4.3.7)
       form-data: 4.0.5
       proxy-from-env: 2.1.0
     transitivePeerDependencies:
@@ -28384,10 +28398,6 @@ snapshots:
     dependencies:
       from2: 2.3.0
 
-  follow-redirects@1.16.0(debug@4.3.4):
-    optionalDependencies:
-      debug: 4.3.4
-
   follow-redirects@1.16.0(debug@4.3.7):
     optionalDependencies:
       debug: 4.3.7
@@ -29274,7 +29284,7 @@ snapshots:
       jsonwebtoken: 9.0.3
       load-esm: 1.0.3
       mime-types: 2.1.35
-      retry-axios: 2.6.0(axios@1.15.2)
+      retry-axios: 2.6.0(axios@1.15.2(debug@4.3.4))
       tough-cookie: 4.1.3
     transitivePeerDependencies:
       - supports-color
@@ -29914,7 +29924,7 @@ snapshots:
       minimist: 1.2.8
       mkdirp: 3.0.1
       node-fetch: 3.3.2
-      prettier: 3.8.3
+      prettier: 3.9.6
 
   json-schema-to-zod@2.8.1: {}
 
@@ -33626,9 +33636,9 @@ snapshots:
 
   ret@0.4.3: {}
 
-  retry-axios@2.6.0(axios@1.15.2):
+  retry-axios@2.6.0(axios@1.15.2(debug@4.3.4)):
     dependencies:
-      axios: 1.15.2
+      axios: 1.15.2(debug@4.3.4)
 
   retry@0.12.0: {}
 

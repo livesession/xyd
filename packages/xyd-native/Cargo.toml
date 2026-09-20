@@ -15,12 +15,12 @@ napi-derive = "3"
 serde_json = { version = "1", features = ["preserve_order"] }
 xyd_core_rs = { path = "../../crates/xyd_core_rs" }
 xyd_watch = { path = "../../crates/xyd_watch" }
-xyd_gql = { path = "../../crates/xyd_gql" }
-xyd_openapi = { path = "../../crates/xyd_openapi" }
-xyd_oas_snippet = { path = "../../crates/xyd_oas_snippet" }
-xyd_opencli_uniform = { path = "../../crates/xyd_opencli_uniform" }
-xyd_uniform = { path = "../../crates/xyd_uniform" }
-xyd_mcp_uniform = { path = "../../crates/xyd_mcp_uniform" }
+xyd_gql = { path = "../../apitoolchain/crates/xyd_gql" }
+xyd_openapi = { path = "../../apitoolchain/crates/xyd_openapi" }
+xyd_oas_snippet = { path = "../../apitoolchain/crates/xyd_oas_snippet" }
+xyd_opencli_uniform = { path = "../../apitoolchain/crates/xyd_opencli_uniform" }
+xyd_uniform = { path = "../../apitoolchain/crates/xyd_uniform" }
+xyd_mcp_uniform = { path = "../../apitoolchain/crates/xyd_mcp_uniform" }
 xyd_settings = { path = "../../crates/xyd_settings" }
 
 # ── SDK/CLI toolchain (the pinned `opensdk` submodule at <repo>/opensdk) ─────
@@ -54,3 +54,15 @@ napi-build = "2"
 [profile.release]
 lto = true
 strip = true
+
+# apitoolchain's crates take `oas_doc` as a pinned GIT dep, not a path dep, and
+# this is where that decision pays off. This crate compiles BOTH submodules into
+# one cdylib — twelve opensdk crates directly, plus apitoolchain's xyd_openapi,
+# which needs oas_doc too. Two path-deps on it made cargo refuse to write the
+# lockfile at all ("package collision ... only one can be written unambiguously"),
+# even though both trees were byte-identical: path-deps are identified by PATH.
+#
+# The patch redirects that one git source onto the checkout this repo already
+# has, so there is exactly one oas_doc in the graph and nothing is fetched.
+[patch."https://github.com/livesession/opensdk"]
+oas_doc = { path = "../../opensdk/crates/oas_doc" }

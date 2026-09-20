@@ -18,6 +18,7 @@
 // exact "xyd composes many things" shape the user asked us to protect.
 import { describe, it, expect, beforeAll } from 'vitest';
 import * as React from 'react';
+import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -31,8 +32,26 @@ import { componentLike as newComponentLike } from './componentLike';
 
 // .../xyd-content/packages/md/plugins/utils → up 5 → repo `packages/`
 const PKGS = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
-const oapFx = (n: string) => path.join(PKGS, 'xyd-openapi/__fixtures__', n, 'input.yaml');
-const gqlFx = (n: string) => path.join(PKGS, 'xyd-gql/__fixtures__', n, 'input.graphql');
+// @xyd-js/openapi and @xyd-js/gql moved to the `apitoolchain` submodule with the
+// crates behind them, so their fixture corpora live there now. This test uses the
+// REAL committed specs rather than inline ones on purpose — that is the whole
+// point of the equivalence check — so it reaches across the boundary by design.
+const ATC_PKGS = path.resolve(PKGS, '..', 'apitoolchain', 'packages');
+const fx = (p: string) => {
+    const full = path.join(ATC_PKGS, p);
+    if (!fs.existsSync(full)) {
+        // A missing corpus must FAIL here rather than silently skip: every case
+        // below would otherwise vanish from the run and the suite would report
+        // green while comparing nothing.
+        throw new Error(
+            `fixture not found: ${full}\n  ` +
+                `git submodule update --init --recursive apitoolchain`,
+        );
+    }
+    return full;
+};
+const oapFx = (n: string) => fx(path.join('xyd-openapi/__fixtures__', n, 'input.yaml'));
+const gqlFx = (n: string) => fx(path.join('xyd-gql/__fixtures__', n, 'input.graphql'));
 
 const theme = { name: 'poetry' } as any;
 const settings = { theme } as any;
