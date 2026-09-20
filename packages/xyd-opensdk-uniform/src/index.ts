@@ -1,12 +1,14 @@
-import { openapi2opensdk, openapi2opensdkFromSource } from '@xyd-js/openapi2opensdk';
-import { type FlatMethod, type NamedType, type OpensdkSpecJson, walkMethods } from '@xyd-js/opensdk-core';
-import { dotnetEmitter } from '@xyd-js/opensdk-dotnet';
-import type { Emitter, EmitterContext, RenderedTypeField, RenderedTypeReference } from '@xyd-js/opensdk-framework';
-import { goEmitter } from '@xyd-js/opensdk-go';
-import { javaEmitter } from '@xyd-js/opensdk-java';
-import { nodeEmitter } from '@xyd-js/opensdk-node';
-import { pythonEmitter } from '@xyd-js/opensdk-python';
-import { rubyEmitter } from '@xyd-js/opensdk-ruby';
+import { readFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
+import { load as yamlLoad } from 'js-yaml';
+import type {
+  EmitterContext,
+  FlatMethod,
+  NamedType,
+  OpensdkSpecJson,
+  RenderedTypeField,
+  RenderedTypeReference,
+} from './ir-types';
 import type {
   CodeBlock,
   Definition,
@@ -18,11 +20,130 @@ import type {
 } from '@xyd-js/uniform';
 import type { OpenAPIV3 } from 'openapi-types';
 
+/**
+ * This module calls the Rust core directly.
+ *
+ * It used to import the converter, opensdk-core, opensdk-framework and all SIX emitter
+ * packages; those are being retired, and this module is what pulled them into CORE xyd's
+ * dependency graph (xyd-plugin-docs' sdkEnrich imports it on the docs render path).
+ *
+ * The emitters were only ever the JS FALLBACK in `operationDocs` — the native batch docs
+ * map was already tried first — so dropping the fallback removed them outright. No
+ * compute moved to Rust: the Reference mutation below still runs in JS on in-memory
+ * objects, which is deliberate (serializing the multi-MB reference set across the
+ * boundary just to mutate it would be a pessimization).
+ *
+ * NATIVE-ONLY: `XYD_NATIVE=0` errors rather than silently degrading, because keeping a
+ * fallback means keeping the dependency being removed.
+ */
+let nativeCache: Record<string, unknown> | null | undefined;
+function loadNative(): Record<string, unknown> {
+  if (process.env.XYD_NATIVE === '0') {
+    throw new Error(
+      'XYD_NATIVE=0 is not supported by opensdk-uniform: it has no JS fallback, because ' +
+        'the TypeScript opensdk emitters it used to depend on are being retired.',
+    );
+  }
+  if (nativeCache === undefined) {
+    const embedded = (globalThis as Record<string, unknown>).__xydNativeCore as
+      | Record<string, unknown>
+      | undefined;
+    if (embedded?.openapi2opensdk) {
+      nativeCache = embedded;
+    } else {
+      try {
+        nativeCache = createRequire(import.meta.url)('@xyd-js/native');
+      } catch {
+        nativeCache = null;
+      }
+    }
+  }
+  if (!nativeCache) {
+    throw new Error(
+      '@xyd-js/native is required by opensdk-uniform and could not be resolved. ' +
+        'Build it with `pnpm --filter @xyd-js/native build:native`.',
+    );
+  }
+  return nativeCache;
+}
+
+/** The batch docs surface per language, keyed by the `compileLang` id. */
+const DOCS_FN_BY_LANG: Record<string, string> = {
+  go: 'opensdkDocsGo',
+  node: 'opensdkDocsNode',
+  python: 'opensdkDocsPython',
+  ruby: 'opensdkDocsRuby',
+  java: 'opensdkDocsJava',
+  dotnet: 'opensdkDocsDotnet',
+};
+
+/** The native batch docs function for a language, or null when that language has none
+ * (rust implements neither docs capability and is not in SDK_LANGS).
+ *
+ * The napi surface returns a JSON STRING; this parses it and maps the `"null"` sentinel
+ * to `null`, matching what `@xyd-js/opensdk-framework`'s loader did. Returning the raw
+ * function instead silently fills `docsByLang` with strings, so every lookup misses and
+ * every operation renders no snippet. */
+function nativeDocsFn(
+  compileLang: string,
+): ((specJson: string, optionsJson?: string) => Record<string, NativeOperationDocs> | null) | null {
+  const name = DOCS_FN_BY_LANG[compileLang];
+  if (!name) return null;
+  const fn = loadNative()[name];
+  if (typeof fn !== 'function') return null;
+  return (specJson: string, optionsJson?: string) => {
+    const raw = (fn as (s: string, o?: string) => string)(specJson, optionsJson);
+    return raw === 'null' ? null : (JSON.parse(raw) as Record<string, NativeOperationDocs>);
+  };
+}
+
+interface NativeOperationDocs {
+  usage: string;
+  typeReference: unknown;
+}
+
+/** OpenAPI doc -> OpenSDK IR, through the native converter. */
+function openapi2opensdk(doc: unknown, options: Record<string, unknown> = {}): OpensdkSpecJson {
+  const native = loadNative();
+  return JSON.parse(
+    (native.openapi2opensdk as (d: string, o: string) => string)(
+      JSON.stringify(doc),
+      JSON.stringify(options),
+    ),
+  ) as OpensdkSpecJson;
+}
+
+/** Read + parse a spec file, then convert.
+ *
+ * Reading stays in JS deliberately: the native converter takes a parsed document, and
+ * moving file/URL loading into Rust would put an HTTP client in the cdylib for no gain. */
+async function openapi2opensdkFromSource(source: string): Promise<OpensdkSpecJson> {
+  const raw = await readFile(source, 'utf8');
+  const doc = /\.ya?ml$/i.test(source) ? yamlLoad(raw) : JSON.parse(raw);
+  return openapi2opensdk(doc);
+}
+
+/** Walk the resource tree, yielding each method with its resource CHAIN (root -> owner).
+ * Inlined from @xyd-js/opensdk-core (pure). */
+function walkMethods(spec: OpensdkSpecJson): FlatMethod[] {
+  const out: FlatMethod[] = [];
+  const visit = (resources: unknown[], chain: string[]): void => {
+    for (const r of resources) {
+      const res = r as { name?: string; methods?: unknown[]; resources?: unknown[] };
+      const next = [...chain, res.name ?? ''];
+      for (const m of res.methods ?? [])
+        out.push({ path: next, method: m } as FlatMethod);
+      if (res.resources?.length) visit(res.resources, next);
+    }
+  };
+  visit((spec as { resources?: unknown[] }).resources ?? [], []);
+  return out;
+}
+
 /** One SDK language shown in the switcher. `language` is the coder highlight id
  * (drives the Atlas dropdown icon via langIconSet); `title` is the display label;
- * `compileLang` is the `@xyd-js/opensdk-ci` `compileSmoke` toolchain id. */
+ * `compileLang` is the native docs-surface / toolchain id. */
 export interface SdkLang {
-  emitter: Emitter;
   language: string;
   title: string;
   compileLang: string;
@@ -30,12 +151,12 @@ export interface SdkLang {
 
 /** The SDK languages, in switcher order. */
 export const SDK_LANGS: SdkLang[] = [
-  { emitter: goEmitter, language: 'go', title: 'Go', compileLang: 'go' },
-  { emitter: pythonEmitter, language: 'python', title: 'Python', compileLang: 'python' },
-  { emitter: nodeEmitter, language: 'typescript', title: 'TypeScript', compileLang: 'node' },
-  { emitter: rubyEmitter, language: 'ruby', title: 'Ruby', compileLang: 'ruby' },
-  { emitter: javaEmitter, language: 'java', title: 'Java', compileLang: 'java' },
-  { emitter: dotnetEmitter, language: 'csharp', title: 'C#', compileLang: 'dotnet' },
+  { language: 'go', title: 'Go', compileLang: 'go' },
+  { language: 'python', title: 'Python', compileLang: 'python' },
+  { language: 'typescript', title: 'TypeScript', compileLang: 'node' },
+  { language: 'ruby', title: 'Ruby', compileLang: 'ruby' },
+  { language: 'java', title: 'Java', compileLang: 'java' },
+  { language: 'csharp', title: 'C#', compileLang: 'dotnet' },
 ];
 
 /** The tab-`language` ids the SDK switcher emits (for extraction/verification). */
@@ -61,6 +182,35 @@ export interface PreparedSdk {
   ir: OpensdkSpecJson;
   ctx: EmitterContext;
   byKey: Map<string, FlatMethod>;
+  /** Native docs, per emitter language id, keyed the same way as `byKey`.
+   * Absent when @xyd-js/native is unavailable — callers then drive the JS
+   * emitter capabilities. Computed ONCE per spec (see `nativeDocs`). */
+  docsByLang: Map<string, Record<string, { usage: string; typeReference: unknown }>>;
+}
+
+/**
+ * Every language's docs, in ONE native call each.
+ *
+ * The alternative — calling the native surface per operation per language — is
+ * 242 × 6 boundary crossings for the OpenAI spec. This runs 6 times total, and
+ * only for languages the native side actually implements; the rest fall through
+ * to the JS emitter at the call sites.
+ */
+function nativeDocs(ir: OpensdkSpecJson): PreparedSdk['docsByLang'] {
+  const out: PreparedSdk['docsByLang'] = new Map();
+  let specJson: string | null = null;
+  for (const lang of SDK_LANGS) {
+    const fn = nativeDocsFn(lang.compileLang);
+    if (!fn) continue;
+    try {
+      specJson ??= JSON.stringify(ir);
+      const map = fn(specJson);
+      if (map) out.set(lang.compileLang, map);
+    } catch {
+      // one language failing must not drop the others — it falls back to JS
+    }
+  }
+  return out;
 }
 
 function prepareFromIr(ir: OpensdkSpecJson): PreparedSdk {
@@ -68,9 +218,9 @@ function prepareFromIr(ir: OpensdkSpecJson): PreparedSdk {
   const ctx: EmitterContext = { spec: ir, types, emitterOptions: {} };
   const byKey = new Map<string, FlatMethod>();
   for (const fm of walkMethods(ir)) {
-    byKey.set(`${fm.method.httpMethod.toLowerCase()} ${fm.method.path}`, fm);
+    byKey.set(`${String(fm.method.httpMethod ?? '').toLowerCase()} ${fm.method.path}`, fm);
   }
-  return { ir, ctx, byKey };
+  return { ir, ctx, byKey, docsByLang: nativeDocs(ir) };
 }
 
 /** Build the prepared SDK state from a RAW un-dereferenced doc
@@ -132,6 +282,31 @@ export function attachSdkExamples(
   attachExamplesPass(references, prepared, resolveLangs(opts.langs));
 }
 
+/**
+ * One operation's docs for one language: the NATIVE batch result when present,
+ * else the JS emitter capability.
+ *
+ * The native map is computed once per spec in `prepareFromIr`; a language the
+ * native side does not implement (or a spec it could not handle) simply has no
+ * entry, and that language falls through to TypeScript. Both paths produce the
+ * same bytes — 1488 golden cases assert it.
+ */
+function operationDocs(
+  prepared: PreparedSdk,
+  lang: SdkLang,
+  fm: FlatMethod,
+  key: string,
+): { usage?: string; typeReference?: RenderedTypeReference } {
+  // Native-only: the emitter fallback that used to live here is what pulled all six
+  // TypeScript emitter packages into this module (and therefore into core xyd).
+  const native = prepared.docsByLang.get(lang.compileLang)?.[key];
+  if (!native) return {};
+  return {
+    usage: native.usage,
+    typeReference: native.typeReference as RenderedTypeReference,
+  };
+}
+
 function attachExamplesPass(references: Reference[], prepared: PreparedSdk, langs: SdkLang[]): void {
   if (!langs.length) return;
   const { ctx, byKey } = prepared;
@@ -139,7 +314,8 @@ function attachExamplesPass(references: Reference[], prepared: PreparedSdk, lang
   for (const ref of references) {
     const rctx = ref.context as OpenAPIReferenceContext | undefined;
     if (!rctx?.method || !rctx?.path) continue; // component schema — no method
-    const fm = byKey.get(`${rctx.method.toLowerCase()} ${rctx.path}`);
+    const key = `${rctx.method.toLowerCase()} ${rctx.path}`;
+    const fm = byKey.get(key);
     if (!fm) continue;
 
     const codeblock = requestCodeblock(ref);
@@ -148,7 +324,7 @@ function attachExamplesPass(references: Reference[], prepared: PreparedSdk, lang
     const sdkTabs = [];
     for (const lang of langs) {
       try {
-        const code = lang.emitter.generateUsage?.(fm.method, fm.path, ctx);
+        const code = operationDocs(prepared, lang, fm, key).usage;
         // `meta` = the tab IDENTITY (`meta || lang` downstream): the language
         // ID, so the page-wide switcher stores ids ("python"), never display
         // titles ("Python") — signatures/variants key off the id.
@@ -335,13 +511,14 @@ function attachTypesPass(
   for (const ref of references) {
     const rctx = ref.context as OpenAPIReferenceContext | undefined;
     if (!rctx?.method || !rctx?.path) continue;
-    const fm = byKey.get(`${rctx.method.toLowerCase()} ${rctx.path}`);
+    const key = `${rctx.method.toLowerCase()} ${rctx.path}`;
+    const fm = byKey.get(key);
     if (!fm) continue;
 
     const perLang: { lang: SdkLang; tref: RenderedTypeReference }[] = [];
     for (const lang of langs) {
       try {
-        const tref = lang.emitter.generateTypeReference?.(fm.method, fm.path, ctx);
+        const tref = operationDocs(prepared, lang, fm, key).typeReference;
         if (tref) perLang.push({ lang, tref });
       } catch {
         // one language failing must not drop the others
@@ -545,20 +722,21 @@ export function embedXSdk(rawDoc: OpenAPIV3.Document, opts: EmbedXSdkOptions = {
     for (const method of HTTP_METHODS) {
       const op = pathItem[method];
       if (!op) continue;
-      const fm = prepared.byKey.get(`${method} ${specPath}`);
+      const key = `${method} ${specPath}`;
+      const fm = prepared.byKey.get(key);
       if (!fm) continue;
 
       const xop: XSdkOperation = {};
       for (const lang of langs) {
         const entry: XSdkOperationLang = {};
         try {
-          const code = lang.emitter.generateUsage?.(fm.method, fm.path, prepared.ctx);
+          const code = operationDocs(prepared, lang, fm, key).usage;
           if (code) entry.usage = code;
         } catch {
           // one language failing must not drop the others
         }
         try {
-          const tref = lang.emitter.generateTypeReference?.(fm.method, fm.path, prepared.ctx);
+          const tref = operationDocs(prepared, lang, fm, key).typeReference;
           if (tref) {
             entry.signature = tref.signature;
             entry.types = { request: tref.request, response: tref.response };

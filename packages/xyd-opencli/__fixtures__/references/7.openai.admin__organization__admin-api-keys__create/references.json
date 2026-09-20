@@ -1,0 +1,145 @@
+[
+  {
+    "title": "organization <command>",
+    "canonical": "organization",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "organization",
+      "fullPath": "openai organization <command>",
+      "group": [
+        "Commands",
+        "organization"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "openai organization <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "admin-api-keys",
+            "type": "command",
+            "description": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "organization admin-api-keys <command>",
+    "canonical": "organization/admin-api-keys",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "organization admin-api-keys",
+      "fullPath": "openai organization admin-api-keys <command>",
+      "group": [
+        "Commands",
+        "organization",
+        "admin-api-keys"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "openai organization admin-api-keys <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "create",
+            "type": "command",
+            "description": "Create an organization admin API key"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "organization admin-api-keys create",
+    "canonical": "organization/admin-api-keys/create",
+    "description": "Create an organization admin API key",
+    "category": "cli",
+    "context": {
+      "path": "organization admin-api-keys create",
+      "fullPath": "openai organization admin-api-keys create [options]",
+      "group": [
+        "Commands",
+        "organization",
+        "admin-api-keys"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "openai organization admin-api-keys create \\\n  --name 'Example data'"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Options",
+        "properties": [
+          {
+            "name": "--name",
+            "type": "string",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

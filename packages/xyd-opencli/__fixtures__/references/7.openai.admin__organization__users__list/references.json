@@ -1,0 +1,149 @@
+[
+  {
+    "title": "organization <command>",
+    "canonical": "organization",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "organization",
+      "fullPath": "openai organization <command>",
+      "group": [
+        "Commands",
+        "organization"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "openai organization <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "users",
+            "type": "command",
+            "description": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "organization users <command>",
+    "canonical": "organization/users",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "organization users",
+      "fullPath": "openai organization users <command>",
+      "group": [
+        "Commands",
+        "organization",
+        "users"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "openai organization users <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "list",
+            "type": "command",
+            "description": "Lists all of the users in the organization."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "organization users list",
+    "canonical": "organization/users/list",
+    "description": "Lists all of the users in the organization.",
+    "category": "cli",
+    "context": {
+      "path": "organization users list",
+      "fullPath": "openai organization users list [options]",
+      "group": [
+        "Commands",
+        "organization",
+        "users"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "openai organization users list"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Options",
+        "properties": [
+          {
+            "name": "--limit",
+            "type": "string",
+            "description": "A limit on the number of objects to be returned. Limit can range between 1 and 100, and the default is 20.\n"
+          },
+          {
+            "name": "--after",
+            "type": "string",
+            "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+          },
+          {
+            "name": "--emails",
+            "type": "string",
+            "description": "Filter by the email address of users."
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -4,3 +4,6 @@
 [submodule "xwrite"]
 	path = xwrite
 	url = https://github.com/livesession/xwrite
+[submodule "opensdk"]
+	path = opensdk
+	url = https://github.com/livesession/opensdk

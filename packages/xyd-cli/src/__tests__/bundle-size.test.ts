@@ -13,6 +13,26 @@ import { describe, expect, it } from 'vitest';
 const pkgRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const distDir = path.join(pkgRoot, 'dist');
 
+// Mirrors findMonorepoOpensdkBin() in src/components/opensdk.ts. A dev-mode
+// install writes a manifest pointing at this binary, so without it the install
+// legitimately fails — and `pnpm build` does not produce it (the toolchain is a
+// Rust crate in the `opensdk` submodule). tests-unit.yml has no Rust toolchain,
+// which is why the install-footprint block below is gated rather than assumed.
+const repoRoot = path.resolve(pkgRoot, '../..');
+const DEV_BIN = [
+    path.join(repoRoot, 'opensdk/target/release/opensdk'),
+    path.join(repoRoot, 'opensdk/target/debug/opensdk'),
+].find((c) => fs.existsSync(c));
+
+// Set in any job that DOES build the binary, so the tier cannot quietly stop
+// running there the way it would if a skip were unconditional.
+if (process.env.XYD_OPENSDK_DEV_BIN === '1' && !DEV_BIN) {
+    throw new Error(
+        'XYD_OPENSDK_DEV_BIN=1 but no opensdk bin found — build it with ' +
+            '`cargo build --manifest-path opensdk/Cargo.toml -p opensdk --bin opensdk`.',
+    );
+}
+
 /** Total dist JS budget. Current: ~73 KB; headroom for growth, but a hard stop
  * against accidentally bundling a toolchain (opensdk's dist alone is ~250 KB
  * before its 16-package dependency tree). */
@@ -55,7 +75,7 @@ describe('default CLI bundle stays lean', () => {
     });
 });
 
-describe('footprint only grows after `components install opensdk`', () => {
+describe.skipIf(!DEV_BIN)('footprint only grows after `components install opensdk`', () => {
     it('the component dir materializes only on install', () => {
         const componentsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'xyd-size-'));
         try {

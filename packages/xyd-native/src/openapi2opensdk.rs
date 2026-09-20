@@ -11,6 +11,6 @@ use napi_derive::napi;
 /// boundary into `openapi2Opensdk`).
 #[napi(js_name = "openapi2opensdk")]
 pub fn openapi2opensdk(doc_json: String, options_json: Option<String>) -> Result<String> {
-    xyd_openapi2opensdk::openapi2opensdk_from_json_str(&doc_json, options_json.as_deref())
-        .map_err(|e| Error::from_reason(format!("[xyd_openapi2opensdk] {e}")))
+    openapi2opensdk::openapi2opensdk_from_json_str(&doc_json, options_json.as_deref())
+        .map_err(|e| Error::from_reason(format!("[openapi2opensdk] {e}")))
 }

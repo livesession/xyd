@@ -1,6 +1,7 @@
 # Hand-owned (protected by .sdkignore): a workspace-integrated manifest for the
 # generated `xyd` CLI. The command tree in src/opencli/** is regenerated from
-# opencli.json by the Rust regen bin (crates/xyd_opencli2rust); this file,
+# opencli.json by the Rust regen bin (opensdk/crates/opencli2rust, in the
+# `opensdk` submodule — see regen.toml for the two-workspace invocation); this file,
 # src/main.rs, and src/v0/** survive regeneration. clap/tokio are pinned in
 # crates/Cargo.toml [workspace.dependencies] (repo pattern);
 # reqwest/serde_json/percent-encoding are the runtime deps the vendored

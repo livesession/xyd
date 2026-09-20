@@ -18,6 +18,9 @@
   ],
   "scripts": {
     "typecheck": "tsc --noEmit",
+    "oracle:freeze": "bun run __oracle__/run.ts --freeze",
+    "oracle:check": "bun run __oracle__/run.ts",
+    "test:guard": "bun test __oracle__/guard.test.ts",
     "storybook": "storybook dev -p 6008",
     "build-storybook": "storybook build",
     "format": "bunx biome check --write ."

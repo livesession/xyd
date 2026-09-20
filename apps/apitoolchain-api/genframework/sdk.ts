@@ -1,11 +1,5 @@
-import { openapi2opensdk } from "@xyd-js/openapi2opensdk";
-import { registerBuiltinEmitters } from "@xyd-js/opensdk-cli";
-import { mergeBehaviorOverrides } from "@xyd-js/opensdk-core";
-import {
-  generateFileMap,
-  getEmitter,
-  materializeProject,
-} from "@xyd-js/opensdk-framework";
+import { createHash } from "node:crypto";
+import { createRequire } from "node:module";
 import { load as yamlLoad } from "js-yaml";
 import JSZip from "jszip";
 import { registryClient } from "../clients/registry";
@@ -19,12 +13,171 @@ import * as sdkQ from "../dbnode/sdk_targets";
 import { storage } from "../storage";
 import { randomId } from "../util";
 
-let registered = false;
-function ensureEmitters(): void {
-  if (!registered) {
-    registerBuiltinEmitters();
-    registered = true;
+/**
+ * SDK generation calls the Rust core directly.
+ *
+ * It used to import four `@xyd-js/*` TypeScript packages (openapi2opensdk, opensdk-cli,
+ * opensdk-core, opensdk-framework); those are being retired. No compute moved: with the
+ * addon present those shims already forwarded to Rust and used the emitter object for
+ * nothing but `.language`, so this deletes a wrapper rather than reimplementing anything.
+ *
+ * NATIVE-ONLY on purpose — keeping a JS fallback means keeping the dependency being
+ * removed. `XYD_NATIVE=0` therefore errors instead of silently degrading.
+ */
+let nativeCache: Record<string, unknown> | null | undefined;
+function loadNative(): Record<string, unknown> {
+  if (process.env.XYD_NATIVE === "0") {
+    throw new Error(
+      "XYD_NATIVE=0 is not supported by SDK generation: it has no JS fallback, " +
+        "because the TypeScript opensdk packages it used to depend on are being retired.",
+    );
   }
+  if (nativeCache === undefined) {
+    const embedded = (globalThis as Record<string, unknown>).__xydNativeCore as
+      | Record<string, unknown>
+      | undefined;
+    if (embedded?.openapi2opensdk) {
+      nativeCache = embedded;
+    } else {
+      try {
+        nativeCache = createRequire(import.meta.url)("@xyd-js/native");
+      } catch {
+        nativeCache = null;
+      }
+    }
+  }
+  if (!nativeCache) {
+    throw new Error(
+      "@xyd-js/native is required for SDK generation and could not be resolved. " +
+        "Build it with `pnpm --filter @xyd-js/native build:native`, and make sure the " +
+        "deployed image ships packages/xyd-native including its platform .node binary.",
+    );
+  }
+  return nativeCache;
+}
+
+const GEN_FN_BY_LANG: Record<string, string> = {
+  go: "opensdkGenerateGo",
+  node: "opensdkGenerateNode",
+  python: "opensdkGeneratePython",
+  ruby: "opensdkGenerateRuby",
+  java: "opensdkGenerateJava",
+  dotnet: "opensdkGenerateDotnet",
+  rust: "opensdkGenerateRust",
+};
+
+// Inlined from @xyd-js/opensdk-framework's registry. Load-bearing: the API imposes no
+// language allowlist (a target can be created as "typescript" or "rs"), and the old
+// `getEmitter` accepted these aliases — indexing GEN_FN_BY_LANG directly would throw.
+const languageAliases: Record<string, string> = {
+  typescript: "node",
+  ts: "node",
+  node: "node",
+  javascript: "node",
+  js: "node",
+  go: "go",
+  golang: "go",
+  python: "python",
+  py: "python",
+  ruby: "ruby",
+  rb: "ruby",
+  java: "java",
+  rust: "rust",
+  rs: "rust",
+  csharp: "dotnet",
+  "c#": "dotnet",
+  cs: "dotnet",
+  dotnet: "dotnet",
+  ".net": "dotnet",
+};
+function resolveLanguage(input: string): string {
+  const key = input.toLowerCase();
+  return languageAliases[key] ?? key;
+}
+
+// Inlined from @xyd-js/opensdk-core (pure). Objects merge recursively; arrays and
+// scalars replace.
+function isPlainObject(v: unknown): v is Record<string, unknown> {
+  return typeof v === "object" && v !== null && !Array.isArray(v);
+}
+function deepMerge(
+  target: Record<string, unknown>,
+  source: Record<string, unknown>,
+): Record<string, unknown> {
+  const out: Record<string, unknown> = { ...target };
+  for (const [k, v] of Object.entries(source)) {
+    if (v === undefined) continue;
+    const prev = out[k];
+    out[k] = isPlainObject(prev) && isPlainObject(v) ? deepMerge(prev, v) : v;
+  }
+  return out;
+}
+function mergeBehaviorOverrides(
+  ...layers: (Record<string, unknown> | undefined)[]
+): Record<string, unknown> | undefined {
+  const present = layers.filter(isPlainObject);
+  if (present.length === 0) return undefined;
+  return present.reduce((acc, l) => deepMerge(acc, l), {});
+}
+
+// Inlined from @xyd-js/opensdk-framework's write.ts — the disk-less writeProject.
+// NOT droppable here (unlike the wizard preview, which filters `.sdk/` out): the lock
+// manifest ships inside the delivered zip / git PR, and the mergeJson canonicalization
+// is what makes a later `opensdk generate` hash the same bytes and correctly detect a
+// user-edited sdk.json as modified.
+const SDK_LOCK_FILENAME = ".sdk/sdk.lock";
+const SDK_IGNORE_FILENAME = ".sdkignore";
+const SDK_BASE_DIR = ".sdk/base";
+const MANIFEST_SCHEMA_VERSION = 1;
+
+function materializeProject(
+  files: Record<string, string | { content: string; writeMode?: string }>,
+  options: { generator?: string; merge?: boolean } = {},
+): Record<string, string> {
+  const sha256 = (content: string) =>
+    createHash("sha256").update(content, "utf8").digest("hex");
+
+  const out: Record<string, string> = {};
+  const manifestFiles: Record<string, string> = {};
+  for (const [rel, value] of Object.entries(files)) {
+    if (
+      rel === SDK_LOCK_FILENAME ||
+      rel === SDK_IGNORE_FILENAME ||
+      rel.startsWith(`${SDK_BASE_DIR}/`)
+    ) {
+      throw new Error(
+        `materializeProject: the file map may not emit ${rel} (it owns .sdk/)`,
+      );
+    }
+    const entry = typeof value === "string" ? { content: value } : value;
+    const content =
+      ((entry as { writeMode?: string }).writeMode ?? "overwrite") ===
+      "mergeJson"
+        ? `${JSON.stringify(JSON.parse(entry.content), null, 2)}\n`
+        : entry.content;
+    out[rel] = content;
+    const hash = sha256(content);
+    manifestFiles[rel] = hash;
+    if (
+      options.merge &&
+      ((entry as { writeMode?: string }).writeMode ?? "overwrite") ===
+        "overwrite"
+    ) {
+      out[`${SDK_BASE_DIR}/${hash}`] = content;
+    }
+  }
+
+  const manifest = {
+    schemaVersion: MANIFEST_SCHEMA_VERSION,
+    generator: options.generator ?? "opensdk",
+    files: Object.fromEntries(
+      Object.entries(manifestFiles).sort(([a], [b]) =>
+        a < b ? -1 : a > b ? 1 : 0,
+      ),
+    ),
+  };
+  out[SDK_LOCK_FILENAME] = `${JSON.stringify(manifest, null, 2)}\n`;
+  return out;
 }
 
 /** Canonical language → the sdk.json section key (aliases the emitters accept).
@@ -254,7 +407,7 @@ export async function generateSdkFileMap(o: {
    * read it without pulling (and unzipping) the whole artifact. */
   sdkJson: string;
 }> {
-  ensureEmitters();
+  const native = loadNative();
   // The custom sdk.json (wizard flow), if any: pull the per-language section +
   // the global behavior/publish/grouping — mirrors the wizard's runOpensdkPreview.
   const config = o.sdkJson;
@@ -266,23 +419,27 @@ export async function generateSdkFileMap(o: {
   // → the converter, alongside grouping.
   const behavior = config
     ? mergeBehaviorOverrides(
-        config.behavior as Parameters<typeof mergeBehaviorOverrides>[0],
-        section.behavior as Parameters<typeof mergeBehaviorOverrides>[0],
+        config.behavior as Record<string, unknown> | undefined,
+        section.behavior as Record<string, unknown> | undefined,
       )
     : undefined;
-  const ir = openapi2opensdk(
-    o.doc as unknown as Parameters<typeof openapi2opensdk>[0],
-    config
-      ? {
-          sdkName: (config.sdkName as string | undefined) ?? o.sdkName,
-          sdkBehavior: behavior as never,
-          mountRules: (
-            config.grouping as { mountRules?: Record<string, string> }
-          )?.mountRules,
-          operationHints: (config.grouping as { operationHints?: unknown })
-            ?.operationHints as never,
-        }
-      : undefined,
+  // The shim this replaces defaulted `options` to `{}` and ALWAYS stringified, so it
+  // passed "{}" (never undefined) when there was no config — replicated here verbatim.
+  const converterOptions = config
+    ? {
+        sdkName: (config.sdkName as string | undefined) ?? o.sdkName,
+        sdkBehavior: behavior,
+        mountRules: (config.grouping as { mountRules?: Record<string, string> })
+          ?.mountRules,
+        operationHints: (config.grouping as { operationHints?: unknown })
+          ?.operationHints,
+      }
+    : {};
+  const ir = JSON.parse(
+    (native.openapi2opensdk as (d: string, o: string) => string)(
+      JSON.stringify(o.doc),
+      JSON.stringify(converterOptions),
+    ),
   );
   // The SDK's PACKAGE version must be valid semver — a spec `info.version` like
   // "v1" bakes an unpublishable version into the manifest (npm/gems reject it).
@@ -310,7 +467,9 @@ export async function generateSdkFileMap(o: {
       } as never;
   }
 
-  const emitter = getEmitter(o.language);
+  const canonical = resolveLanguage(o.language);
+  const genFn = GEN_FN_BY_LANG[canonical];
+  if (!genFn) throw new Error(`unsupported SDK language: ${o.language}`);
   // The generated package is named after the SDK's OWN id (the user's deliberate
   // slug, e.g. "livesession-api-sdk"), so it matches the target id
   // (`<sdk-id>-<language>`). Fall back to the display name / spec title for
@@ -336,7 +495,14 @@ export async function generateSdkFileMap(o: {
   // `.sdk/sdk.lock` regen manifest (via materializeProject, the disk-less
   // writeProject). apitoolchain adds only a root `sdk.json` (regen config; `spec`
   // → the live registry), then hands the file map to opensdk.
-  const project = generateFileMap(ir, emitter, options);
+  // Unlike the converter shim above, the orchestrator passed `undefined` (not "{}")
+  // for an empty options bag — the other convention, replicated here.
+  const project = JSON.parse(
+    (native[genFn] as (s: string, o?: string) => string)(
+      JSON.stringify(ir),
+      Object.keys(options).length ? JSON.stringify(options) : undefined,
+    ),
+  ) as Record<string, string | { content: string; writeMode?: string }>;
   const sdkJsonDoc: Record<string, unknown> = {
     $schema: "https://unpkg.com/@xyd-js/opensdk-cli/sdk.schema.json",
     version: 1,
@@ -365,7 +531,7 @@ export async function generateSdkFileMap(o: {
     writeMode: "skipIfExists",
   };
 
-  const files = await materializeProject(project, { generator: "opensdk" });
+  const files = materializeProject(project, { generator: "opensdk" });
   return {
     files,
     packageName,

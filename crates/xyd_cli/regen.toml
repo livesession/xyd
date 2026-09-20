@@ -1,6 +1,11 @@
-# Rust-native regen config for the xyd CLI. Consumed by:
-#   cargo run -q -p xyd_opencli2rust --bin regen -- crates/xyd_cli
+# Rust-native regen config for the xyd CLI. Consumed by (from the repo root):
+#   cargo run -q --manifest-path opensdk/Cargo.toml -p opencli2rust --bin regen -- crates/xyd_cli
 # (which reads opencli.json → opencli2rust → write_project → cargo fmt).
+#
+# The `--manifest-path` is what makes this a TWO-workspace invocation: the regen
+# driver lives in the `opensdk` submodule while its target — this crate — lives
+# here. `cargo run` does not change directory, so the `crates/xyd_cli` argument
+# still resolves against the repo root.
 generator = "opencli2rust"
 opencli   = "opencli.json"
 crate     = "xyd_cli"

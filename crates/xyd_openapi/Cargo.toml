@@ -16,6 +16,12 @@ publish = false
 serde = { workspace = true }
 serde_json = { workspace = true }
 serde_yaml = "0.9"
+# The spec loader/dereferencer moved to the `opensdk` submodule, which owns the
+# SDK/CLI toolchain that shares it. Being outside this workspace directory, it
+# builds as an ordinary dependency but is NOT covered by `cargo fmt --all` /
+# `cargo clippy --workspace` here; opensdk's CI lints it. A missing checkout
+# fails at manifest-load with the path in the message — see scripts/ensure-submodules.mjs.
+oas_doc = { path = "../../opensdk/crates/oas_doc" }
 xyd_uniform = { path = "../xyd_uniform" }
 
 [dev-dependencies]

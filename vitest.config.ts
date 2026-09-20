@@ -25,6 +25,14 @@ export default defineConfig({
             // (`bun:test`). The root pnpm Vitest can't resolve their bun deps, so
             // never collect them here.
             'packages/apitoolchain-*/**',
+            // xyd-opensdk-uniform is NATIVE-ONLY: its src throws on XYD_NATIVE=0
+            // because the JS emitters it used to fall back to were deleted with
+            // the TypeScript cluster. `pnpm build` does NOT build the napi addon
+            // (xyd-native deliberately names its script build:native), and
+            // tests-unit.yml has no Rust toolchain or submodule checkout — so
+            // collecting these here fails 24 tests on a clean runner. The ffi job
+            // in tests-native.yml builds the .node and owns them.
+            'packages/xyd-opensdk-uniform/**',
             '**/node_modules/**',
             '**/dist/**',
             '**/build/**'

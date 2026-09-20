@@ -9,7 +9,10 @@
     "skipLibCheck": true,
     "noEmit": true,
     "allowImportingTsExtensions": true,
-    "types": ["node"]
+    "types": [
+      "node",
+      "bun"
+    ]
   },
   "include": [
     "api",

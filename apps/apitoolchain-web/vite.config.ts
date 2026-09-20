@@ -128,48 +128,10 @@ export default defineConfig({
         replacement: xyd("xyd-theme-opener/dist/index.js"),
       },
       // OpenSDK pipeline — SERVER-ONLY (the editor's SDK-usage examples run in
-      // the loader / resource route, never the client bundle). Aliased at their
-      // built dist like the rest of the xyd packages.
-      {
-        find: /^@xyd-js\/openapi2opensdk$/,
-        replacement: xyd("xyd-openapi2opensdk/dist/index.js"),
-      },
-      {
-        find: /^@xyd-js\/opensdk-core$/,
-        replacement: xyd("xyd-opensdk-core/dist/index.js"),
-      },
-      {
-        find: /^@xyd-js\/opensdk-cli$/,
-        replacement: xyd("xyd-opensdk-cli/dist/index.js"),
-      },
-      {
-        find: /^@xyd-js\/opensdk-framework$/,
-        replacement: xyd("xyd-opensdk-framework/dist/index.js"),
-      },
-      {
-        find: /^@xyd-js\/opensdk-go$/,
-        replacement: xyd("xyd-opensdk-go/dist/index.js"),
-      },
-      {
-        find: /^@xyd-js\/opensdk-node$/,
-        replacement: xyd("xyd-opensdk-node/dist/index.js"),
-      },
-      {
-        find: /^@xyd-js\/opensdk-python$/,
-        replacement: xyd("xyd-opensdk-python/dist/index.js"),
-      },
-      {
-        find: /^@xyd-js\/opensdk-ruby$/,
-        replacement: xyd("xyd-opensdk-ruby/dist/index.js"),
-      },
-      {
-        find: /^@xyd-js\/opensdk-java$/,
-        replacement: xyd("xyd-opensdk-java/dist/index.js"),
-      },
-      {
-        find: /^@xyd-js\/opensdk-dotnet$/,
-        replacement: xyd("xyd-opensdk-dotnet/dist/index.js"),
-      },
+      // the loader / resource route, never the client bundle). Only
+      // opensdk-uniform is still a TypeScript package: the converters, the seven
+      // emitters and the CLI are Rust now, reached through @xyd-js/native rather
+      // than aliased at a dist that no longer exists.
       {
         find: /^@xyd-js\/opensdk-uniform$/,
         replacement: xyd("xyd-opensdk-uniform/dist/index.js"),

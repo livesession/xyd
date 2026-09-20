@@ -1,3 +1,4 @@
+import { createRequire } from "node:module";
 import {
   DEFAULT_RELEASE_CONFIG,
   prepareRelease,
@@ -5,8 +6,7 @@ import {
   renderChangelogFromHistory,
   renderReleaseManifest,
 } from "@apitoolchain/release-man";
-import { openapi2opensdk } from "@xyd-js/openapi2opensdk";
-import { diffIR, type OpensdkSpecJson } from "@xyd-js/opensdk-core";
+
 import { load as yamlLoad } from "js-yaml";
 import { type FileEntry, gitProviderClient } from "../clients/gitprovider";
 import { registryClient } from "../clients/registry";
@@ -21,6 +21,84 @@ import { storage } from "../storage";
 import { currentVersion, randomId } from "../util";
 import { enqueuePublishForTarget } from "./publish";
 import { generateSdkFileMap, registrySpecRef } from "./sdk";
+
+/**
+ * Release diffing calls the Rust core directly.
+ *
+ * It used to import `openapi2opensdk` and `diffIR` from the TypeScript opensdk packages,
+ * which are being retired. No logic moved: the converter shim already forwarded to Rust,
+ * and `diffIR` is a straight port — verified head-to-head against the TypeScript across
+ * all 27 diff fixtures (27 identical, 0 differing).
+ *
+ * NATIVE-ONLY: `XYD_NATIVE=0` errors rather than silently degrading.
+ */
+let nativeCache: Record<string, unknown> | null | undefined;
+function loadNative(): Record<string, unknown> {
+  if (process.env.XYD_NATIVE === "0") {
+    throw new Error(
+      "XYD_NATIVE=0 is not supported by the release pipeline: it has no JS fallback, " +
+        "because the TypeScript opensdk packages it used to depend on are being retired.",
+    );
+  }
+  if (nativeCache === undefined) {
+    const embedded = (globalThis as Record<string, unknown>).__xydNativeCore as
+      | Record<string, unknown>
+      | undefined;
+    if (embedded?.openapi2opensdk) {
+      nativeCache = embedded;
+    } else {
+      try {
+        nativeCache = createRequire(import.meta.url)("@xyd-js/native");
+      } catch {
+        nativeCache = null;
+      }
+    }
+  }
+  if (!nativeCache) {
+    throw new Error(
+      "@xyd-js/native is required by the release pipeline and could not be resolved. " +
+        "Build it with `pnpm --filter @xyd-js/native build:native`.",
+    );
+  }
+  return nativeCache;
+}
+
+/** The OpenSDK IR document. Passed through to the native surfaces as JSON. */
+interface OpensdkSpecJson {
+  info: { title?: string; version?: string; [key: string]: unknown };
+  resources?: unknown[];
+  types?: unknown[];
+  [key: string]: unknown;
+}
+
+/** OpenAPI doc -> OpenSDK IR. The shim this replaces defaulted `options` to `{}` and
+ * always stringified, so it passed "{}" (never undefined) — replicated verbatim. */
+function openapi2opensdk(
+  doc: unknown,
+  options: Record<string, unknown> = {},
+): OpensdkSpecJson {
+  const native = loadNative();
+  return JSON.parse(
+    (native.openapi2opensdk as (d: string, o: string) => string)(
+      JSON.stringify(doc),
+      JSON.stringify(options),
+    ),
+  ) as OpensdkSpecJson;
+}
+
+/** IR-to-IR breaking-change diff. */
+function diffIR(
+  base: OpensdkSpecJson,
+  head: OpensdkSpecJson,
+): { changes: unknown[] } {
+  const native = loadNative();
+  return JSON.parse(
+    (native.diffIR as (b: string, h: string) => string)(
+      JSON.stringify(base),
+      JSON.stringify(head),
+    ),
+  ) as { changes: unknown[] };
+}
 
 const BOT = { name: "apitoolchain", email: "bot@apitoolchain.dev" };
 
@@ -105,9 +183,7 @@ export async function runRelease(o: {
     const headSpec = await registryClient.fetchSpecRaw(apiId, headSpecVersion);
     if (!headSpec) throw new Error("head spec not found in registry");
     const headDoc = parseSpec(headSpec.text, headSpec.contentType);
-    const headIr = openapi2opensdk(
-      headDoc as unknown as Parameters<typeof openapi2opensdk>[0],
-    );
+    const headIr = openapi2opensdk(headDoc);
 
     // The first release for a connection has no prior version to diff against —
     // it's the INITIAL release at the spec's own version, not an upgrade. Every
@@ -275,12 +351,7 @@ async function loadBaseIr(
   }
   if (baseSpecVersion) {
     const base = await registryClient.fetchSpecRaw(apiId, baseSpecVersion);
-    if (base)
-      return openapi2opensdk(
-        parseSpec(base.text, base.contentType) as unknown as Parameters<
-          typeof openapi2opensdk
-        >[0],
-      );
+    if (base) return openapi2opensdk(parseSpec(base.text, base.contentType));
   }
   return EMPTY_IR;
 }

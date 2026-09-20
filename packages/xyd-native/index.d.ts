@@ -44,6 +44,14 @@ export declare function compileMdx(source: string, settingsJson: string, baseDir
  */
 export declare function createWatcher(root: string, opts: WatchOpts, onChange: (err: Error | null, batch: JsChange[]) => void): Watcher
 
+/**
+ * Parity target: `diffIR(base, head)` from `@xyd-js/opensdk-core`.
+ *
+ * `js_name` pins the exact export name — napi would otherwise lowercase the
+ * trailing acronym to `diffIr`, and the TypeScript callers spell it `diffIR`.
+ */
+export declare function diffIR(baseJson: string, headJson: string): string
+
 /** `findIndexPage()` — "" when neither index.md nor index.mdx exists under cwd. */
 export declare function findIndexPage(cwd: string): string
 
@@ -116,19 +124,37 @@ export declare function opencli2go(specJson: string, optionsJson?: string | unde
 
 export declare function opencli2rust(specJson: string, optionsJson?: string | undefined | null): string
 
-export declare function opensdkGenerateDotnet(specJson: string): string
+/**
+ * `specJson` is the parsed OpenCLI document; `optionsJson` is
+ * `{ regions?: string[], globalOptionsPerCommand?: boolean }`.
+ */
+export declare function opencliToReferences(specJson: string, optionsJson?: string | undefined | null): string
 
-export declare function opensdkGenerateGo(specJson: string): string
+export declare function opensdkDocsDotnet(specJson: string, optionsJson?: string | undefined | null): string
 
-export declare function opensdkGenerateJava(specJson: string): string
+export declare function opensdkDocsGo(specJson: string, optionsJson?: string | undefined | null): string
 
-export declare function opensdkGenerateNode(specJson: string): string
+export declare function opensdkDocsJava(specJson: string, optionsJson?: string | undefined | null): string
 
-export declare function opensdkGeneratePython(specJson: string): string
+export declare function opensdkDocsNode(specJson: string, optionsJson?: string | undefined | null): string
 
-export declare function opensdkGenerateRuby(specJson: string): string
+export declare function opensdkDocsPython(specJson: string, optionsJson?: string | undefined | null): string
 
-export declare function opensdkGenerateRust(specJson: string): string
+export declare function opensdkDocsRuby(specJson: string, optionsJson?: string | undefined | null): string
+
+export declare function opensdkGenerateDotnet(specJson: string, optionsJson?: string | undefined | null): string
+
+export declare function opensdkGenerateGo(specJson: string, optionsJson?: string | undefined | null): string
+
+export declare function opensdkGenerateJava(specJson: string, optionsJson?: string | undefined | null): string
+
+export declare function opensdkGenerateNode(specJson: string, optionsJson?: string | undefined | null): string
+
+export declare function opensdkGeneratePython(specJson: string, optionsJson?: string | undefined | null): string
+
+export declare function opensdkGenerateRuby(specJson: string, optionsJson?: string | undefined | null): string
+
+export declare function opensdkGenerateRust(specJson: string, optionsJson?: string | undefined | null): string
 
 /** pluginJsonView core: Reference[] JSON → string[] JSON. */
 export declare function pluginJsonView(referencesJson: string): string

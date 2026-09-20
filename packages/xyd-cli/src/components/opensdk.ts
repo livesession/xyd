@@ -14,13 +14,60 @@ import colors from 'picocolors';
 
 const OPENSDK_PACKAGE = '@xyd-js/opensdk-cli';
 
+/** The toolchain releases itself: `opensdk/.github/workflows/release.yml` publishes
+ * `opensdk-<triple>` on a tag push. This pointed at xyd's own releases, where the
+ * assets were built but attached to nothing, so every install 404'd and silently
+ * took the npm fallback below — which is how it kept installing a stale
+ * `0.1.0-build.342` long after the Rust toolchain existed.
+ *
+ * Kept in lockstep with OPENSDK_ASSET_BASE in crates/xyd_cli/src/v0/opensdk.rs:
+ * two CLIs, one download URL, and updating only one of them is exactly the bug
+ * this comment exists to prevent a second time. */
+const OPENSDK_ASSET_BASE = 'https://github.com/livesession/opensdk/releases/latest/download';
+
 interface OpensdkManifest {
     name: 'opensdk';
     package: string;
     version: string;
-    mode: 'dev' | 'published';
+    mode: 'dev' | 'published' | 'native';
     binPath: string;
     installedAt: string;
+}
+
+/** The `opensdk-<triple>` asset for this host, or null on a platform whose binary
+ * isn't built yet (darwin-x64, windows — no matrix leg yet). */
+function targetTriple(): string | null {
+    if (process.platform === 'linux' && process.arch === 'x64') return 'linux-x64';
+    if (process.platform === 'linux' && process.arch === 'arm64') return 'linux-arm64';
+    if (process.platform === 'darwin' && process.arch === 'arm64') return 'darwin-arm64';
+    return null;
+}
+
+/** Try the native payload: download `opensdk-<triple>` into `dir`.
+ *
+ * Returns null when it isn't available for this host — an unbuilt platform, or an
+ * asset that isn't published yet (404) — and the caller falls back to npm. Any other
+ * failure throws: silently falling back would hide a real outage behind a slower,
+ * node-requiring install. `XYD_OPENSDK_URL` overrides the URL (canary, testing). */
+async function installNativeOpensdk(dir: string): Promise<string | null> {
+    let url = process.env.XYD_OPENSDK_URL;
+    if (!url) {
+        const triple = targetTriple();
+        if (!triple) return null;
+        url = `${OPENSDK_ASSET_BASE}/opensdk-${triple}`;
+    }
+
+    console.log(`Downloading opensdk (${url})...`);
+    const response = await fetch(url);
+    if (response.status === 404) return null;
+    if (!response.ok) {
+        throw new Error(`downloading ${url} failed with HTTP ${response.status}`);
+    }
+
+    const dest = path.join(dir, 'opensdk');
+    fs.writeFileSync(dest, new Uint8Array(await response.arrayBuffer()));
+    fs.chmodSync(dest, 0o755);
+    return dest;
 }
 
 /** Where CLI components live: user-global (survives CLI upgrades, permission-safe
@@ -53,17 +100,42 @@ export function resolveOpensdkBin(): string | null {
     return fs.existsSync(manifest.binPath) ? manifest.binPath : null;
 }
 
-/** Dev mode: the monorepo's built opensdk-cli, found by walking up from this module. */
+/** Dev mode: the monorepo's built opensdk, found by walking up from this module.
+ *
+ * The toolchain lives in the `opensdk` submodule, whose cargo workspace is rooted at
+ * the submodule root — so its target dir is `opensdk/target/`, not this repo's
+ * `crates/target/`. The legacy `packages/xyd-opensdk-cli/dist/cli.js` candidate is
+ * gone with the TypeScript cluster. Kept in lockstep with `find_monorepo_opensdk_bin`
+ * in crates/xyd_cli/src/v0/opensdk.rs — the two CLIs must resolve the same bin. */
 function findMonorepoOpensdkBin(): string | null {
+    // Anchor on the repo root FIRST, then look only inside it. Scanning for a
+    // directory named `opensdk` at every ancestor escapes the repo after three
+    // hops, and on a machine with the standalone opensdk clone checked out
+    // beside xyd it resolved to THAT — an unrelated tree at whatever revision
+    // happened to be there, not the pinned submodule. It then passed locally and
+    // failed in CI, where no such sibling exists.
     let dir = path.dirname(fileURLToPath(import.meta.url));
     for (let i = 0; i < 6; i++) {
-        const candidate = path.join(dir, 'packages', 'xyd-opensdk-cli', 'dist', 'cli.js');
-        if (fs.existsSync(candidate)) return candidate;
+        if (fs.existsSync(path.join(dir, '.gitmodules'))) {
+            return (
+                [
+                    path.join(dir, 'opensdk', 'target', 'release', 'opensdk'),
+                    path.join(dir, 'opensdk', 'target', 'debug', 'opensdk'),
+                ].find((c) => fs.existsSync(c)) ?? null
+            );
+        }
         const parent = path.dirname(dir);
         if (parent === dir) break;
         dir = parent;
     }
     return null;
+}
+
+/** Whether a payload is the LEGACY npm toolchain (a `cli.js` needing a JS runtime)
+ * rather than the native binary. Inferred from the extension, not a manifest field,
+ * so installs written by either CLI stay interoperable. */
+export function needsJsRuntime(bin: string): boolean {
+    return bin.endsWith('.js');
 }
 
 export async function installOpensdk(): Promise<boolean> {
@@ -79,6 +151,7 @@ export async function installOpensdk(): Promise<boolean> {
     let binPath: string;
     let mode: OpensdkManifest['mode'];
     let version = 'latest';
+    let nativeBin: string | null;
 
     if (process.env.XYD_DEV_MODE) {
         // Dev mode: no npm — point at the monorepo build (external deps resolve
@@ -86,14 +159,26 @@ export async function installOpensdk(): Promise<boolean> {
         const devBin = findMonorepoOpensdkBin();
         if (!devBin) {
             console.error(
-                colors.red('XYD_DEV_MODE is set but packages/xyd-opensdk-cli/dist/cli.js was not found — run `pnpm build` first.'),
+                colors.red(
+                    'XYD_DEV_MODE is set but no opensdk build was found — run ' +
+                        '`cargo build --manifest-path opensdk/Cargo.toml -p opensdk --bin opensdk --release` ' +
+                        'first (`git submodule update --init opensdk` if that directory is empty).',
+                ),
             );
             return false;
         }
         binPath = devBin;
         mode = 'dev';
         version = 'workspace';
+    } else if ((nativeBin = await installNativeOpensdk(dir).catch((err) => {
+        console.error(colors.red(`Failed to download opensdk: ${err instanceof Error ? err.message : err}`));
+        return null;
+    }))) {
+        binPath = nativeBin;
+        mode = 'native';
     } else {
+        // LEGACY: no `opensdk-<triple>` asset published yet. Delete this branch once
+        // a release ships them — that is what unblocks retiring the TS toolchain.
         console.log(`Installing ${OPENSDK_PACKAGE}...`);
         fs.writeFileSync(
             path.join(dir, 'package.json'),
@@ -148,7 +233,11 @@ export function runOpensdk(args: string[]): never {
         console.error(`Install it with: ${colors.bold('xyd components install opensdk')}`);
         process.exit(1);
     }
-    const result = spawnSync(process.execPath, [bin, ...args], { stdio: 'inherit' });
+    // A `.js` payload is the LEGACY npm toolchain and runs under this Node; the native
+    // binary is executed directly.
+    const result = needsJsRuntime(bin)
+        ? spawnSync(process.execPath, [bin, ...args], { stdio: 'inherit' })
+        : spawnSync(bin, args, { stdio: 'inherit' });
     if (result.error) {
         console.error(colors.red(`Failed to run opensdk: ${result.error.message}`));
         process.exit(1);

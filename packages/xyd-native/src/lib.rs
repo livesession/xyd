@@ -13,7 +13,9 @@ mod openapi2opencli;
 mod openapi2opensdk;
 mod opencli2go;
 mod opencli2rust;
+mod opencli_uniform;
 mod opensdk;
+mod opensdk_diff;
 mod settings;
 mod uniform;
 

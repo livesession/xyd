@@ -24,10 +24,14 @@ Run on push / PR to `master` and `dev`.
 | tests-unit.yml | `pnpm test:unit` (root Vitest — all packages' offline unit tests) | Node + pnpm |
 | tests-e2e.yml | Playwright e2e | Node + pnpm + Chromium |
 | tests-node-support.yml | Node 22/23/24 × npm/pnpm/bun matrix | Node + pnpm |
-| tests-opencli-pipeline.yml | OpenAPI → OpenCLI → Go pipeline, incl. Go-gated layers (`O2G_GO_SMOKE=1`, `E2E_CLI=1`) excluded by the root Vitest config | Node + pnpm + **Go 1.22** |
+| tests-opencli-pipeline.yml | `@xyd-js/opencli` — the OpenCLI core model + schema round-trip | Node + pnpm |
+| tests-native.yml | cargo fmt/clippy/test on `crates/`, the same inside the `xwrite` and `opensdk` submodules, then the napi build + through-shim vitest in both modes | Node + pnpm + **Rust stable** |
 
-`tests-opencli-pipeline.yml` is `paths`-scoped to `packages/xyd-opencli*` so the heavier Go job
-only runs when the pipeline packages change. See `13.api-definitions/OpenCliCliGeneration.md`.
+`tests-opencli-pipeline.yml` is `paths`-scoped to `packages/xyd-opencli/**`; the generators
+downstream of it are Rust and live in the `opensdk` submodule, so their smoke/e2e tiers run in
+that repo's own CI. `tests-native.yml`'s `paths` list spells the submodules `xwrite` / `opensdk`
+(the gitlink paths), not `xwrite/**` / `opensdk/**`, which would never match. See
+`13.api-definitions/OpenCliCliGeneration.md` and `13.api-definitions/OpenSdkGeneration.md`.
 
 ## Stable Release
 

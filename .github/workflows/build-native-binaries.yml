@@ -50,14 +50,17 @@ jobs:
             bun-target: bun-linux-x64
             engine: xyd-linux-x64
             artifact: xyd-native-linux-x64
+            opensdk: opensdk-linux-x64
           - os: ubuntu-24.04-arm
             bun-target: bun-linux-arm64
             engine: xyd-linux-arm64
             artifact: xyd-native-linux-arm64
+            opensdk: opensdk-linux-arm64
           - os: macos-14
             bun-target: bun-darwin-arm64
             engine: xyd-darwin-arm64
             artifact: xyd-native-darwin-arm64
+            opensdk: opensdk-darwin-arm64
     steps:
       - uses: actions/checkout@v4
         with:
@@ -95,10 +98,12 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
-      # Two Rust build trees are exercised here: the napi core in
-      # packages/xyd-native/target (for the bun engine) and the CLI crate in
+      # Three Rust build trees are exercised here: the napi core in
+      # packages/xyd-native/target (for the bun engine), the CLI crate in
       # crates/target (for the outer Rust binary — heavy: it embeds the ~233 MB
-      # engine, so this cache entry is large but well within the repo limit).
+      # engine, so this cache entry is large but well within the repo limit), and
+      # opensdk/target (the toolchain binary — the `opensdk` submodule's
+      # workspace is rooted at the submodule root, so it has its OWN target dir).
       - name: Setup cargo cache
         uses: actions/cache@v4
         with:
@@ -107,7 +112,8 @@ jobs:
             ~/.cargo/git
             packages/xyd-native/target
             crates/target
-          key: ${{ runner.os }}-${{ runner.arch }}-cargo-native-cli-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'packages/xyd-native/Cargo.toml') }}
+            opensdk/target
+          key: ${{ runner.os }}-${{ runner.arch }}-cargo-native-cli-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'opensdk/Cargo.lock', 'packages/xyd-native/Cargo.toml') }}
           restore-keys: |
             ${{ runner.os }}-${{ runner.arch }}-cargo-native-cli-
 
@@ -198,4 +204,54 @@ jobs:
         with:
           name: ${{ matrix.artifact }}
           path: crates/target/release/${{ matrix.artifact }}
+          if-no-files-found: error
+
+      # The opensdk TOOLCHAIN binary (~5.6 MB, no embedded engine — it neither renders
+      # docs nor spawns bun, so none of the engine staging above applies to it). Shipping
+      # it as a release asset is what lets `xyd components install opensdk` download a
+      # node-free binary instead of fetching the toolchain from npm — see
+      # crates/xyd_cli/src/v0/opensdk.rs. Reuses this job's Rust toolchain + cargo cache.
+      #
+      # Built from the `opensdk` submodule's OWN workspace (rooted at the submodule
+      # root, not at its crates/), so both the manifest and the output tree are
+      # `opensdk/…` — unlike the xyd binary above, which stays in crates/target.
+      - name: Build the opensdk toolchain binary
+        working-directory: opensdk
+        run: cargo build -p opensdk --bin opensdk --release
+
+      - name: Stage opensdk under the artifact name
+        shell: bash
+        run: cp opensdk/target/release/opensdk "opensdk/target/release/${{ matrix.opensdk }}"
+
+      # Same darwin constraint as the outer xyd binary: an unsigned arm64 Mach-O won't
+      # run at all. No `allow-jit` needed — it's a pure codegen CLI.
+      - name: 'Codesign + verify opensdk (darwin)'
+        if: matrix.os == 'macos-14'
+        run: |
+          codesign -s - --force "opensdk/target/release/${{ matrix.opensdk }}"
+          codesign --verify --strict --verbose=2 "opensdk/target/release/${{ matrix.opensdk }}"
+          echo "opensdk codesign ok"
+
+      # Node-free proof: generate a real SDK from a spec in a clean temp dir with no
+      # node_modules and no repo on PATH. Asserts the binary actually emitted files
+      # rather than merely exiting 0.
+      - name: 'Smoke: node-free opensdk generate'
+        shell: bash
+        run: |
+          BIN="$PWD/opensdk/target/release/${{ matrix.opensdk }}"
+          WORK="$RUNNER_TEMP/opensdk-smoke"
+          rm -rf "$WORK"; mkdir -p "$WORK"
+          cp opensdk/crates/openapi2opensdk/__fixtures__/1.basic/input.json "$WORK/openapi.json"
+          cd "$WORK"
+          "$BIN" --help > /dev/null
+          "$BIN" generate --lang go --spec ./openapi.json --output ./out
+          test -f ./out/go.mod
+          test -f ./out/client.go
+          echo "opensdk smoke ok: $(find ./out -type f | wc -l) files generated"
+
+      - name: Upload opensdk artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.opensdk }}
+          path: opensdk/target/release/${{ matrix.opensdk }}
           if-no-files-found: error

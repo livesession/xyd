@@ -1,0 +1,280 @@
+[
+  {
+    "title": "audio <command>",
+    "canonical": "audio",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "audio",
+      "fullPath": "transcribe-api audio <command>",
+      "group": [
+        "Commands",
+        "audio"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "transcribe-api audio <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "transcriptions",
+            "type": "command",
+            "description": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "audio transcriptions <command>",
+    "canonical": "audio/transcriptions",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "audio transcriptions",
+      "fullPath": "transcribe-api audio transcriptions <command>",
+      "group": [
+        "Commands",
+        "audio",
+        "transcriptions"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "transcribe-api audio transcriptions <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "create",
+            "type": "command",
+            "description": "Transcribes audio into the input language."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "audio transcriptions create",
+    "canonical": "audio/transcriptions/create",
+    "description": "Transcribes audio into the input language.",
+    "category": "cli",
+    "context": {
+      "path": "audio transcriptions create",
+      "fullPath": "transcribe-api audio transcriptions create [options]",
+      "group": [
+        "Commands",
+        "audio",
+        "transcriptions"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "transcribe-api audio transcriptions create \\\n  --model gpt-4o-transcribe"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "application/json",
+                    "language": "json",
+                    "code": "{\n  \"text\": \"string\",\n  \"language\": \"string\",\n  \"duration\": 0\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Options",
+        "properties": [
+          {
+            "name": "--model",
+            "type": "string",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "--language",
+            "type": "string",
+            "description": "The language of the input audio (ISO-639-1)."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "models <command>",
+    "canonical": "models",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "models",
+      "fullPath": "transcribe-api models <command>",
+      "group": [
+        "Commands",
+        "models"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "transcribe-api models <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "retrieve",
+            "type": "command",
+            "description": "Retrieve a model instance."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "models retrieve",
+    "canonical": "models/retrieve",
+    "description": "Retrieve a model instance.",
+    "category": "cli",
+    "context": {
+      "path": "models retrieve",
+      "fullPath": "transcribe-api models retrieve <model>",
+      "group": [
+        "Commands",
+        "models"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "transcribe-api models retrieve 'Example data'"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "description": "Example response",
+          "examples": [
+            {
+              "codeblock": {
+                "title": "200",
+                "tabs": [
+                  {
+                    "title": "application/json",
+                    "language": "json",
+                    "code": "{\n  \"id\": \"gpt-4o-transcribe\",\n  \"object\": \"model\"\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "model",
+            "type": "string",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

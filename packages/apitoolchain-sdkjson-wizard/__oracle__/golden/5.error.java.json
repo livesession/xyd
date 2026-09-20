@@ -1,0 +1,4 @@
+{
+  "files": [],
+  "error": "[openapi2opensdk] openapi2opensdk: not an OpenAPI 3.x document — missing or unsupported \"openapi\" version field (got undefined)"
+}

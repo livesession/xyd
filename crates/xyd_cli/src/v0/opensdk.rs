@@ -1,13 +1,25 @@
 //! Native `opensdk` runner + `components …opensdk` install/uninstall.
 //!
-//! Port of `packages/xyd-cli/src/components/opensdk.ts`. The opensdk toolchain
-//! (`@xyd-js/opensdk-cli`) is installed ON DEMAND into a self-contained, user-global
+//! The opensdk toolchain is installed ON DEMAND into a self-contained, user-global
 //! component dir (`~/.config/xyd/components/opensdk`) so the default `xyd` stays lean.
 //! State (a `component.json` manifest) and payload live together there.
 //!
-//! One divergence from the TS CLI: that spawns Node (`process.execPath`) on the bin JS.
-//! This binary is NODE-FREE, so `run()` resolves a JS runtime from PATH (or an override)
-//! to execute the toolchain — see [`resolve_js_runtime`].
+//! # Two payload kinds
+//!
+//! The toolchain is now a Rust binary (`opensdk/cli` in the
+//! pinned `opensdk` submodule, ~5.6 MB, node-free),
+//! published as an `opensdk-<triple>` GitHub release asset next to `xyd-<triple>`.
+//! [`install`] downloads that. Until a release carrying those assets exists, it falls
+//! back to the LEGACY npm payload (`@xyd-js/opensdk-cli`, a `cli.js` needing a JS
+//! runtime) so the command keeps working mid-rollout.
+//!
+//! [`run`] tells them apart by extension — a `.js` bin is spawned under a resolved JS
+//! runtime, anything else is executed directly. Inferring rather than reading a manifest
+//! field keeps both CLIs interoperable: the TS CLI writes no `kind`, and it only ever
+//! reads `binPath`.
+//!
+//! REMOVE THE FALLBACK (and [`resolve_js_runtime`], and the `pm` import) once a release
+//! ships the assets — that is what unblocks deleting the TypeScript toolchain.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -17,6 +29,26 @@ use super::pm;
 use crate::opencli::runtime::Error;
 
 const OPENSDK_PACKAGE: &str = "@xyd-js/opensdk-cli";
+
+/// The toolchain releases itself now: `opensdk/.github/workflows/release.yml`
+/// publishes `opensdk-<triple>` on a tag push. This used to point at xyd's own
+/// releases, where the assets were built but attached to nothing — every install
+/// 404'd and silently took the npm fallback below.
+///
+/// `/releases/latest/` resolves to the newest NON-prerelease release, so this URL
+/// stays 404 until opensdk ships a stable (no `-` in the tag) version.
+const OPENSDK_ASSET_BASE: &str = "https://github.com/livesession/opensdk/releases/latest/download";
+
+/// The `opensdk-<triple>` asset for the host, or `None` on a platform whose binary is
+/// not built yet (darwin-x64, windows — `compile.ts` supports them; no matrix leg yet).
+fn target_triple() -> Option<&'static str> {
+    match (std::env::consts::OS, std::env::consts::ARCH) {
+        ("linux", "x86_64") => Some("linux-x64"),
+        ("linux", "aarch64") => Some("linux-arm64"),
+        ("macos", "aarch64") => Some("darwin-arm64"),
+        _ => None,
+    }
+}
 
 fn manifest_path() -> Result<PathBuf, Error> {
     Ok(paths::opensdk_component_dir()?.join("component.json"))
@@ -31,18 +63,34 @@ fn resolve_opensdk_bin() -> Option<PathBuf> {
     path.exists().then_some(path)
 }
 
-/// Dev mode: the monorepo's built opensdk-cli, found by walking up from the binary.
+/// Dev mode: the monorepo's built opensdk, found by walking up from this binary.
+///
+/// The toolchain lives in the `opensdk` submodule, whose cargo workspace is rooted
+/// at the submodule root — so its target dir is `opensdk/target/`, not this repo's
+/// `crates/target/`. The legacy `packages/xyd-opensdk-cli/dist/cli.js` candidate is
+/// gone with the TypeScript cluster; keeping it would only mean a dev tree silently
+/// resolving to a path that can no longer exist.
 fn find_monorepo_opensdk_bin() -> Option<PathBuf> {
     let exe = std::env::current_exe().ok()?;
     let mut dir = exe.parent()?.to_path_buf();
     for _ in 0..6 {
-        let candidate = dir
-            .join("packages")
-            .join("xyd-opensdk-cli")
-            .join("dist")
-            .join("cli.js");
-        if candidate.exists() {
-            return Some(candidate);
+        // Anchor on the repo root FIRST, then look only inside it. Scanning for
+        // a directory named `opensdk` at every ancestor escapes the repo after a
+        // few hops, and on a machine with the standalone opensdk clone checked
+        // out beside xyd it resolves to THAT — an unrelated tree at whatever
+        // revision happens to be there, not the pinned submodule.
+        if dir.join(".gitmodules").exists() {
+            let candidates = [
+                dir.join("opensdk")
+                    .join("target")
+                    .join("release")
+                    .join("opensdk"),
+                dir.join("opensdk")
+                    .join("target")
+                    .join("debug")
+                    .join("opensdk"),
+            ];
+            return candidates.into_iter().find(|c| c.exists());
         }
         match dir.parent() {
             Some(parent) if parent != dir => dir = parent.to_path_buf(),
@@ -52,8 +100,70 @@ fn find_monorepo_opensdk_bin() -> Option<PathBuf> {
     None
 }
 
+/// Download the `opensdk-<triple>` release asset to `dest` and mark it executable.
+///
+/// Returns `Ok(false)` when the asset simply isn't published yet (404) — the caller
+/// then takes the legacy npm path. Any other failure (network, IO, unexpected status)
+/// is a hard error: silently falling back would hide a real outage behind a slower,
+/// node-requiring install.
+async fn download_opensdk_binary(url: &str, dest: &Path) -> Result<bool, Error> {
+    let response = reqwest::get(url)
+        .await
+        .map_err(|e| Error::Invalid(format!("cannot reach {url}: {e}")))?;
+
+    if response.status() == reqwest::StatusCode::NOT_FOUND {
+        return Ok(false);
+    }
+    if !response.status().is_success() {
+        return Err(Error::Invalid(format!(
+            "downloading {url} failed with HTTP {}",
+            response.status()
+        )));
+    }
+
+    let bytes = response
+        .bytes()
+        .await
+        .map_err(|e| Error::Invalid(format!("cannot read {url}: {e}")))?;
+    std::fs::write(dest, &bytes)
+        .map_err(|e| Error::Invalid(format!("cannot write {}: {e}", dest.display())))?;
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(dest, std::fs::Permissions::from_mode(0o755))
+            .map_err(|e| Error::Invalid(format!("cannot chmod {}: {e}", dest.display())))?;
+    }
+    Ok(true)
+}
+
+/// Try the native payload: download `opensdk-<triple>` into `dir`.
+///
+/// `Ok(None)` means "not available for this host" — either an unbuilt platform or an
+/// asset that isn't published yet — and the caller should take the legacy npm path.
+/// `XYD_OPENSDK_URL` overrides the asset URL (canary channel, local testing, mirrors).
+async fn install_native(dir: &Path) -> Result<Option<PathBuf>, Error> {
+    let url = match std::env::var("XYD_OPENSDK_URL") {
+        Ok(value) if !value.is_empty() => value,
+        _ => match target_triple() {
+            Some(triple) => format!("{OPENSDK_ASSET_BASE}/opensdk-{triple}"),
+            // Unbuilt platform: fall through to npm rather than erroring, so those
+            // users keep a working toolchain.
+            None => return Ok(None),
+        },
+    };
+
+    println!("Downloading opensdk ({url})...");
+    let dest = dir.join("opensdk");
+    if download_opensdk_binary(&url, &dest).await? {
+        Ok(Some(dest))
+    } else {
+        Ok(None)
+    }
+}
+
 /// `xyd components install opensdk` — idempotent install of the toolchain.
-pub fn install() -> Result<(), Error> {
+pub async fn install() -> Result<(), Error> {
     if let Some(existing) = resolve_opensdk_bin() {
         println!("✓ opensdk is already installed ({})", existing.display());
         return Ok(());
@@ -68,7 +178,7 @@ pub fn install() -> Result<(), Error> {
     let version: &str;
 
     if std::env::var_os("XYD_DEV_MODE").is_some() {
-        // Dev mode: no npm — point at the monorepo build.
+        // Dev mode: no download, no npm — point at the monorepo build.
         match find_monorepo_opensdk_bin() {
             Some(bin) => {
                 bin_path = bin;
@@ -77,13 +187,21 @@ pub fn install() -> Result<(), Error> {
             }
             None => {
                 return Err(Error::Invalid(
-                    "XYD_DEV_MODE is set but packages/xyd-opensdk-cli/dist/cli.js was not \
-                     found — run `pnpm build` first."
+                    "XYD_DEV_MODE is set but no opensdk build was found — run \
+                     `cargo build --manifest-path opensdk/Cargo.toml -p opensdk \
+                     --bin opensdk --release` first (the toolchain lives in the opensdk \
+                     submodule; `git submodule update --init opensdk` if it is empty)."
                         .into(),
                 ));
             }
         }
+    } else if let Some(native) = install_native(&dir).await? {
+        bin_path = native;
+        mode = "native";
+        version = "latest";
     } else {
+        // LEGACY: no `opensdk-<triple>` asset published yet. Delete this branch once
+        // a release ships them — see the module docs.
         println!("Installing {OPENSDK_PACKAGE}...");
         // Written in the same key order as the TS CLI (name, private, dependencies).
         let package_json = format!(
@@ -147,18 +265,35 @@ pub fn run() -> Result<(), Error> {
         }
     };
 
-    let runtime = resolve_js_runtime()?;
-    let status = Command::new(&runtime)
-        .arg(&bin)
-        .args(&passthrough)
-        .status()
-        .map_err(|e| {
-            Error::Invalid(format!(
-                "Failed to run opensdk with {}: {e}",
-                runtime.display()
-            ))
-        })?;
+    let status = if needs_js_runtime(&bin) {
+        let runtime = resolve_js_runtime()?;
+        Command::new(&runtime)
+            .arg(&bin)
+            .args(&passthrough)
+            .status()
+            .map_err(|e| {
+                Error::Invalid(format!(
+                    "Failed to run opensdk with {}: {e}",
+                    runtime.display()
+                ))
+            })?
+    } else {
+        Command::new(&bin)
+            .args(&passthrough)
+            .status()
+            .map_err(|e| Error::Invalid(format!("Failed to run {}: {e}", bin.display())))?
+    };
     std::process::exit(status.code().unwrap_or(1));
+}
+
+/// Whether a payload is the LEGACY npm toolchain (a `cli.js` needing a JS runtime)
+/// rather than the native binary.
+///
+/// Inferred from the extension, not a manifest field, so the Rust and TS CLIs stay
+/// interoperable across an install written by either — the TS CLI writes no `kind` and
+/// only ever reads `binPath`.
+fn needs_js_runtime(bin: &Path) -> bool {
+    bin.extension().is_some_and(|e| e == "js")
 }
 
 /// Resolve a JS runtime to execute the toolchain's `cli.js` in this node-free binary:
@@ -236,7 +371,40 @@ fn civil_from_days(z: i64) -> (i64, u32, u32) {
 
 #[cfg(test)]
 mod tests {
-    use super::{civil_from_days, json_string};
+    use super::{civil_from_days, json_string, needs_js_runtime, target_triple};
+    use std::path::Path;
+
+    #[test]
+    fn js_payloads_need_a_runtime_native_ones_do_not() {
+        // LEGACY npm payload.
+        assert!(needs_js_runtime(Path::new("/c/opensdk/cli.js")));
+        // Native binary — extensionless, which is how the release asset lands.
+        assert!(!needs_js_runtime(Path::new("/c/opensdk/opensdk")));
+        assert!(!needs_js_runtime(Path::new(
+            "/repo/opensdk/target/release/opensdk"
+        )));
+        // A dir named like the asset must not be mistaken for JS.
+        assert!(!needs_js_runtime(Path::new("/c/opensdk-darwin-arm64")));
+    }
+
+    /// The host must map to a built asset — these are exactly the three triples in
+    /// `build-native-binaries.yml`. Guards against the matrix and this table drifting:
+    /// a mismatch means `install` silently takes the npm path on a supported platform.
+    #[test]
+    fn host_triple_matches_a_release_asset() {
+        let triple = target_triple();
+        if cfg!(all(
+            any(target_os = "linux", target_os = "macos"),
+            any(target_arch = "x86_64", target_arch = "aarch64")
+        )) && !cfg!(all(target_os = "macos", target_arch = "x86_64"))
+        {
+            let triple = triple.expect("a built platform must resolve a triple");
+            assert!(
+                ["linux-x64", "linux-arm64", "darwin-arm64"].contains(&triple),
+                "unexpected triple {triple}"
+            );
+        }
+    }
 
     #[test]
     fn civil_from_days_known_dates() {

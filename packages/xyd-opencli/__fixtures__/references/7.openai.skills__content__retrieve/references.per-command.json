@@ -1,0 +1,145 @@
+[
+  {
+    "title": "skills <command>",
+    "canonical": "skills",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "skills",
+      "fullPath": "openai skills <command>",
+      "group": [
+        "Commands",
+        "skills"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "openai skills <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "content",
+            "type": "command",
+            "description": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "skills content <command>",
+    "canonical": "skills/content",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "skills content",
+      "fullPath": "openai skills content <command>",
+      "group": [
+        "Commands",
+        "skills",
+        "content"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "openai skills content <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "list",
+            "type": "command",
+            "description": "Download a skill zip bundle by its ID."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "skills content list",
+    "canonical": "skills/content/list",
+    "description": "Download a skill zip bundle by its ID.",
+    "category": "cli",
+    "context": {
+      "path": "skills content list",
+      "fullPath": "openai skills content list <skill-id>",
+      "group": [
+        "Commands",
+        "skills",
+        "content"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "openai skills content list 'Example data'"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "skill-id",
+            "type": "string",
+            "description": "The identifier of the skill to download.",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

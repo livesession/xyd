@@ -1,0 +1,369 @@
+[
+  {
+    "title": "stores <command>",
+    "canonical": "stores",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "stores",
+      "fullPath": "stores-api stores <command>",
+      "group": [
+        "Commands",
+        "stores"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "stores-api stores <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "items",
+            "type": "command",
+            "description": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "stores items <command>",
+    "canonical": "stores/items",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "stores items",
+      "fullPath": "stores-api stores items <command>",
+      "group": [
+        "Commands",
+        "stores",
+        "items"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "stores-api stores items <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "list",
+            "type": "command",
+            "description": "List items in a store."
+          },
+          {
+            "name": "create",
+            "type": "command",
+            "description": "Create an item in a store."
+          },
+          {
+            "name": "retrieve",
+            "type": "command",
+            "description": "Retrieve a store item."
+          },
+          {
+            "name": "archive",
+            "type": "command",
+            "description": "Archive a store item."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "stores items list",
+    "canonical": "stores/items/list",
+    "description": "List items in a store.",
+    "category": "cli",
+    "context": {
+      "path": "stores items list",
+      "fullPath": "stores-api stores items list [options] <store-id>",
+      "group": [
+        "Commands",
+        "stores",
+        "items"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "stores-api stores items list 'Example data'"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "store-id",
+            "type": "string",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Options",
+        "properties": [
+          {
+            "name": "--limit",
+            "type": "string",
+            "description": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "stores items create",
+    "canonical": "stores/items/create",
+    "description": "Create an item in a store.",
+    "category": "cli",
+    "context": {
+      "path": "stores items create",
+      "fullPath": "stores-api stores items create [options] <store-id>",
+      "group": [
+        "Commands",
+        "stores",
+        "items"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "stores-api stores items create 'Example data' \\\n  --sku 'Example data'"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "store-id",
+            "type": "string",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Options",
+        "properties": [
+          {
+            "name": "--sku",
+            "type": "string",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "--quantity",
+            "type": "string",
+            "description": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "stores items retrieve",
+    "canonical": "stores/items/retrieve",
+    "description": "Retrieve a store item.",
+    "category": "cli",
+    "context": {
+      "path": "stores items retrieve",
+      "fullPath": "stores-api stores items retrieve <store-id> <item-id>",
+      "group": [
+        "Commands",
+        "stores",
+        "items"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "stores-api stores items retrieve 'Example data' 'Example data'"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "store-id",
+            "type": "string",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "item-id",
+            "type": "string",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "stores items archive",
+    "canonical": "stores/items/archive",
+    "description": "Archive a store item.",
+    "category": "cli",
+    "context": {
+      "path": "stores items archive",
+      "fullPath": "stores-api stores items archive <store-id> <item-id>",
+      "group": [
+        "Commands",
+        "stores",
+        "items"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "stores-api stores items archive 'Example data' 'Example data'"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "store-id",
+            "type": "string",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "item-id",
+            "type": "string",
+            "description": "",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

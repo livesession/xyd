@@ -1,0 +1,213 @@
+[
+  {
+    "title": "organization <command>",
+    "canonical": "organization",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "organization",
+      "fullPath": "openai organization <command>",
+      "group": [
+        "Commands",
+        "organization"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "openai organization <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "projects",
+            "type": "command",
+            "description": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "organization projects <command>",
+    "canonical": "organization/projects",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "organization projects",
+      "fullPath": "openai organization projects <command>",
+      "group": [
+        "Commands",
+        "organization",
+        "projects"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "openai organization projects <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "rate-limits",
+            "type": "command",
+            "description": ""
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "organization projects rate-limits <command>",
+    "canonical": "organization/projects/rate-limits",
+    "description": "",
+    "category": "cli",
+    "context": {
+      "path": "organization projects rate-limits",
+      "fullPath": "openai organization projects rate-limits <command>",
+      "group": [
+        "Commands",
+        "organization",
+        "projects",
+        "rate-limits"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "openai organization projects rate-limits <command>"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Commands",
+        "properties": [
+          {
+            "name": "list",
+            "type": "command",
+            "description": "Returns the rate limits per model for a project."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "organization projects rate-limits list",
+    "canonical": "organization/projects/rate-limits/list",
+    "description": "Returns the rate limits per model for a project.",
+    "category": "cli",
+    "context": {
+      "path": "organization projects rate-limits list",
+      "fullPath": "openai organization projects rate-limits list [options] <project-id>",
+      "group": [
+        "Commands",
+        "organization",
+        "projects",
+        "rate-limits"
+      ]
+    },
+    "examples": {
+      "groups": [
+        {
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "CLI Tool",
+                    "language": "shell",
+                    "code": "openai organization projects rate-limits list 'Example data'"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "definitions": [
+      {
+        "title": "Arguments",
+        "properties": [
+          {
+            "name": "project-id",
+            "type": "string",
+            "description": "The ID of the project.",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Options",
+        "properties": [
+          {
+            "name": "--limit",
+            "type": "string",
+            "description": "A limit on the number of objects to be returned. The default is 100.\n"
+          },
+          {
+            "name": "--after",
+            "type": "string",
+            "description": "A cursor for use in pagination. `after` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, ending with obj_foo, your subsequent call can include after=obj_foo in order to fetch the next page of the list.\n"
+          },
+          {
+            "name": "--before",
+            "type": "string",
+            "description": "A cursor for use in pagination. `before` is an object ID that defines your place in the list. For instance, if you make a list request and receive 100 objects, beginning with obj_foo, your subsequent call can include before=obj_foo in order to fetch the previous page of the list.\n"
+          }
+        ]
+      }
+    ]
+  }
+]

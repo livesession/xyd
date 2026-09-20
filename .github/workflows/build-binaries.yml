@@ -80,9 +80,9 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             packages/xyd-native/target
-          key: ${{ runner.os }}-${{ runner.arch }}-cargo-native-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'packages/xyd-native/Cargo.toml') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-cargo-native-engine-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'opensdk/Cargo.lock', 'packages/xyd-native/Cargo.toml') }}
           restore-keys: |
-            ${{ runner.os }}-${{ runner.arch }}-cargo-native-
+            ${{ runner.os }}-${{ runner.arch }}-cargo-native-engine-
 
       - name: Install dependencies
         run: pnpm i

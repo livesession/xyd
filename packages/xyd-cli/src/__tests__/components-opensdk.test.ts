@@ -14,7 +14,28 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 const pkgRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const CLI = path.join(pkgRoot, 'dist/index.js');
-const DEV_BIN = path.resolve(pkgRoot, '../xyd-opensdk-cli/dist/cli.js');
+
+// Mirrors findMonorepoOpensdkBin() in src/components/opensdk.ts. The toolchain
+// lives in the `opensdk` submodule, whose workspace is rooted at the submodule
+// root — hence `opensdk/target/`, not this repo's `crates/target/`.
+const repoRoot = path.resolve(pkgRoot, '../..');
+const DEV_BIN = [
+    path.join(repoRoot, 'opensdk/target/release/opensdk'),
+    path.join(repoRoot, 'opensdk/target/debug/opensdk'),
+].find((c) => fs.existsSync(c));
+
+// The passthrough tier needs a REAL opensdk bin, which only exists where the
+// Rust workspace has been built — `tests-unit.yml` has no Rust toolchain, so
+// it legitimately cannot run there. Set XYD_OPENSDK_DEV_BIN=1 in any job that
+// DOES build it to turn a missing bin into a hard failure, so the tier cannot
+// silently stop running.
+const REQUIRE_DEV_BIN = process.env.XYD_OPENSDK_DEV_BIN === '1';
+if (REQUIRE_DEV_BIN && !DEV_BIN) {
+    throw new Error(
+        'XYD_OPENSDK_DEV_BIN=1 but no opensdk bin found — build it with ' +
+            '`cargo build --manifest-path opensdk/Cargo.toml -p opensdk --bin opensdk`.',
+    );
+}
 
 let componentsDir: string;
 
@@ -26,8 +47,8 @@ function runCli(args: string[]) {
 }
 
 beforeAll(() => {
-    // Root `pretest:unit` runs `pnpm build`, so both dists exist locally and in CI.
-    if (!fs.existsSync(CLI) || !fs.existsSync(DEV_BIN)) {
+    // Root `pretest:unit` runs `pnpm build`, so the CLI dist exists locally and in CI.
+    if (!fs.existsSync(CLI)) {
         throw new Error('dist not built — run `pnpm build` first (root pretest:unit does this).');
     }
     componentsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'xyd-opensdk-'));
@@ -37,7 +58,7 @@ afterAll(() => {
     fs.rmSync(componentsDir, { recursive: true, force: true });
 });
 
-describe('xyd opensdk (component passthrough)', () => {
+describe('xyd opensdk (no component installed)', () => {
     it('is a friendly error before install', () => {
         const r = runCli(['opensdk', '--help']);
         expect(r.status).not.toBe(0);
@@ -55,6 +76,10 @@ describe('xyd opensdk (component passthrough)', () => {
         expect(r.stderr).not.toContain('Unknown or unexpected option');
     });
 
+});
+
+// Needs a real built opensdk bin — see REQUIRE_DEV_BIN above.
+describe.skipIf(!DEV_BIN)('xyd opensdk (component passthrough)', () => {
     it('components install opensdk succeeds in dev mode', () => {
         const r = runCli(['components', 'install', 'opensdk']);
         expect(r.status, r.stderr).toBe(0);

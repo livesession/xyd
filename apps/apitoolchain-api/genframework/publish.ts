@@ -1,8 +1,8 @@
-import { mkdtempSync, rmSync } from "node:fs";
+import { spawnSync } from "node:child_process";
+import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { publishTarget } from "@xyd-js/opensdk-cli";
 import JSZip from "jszip";
 import * as jobQ from "../dbnode/jobs";
 import * as notifQ from "../dbnode/notifications";
@@ -102,9 +102,93 @@ async function alreadyPublished(
   }
 }
 
+/** Resolve the `opensdk` binary: explicit override, the installed component, the
+ * monorepo dev build, then PATH. */
+function resolveOpensdkBin(): string {
+  const override = process.env.XYD_OPENSDK_BIN;
+  if (override) return override;
+  const candidates = [
+    join(
+      process.env.XYD_COMPONENTS_DIR ||
+        join(process.env.HOME ?? "", ".config", "xyd", "components"),
+      "opensdk",
+      "opensdk",
+    ),
+    // The toolchain lives in the `opensdk` submodule, whose workspace is rooted
+    // at the submodule root — so `opensdk/target/`, not this repo's `crates/target/`.
+    join(process.cwd(), "..", "..", "opensdk", "target", "release", "opensdk"),
+  ];
+  return candidates.find((c) => existsSync(c)) ?? "opensdk";
+}
+
+export interface PublishInvocation {
+  args: string[];
+  /** Merged into the child's env. The token goes HERE, never into argv. */
+  env: Record<string, string>;
+}
+
 /**
- * Publish a registry connection's SDK to its package registry via the reused
- * opensdk `publishTarget()` (shells out to npm/twine/gem/… on the gateway host).
+ * Build the `opensdk publish` invocation.
+ *
+ * Split out as a pure function so the command can be asserted in a test without
+ * actually publishing anything — the argv/env wiring is the part worth pinning.
+ *
+ * The token is passed through the environment on purpose: argv is world-readable
+ * via `ps`, so a token given as a flag would leak to every user on the host. The
+ * CLI reads OPENSDK_PUBLISH_TOKEN when no sdk.json publish config names a tokenEnv.
+ */
+export function buildPublishInvocation(o: {
+  language: string;
+  dir: string;
+  registry?: string;
+  token?: string;
+  version?: string;
+  tag?: string;
+  dryRun?: boolean;
+}): PublishInvocation {
+  const args = ["publish", "--lang", o.language, "--output", o.dir];
+  if (o.registry) args.push("--registry", o.registry);
+  if (o.version) args.push("--package-version", o.version);
+  if (o.tag) args.push("--tag", o.tag);
+  if (o.dryRun) args.push("--dry-run");
+  const env: Record<string, string> = {};
+  if (o.token) env.OPENSDK_PUBLISH_TOKEN = o.token;
+  return { args, env };
+}
+
+/** Publish one generated SDK by shelling out to the opensdk binary.
+ *
+ * Replaces the TypeScript `publishTarget()`, which was a dispatcher over per-language
+ * spawnSync publishers — subprocess orchestration with no compute, so the binary's own
+ * CLI is the right seam rather than a native binding. Throws on failure, matching the
+ * old behavior the caller relies on. */
+function publishTarget(
+  language: string,
+  dir: string,
+  opts: { registry?: string; token?: string; version?: string; tag?: string },
+): void {
+  const bin = resolveOpensdkBin();
+  const { args, env } = buildPublishInvocation({ language, dir, ...opts });
+  const r = spawnSync(bin, args, {
+    stdio: "inherit",
+    env: { ...process.env, ...env },
+  });
+  if (r.error) {
+    throw new Error(
+      `Failed to run ${bin}: ${r.error.message}. Install it with ` +
+        "`xyd components install opensdk`, or set XYD_OPENSDK_BIN.",
+    );
+  }
+  if (r.status !== 0) {
+    throw new Error(
+      `opensdk publish failed for ${language} (exit ${r.status}).`,
+    );
+  }
+}
+
+/**
+ * Publish a registry connection's SDK to its package registry via the opensdk
+ * binary (which shells out to npm/twine/gem/… on the gateway host).
  * Runs off the request path (fire-and-forget); the `jobs` row is the queue-ready
  * seam. Mirrors runGitSync's shape (job + notification + status transitions).
  *
