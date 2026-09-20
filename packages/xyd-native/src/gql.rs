@@ -13,7 +13,7 @@ pub fn gql_schema_to_references(
     sources: Vec<String>,
     options_json: Option<String>,
 ) -> Result<String> {
-    let options: Option<gql::Options> = match options_json.as_deref() {
+    let options: Option<apitoolchain_gql::Options> = match options_json.as_deref() {
         Some(s) => Some(
             serde_json::from_str(s)
                 .map_err(|e| Error::from_reason(format!("[gql] bad options: {e}")))?,
@@ -21,9 +21,9 @@ pub fn gql_schema_to_references(
         None => None,
     };
 
-    let resolved: Vec<String> = sources.iter().map(|s| gql::resolve_source(s)).collect();
+    let resolved: Vec<String> = sources.iter().map(|s| apitoolchain_gql::resolve_source(s)).collect();
 
-    let (references, route) = gql::gql_schema_to_references_full(&resolved, options)
+    let (references, route) = apitoolchain_gql::gql_schema_to_references_full(&resolved, options)
         .map_err(|e| Error::from_reason(format!("[gql] {e}")))?;
 
     serde_json::to_string(&serde_json::json!({

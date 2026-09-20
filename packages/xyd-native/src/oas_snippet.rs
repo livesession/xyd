@@ -34,7 +34,7 @@ pub fn oas_to_snippet(input_json: String) -> Result<String> {
             .to_string()
     };
 
-    let snippet = oas_snippet::oas_to_snippet(
+    let snippet = apitoolchain_oas_snippet::oas_to_snippet(
         &spec,
         &str_of("path"),
         &str_of("method"),

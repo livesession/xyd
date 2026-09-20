@@ -6,11 +6,11 @@ packages:
   # the crates behind them. Listed EXPLICITLY, never as a glob: the rest of
   # apitoolchain/packages/ is standalone bun islands with their own lockfiles,
   # which a glob would adopt and break `pnpm i` on.
-  - 'apitoolchain/packages/uniform'
-  - 'apitoolchain/packages/gql'
-  - 'apitoolchain/packages/openapi'
-  - 'apitoolchain/packages/mcp-uniform'
-  - 'apitoolchain/packages/opencli'
+  - 'apitoolchain/packages/apitoolchain-uniform'
+  - 'apitoolchain/packages/apitoolchain-gql'
+  - 'apitoolchain/packages/apitoolchain-openapi'
+  - 'apitoolchain/packages/apitoolchain-mcp-uniform'
+  - 'apitoolchain/packages/apitoolchain-opencli'
   - packages/xyd-ask-ai/examples/*
   - '!packages/xyd-js'
   # standalone bun package (own @apitoolchain scope), managed outside the @xyd-js pnpm workspace

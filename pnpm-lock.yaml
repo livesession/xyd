@@ -143,7 +143,7 @@ importers:
         specifier: ^5.1.4
         version: 5.1.4(typescript@5.9.3)(vite@7.3.3(@types/node@24.12.3)(jiti@2.7.0)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)(yaml@2.8.4))
 
-  apitoolchain/packages/gql:
+  apitoolchain/packages/apitoolchain-gql:
     dependencies:
       '@graphql-tools/merge':
         specifier: ^8.4.0
@@ -153,7 +153,7 @@ importers:
         version: 10.0.33(graphql@16.14.0)
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../uniform
+        version: link:../apitoolchain-uniform
       github-slugger:
         specifier: ^2.0.0
         version: 2.0.0
@@ -178,14 +178,14 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@24.12.3)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
 
-  apitoolchain/packages/mcp-uniform:
+  apitoolchain/packages/apitoolchain-mcp-uniform:
     dependencies:
       '@xyd-js/openapi':
         specifier: workspace:*
-        version: link:../openapi
+        version: link:../apitoolchain-openapi
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../uniform
+        version: link:../apitoolchain-uniform
     optionalDependencies:
       '@xyd-js/native':
         specifier: workspace:*
@@ -204,7 +204,7 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@24.12.3)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
 
-  apitoolchain/packages/openapi:
+  apitoolchain/packages/apitoolchain-openapi:
     dependencies:
       '@apidevtools/json-schema-ref-parser':
         specifier: ^12.0.2
@@ -220,7 +220,7 @@ importers:
         version: 0.0.0-build-e80ab83-20260920140634
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../uniform
+        version: link:../apitoolchain-uniform
       github-slugger:
         specifier: ^2.0.0
         version: 2.0.0
@@ -254,7 +254,7 @@ importers:
         specifier: ^2.1.8
         version: 2.1.9(@types/node@24.12.3)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
 
-  apitoolchain/packages/opencli:
+  apitoolchain/packages/apitoolchain-opencli:
     optionalDependencies:
       '@xyd-js/native':
         specifier: workspace:*
@@ -279,7 +279,7 @@ importers:
         specifier: ^2.1.1
         version: 2.1.9(@types/node@20.9.0)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
 
-  apitoolchain/packages/uniform:
+  apitoolchain/packages/apitoolchain-uniform:
     dependencies:
       '@mdx-js/mdx':
         specifier: ^3.1.0
@@ -360,10 +360,10 @@ importers:
         version: link:../../packages/xyd-framework
       '@xyd-js/gql':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/gql
+        version: link:../../apitoolchain/packages/apitoolchain-gql
       '@xyd-js/openapi':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/openapi
+        version: link:../../apitoolchain/packages/apitoolchain-openapi
       '@xyd-js/theme-cosmo':
         specifier: workspace:*
         version: link:../../packages/xyd-theme-cosmo
@@ -390,7 +390,7 @@ importers:
         version: link:../../packages/xyd-ui
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/uniform
+        version: link:../../apitoolchain/packages/apitoolchain-uniform
       gestalt:
         specifier: ^177.0.0
         version: 177.0.12(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -478,7 +478,7 @@ importers:
         version: link:../xyd-core
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/uniform
+        version: link:../../apitoolchain/packages/apitoolchain-uniform
       openux-js:
         specifier: 0.0.0-pre.1
         version: 0.0.0-pre.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -738,7 +738,7 @@ importers:
         version: link:../xyd-plugins
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/uniform
+        version: link:../../apitoolchain/packages/apitoolchain-uniform
       codehike:
         specifier: ^1.0.2
         version: 1.1.0
@@ -884,7 +884,7 @@ importers:
         version: link:../../specs/xyd-cli
       '@xyd-js/opencli':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/opencli
+        version: link:../../apitoolchain/packages/apitoolchain-opencli
       '@xyd-js/opencli-completion':
         specifier: workspace:*
         version: link:../xyd-opencli-completion
@@ -1033,7 +1033,7 @@ importers:
         version: link:../xyd-native
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/uniform
+        version: link:../../apitoolchain/packages/apitoolchain-uniform
       codehike:
         specifier: ^1.0.7
         version: 1.1.0
@@ -1094,19 +1094,19 @@ importers:
         version: link:../xyd-core
       '@xyd-js/gql':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/gql
+        version: link:../../apitoolchain/packages/apitoolchain-gql
       '@xyd-js/mcp-uniform':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/mcp-uniform
+        version: link:../../apitoolchain/packages/apitoolchain-mcp-uniform
       '@xyd-js/native':
         specifier: workspace:*
         version: link:../xyd-native
       '@xyd-js/openapi':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/openapi
+        version: link:../../apitoolchain/packages/apitoolchain-openapi
       '@xyd-js/opencli':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/opencli
+        version: link:../../apitoolchain/packages/apitoolchain-opencli
       '@xyd-js/sources':
         specifier: workspace:*
         version: link:../xyd-sources
@@ -1291,7 +1291,7 @@ importers:
         version: link:../xyd-router
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/uniform
+        version: link:../../apitoolchain/packages/apitoolchain-uniform
       cli-spinners:
         specifier: ^3.0.0
         version: 3.4.0
@@ -1604,19 +1604,19 @@ importers:
         version: link:../xyd-framework
       '@xyd-js/gql':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/gql
+        version: link:../../apitoolchain/packages/apitoolchain-gql
       '@xyd-js/native':
         specifier: workspace:*
         version: link:../xyd-native
       '@xyd-js/openapi':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/openapi
+        version: link:../../apitoolchain/packages/apitoolchain-openapi
       '@xyd-js/plugins':
         specifier: workspace:*
         version: link:../xyd-plugins
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/uniform
+        version: link:../../apitoolchain/packages/apitoolchain-uniform
       json-schema-to-zod:
         specifier: ^2.6.1
         version: 2.8.1
@@ -1715,7 +1715,7 @@ importers:
     dependencies:
       '@xyd-js/opencli':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/opencli
+        version: link:../../apitoolchain/packages/apitoolchain-opencli
     devDependencies:
       '@types/node':
         specifier: ^20.9.0
@@ -1737,7 +1737,7 @@ importers:
     dependencies:
       '@xyd-js/opencli':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/opencli
+        version: link:../../apitoolchain/packages/apitoolchain-opencli
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.1
@@ -1791,7 +1791,7 @@ importers:
     dependencies:
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/uniform
+        version: link:../../apitoolchain/packages/apitoolchain-uniform
       js-yaml:
         specifier: ^4.1.0
         version: 4.1.1
@@ -1804,7 +1804,7 @@ importers:
         version: 20.9.0
       '@xyd-js/openapi':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/openapi
+        version: link:../../apitoolchain/packages/apitoolchain-openapi
       openapi-types:
         specifier: ^12.1.3
         version: 12.1.3
@@ -1948,19 +1948,19 @@ importers:
         version: link:../xyd-framework
       '@xyd-js/gql':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/gql
+        version: link:../../apitoolchain/packages/apitoolchain-gql
       '@xyd-js/mcp-uniform':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/mcp-uniform
+        version: link:../../apitoolchain/packages/apitoolchain-mcp-uniform
       '@xyd-js/native':
         specifier: workspace:*
         version: link:../xyd-native
       '@xyd-js/openapi':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/openapi
+        version: link:../../apitoolchain/packages/apitoolchain-openapi
       '@xyd-js/opencli':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/opencli
+        version: link:../../apitoolchain/packages/apitoolchain-opencli
       '@xyd-js/opensdk-uniform':
         specifier: workspace:*
         version: link:../xyd-opensdk-uniform
@@ -1972,7 +1972,7 @@ importers:
         version: link:../xyd-themes
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/uniform
+        version: link:../../apitoolchain/packages/apitoolchain-uniform
       codehike:
         specifier: ^1.0.3
         version: 1.1.0
@@ -2204,7 +2204,7 @@ importers:
         version: link:../xyd-framework
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/uniform
+        version: link:../../apitoolchain/packages/apitoolchain-uniform
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^1.3.1
@@ -2247,10 +2247,10 @@ importers:
     dependencies:
       '@xyd-js/openapi':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/openapi
+        version: link:../../apitoolchain/packages/apitoolchain-openapi
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/uniform
+        version: link:../../apitoolchain/packages/apitoolchain-uniform
       typia:
         specifier: ^12.0.0
         version: 12.1.1(@types/node@24.12.3)(typescript@5.8.3)
@@ -2314,7 +2314,7 @@ importers:
         version: 19.2.14
       '@xyd-js/uniform':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/uniform
+        version: link:../../apitoolchain/packages/apitoolchain-uniform
       react-docgen:
         specifier: ^7.1.1
         version: 7.1.1
@@ -2919,7 +2919,7 @@ importers:
         version: 1.15.0(@types/node@24.12.3)
       '@xyd-js/opencli':
         specifier: workspace:*
-        version: link:../../apitoolchain/packages/opencli
+        version: link:../../apitoolchain/packages/apitoolchain-opencli
       typescript:
         specifier: ^5.6.2
         version: 5.8.3

@@ -12,7 +12,7 @@ use serde_json::Value;
 pub fn uniform_to_input_json_schema(reference_json: String) -> Result<String> {
     let reference: Value = serde_json::from_str(&reference_json)
         .map_err(|e| Error::from_reason(format!("[uniform] bad reference: {e}")))?;
-    let out = uniform::converters::uniform_to_input_json_schema(&reference)
+    let out = apitoolchain_uniform::converters::uniform_to_input_json_schema(&reference)
         .unwrap_or(Value::Null);
     serde_json::to_string(&out)
         .map_err(|e| Error::from_reason(format!("[uniform] serialize: {e}")))
@@ -23,7 +23,7 @@ pub fn uniform_to_input_json_schema(reference_json: String) -> Result<String> {
 pub fn plugin_json_view(references_json: String) -> Result<String> {
     let references: Vec<Value> = serde_json::from_str(&references_json)
         .map_err(|e| Error::from_reason(format!("[uniform] bad references: {e}")))?;
-    let views = uniform::plugins::plugin_json_view(&references);
+    let views = apitoolchain_uniform::plugins::plugin_json_view(&references);
     serde_json::to_string(&views)
         .map_err(|e| Error::from_reason(format!("[uniform] serialize: {e}")))
 }
@@ -45,7 +45,7 @@ pub fn plugin_navigation(input_json: String) -> Result<String> {
         .cloned()
         .unwrap_or_default();
 
-    let out = uniform::plugins::plugin_navigation(&settings, url_prefix, &references)
+    let out = apitoolchain_uniform::plugins::plugin_navigation(&settings, url_prefix, &references)
         .map_err(|e| Error::from_reason(format!("[uniform] {e}")))?;
 
     let result = serde_json::json!({

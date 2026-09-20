@@ -15,7 +15,7 @@
 use napi::bindgen_prelude::*;
 use napi_derive::napi;
 
-use opencli_uniform::{opencli_to_references, OpencliToReferencesOptions};
+use apitoolchain_opencli_uniform::{opencli_to_references, OpencliToReferencesOptions};
 
 /// `specJson` is the parsed OpenCLI document; `optionsJson` is
 /// `{ regions?: string[], globalOptionsPerCommand?: boolean }`.

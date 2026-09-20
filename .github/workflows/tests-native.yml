@@ -317,7 +317,7 @@ jobs:
           # crates), so xyd is the only place where BOTH halves of the
           # differential exist. apitoolchain's own CI runs the =0 half only, and
           # says so.
-          SHIM_PKGS="apitoolchain/packages/gql apitoolchain/packages/openapi apitoolchain/packages/uniform apitoolchain/packages/mcp-uniform packages/xyd-content packages/xyd-plugin-docs"
+          SHIM_PKGS="apitoolchain/packages/apitoolchain-gql apitoolchain/packages/apitoolchain-openapi apitoolchain/packages/apitoolchain-uniform apitoolchain/packages/apitoolchain-mcp-uniform packages/xyd-content packages/xyd-plugin-docs"
           for pkg in $SHIM_PKGS; do
             if [ -d "$pkg/__tests__" ]; then
               echo "=== $pkg (native=1) ==="; (cd "$pkg" && XYD_NATIVE=1 XYD_REQUIRE_NATIVE=1 npx vitest run)

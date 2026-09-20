@@ -28,7 +28,7 @@ pub fn mcp_to_references(surface_json: String) -> Result<String> {
         .and_then(|t| t.as_str())
         .unwrap_or("http");
 
-    let refs = mcp_uniform::mcp_to_references(&mcp_uniform::McpSurface {
+    let refs = apitoolchain_mcp_uniform::mcp_to_references(&apitoolchain_mcp_uniform::McpSurface {
         tools,
         resources,
         server_url,

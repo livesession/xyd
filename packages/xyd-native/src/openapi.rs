@@ -13,7 +13,7 @@ pub fn oap_schema_to_references_from_file(
     path: String,
     options_json: Option<String>,
 ) -> Result<String> {
-    let options: Option<openapi::Options> = match options_json.as_deref() {
+    let options: Option<apitoolchain_openapi::Options> = match options_json.as_deref() {
         Some(s) => Some(
             serde_json::from_str(s)
                 .map_err(|e| Error::from_reason(format!("[openapi] bad options: {e}")))?,
@@ -21,7 +21,7 @@ pub fn oap_schema_to_references_from_file(
         None => None,
     };
 
-    let references = openapi::oap_schema_to_references_from_file(&path, options)
+    let references = apitoolchain_openapi::oap_schema_to_references_from_file(&path, options)
         .map_err(|e| Error::from_reason(format!("[openapi] {e}")))?;
 
     serde_json::to_string(&references)
@@ -44,7 +44,7 @@ pub fn uniform_oas_pages(input_json: String) -> Result<String> {
             .unwrap_or("")
             .to_string()
     };
-    let fused = openapi::fused::uniform_oas_pages(&openapi::fused::FusedInput {
+    let fused = apitoolchain_openapi::fused::uniform_oas_pages(&apitoolchain_openapi::fused::FusedInput {
         source: str_of("source"),
         url_prefix: str_of("urlPrefix"),
         match_route: str_of("matchRoute"),
