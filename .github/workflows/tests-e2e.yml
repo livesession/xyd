@@ -86,12 +86,29 @@ jobs:
 
           SHORT_SHA=${BUILD_VERSION#build-}
 
-          LATEST_BUILD_VERSION=$(npm view @xyd-js/cli versions --json | jq -r '.[] | select(test("^0\\.0\\.0-build-'${SHORT_SHA}'-[0-9]+$")) | .' | sort -V | tail -n1)
-
-          if [ -z "$LATEST_BUILD_VERSION" ]; then
-            echo "❌ No build version found for SHA: ${SHORT_SHA}"
-            exit 1
-          fi
+          # WAIT for the version to appear. Build Release reports success when
+          # `npm publish` returns, but npm does not make the version queryable
+          # until noticeably later — measured on run 35512872074:
+          #   13:13:28  Build Release finishes, green
+          #   13:13:30  this job starts
+          #   13:15:06  @xyd-js/cli 0.0.0-build-2d8edf9-* becomes visible
+          # i.e. the package landed 96s AFTER we looked for it. Retrying the
+          # install alone cannot help, because discovery exits first.
+          for attempt in 1 2 3 4 5 6; do
+            LATEST_BUILD_VERSION=$(npm view @xyd-js/cli versions --json --prefer-online 2>/dev/null \
+              | jq -r '.[] | select(test("^0\\.0\\.0-build-'${SHORT_SHA}'-[0-9]+$")) | .' | sort -V | tail -n1)
+            [ -n "$LATEST_BUILD_VERSION" ] && break
+            if [ "$attempt" -eq 6 ]; then
+              echo "❌ No build version found for SHA: ${SHORT_SHA} after 6 attempts"
+              echo "::error::@xyd-js/cli has no 0.0.0-build-${SHORT_SHA}-* version after ~3.75min."
+              echo "::error::If Build Release was green, the publish never reached the registry; check its publish step."
+              exit 1
+            fi
+            delay=$((attempt * 15))
+            echo "not visible yet (attempt ${attempt}/6); retrying in ${delay}s"
+            sleep "${delay}"
+          done
+          echo "✅ Resolved ${LATEST_BUILD_VERSION}"
 
           echo "📦 Installing @xyd-js/cli@${LATEST_BUILD_VERSION}"
           # This job starts seconds after Build Release finishes publishing ~53
