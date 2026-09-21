@@ -238,6 +238,15 @@ const CLI_LANG_OPTIONS = {
       binName: str('Binary name (default: slug of the CLI name).'),
       edition: str('Rust edition in Cargo.toml (default: "2021").'),
       baseURL: str('Default API base URL baked into the runtime (overridable via <BIN>_BASE_URL).'),
+      versionFrom: {
+        type: 'string',
+        enum: ['spec', 'crate'],
+        description:
+          "Where `--version` reads from. \"spec\" (default) bakes the OpenAPI document's info.version — the API's version. " +
+          '"crate" emits env!("CARGO_PKG_VERSION") — the BINARY\'s version, which cannot drift from Cargo.toml. ' +
+          'Use "crate" when the generated crate is released under its own tag: a release workflow that verifies the tag ' +
+          'against Cargo.toml would otherwise ship a binary whose --version reports something else entirely.',
+      },
     },
   },
 };

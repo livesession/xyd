@@ -182,6 +182,33 @@ and avoids a Go toolchain dependency at generation time).
   from positionals, set query params/body from flags, attach auth from the configured env var,
   call the vendored client, and print the response.
 
+### Releasing a generated CLI
+
+Two version strings exist and they are not the same thing: the OpenCLI document's
+`info.version` (the **API's** version) and the generated crate's `Cargo.toml` version (the
+**binary's**). `--version` reads whichever `versionFrom` selects.
+
+| `versionFrom` | `--version` reports | For |
+|---------------|---------------------|-----|
+| `spec` (default) | the document's `info.version`, baked as a literal | a CLI whose spec version IS its version — xyd's own generated CLI |
+| `crate` | `env!("CARGO_PKG_VERSION")` | a crate released under its own tag |
+
+The default is `spec` because the two real consumers want opposite answers: xyd's generated
+CLI carries a meaningful `info.version` next to a workspace version of `0.0.0`, while
+apitoolchain's crate is released as `v0.1.0` from a spec whose `info.version` is `0.0.0`.
+
+For a released crate, `crate` is the one that cannot lie. `apitoolchain/.github/workflows/release.yml`
+verifies the tag against `cli/Cargo.toml` and refuses to publish a disagreement — but that
+check says nothing about the string compiled into the binary, so under `spec` a tag, a
+manifest and a green CI run could all agree while `--version` reported something else.
+
+`apitoolchain/scripts/release.sh` is the worked example of the surrounding workflow: it bumps
+the manifest, runs the same verification CI does, commits, then tags — in that order, since
+tagging first fails minutes later in CI. It also regenerates first and refuses if `cli/` moved,
+because a generated tree can fall behind the spec committed beside it, and it has a `--retag`
+path for the state a failed release leaves behind (a published tag pointing at the wrong
+commit).
+
 ### opencli2rust (Rust generator)
 
 The Rust sibling of `opencli2go`: same layering (`lib.rs` / `command.rs` / `handler.rs` /
