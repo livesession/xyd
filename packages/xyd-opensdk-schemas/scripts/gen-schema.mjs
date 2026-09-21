@@ -90,6 +90,24 @@ const LANG_OPTIONS = {
         description:
           'Where package.json points. "dist" (default) builds with tsc; "source" points main/types/exports at ./src/index.ts, drops the build/prepare hooks, and scaffolds a .gitignore — for consumers that import the TypeScript directly and never run a build.',
       },
+      // Accepts a bare style string, `true` (= namespace), or {style, name}.
+      // Off unless set, so every golden is untouched.
+      busybox: {
+        description:
+          'Emit the error-helper "busybox" and choose how it is exposed: "static" (on the client), "flat" (named re-exports), or "namespace" (default). `true` means namespace.',
+        oneOf: [
+          { type: 'boolean' },
+          { type: 'string', enum: ['static', 'flat', 'namespace'] },
+          {
+            type: 'object',
+            properties: {
+              style: { type: 'string', enum: ['static', 'flat', 'namespace'] },
+              name: str('Exported symbol name (default: busybox).'),
+            },
+            additionalProperties: false,
+          },
+        ],
+      },
     },
   },
   // packages/xyd-opensdk-ruby/src/types.ts
@@ -320,6 +338,7 @@ const chainSchema = {
           options: { type: 'object', description: 'Emitter options for this language (packageName, modulePath, ...).', additionalProperties: true },
           publish: { $ref: '#/$defs/PublishTarget', description: "Publish target merged over the chain's global publish." },
           tests: { type: 'boolean', description: "Emit the SDK's own test suite (default true)." },
+          format: { type: 'boolean', description: "Run the language's formatter over the generated files before writing them, so .sdk/sdk.lock records the formatted bytes (default false)." },
         },
         additionalProperties: false,
       },
