@@ -44,14 +44,25 @@ export default defineConfig({
             'apitoolchain/apps/**',
             'apitoolchain/opensdk/**',
             'apitoolchain/cli/**',
-            // xyd-opensdk-uniform is NATIVE-ONLY: its src throws on XYD_NATIVE=0
-            // because the JS emitters it used to fall back to were deleted with
-            // the TypeScript cluster. `pnpm build` does NOT build the napi addon
-            // (xyd-native deliberately names its script build:native), and
-            // tests-unit.yml has no Rust toolchain or submodule checkout — so
-            // collecting these here fails 24 tests on a clean runner. The ffi job
-            // in tests-native.yml builds the .node and owns them.
+            // NATIVE-ONLY packages. Their src THROWS when @xyd-js/native does not
+            // load, because the JS implementations they used to fall back to were
+            // deleted. `pnpm build` does NOT build the napi addon (xyd-native
+            // deliberately names its script build:native), and tests-unit.yml has
+            // no Rust toolchain or submodule checkout — so collecting these here
+            // fails on a clean runner. The ffi job in tests-native.yml builds the
+            // .node and owns them, in its "vitest native-only shims" step.
+            //
+            // This list grows whenever a package's fallback is reaped. It started
+            // as xyd-opensdk-uniform alone; gql, uniform and mcp-uniform joined it
+            // when their src/impl-js was deleted. Note the include glob above
+            // deliberately collects 'apitoolchain/packages/*' — so a reaped shim
+            // is collected by default and MUST be excluded explicitly here.
+            // apitoolchain-openapi is absent on purpose: it kept its impl-js and
+            // still runs fine with no addon.
             'packages/xyd-opensdk-uniform/**',
+            'apitoolchain/packages/apitoolchain-gql/**',
+            'apitoolchain/packages/apitoolchain-uniform/**',
+            'apitoolchain/packages/apitoolchain-mcp-uniform/**',
             '**/node_modules/**',
             '**/dist/**',
             '**/build/**'

@@ -21,6 +21,7 @@ import * as React from 'react';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 
 import { deferencedOpenAPI, oapSchemaToReferences } from '@xyd-js/openapi';
 import { gqlSchemaToReferences } from '@xyd-js/gql';
@@ -103,6 +104,29 @@ const GRAPHQL_FIXTURES = [
     '-1.opendocs.flat',
 ];
 
+// @xyd-js/gql is NATIVE-ONLY: its src/impl-js was deleted, so it THROWS when
+// @xyd-js/native is unavailable instead of falling back to JS. Two places
+// legitimately have no addon — the XYD_NATIVE=0 differential leg, and
+// tests-unit.yml, which never builds one — and this block cannot run in either.
+//
+// Skipping is not hiding the failure. The ffi job in tests-native.yml runs this
+// same file WITH the addon, and runs it under XYD_REQUIRE_NATIVE=1, which makes
+// gql's loader throw at IMPORT time if the addon is missing. So the skip can
+// never quietly swallow a broken build: where the equivalence is supposed to be
+// proven, an absent addon is fatal rather than skipped.
+//
+// The OpenAPI block above is deliberately NOT gated — @xyd-js/openapi kept its
+// JS fallback, so it is still a real two-implementation differential.
+const gqlNativeUnavailable = (() => {
+    if (process.env.XYD_NATIVE === '0') return true;
+    try {
+        const native = createRequire(import.meta.url)('@xyd-js/native');
+        return typeof native?.gqlSchemaToReferences !== 'function';
+    } catch {
+        return true;
+    }
+})();
+
 describe('componentLike equivalence — REAL uniform through the REAL composer (atlas)', () => {
     describe('OpenAPI', () => {
         for (const fx of OPENAPI_FIXTURES) {
@@ -123,7 +147,7 @@ describe('componentLike equivalence — REAL uniform through the REAL composer (
         }
     });
 
-    describe('GraphQL', () => {
+    describe.skipIf(gqlNativeUnavailable)('GraphQL', () => {
         for (const fx of GRAPHQL_FIXTURES) {
             it(`atlas compose compiles identically (new ≡ legacy): ${fx}`, async () => {
                 const references = await gqlSchemaToReferences(gqlFx(fx));

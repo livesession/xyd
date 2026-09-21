@@ -38,7 +38,11 @@ const SUBMODULES = [
     },
     {
         name: "apitoolchain",
-        sentinel: path.join(REPO, "apitoolchain", "crates", "xyd_uniform", "Cargo.toml"),
+        // Renamed with the crate: the `xyd_` prefix was dropped when the
+        // toolchain became its own repo, so the old `crates/xyd_uniform` path
+        // no longer exists in ANY checkout — populated or not — and this
+        // preflight reported every healthy tree as a missing submodule.
+        sentinel: path.join(REPO, "apitoolchain", "crates", "apitoolchain_uniform", "Cargo.toml"),
         what: "the API toolchain (uniform/openapi/gql/mcp/opencli crates + their npm shims)",
         url: "github.com/livesession/apitoolchain",
     },
