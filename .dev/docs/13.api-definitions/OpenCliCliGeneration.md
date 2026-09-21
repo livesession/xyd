@@ -247,6 +247,77 @@ This is what makes generation *functional*. Shape:
   It is `skip_serializing_if = "Option::is_none"`, so every document that does not need it is
   byte-identical to before the field existed.
 
+## The `x-cli` extension
+
+The other direction: `x-openapi` is what the converter **writes into** the OpenCLI document;
+`x-cli` is what it **reads from** the OpenAPI document. It is the sibling of `x-sdk`, which
+`opensdk xsdk` already embeds in OpenAPI specs — `x-sdk` carries SDK docs, `x-cli` carries
+CLI-generation hints, both written next to the API they describe rather than in a build config
+on the other side of the repo.
+
+### Root block — converter options
+
+```yaml
+x-cli:
+  cliName: acme
+  grammar: verb-noun
+  singularOverrides: { apis: api }
+```
+
+It deserializes into **the same `Options` type** the converter config uses and merges
+field-wise, so every converter option is spec-settable without maintaining a second list.
+
+### Per operation / per path item
+
+| Field | Effect |
+|-------|--------|
+| `grammar` | Word order for THIS command — the whole of grammar mixing |
+| `group` | Replace the derived resource path (`"billing invoices"`; `""` mounts at top level) |
+| `verb` | Replace the derived action verb (the leaf's own name) |
+| `aliases` | Replace the derived aliases (empty list removes them) |
+| `hidden` | Keep the command working but out of `--help` |
+| `ignore` | Drop the operation from the CLI entirely |
+| `description` | Replace the summary/description used as help text |
+
+### Precedence
+
+**Specificity beats source** — the ladder `openapi2opensdk` already set for `x-open-sdk-*`:
+
+```
+operation  >  path item  >  converter config  >  root x-cli  >  built-in default
+```
+
+Converter config sits above the root block deliberately: that is the operator overriding the
+spec on purpose. It sits below the per-operation block for the same reason in reverse.
+
+Both merges are written out field by field with no `..base` rest pattern — a rest pattern
+would silently inherit the base value for any field added later, so a new option would appear
+to work while ignoring the spec.
+
+A malformed block **warns to stderr and is ignored** rather than failing the conversion: this
+is spec-authored hint data, and a typo in it should not take down a build that has a perfectly
+good converter config.
+
+### Mixing
+
+Because `grammar` is decided per operation, one document holds both word orders with no extra
+machinery — no path-glob matcher, no `{default, overrides}` object form. Anything broader than
+a single operation is already expressible as an **OpenAPI Overlay** (`opensdk_chain`'s
+`chain.sources[].overlays`), which is a standard rather than a dialect of our own.
+
+Read-pairing consults each leaf's **own** grammar, not the converter-wide one: merging a pair
+whose halves were not both placed verb-first would put the command somewhere neither asked
+for. `__fixtures__/9.x-cli-operation` is the mixing case — a verb-noun document with one pair
+opting back into noun-verb.
+
+> **On the name.** `x-cli` also means something else on an OpenSDK **IR**: "this SDK spawns a
+> binary" (`opensdk_cli_common::is_cli_spec`), which puts all seven emitters into CLI mode.
+> Reusing it is safe only because Stage A builds a typed IR and drops unknown root keys, so an
+> OpenAPI `x-cli` cannot reach that sniff. That is asserted, not assumed —
+> `openapi2opensdk/tests/x_cli_namespace.rs` — because if a root-extension passthrough were
+> ever added, an OpenAPI doc carrying CLI hints would silently generate seven
+> process-spawning SDKs.
+
 ## Tests and fixtures
 
 Each crate carries its own fixtures, following the repo's
