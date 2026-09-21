@@ -786,6 +786,10 @@
           "type": "string",
           "description": "Env var the generated CLI reads credentials from (default: from the spec security scheme)."
         },
+        "rootCommand": {
+          "type": "string",
+          "description": "Wrap every generated command under one named parent, so `api get sdks` becomes `api <root> get sdks`. Unset emits the tree unwrapped. Note both backends emit one file per top-level command, so a wrapper collapses the CLI into a single generated file."
+        },
         "modulePath": {
           "type": "string",
           "description": "Go module path (default: example.com/<binName>)."
@@ -894,6 +898,10 @@
         "authEnvVar": {
           "type": "string",
           "description": "Env var the generated CLI reads credentials from (default: from the spec security scheme)."
+        },
+        "rootCommand": {
+          "type": "string",
+          "description": "Wrap every generated command under one named parent, so `api get sdks` becomes `api <root> get sdks`. Unset emits the tree unwrapped. Note both backends emit one file per top-level command, so a wrapper collapses the CLI into a single generated file."
         },
         "crateName": {
           "type": "string",

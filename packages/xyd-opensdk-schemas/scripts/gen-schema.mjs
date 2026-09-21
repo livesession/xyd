@@ -198,6 +198,7 @@ const CLI_CONVERTER_PROPS = {
   includePaths: { type: 'array', items: { type: 'string' }, description: 'Only operations under these path prefixes.' },
   maxBodyDepth: { type: 'number', description: 'Flatten body properties up to this depth; deeper ones become JSON flags.' },
   authEnvVar: str('Env var the generated CLI reads credentials from (default: from the spec security scheme).'),
+  rootCommand: str('Wrap every generated command under one named parent, so `api get sdks` becomes `api <root> get sdks`. Unset emits the tree unwrapped. Note both backends emit one file per top-level command, so a wrapper collapses the CLI into a single generated file.'),
 };
 const CLI_LANG_OPTIONS = {
   // packages/xyd-opencli2go/src/types.ts
