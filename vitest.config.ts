@@ -7,7 +7,13 @@ export default defineConfig({
         include: [
             'packages/**/*.test.ts',
             'packages/**/__tests__/**/*.test.ts',
-            '__tests__/**/*.test.ts'
+            '__tests__/**/*.test.ts',
+            // The five converter shims live in the `apitoolchain` submodule now.
+            // They are pnpm workspace members here, their dist/ is what ~16 xyd
+            // packages import, and xyd is where the napi addon exists — so their
+            // tests keep running in THIS suite, not only in apitoolchain's.
+            'apitoolchain/packages/*/**/*.test.ts',
+            'apitoolchain/packages/*/__tests__/**/*.test.ts'
         ],
         exclude: [
             '__tests__/e2e/**',
@@ -24,15 +30,39 @@ export default defineConfig({
             // kysely etc.), and apitoolchain-release-man uses `bun test`
             // (`bun:test`). The root pnpm Vitest can't resolve their bun deps, so
             // never collect them here.
-            'packages/apitoolchain-*/**',
-            // xyd-opensdk-uniform is NATIVE-ONLY: its src throws on XYD_NATIVE=0
-            // because the JS emitters it used to fall back to were deleted with
-            // the TypeScript cluster. `pnpm build` does NOT build the napi addon
-            // (xyd-native deliberately names its script build:native), and
-            // tests-unit.yml has no Rust toolchain or submodule checkout — so
-            // collecting these here fails 24 tests on a clean runner. The ffi job
-            // in tests-native.yml builds the .node and owns them.
+            // The rest of the submodule: the eleven standalone bun packages
+            // (bun:test, or a local vitest with its own node_modules) and the
+            // apps. Same reason as always — the root pnpm Vitest cannot resolve
+            // their bun deps; apitoolchain's own CI runs them.
+            //
+            // ONE pattern rather than eleven: every app-side package now carries
+            // the `apitoolchainapp-` prefix, so a package added over there is
+            // excluded by construction instead of by someone remembering to add
+            // a line here. The converter shims are exactly what is left
+            // unprefixed, which is what the include above collects.
+            'apitoolchain/packages/apitoolchainapp-*/**',
+            'apitoolchain/apps/**',
+            'apitoolchain/opensdk/**',
+            'apitoolchain/cli/**',
+            // NATIVE-ONLY packages. Their src THROWS when @xyd-js/native does not
+            // load, because the JS implementations they used to fall back to were
+            // deleted. `pnpm build` does NOT build the napi addon (xyd-native
+            // deliberately names its script build:native), and tests-unit.yml has
+            // no Rust toolchain or submodule checkout — so collecting these here
+            // fails on a clean runner. The ffi job in tests-native.yml builds the
+            // .node and owns them, in its "vitest native-only shims" step.
+            //
+            // This list grows whenever a package's fallback is reaped. It started
+            // as xyd-opensdk-uniform alone; gql, uniform and mcp-uniform joined it
+            // when their src/impl-js was deleted. Note the include glob above
+            // deliberately collects 'apitoolchain/packages/*' — so a reaped shim
+            // is collected by default and MUST be excluded explicitly here.
+            // apitoolchain-openapi is absent on purpose: it kept its impl-js and
+            // still runs fine with no addon.
             'packages/xyd-opensdk-uniform/**',
+            'apitoolchain/packages/apitoolchain-gql/**',
+            'apitoolchain/packages/apitoolchain-uniform/**',
+            'apitoolchain/packages/apitoolchain-mcp-uniform/**',
             '**/node_modules/**',
             '**/dist/**',
             '**/build/**'

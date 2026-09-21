@@ -7,3 +7,6 @@
 [submodule "opensdk"]
 	path = opensdk
 	url = https://github.com/livesession/opensdk
+[submodule "apitoolchain"]
+	path = apitoolchain
+	url = https://github.com/livesession/apitoolchain

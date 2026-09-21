@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://unpkg.com/@xyd-js/opensdk-cli/sdk.schema.json",
+  "$id": "https://unpkg.com/@xyd-js/opensdk-schemas/sdk.schema.json",
   "title": "OpenSDK sdk.json",
   "description": "Declarative configuration for generating SDKs with the OpenSDK CLI.",
   "type": "object",

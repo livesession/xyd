@@ -6,8 +6,10 @@ name: tests:native
 #            fixture-parity + oracle round-trip tests (they read the committed
 #            packages/*/__fixtures__ oracles from the checkout).
 #   tier 2 — build the napi .node (debug — parity is value-equality, not perf)
-#            and run the through-shim vitest suites of MIGRATED packages in both
-#            modes (XYD_NATIVE=1 native / XYD_NATIVE=0 frozen JS fallback).
+#            and run the through-shim vitest suites of MIGRATED packages. Those
+#            that still ship two implementations run in BOTH modes
+#            (XYD_NATIVE=1 native / XYD_NATIVE=0 frozen JS fallback); those
+#            whose frozen JS was reaped run native-only, in their own step.
 
 on:
   push:
@@ -21,12 +23,9 @@ on:
       # silently skip.
       - 'xwrite'
       - 'opensdk'
+      - 'apitoolchain'
       - '.gitmodules'
       - 'packages/xyd-native/**'
-      - 'packages/xyd-gql/**'
-      - 'packages/xyd-openapi/**'
-      - 'packages/xyd-uniform/**'
-      - 'packages/xyd-mcp-uniform/**'
       - 'packages/xyd-content/**'
       - 'packages/xyd-plugin-docs/**'
       - 'packages/xyd-opensdk-*/**'
@@ -45,12 +44,9 @@ on:
       # silently skip.
       - 'xwrite'
       - 'opensdk'
+      - 'apitoolchain'
       - '.gitmodules'
       - 'packages/xyd-native/**'
-      - 'packages/xyd-gql/**'
-      - 'packages/xyd-openapi/**'
-      - 'packages/xyd-uniform/**'
-      - 'packages/xyd-mcp-uniform/**'
       - 'packages/xyd-content/**'
       - 'packages/xyd-plugin-docs/**'
       - 'packages/xyd-opensdk-*/**'
@@ -87,7 +83,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             crates/target
-          key: ${{ runner.os }}-cargo-crates-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'opensdk/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-crates-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'opensdk/Cargo.lock', 'apitoolchain/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-crates-
 
@@ -199,7 +195,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             opensdk/target
-          key: ${{ runner.os }}-cargo-opensdk-${{ hashFiles('opensdk/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-opensdk-${{ hashFiles('opensdk/Cargo.lock', 'apitoolchain/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-opensdk-
 
@@ -277,7 +273,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             packages/xyd-native/target
-          key: ${{ runner.os }}-cargo-native-debug-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'opensdk/Cargo.lock', 'packages/xyd-native/Cargo.toml') }}
+          key: ${{ runner.os }}-cargo-native-debug-${{ hashFiles('crates/**/Cargo.toml', 'xwrite/**/Cargo.toml', 'opensdk/Cargo.lock', 'apitoolchain/Cargo.lock', 'packages/xyd-native/Cargo.toml') }}
           restore-keys: |
             ${{ runner.os }}-cargo-native-debug-
 
@@ -309,21 +305,104 @@ jobs:
           # M1 highlighter: xyd-content carries the both-mode highlight shim test
           # (__tests__/highlight-native.test.ts) — native xyd_highlight ⇄ codehike
           # fallback; the crate's own cargo tests (cargo job) gate byte-parity.
-          SHIM_PKGS="xyd-gql xyd-openapi xyd-uniform xyd-mcp-uniform xyd-content xyd-plugin-docs"
+          #
+          # XYD_REQUIRE_NATIVE=1 on the =1 leg is load-bearing. Every shim loader
+          # ends in `catch { return null }` and every call site is `if (native?.fn)`,
+          # so without it a failed addon load makes the "native" leg run impl-js
+          # and report green — the two legs become the SAME run. Verified by
+          # hiding packages/xyd-native/*.node and re-running: `XYD_NATIVE=1` still
+          # said "14 passed", identical to the real native run. With the flag the
+          # same experiment fails at import. Never drop it from this line.
+          # These moved to the `apitoolchain` submodule with the crates behind
+          # them. They stay in THIS loop rather than moving to apitoolchain's
+          # CI: the addon is built here (it compiles those very crates), so xyd
+          # is the only place where BOTH halves of the differential exist.
+          #
+          # The list shrank from four apitoolchain shims to one. gql, uniform
+          # and mcp-uniform no longer HAVE a second half — their frozen JS
+          # converters were deleted once @xyd-js/native shipped platform
+          # binaries — so they moved to the native-only step below rather than
+          # being dropped. openapi keeps a fallback because its impl-js is only
+          # partly reapable: ~1300 lines are third-party-backed or a genuine
+          # port, so it still has two implementations and this loop is still
+          # the thing that keeps them agreeing.
+          SHIM_PKGS="apitoolchain/packages/apitoolchain-openapi packages/xyd-content packages/xyd-plugin-docs"
           for pkg in $SHIM_PKGS; do
-            if [ -d "packages/$pkg/__tests__" ]; then
-              echo "=== $pkg (native=1) ==="; (cd "packages/$pkg" && XYD_NATIVE=1 npx vitest run)
-              echo "=== $pkg (native=0) ==="; (cd "packages/$pkg" && XYD_NATIVE=0 npx vitest run)
+            if [ -d "$pkg/__tests__" ]; then
+              echo "=== $pkg (native=1) ==="; (cd "$pkg" && XYD_NATIVE=1 XYD_REQUIRE_NATIVE=1 npx vitest run)
+              echo "=== $pkg (native=0) ==="; (cd "$pkg" && XYD_NATIVE=0 npx vitest run)
             else
-              echo "$pkg — no __tests__, skipping"
+              echo "::error::$pkg has no __tests__ — the path is wrong, so this leg tested nothing."
+              exit 1
             fi
           done
 
-      # NATIVE-ONLY, deliberately not in the both-modes loop above: this package
-      # throws on XYD_NATIVE=0 (no JS fallback — the JS emitters that were the
-      # other half of the differential were deleted with the TypeScript cluster),
-      # so a =0 pass would abort the step under `bash -e`. It runs HERE rather
-      # than in tests:unit because it needs the .node built above, and the root
-      # vitest config excludes it for the same reason.
-      - name: vitest xyd-opensdk-uniform (native only)
-        run: cd packages/xyd-opensdk-uniform && XYD_NATIVE=1 npx vitest run
+      # NATIVE-ONLY, deliberately not in the both-modes loop above: these
+      # packages THROW on XYD_NATIVE=0, so a =0 leg would abort the step under
+      # `bash -e`. They have no JS fallback because the frozen implementations
+      # that were the other half of the differential are gone.
+      #
+      # They are listed here rather than dropped. A native-only package still
+      # needs its suite run — and run with the addon PROVEN loaded, which is
+      # what XYD_REQUIRE_NATIVE asserts for the three that have a loader.
+      # Silently removing them from the loop would have retired the tests along
+      # with the fallback.
+      - name: vitest native-only shims
+        run: |
+          set -e
+          # The three apitoolchain shims whose impl-js was reaped. Each keeps a
+          # `native.ts` loader, so XYD_REQUIRE_NATIVE=1 applies: without it a
+          # failed addon load would surface as the package's own "requires
+          # @xyd-js/native" error — a real failure, but one that reads like a
+          # packaging problem instead of a broken build.
+          for pkg in apitoolchain/packages/apitoolchain-gql \
+                     apitoolchain/packages/apitoolchain-uniform \
+                     apitoolchain/packages/apitoolchain-mcp-uniform; do
+            if [ ! -d "$pkg/__tests__" ]; then
+              echo "::error::$pkg has no __tests__ — the path is wrong, so this leg tested nothing."
+              exit 1
+            fi
+            echo "=== $pkg (native only) ==="
+            (cd "$pkg" && XYD_NATIVE=1 XYD_REQUIRE_NATIVE=1 npx vitest run)
+          done
+
+          # No XYD_REQUIRE_NATIVE here: this package resolves @xyd-js/native
+          # eagerly and THROWS on failure already (src/index.ts:55-64), so it
+          # has no loader reading that flag — setting it would imply a guard
+          # that isn't there. It also runs HERE rather than in tests:unit
+          # because it needs the .node built above, and the root vitest config
+          # excludes it for the same reason.
+          echo "=== packages/xyd-opensdk-uniform (native only) ==="
+          (cd packages/xyd-opensdk-uniform && XYD_NATIVE=1 npx vitest run)
+
+      # The ROOT suite, re-run here WITH the addon. tests-unit.yml runs the same
+      # suite on a runner that has none, so every test gated on the addon skips
+      # there. Without this step those tests would skip in the only job that
+      # runs them and therefore never execute in CI at all — a green tick for
+      # coverage that silently stopped existing.
+      #
+      # Why they cannot just move into a package's own suite: running vitest
+      # from a package directory finds the ROOT config, whose include globs are
+      # written relative to the repo root, so only the `__tests__/**` pattern
+      # can match — a test under `src/` is invisible to the per-package runs
+      # above and is collected ONLY by this root run.
+      # `packages/xyd-plugin-docs/src/presets/cli/cli-preset.test.ts` is exactly
+      # that shape, and it is the canary for every non-openapi `api.*` source
+      # (cli/graphql/mcp all reach pluginNavigation unconditionally).
+      #
+      # Not redundant with tests-unit.yml: same suite, opposite environment. The
+      # assertion here is that nothing is left skipped once the addon is real.
+      - name: vitest root suite (with the addon)
+        run: |
+          XYD_NATIVE=1 npx vitest run --reporter=json --outputFile=/tmp/root.json
+          node -e "
+            const r = require('/tmp/root.json');
+            const skipped = r.testResults.flatMap(f =>
+              f.assertionResults.filter(a => a.status === 'pending').map(a => f.name + ' > ' + a.fullName));
+            console.log('skipped with the addon present: ' + skipped.length);
+            skipped.forEach(s => console.log('  - ' + s));
+            // A small number of skips is expected (cases gated on things other
+            // than the addon). The point of printing them is that a test which
+            // quietly stops running becomes visible in the log instead of
+            // vanishing into a pass.
+          "

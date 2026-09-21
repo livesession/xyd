@@ -5,29 +5,26 @@
     "node": ">=22.12.0"
   },
   "packageManager": "pnpm@9.10.0",
+  "_workspaces_note": "pnpm reads pnpm-workspace.yaml, NOT this field \u2014 keep the two in sync anyway so any tool that does read it (bun, editors) sees the same set. The five converter shims live in the `apitoolchain` submodule; the rest of its packages/ are standalone bun islands and are NOT members.",
   "workspaces": [
     "apps/apidocs-demo",
     "packages/*",
+    "specs/*",
+    "apitoolchain/packages/apitoolchain-uniform",
+    "apitoolchain/packages/apitoolchain-gql",
+    "apitoolchain/packages/apitoolchain-openapi",
+    "apitoolchain/packages/apitoolchain-mcp-uniform",
+    "apitoolchain/packages/apitoolchain-opencli",
     "packages/xyd-ask-ai/examples/*",
     "!packages/xyd-js",
-    "!packages/apitoolchain-design-system",
-    "!packages/apitoolchain-sdkjson-wizard",
-    "!packages/apitoolchain-auth-design-system",
-    "!packages/apitoolchain-schemas",
-    "!packages/apitoolchain-dev",
-    "!packages/apitoolchain-filters",
-    "!packages/apitoolchain-sdk-chain",
-    "!packages/apitoolchain-gitprovider-node",
-    "!packages/apitoolchain-registry-api-node",
-    "!packages/apitoolchain-api-node",
     ".xyd/host"
   ],
   "scripts": {
     "dev": "pnpm lerna watch -- lerna run build",
     "dev:styles": "pnpm --filter \"@xyd-js/components\" --filter \"@xyd-js/ui\" --parallel dev",
-    "build": "pnpm run --filter=\"./packages/**/*\" build",
-    "build:storybook": "pnpm run build && pnpm run --filter=\"./packages/**/*\" build:storybook",
-    "build:apidocs-demo": "pnpm --filter \"./packages/**/*\" --filter \"@xyd-js/apidocs-demo\" build",
+    "build": "pnpm run --filter=\"./packages/**/*\" --filter=\"./apitoolchain/packages/**/*\" build",
+    "build:storybook": "pnpm run build && pnpm run --filter=\"./packages/**/*\" --filter=\"./apitoolchain/packages/**/*\" build:storybook",
+    "build:apidocs-demo": "pnpm --filter \"./packages/**/*\" --filter \"./apitoolchain/packages/**/*\" --filter \"@xyd-js/apidocs-demo\" build",
     "schema:docs.json": "node scripts/generate-schema.mjs",
     "clean": "./clear.sh",
     "prepare": "husky",
@@ -60,7 +57,8 @@
   },
   "pnpm": {
     "overrides": {
-      "typescript@^6": "5.9.3"
+      "typescript@^6": "5.9.3",
+      "@xyd-js/native": "workspace:*"
     }
   },
   "pre-commit": "lint-staged",

@@ -27,7 +27,7 @@ Run on push / PR to `master` and `dev`.
 | tests-opencli-pipeline.yml | `@xyd-js/opencli` — the OpenCLI core model + schema round-trip | Node + pnpm |
 | tests-native.yml | cargo fmt/clippy/test on `crates/`, the same inside the `xwrite` and `opensdk` submodules, then the napi build + through-shim vitest in both modes | Node + pnpm + **Rust stable** |
 
-`tests-opencli-pipeline.yml` is `paths`-scoped to `packages/xyd-opencli/**`; the generators
+`tests-opencli-pipeline.yml` is `paths`-scoped to the bare `apitoolchain` gitlink; the generators
 downstream of it are Rust and live in the `opensdk` submodule, so their smoke/e2e tiers run in
 that repo's own CI. `tests-native.yml`'s `paths` list spells the submodules `xwrite` / `opensdk`
 (the gitlink paths), not `xwrite/**` / `opensdk/**`, which would never match. See

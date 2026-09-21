@@ -23,6 +23,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # apitoolchain is a pnpm workspace MEMBER (it holds the five converter
+          # shims), so `pnpm i` fails outright without it:
+          #   ERR_PNPM_WORKSPACE_PKG_NOT_FOUND ... no package named "@xyd-js/gql"
+          # NOT `recursive`: `examples` has nested submodules nothing here needs.
+          submodules: true
 
       - name: 🟢 Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4

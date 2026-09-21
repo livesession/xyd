@@ -37,6 +37,16 @@ const SUBMODULES = [
         url: "github.com/livesession/xwrite",
     },
     {
+        name: "apitoolchain",
+        // Renamed with the crate: the `xyd_` prefix was dropped when the
+        // toolchain became its own repo, so the old `crates/xyd_uniform` path
+        // no longer exists in ANY checkout — populated or not — and this
+        // preflight reported every healthy tree as a missing submodule.
+        sentinel: path.join(REPO, "apitoolchain", "crates", "apitoolchain_uniform", "Cargo.toml"),
+        what: "the API toolchain (uniform/openapi/gql/mcp/opencli crates + their npm shims)",
+        url: "github.com/livesession/apitoolchain",
+    },
+    {
         name: "opensdk",
         sentinel: path.join(REPO, "opensdk", "crates", "oas_doc", "Cargo.toml"),
         what: "the SDK/CLI toolchain (converters, emitters, the shared spec loader)",

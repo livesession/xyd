@@ -1,7 +1,7 @@
 {
   "name": "@xyd-js/native",
   "version": "0.0.0",
-  "description": "xyd Rust core (napi) — the one native module embedded into the bun-compiled binary",
+  "description": "xyd Rust core (napi) \u2014 the one native module embedded into the bun-compiled binary",
   "license": "MIT",
   "type": "commonjs",
   "main": "index.js",
@@ -17,10 +17,7 @@
       "aarch64-apple-darwin",
       "x86_64-apple-darwin",
       "x86_64-unknown-linux-gnu",
-      "aarch64-unknown-linux-gnu",
-      "x86_64-unknown-linux-musl",
-      "aarch64-unknown-linux-musl",
-      "x86_64-pc-windows-msvc"
+      "aarch64-unknown-linux-gnu"
     ]
   },
   "scripts": {
@@ -31,5 +28,8 @@
   },
   "devDependencies": {
     "@napi-rs/cli": "^3.8.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

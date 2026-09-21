@@ -9,7 +9,7 @@ use serde_json::Value;
 #[napi]
 pub fn mcp_to_references(surface_json: String) -> Result<String> {
     let input: Value = serde_json::from_str(&surface_json)
-        .map_err(|e| Error::from_reason(format!("[xyd_mcp_uniform] bad surface: {e}")))?;
+        .map_err(|e| Error::from_reason(format!("[mcp_uniform] bad surface: {e}")))?;
     let empty: Vec<Value> = Vec::new();
     let tools = input
         .get("tools")
@@ -28,12 +28,12 @@ pub fn mcp_to_references(surface_json: String) -> Result<String> {
         .and_then(|t| t.as_str())
         .unwrap_or("http");
 
-    let refs = xyd_mcp_uniform::mcp_to_references(&xyd_mcp_uniform::McpSurface {
+    let refs = apitoolchain_mcp_uniform::mcp_to_references(&apitoolchain_mcp_uniform::McpSurface {
         tools,
         resources,
         server_url,
         transport,
     });
     serde_json::to_string(&refs)
-        .map_err(|e| Error::from_reason(format!("[xyd_mcp_uniform] serialize: {e}")))
+        .map_err(|e| Error::from_reason(format!("[mcp_uniform] serialize: {e}")))
 }

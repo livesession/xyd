@@ -78,5 +78,5 @@ The `#region` fragment matches either a tool `name` or a resource `uri`.
 
 ## Tests
 
-- **Unit**: `packages/xyd-mcp-uniform/__tests__/` — data-driven fixtures with a stubbed fetcher. Covers basic, nested-schema, multiple-tools, resources, and auth-bearer cases.
+- **Unit**: `apitoolchain/packages/mcp-uniform/__tests__/` — data-driven fixtures with a stubbed fetcher. Covers basic, nested-schema, multiple-tools, resources, and auth-bearer cases.
 - **E2E**: `__tests__/e2e/9.mcp/` — three Playwright suites driving the full build pipeline against a tiny HTTP stub (`__tests__/e2e/utils/mcp-stub.ts`).

@@ -6,8 +6,8 @@
 //! must reproduce that byte-for-byte. The same fixtures drive the through-shim
 //! both-mode vitest test, so JS, Rust, and the shim can never silently drift.
 
+use apitoolchain_parity::{assert_parity, fixture_cases};
 use serde_json::{Map, Value};
-use xyd_parity::{assert_parity, fixture_cases};
 
 #[test]
 fn process_settings_fixtures() {
