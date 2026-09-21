@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://unpkg.com/@xyd-js/opensdk-schemas/sdk.schema.json",
+  "$id": "https://unpkg.com/@xyd-js/opensdk-cli/sdk.schema.json",
   "title": "OpenSDK sdk.json",
   "description": "Declarative configuration for generating SDKs with the OpenSDK CLI.",
   "type": "object",
@@ -434,6 +434,14 @@
         "envVar": {
           "type": "string",
           "description": "Env var the client reads the credential from (default: the scheme envVar / <PKG>_API_KEY)."
+        },
+        "entry": {
+          "type": "string",
+          "enum": [
+            "dist",
+            "source"
+          ],
+          "description": "Where package.json points. \"dist\" (default) builds with tsc; \"source\" points main/types/exports at ./src/index.ts, drops the build/prepare hooks, and scaffolds a .gitignore — for consumers that import the TypeScript directly and never run a build."
         }
       },
       "additionalProperties": false

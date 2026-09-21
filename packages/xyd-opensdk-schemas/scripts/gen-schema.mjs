@@ -84,6 +84,12 @@ const LANG_OPTIONS = {
     options: {
       packageName: str('npm package name (default: kebab-case of info.title).'),
       envVar: str('Env var the client reads the credential from (default: the scheme envVar / <PKG>_API_KEY).'),
+      entry: {
+        type: 'string',
+        enum: ['dist', 'source'],
+        description:
+          'Where package.json points. "dist" (default) builds with tsc; "source" points main/types/exports at ./src/index.ts, drops the build/prepare hooks, and scaffolds a .gitignore — for consumers that import the TypeScript directly and never run a build.',
+      },
     },
   },
   // packages/xyd-opensdk-ruby/src/types.ts
