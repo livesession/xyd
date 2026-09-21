@@ -214,8 +214,11 @@ const CLI_CONVERTER_PROPS = {
     additionalProperties: { type: 'string' },
     description:
       'Plural → singular pairs for the verb-noun singularizer, for words its rules get wrong. ' +
-      '`apis` is the built-in example: every inflector guards an `is` ending to protect analysis/basis, ' +
-      'so without `{"apis": "api"}` the singular of `apis` is `apis`.',
+      'Empty by default — nothing is overridden unless you list it. The usual example is `apis`: ' +
+      'every inflector guards an `is` ending to protect analysis/basis, so its singular is `apis`. ' +
+      'That does not break anything (the read merge still produces one working command, named for ' +
+      'the plural); `{"apis": "api"}` just renames it to the singular-canonical form the rest of ' +
+      'the command tree uses.',
   },
 };
 const CLI_LANG_OPTIONS = {

@@ -110,8 +110,8 @@ GET and its item GET therefore collapse into **one** command with an optional po
 both spellings as names:
 
 ```
-GET /sdks          ─┐   api get sdks           → GET /sdks
-GET /sdks/{id}     ─┴─> api get sdk            → GET /sdks        (alias)
+GET /sdks          ─┐   api get sdk            → GET /sdks        (canonical)
+GET /sdks/{id}     ─┴─> api get sdks           → GET /sdks        (alias)
                         api get sdk  <id>      → GET /sdks/<id>
                         api get sdks <id>      → GET /sdks/<id>
 GET /sdks/{id}/targets  api get sdk targets <id> → GET /sdks/<id>/targets
@@ -132,8 +132,16 @@ Nouns follow two clauses:
   `GET /overview/stats` keeps its plural (`stats` is a real plural of `stat`; it is N2 that
   preserves it, not the inflector).
 
-`singularOverrides` supplies pairs the rules get wrong; **`{"apis": "api"}` ships by
-default** because that is the case the design was forced by.
+`singularOverrides` supplies pairs the rules get wrong. It ships **empty** — nothing is
+overridden unless you say so.
+
+`apis` is worth spelling out, because it is the case that forced this design and it is easy
+to conclude the override is what fixes it. It is not: the **merge** is. With no override the
+pair still collapses into one working command, just named for the plural, since singular and
+plural are the same word — `api get apis` and `api get apis <id>` both work, with no alias.
+Adding `{"apis": "api"}` only changes the naming, to the singular-canonical form the rest of
+the tree uses: `api get api [alias: apis]`. apitoolchain declares it for exactly that reason;
+it is a readability choice, not a requirement.
 
 The top level is ranked read-then-write (`get`, `create`, `update`, `delete`, …) so `--help`
 does not open with `create`. The rank is gated on the grammar rather than on tree depth — a
