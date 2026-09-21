@@ -199,6 +199,24 @@ const CLI_CONVERTER_PROPS = {
   maxBodyDepth: { type: 'number', description: 'Flatten body properties up to this depth; deeper ones become JSON flags.' },
   authEnvVar: str('Env var the generated CLI reads credentials from (default: from the spec security scheme).'),
   rootCommand: str('Wrap every generated command under one named parent, so `api get sdks` becomes `api <root> get sdks`. Unset emits the tree unwrapped. Note both backends emit one file per top-level command, so a wrapper collapses the CLI into a single generated file.'),
+  grammar: {
+    type: 'string',
+    enum: ['noun-verb', 'verb-noun'],
+    description:
+      'Command word order. noun-verb (default) is resource-first — `api sdks list`, like gh/aws/stripe. ' +
+      'verb-noun is action-first — `api get sdks`, like kubectl; it also collapses a collection GET and ' +
+      'its item GET into ONE command whose optional positional selects between them (`get sdks` lists, ' +
+      '`get sdk <id>` retrieves, and the plural/singular names are aliases). ' +
+      'Do not feed verb-noun output to opencli2opensdk — the SDK resources would be named after the verbs.',
+  },
+  singularOverrides: {
+    type: 'object',
+    additionalProperties: { type: 'string' },
+    description:
+      'Plural → singular pairs for the verb-noun singularizer, for words its rules get wrong. ' +
+      '`apis` is the built-in example: every inflector guards an `is` ending to protect analysis/basis, ' +
+      'so without `{"apis": "api"}` the singular of `apis` is `apis`.',
+  },
 };
 const CLI_LANG_OPTIONS = {
   // packages/xyd-opencli2go/src/types.ts

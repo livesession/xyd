@@ -88,6 +88,65 @@ openapi2opencli_from_file(path: &str, options: Option<Options>) -> Result<Spec, 
 
 Flags are kebab-cased; the original wire name is preserved in option metadata for round-trip.
 
+#### Command grammar (`grammar`)
+
+The table above describes **placement under `noun-verb`**, the default and the shape every
+existing golden is frozen in: resource first, action last — `api sdks list`, like `gh` /
+`aws` / `stripe`. The `grammar` option selects the other order.
+
+| `grammar` | Shape | Precedent |
+|-----------|-------|-----------|
+| `noun-verb` (default) | `api sdks list`, `api sdks targets list <id>` | gh, aws, stripe |
+| `verb-noun` | `api get sdks`, `api get sdk targets <id>` | kubectl, PowerShell |
+
+`verb-noun` is not a reordering of the same tree. Hoisting the verb to the root makes a
+resource's two reads siblings under it, and naively that **collides on our own API**: every
+inflector guards an `is` ending (to protect `analysis`, `basis`), so `singularize("apis")` is
+`"apis"` and `GET /apis` and `GET /apis/{apiId}` both claim `get apis`.
+
+So it follows kubectl properly. kubectl does *not* make the plural carry meaning — `pod` and
+`pods` are synonyms, and the **presence of a name argument** selects the item. A collection
+GET and its item GET therefore collapse into **one** command with an optional positional and
+both spellings as names:
+
+```
+GET /sdks          ─┐   api get sdks           → GET /sdks
+GET /sdks/{id}     ─┴─> api get sdk            → GET /sdks        (alias)
+                        api get sdk  <id>      → GET /sdks/<id>
+                        api get sdks <id>      → GET /sdks/<id>
+GET /sdks/{id}/targets  api get sdk targets <id> → GET /sdks/<id>/targets
+POST /sdks              api create sdk
+DELETE /sdks/{id}       api delete sdk <id>
+POST /releases/{id}/publish  api publish release <id>
+```
+
+The merged command is **singular-canonical, plural-alias**. Intermediate segments are
+singularized (`get sdk targets`), so naming it plural would place it beside its own singular
+sibling — which clap rejects.
+
+Nouns follow two clauses:
+
+- **N1** — a static segment immediately followed by `{param}` is singularized.
+- **N2** — everything else verbatim, *except* the terminal segment under `create`. So a bulk
+  `DELETE /sdks` stays `delete sdks` rather than lying with `delete sdk`, and
+  `GET /overview/stats` keeps its plural (`stats` is a real plural of `stat`; it is N2 that
+  preserves it, not the inflector).
+
+`singularOverrides` supplies pairs the rules get wrong; **`{"apis": "api"}` ships by
+default** because that is the case the design was forced by.
+
+The top level is ranked read-then-write (`get`, `create`, `update`, `delete`, …) so `--help`
+does not open with `create`. The rank is gated on the grammar rather than on tree depth — a
+resource legitimately *named* `get` must not be silently hoisted under `noun-verb`.
+
+> Do not feed `verb-noun` output to `opencli2opensdk`: the SDK resources would be named after
+> the verbs (`client.get.sdks()`).
+
+Both backends support a command that is runnable **and** a parent, which is what the merged
+read command requires, and both branch on the positional to choose between the two bindings
+carried in one `x-openapi` block (see `whenArgsPresent` below). The request either backend
+sends for a given argv is identical.
+
 ### opencli2go (Go generator)
 
 `opencli2go(spec, options)` returns a **pure virtual file map** (`BTreeMap<path, contents>`) —
@@ -170,6 +229,23 @@ This is what makes generation *functional*. Shape:
 - **Per leaf command** `x-openapi`: `{ method, path, contentType, params[], body }`, where each
   `param`/body property has a `from` linking it to its OpenCLI input — `argument:<name>` or
   `option:<name>` — so the generator knows where each value comes from in the request.
+- **`whenArgsPresent`** (optional, `verb-noun` only): a second, nested binding of the same
+  shape. A command carrying it has TWO requests and picks between them on whether its optional
+  positional was supplied — the merged list/retrieve command above. The discriminator is the
+  argument the alternate path uses and the primary does not.
+
+  ```jsonc
+  "x-openapi": {
+    "method": "get", "path": "/sdks",          // no positional -> list
+    "whenArgsPresent": {                        // positional given -> retrieve
+      "method": "get", "path": "/sdks/{id}",
+      "params": [{ "in": "path", "name": "id", "from": "argument:id" }]
+    }
+  }
+  ```
+
+  It is `skip_serializing_if = "Option::is_none"`, so every document that does not need it is
+  byte-identical to before the field existed.
 
 ## Tests and fixtures
 
