@@ -147,6 +147,13 @@ read command requires, and both branch on the positional to choose between the t
 carried in one `x-openapi` block (see `whenArgsPresent` below). The request either backend
 sends for a given argv is identical.
 
+One consequence needed a per-framework fix. If such a parent has a **required** option, both
+CLI frameworks enforce it before dispatching to a child, so `api create sdk target <id>` fails
+demanding the `--api-id` that belongs to `api create sdk` — every subcommand of the parent
+unreachable. clap has exactly this switch (`subcommand_negates_reqs`); urfave has none, so
+`opencli2go` declares the flag non-required and checks it inside the parent's own `Action`,
+reproducing urfave's own error message.
+
 ### opencli2go (Go generator)
 
 `opencli2go(spec, options)` returns a **pure virtual file map** (`BTreeMap<path, contents>`) —
