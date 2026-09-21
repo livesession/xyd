@@ -23,7 +23,6 @@ packages:
   - '!packages/apitoolchain-dev'
   - '!packages/apitoolchain-release-man'
   - '!packages/apitoolchain-filters'
-  - '!packages/apitoolchain-sdk-chain'
   - '!packages/apitoolchain-gitprovider-node'
   - '!packages/apitoolchain-registry-api-node'
   - '!packages/apitoolchain-api-node'

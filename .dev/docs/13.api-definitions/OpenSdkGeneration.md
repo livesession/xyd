@@ -263,7 +263,7 @@ backend keys like `binName`/`crateName`/`modulePath` — disjoint, unit-tested);
 (`mountRules`/`operationHints`) is warned-once + ignored; `--no-tests` is a no-op; `--merge`
 and the full framework write lifecycle apply to both backends (Go included — its naive writer
 is bypassed); `opensdk publish` and chain `--publish` skip CLI targets with a note (no registry
-publisher). Real-world example: `packages/apitoolchain-sdk-chain/chain.json`'s `api-cli` target.
+publisher). Real-world example: `apitoolchain/sdk/chain.json`'s `api-cli` target.
 
 ## Chain (`opensdk_chain`)
 

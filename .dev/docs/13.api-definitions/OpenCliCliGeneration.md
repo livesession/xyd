@@ -157,7 +157,7 @@ generation consumes the raw OpenAPI doc, not the OpenSDK IR), runs `openapi2open
 `opencli2go`/`opencli2rust`, and writes through the framework `write_project` — so the regen
 lifecycle (lock, stale-prune, `.sdkignore`, `--merge`) applies to BOTH backends, Go included.
 Options are one flat bag split by allowlist (converter vs backend keys); `sdkName` defaults
-`cliName`. Chain example: `packages/apitoolchain-sdk-chain/chain.json` target `api-cli`
+`cliName`. Chain example: `apitoolchain/sdk/chain.json` target `api-cli`
 (`target: "rust-cli"`).
 
 ## The `x-openapi` extension
