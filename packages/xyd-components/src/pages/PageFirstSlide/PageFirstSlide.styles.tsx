@@ -30,9 +30,6 @@ export const globals = css`
                 --page-first-slide-special-text-color: var(--xyd-heading-color, #fff);
             }
             @media (prefers-color-scheme: dark) {
-                --page-first-slide-special-text-color: var(--xyd-heading-color, #fff);
-            }
-            @media (prefers-color-scheme: dark) {
                 :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
                     --page-first-slide-special-text-color: var(--xyd-heading-color, #fff);
                 }
