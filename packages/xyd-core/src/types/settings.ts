@@ -1964,7 +1964,7 @@ export type LLMsTxtSectionMap = { [section: string]: {
  */
 export interface Advanced {
   /**
-   * Mount the site under a URL prefix, e.g. `"/docs"` or `"/docs"`.
+   * Mount the site under a URL prefix, e.g. `"/docs"` or `"/docs/reference"`.
    *
    * Every route, raw file (`llms.txt`, the `.md` twins) and asset URL carries
    * the prefix, and `xyd build` writes the whole site under

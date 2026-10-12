@@ -85,11 +85,12 @@ test.describe('openapi — atlas-only + basename (build)', () => {
 
     test('the output tree is self-contained under the prefix', async () => {
         const client = path.join(__dirname, '.xyd', 'build', 'client');
-        const mount = path.join(client, 'v3', 'atlas');
+        const segments = BASE.split('/').filter(Boolean);
+        const mount = path.join(client, ...segments);
 
-        // the basename's own index stays index.html (not hoisted to v3/atlas.html)
+        // the basename's own index stays index.html (not hoisted to <basename>.html)
         expect(fs.existsSync(path.join(mount, 'index.html'))).toBe(true);
-        expect(fs.existsSync(path.join(client, 'v3', 'atlas.html'))).toBe(false);
+        expect(fs.existsSync(path.join(client, ...segments.slice(0, -1), `${segments.at(-1)}.html`))).toBe(false);
         // routes are flattened as usual
         expect(fs.existsSync(path.join(mount, 'getBookByTitle.html'))).toBe(true);
         expect(fs.existsSync(path.join(mount, 'objects', 'Book.html'))).toBe(true);

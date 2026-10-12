@@ -11,8 +11,8 @@ import path from "node:path";
  *
  *   client/
  *     .vite/                      build metadata, not servable
- *     v3/atlas/                   the whole site — self-contained, mount it at /docs
- *       index.html                the landing page (stays index.html, never v3/atlas.html)
+ *     docs/                       the whole site — self-contained, mount it at /docs
+ *       index.html                the landing page (stays index.html, never docs.html)
  *       <page>.html, <page>.data  one per route (flattened from <page>/index.html)
  *       <page>.md, llms.txt       the raw routes
  *       assets/                   hashed js/css/fonts, referenced as /docs/assets/*
@@ -41,7 +41,7 @@ export function normalizePathBase(base: string): string {
     return trimmed ? `/${trimmed}/` : "/";
 }
 
-/** The basename's directory chain relative to the client root: `/docs` → ["v3", "v3/atlas"]. */
+/** The basename's directory chain relative to the client root: `/docs/reference` → ["docs", "docs/reference"]. */
 export function basenameDirs(basename?: string | null): string[] {
     const segments = (basename || "").split("/").filter(Boolean);
     return segments.map((_, i) => segments.slice(0, i + 1).join("/"));
