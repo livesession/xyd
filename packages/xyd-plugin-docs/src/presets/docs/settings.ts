@@ -14,6 +14,19 @@ import { settingsNative } from "../../native";
 
 const extensions = ["tsx", "ts", "json"];
 
+const FAST_SERVE_OPENAPI_EXTENSIONS = ["yaml", "yml", "json"];
+const FAST_SERVE_GRAPHQL_EXTENSIONS = ["graphql", "graphqls"];
+/** the synthesized landing page — under .xyd so the project dir stays untouched */
+const FAST_SERVE_INDEX_PAGE = ".xyd/.cache/.fast-serve/index.md";
+
+/** set by the fast-serve mode when it synthesized a landing page; read by findIndexPage */
+let fastServeIndexPagePath: string | undefined;
+
+/** The landing page the fast-serve mode synthesized (cwd-relative), if any. */
+export function fastServeIndexPage(): string | undefined {
+    return fastServeIndexPagePath;
+}
+
 /**
  * Reads `xyd` settings from the current working directory.
  *
@@ -97,18 +110,38 @@ export async function readSettings() {
     return settings;
 }
 
-// TODO: it's concept only
+/**
+ * Fast-serve mode: `xyd dev|build <document>` with an OpenAPI (`.yaml`/`.yml`/
+ * `.json`) or GraphQL (`.graphql`/`.graphqls`) document renders the API
+ * reference alone — one page per operation and per schema, no docs content.
+ * A `docs.json` beside the document is optional and deep-merges OVER these
+ * defaults, so it can add a `theme`, a `name`, or `advanced.basename` to mount
+ * the site under a prefix.
+ *
+ * The landing page is `index.md`/`index.mdx` from the project dir when one
+ * exists; otherwise, for OpenAPI, one is synthesized from `info.title` and
+ * `info.description` (written under .xyd/.cache — the project dir stays as is).
+ *
+ * Returns null when the positional is not such a document (or absent), in
+ * which case the regular settings apply.
+ */
 async function fastServeSetup(currentSettings: Settings | null) {
-    const args = process.argv.slice(2);
-    const [command, optionalFastServePath] = args;
+    const [command, positional] = process.argv.slice(2);
 
-    const fastServeMode =
-        (command === "dev" || command === "build") && optionalFastServePath;
-    if (!fastServeMode) {
+    if (
+        (command !== "dev" && command !== "build") ||
+        !positional ||
+        positional.startsWith("-")
+    ) {
         return null;
     }
 
-    const extension = path.extname(optionalFastServePath).slice(1);
+    const extension = path.extname(positional).slice(1).toLowerCase();
+    const isOpenApi = FAST_SERVE_OPENAPI_EXTENSIONS.includes(extension);
+    const isGraphql = FAST_SERVE_GRAPHQL_EXTENSIONS.includes(extension);
+    if (!isOpenApi && !isGraphql) {
+        return null;
+    }
 
     let fastServeSettings: Settings = {
         theme: {
@@ -124,28 +157,76 @@ async function fastServeSetup(currentSettings: Settings | null) {
         fastServeSettings = deepMerge(fastServeSettings, currentSettings);
     }
 
-    switch (extension) {
-        case "yaml":
-        case "yml": {
-            if (await isOpenApiYaml(optionalFastServePath)) {
-                fastServeSettings.api = {
-                    openapi: optionalFastServePath,
-                };
+    if (isGraphql) {
+        fastServeSettings.api = {
+            ...fastServeSettings.api,
+            graphql: positional,
+        };
 
-                return postLoadSetup(fastServeSettings);
-            }
-        }
-        case "graphql":
-        case "graphqls": {
-            fastServeSettings.api = {
-                graphql: optionalFastServePath,
-            };
+        return postLoadSetup(fastServeSettings);
+    }
 
-            return postLoadSetup(fastServeSettings);
+    const document = await readOpenApiDocument(positional);
+    if (!document) {
+        // a .yaml/.json that is not an OpenAPI document: not fast-serve
+        return null;
+    }
+
+    fastServeSettings.api = {
+        ...fastServeSettings.api,
+        openapi: positional,
+    };
+
+    await ensureFastServeIndexPage(document);
+
+    return postLoadSetup(fastServeSettings);
+}
+
+/**
+ * No `index.md`/`index.mdx` in the project → write one from the document's
+ * `info` under .xyd/.cache and hand it to findIndexPage (fastServeIndexPage()).
+ */
+async function ensureFastServeIndexPage(document: Record<string, any>) {
+    fastServeIndexPagePath = undefined;
+
+    for (const candidate of ["index.md", "index.mdx"]) {
+        if (await fileExists(path.join(process.cwd(), candidate))) {
+            return;
         }
     }
 
-    return null;
+    const info = document.info || {};
+    const title = typeof info.title === "string" ? info.title.trim() : "";
+    if (!title) {
+        return;
+    }
+    const description =
+        typeof info.description === "string" ? info.description.trim() : "";
+
+    const content = [
+        "---",
+        `title: ${JSON.stringify(title)}`,
+        "---",
+        "",
+        `# ${title}`,
+        "",
+        ...(description ? [description, ""] : []),
+    ].join("\n");
+
+    const indexPath = path.join(process.cwd(), FAST_SERVE_INDEX_PAGE);
+    await fs.mkdir(path.dirname(indexPath), { recursive: true });
+    await fs.writeFile(indexPath, content, "utf-8");
+
+    fastServeIndexPagePath = FAST_SERVE_INDEX_PAGE;
+}
+
+async function fileExists(filePath: string) {
+    try {
+        await fs.access(filePath);
+        return true;
+    } catch {
+        return false;
+    }
 }
 
 function postLoadSetup(settings: Settings) {
@@ -468,17 +549,26 @@ function deepMerge<T>(target: T, source: DeepPartial<T>): T {
     return target;
 }
 
-async function isOpenApiYaml(filePath: string): Promise<boolean> {
+/** Parse an OpenAPI document (YAML or JSON); null when unreadable or not OpenAPI. */
+async function readOpenApiDocument(
+    filePath: string
+): Promise<Record<string, any> | null> {
     try {
         const content = await fs.readFile(filePath, "utf-8");
-        const parsed = yaml.load(content);
-        if (!parsed) {
-            return false;
+        const parsed =
+            path.extname(filePath).toLowerCase() === ".json"
+                ? JSON.parse(content)
+                : yaml.load(content);
+        if (!parsed || typeof parsed !== "object" || !("openapi" in parsed)) {
+            return null;
         }
 
-        return parsed && typeof parsed === "object" && "openapi" in parsed;
+        return parsed as Record<string, any>;
     } catch (error) {
-        console.warn(`⚠️ Error reading or parsing YAML file ${filePath}:`, error);
-        return false;
+        console.warn(
+            `⚠️ Error reading or parsing OpenAPI document ${filePath}:`,
+            error
+        );
+        return null;
     }
 }

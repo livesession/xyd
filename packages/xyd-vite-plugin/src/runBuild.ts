@@ -125,7 +125,23 @@ export function validateDocsOutput(clientDir: string, sinceMs: number): void {
     if (!entries.length) fail("directory empty");
     const newest = Math.max(...entries.map((e) => fs.statSync(path.join(clientDir, e)).mtimeMs));
     if (newest < sinceMs - 5000) fail("output predates this build — stale result from a previous run");
-    const assetsDir = path.join(clientDir, "assets");
-    if (!fs.existsSync(assetsDir) || !fs.readdirSync(assetsDir).length) fail("no assets/ output");
+    // assets/ sits at the client root (older xyd) or under the mount dir — the
+    // self-contained basename layout, client/<basename>/assets — either is fine.
+    if (!findAssetsDir(clientDir)) fail("no assets/ output");
     if (!hasHtml(clientDir)) fail("no prerendered .html pages");
+}
+
+function findAssetsDir(dir: string, depth = 0): string | null {
+    if (depth > 6) return null;
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        if (!entry.isDirectory() || entry.name === ".vite" || entry.name === "node_modules") continue;
+        const abs = path.join(dir, entry.name);
+        if (entry.name === "assets") {
+            if (fs.readdirSync(abs).length) return abs;
+            continue;
+        }
+        const nested = findAssetsDir(abs, depth + 1);
+        if (nested) return nested;
+    }
+    return null;
 }

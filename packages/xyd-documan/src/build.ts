@@ -6,6 +6,12 @@ import { build as viteBuild, mergeConfig, Plugin as VitePlugin, PluginOption } f
 import tsconfigPaths from "vite-tsconfig-paths";
 
 import {
+    basenameViteBase,
+    normalizePathBase,
+    relocateUnderBasename,
+    renamePrerenderedRoutes,
+} from "./buildOutput";
+import {
     appInit,
     calculateFolderChecksum,
     commonPostInstallVitePlugins,
@@ -21,6 +27,14 @@ import {
 
 // Define the main function to run the builds
 export async function build() {
+    // Start from an empty output. React Router only empties an out-dir that
+    // lies inside the Vite root (ours, .xyd/build, is outside .xyd/host), so a
+    // second build piled onto the first: the flatten's skip policy then kept
+    // the previous <route>.html and the fresh one stayed in <route>/index.html.
+    for (const dir of ["client", "server"]) {
+        fs.rmSync(path.join(getBuildPath(), dir), { recursive: true, force: true });
+    }
+
     const skip = await preWorkspaceSetup({
         force: true
     })
@@ -68,11 +82,25 @@ export async function build() {
 
     const userViteConfig = respPluginDocs.settings?.advanced?.vite || {};
 
+    // `advanced.basename` mounts the site under a prefix. Vite's `base` has to
+    // follow it, or the prerendered HTML references `/assets/*` at the server
+    // root while the pages live under the prefix. An explicit `advanced.vite.base`
+    // still wins (a CDN base, say) — then the assets stay at the client root
+    // for the user's own pipeline.
+    const basename = respPluginDocs.settings?.advanced?.basename || "";
+    const defaultBase = basenameViteBase(basename);
+    const configuredBase = (userViteConfig as { base?: unknown }).base;
+    const userBase = typeof configuredBase === "string" ? normalizePathBase(configuredBase) : undefined;
+    const viteBase = userBase ?? defaultBase;
+    // the whole site under client/<basename>/ — see buildOutput.ts for the anatomy
+    const selfContained = !!defaultBase && viteBase === defaultBase;
+
     try {
         // Build the client-side bundle
         let clientConfig: any = {
             mode: "production",
             root: appRoot,
+            ...(viteBase ? { base: viteBase } : {}),
             plugins: [
                 ...(commonRunVitePlugins as PluginOption[]),
                 ...(postInstallVitePlugins as PluginOption[]),
@@ -119,6 +147,7 @@ export async function build() {
         let ssrConfig: any = {
             mode: "production",
             root: appRoot,
+            ...(viteBase ? { base: viteBase } : {}),
             build: {
                 ssr: true,
                 rollupOptions: {
@@ -134,11 +163,6 @@ export async function build() {
                 ...(postInstallVitePlugins as PluginOption[]),
 
                 tsconfigPaths(),
-                finishBuild({
-                    exit: true,
-                    log: false,
-                    delayMs: 1000 * 1,
-                }),
             ],
             optimizeDeps: {
                 include: ["react/jsx-runtime"],
@@ -176,10 +200,22 @@ export async function build() {
     } catch (error) {
         console.error('Build failed:', error);  // TODO: better message
         // exit non-zero — otherwise a failed build looks successful to callers
-        // (CI, deploy tooling, @xyd-js/vite-plugin) since finishBuild's exit(0)
-        // only runs on a completed bundle
+        // (CI, deploy tooling, @xyd-js/vite-plugin)
         process.exit(1);
     }
+
+    // Only reached when both bundles closed cleanly. This used to run from a
+    // `closeBundle` hook — but Vite fires closeBundle from its `finally` after
+    // a failed write too (a prerender that 404s, say), and Rollup passes no
+    // error on that path, so the hook's exit(0) pre-empted Vite's rethrow and
+    // a failed build exited 0. Now a failure rejects viteBuild and lands in the
+    // catch above.
+    await finishBuild({
+        basename,
+        selfContained,
+        log: false,
+        delayMs: 1000 * 1,
+    });
 }
 
 function setupInstallableEnvironmentV2() {
@@ -334,152 +370,58 @@ function fixManifestPlugin(
 }
 
 /**
- * Vite plugin that runs the route renaming after the build completes.
+ * Shape the client output after the bundles closed, then exit: flatten the
+ * prerendered routes (keeping the basename's own index.html in place) and,
+ * when the site is mounted under `advanced.basename`, gather the root-level
+ * Vite output (assets/, __spa-fallback.html) under it.
  */
-function finishBuild(options?: {
+async function finishBuild(options: {
+    basename: string;
+    /** the Vite base equals the basename: assets live under it, so move them there */
+    selfContained: boolean;
     log?: boolean, // default true
     onBeforeExit?: (activeHandles: string[]) => void;
     exit?: boolean; // default true
     delayMs?: number; // default 50
-}): VitePlugin {
-    const log = options?.log ?? true;
-    const exit = options?.exit ?? true;
-    const delayMs = options?.delayMs ?? 50;
-    return {
-        name: 'rename-routes',
-        apply: 'build',
-        async closeBundle() {
-            console.log('Processing build completion...');
+}) {
+    const log = options.log ?? true;
+    const exit = options.exit ?? true;
+    const delayMs = options.delayMs ?? 50;
+    const clientDir = path.join(getBuildPath(), "client");
 
-            // Run the route renaming
-            // https://github.com/remix-run/react-router/discussions/12596
-            renamePrerenderedRoutes();
+    console.log('Processing build completion...');
 
-            // Give Vite a tick to finish any async write operations
-            // TODO: better solution
-            await new Promise(resolve => setTimeout(resolve, delayMs));
+    // https://github.com/remix-run/react-router/discussions/12596
+    renamePrerenderedRoutes({
+        rootDir: clientDir,
+        basename: options.basename,
+    });
 
-            const handles =
-                (process as any)._getActiveHandles?.()
-                    ?.map((h: any) => h?.constructor?.name || typeof h) || [];
-
-            options?.onBeforeExit?.(handles);
-
-            // If anything is still keeping the event loop alive, you can force-exit.
-            if (exit) {
-                // Optional: print what's keeping Node alive to help you fix root cause
-                if (handles.length) {
-                    log && console.log('[stop-on-build] Active handles:', handles);
-                }
-
-                console.log('Build completed, exiting...');
-                process.exit(0);
-            }
-        },
-    };
-}
-
-
-type ConflictPolicy = "skip" | "overwrite" | "suffix";
-
-interface Options {
-    rootDir?: string;                         // defaults to <build>/client
-    ext?: string;                             // defaults to ".html"
-    onConflict?: ConflictPolicy;              // defaults to "skip"
-    dryRun?: boolean;                         // defaults to false
-    removeEmptyDirs?: boolean;                // defaults to true
-}
-
-function renamePrerenderedRoutes(opts: Options = {}) {
-    const {
-        rootDir = path.join(getBuildPath(), "client"),
-        ext = ".html",
-        onConflict = "skip",
-        dryRun = false,
-        removeEmptyDirs = true,
-    } = opts;
-
-    if (!fs.existsSync(rootDir)) {
-        // console.log(`[flatten] Skip: ${rootDir} does not exist.`);
-        return;
+    if (options.selfContained && options.basename) {
+        const moved = relocateUnderBasename(clientDir, options.basename);
+        if (moved.length) {
+            console.log(`Moved ${moved.join(", ")} under ${options.basename}`);
+        }
     }
 
-    let moved = 0, skipped = 0, overwritten = 0, removedDirs = 0;
+    // Give Vite a tick to finish any async write operations
+    // TODO: better solution
+    await new Promise(resolve => setTimeout(resolve, delayMs));
 
-    const isIgnorableJunk = (name: string) =>
-        name === ".DS_Store" || name === "Thumbs.db";
+    const handles =
+        (process as any)._getActiveHandles?.()
+            ?.map((h: any) => h?.constructor?.name || typeof h) || [];
 
-    const dirIsEmpty = (dir: string) => {
-        try {
-            const entries = fs.readdirSync(dir, { withFileTypes: true })
-                .filter(e => !isIgnorableJunk(e.name));
-            return entries.length === 0;
-        } catch {
-            return false;
-        }
-    };
+    options.onBeforeExit?.(handles);
 
-    const uniqueWithSuffix = (targetPath: string) => {
-        const { dir, name, ext: e } = path.parse(targetPath);
-        let i = 1;
-        let candidate = targetPath;
-        while (fs.existsSync(candidate)) {
-            candidate = path.join(dir, `${name}-${i}${e}`);
-            i++;
-        }
-        return candidate;
-    };
-
-    const moveIndexUp = (parentDir: string, subdirName: string) => {
-        const folderPath = path.join(parentDir, subdirName);
-        const indexHtmlPath = path.join(folderPath, "index.html");
-        if (!fs.existsSync(indexHtmlPath)) return;
-
-        let newHtmlPath = path.join(parentDir, `${subdirName}${ext}`);
-
-        if (fs.existsSync(newHtmlPath)) {
-            if (onConflict === "skip") {
-                // console.log(`[flatten] Skip (exists): ${newHtmlPath}`);
-                skipped++;
-                return;
-            }
-            if (onConflict === "overwrite") {
-                // console.log(`[flatten] Overwrite: ${newHtmlPath}`);
-                if (!dryRun) fs.rmSync(newHtmlPath);
-                overwritten++;
-            }
-            if (onConflict === "suffix") {
-                const suffixed = uniqueWithSuffix(newHtmlPath);
-                // console.log(`[flatten] Conflict → suffix: ${path.basename(newHtmlPath)} -> ${path.basename(suffixed)}`);
-                newHtmlPath = suffixed;
-            }
+    // If anything is still keeping the event loop alive, you can force-exit.
+    if (exit) {
+        // Optional: print what's keeping Node alive to help you fix root cause
+        if (handles.length) {
+            log && console.log('[stop-on-build] Active handles:', handles);
         }
 
-        // console.log(`[flatten] ${path.relative(rootDir, indexHtmlPath)} -> ${path.relative(rootDir, newHtmlPath)}`);
-        if (!dryRun) fs.renameSync(indexHtmlPath, newHtmlPath);
-        moved++;
-
-        if (removeEmptyDirs && dirIsEmpty(folderPath)) {
-            // console.log(`[flatten] Removing empty dir: ${path.relative(rootDir, folderPath)}`);
-            if (!dryRun) fs.rmSync(folderPath, { recursive: true });
-            removedDirs++;
-        }
-    };
-
-    const dfs = (dir: string) => {
-        const entries = fs.readdirSync(dir, { withFileTypes: true });
-        for (const entry of entries) {
-            if (entry.isDirectory()) {
-                const subdir = path.join(dir, entry.name);
-                // 1) descend first (process children)
-                dfs(subdir);
-                // 2) then flatten this subdir's index.html up into 'dir'
-                moveIndexUp(dir, entry.name);
-            }
-        }
-    };
-
-    dfs(rootDir);
-
-    // console.log(`[flatten] Done. moved=${moved}, skipped=${skipped}, overwritten=${overwritten}, removedDirs=${removedDirs}, dryRun=${dryRun}`);
+        console.log('Build completed, exiting...');
+        process.exit(0);
+    }
 }

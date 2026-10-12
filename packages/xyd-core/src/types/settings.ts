@@ -1964,7 +1964,15 @@ export type LLMsTxtSectionMap = { [section: string]: {
  */
 export interface Advanced {
   /**
-   * basename
+   * Mount the site under a URL prefix, e.g. `"/docs"` or `"/v3/atlas"`.
+   *
+   * Every route, raw file (`llms.txt`, the `.md` twins) and asset URL carries
+   * the prefix, and `xyd build` writes the whole site under
+   * `.xyd/build/client/<basename>/` — a self-contained tree to serve at that
+   * path. The Vite `base` defaults to `<basename>/`; set `advanced.vite.base`
+   * to serve the assets from somewhere else.
+   *
+   * @example "/docs"
    */
   basename?: string;
 

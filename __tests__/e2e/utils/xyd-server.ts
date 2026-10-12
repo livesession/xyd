@@ -14,6 +14,12 @@ export interface XydServerOptions {
     mode?: "dev" | "build";
     /** Extra env vars passed to xyd process */
     env?: Record<string, string>;
+    /**
+     * Extra CLI arguments, placed right after the command: `xyd build <...args>`
+     * in build mode, `xyd <...args> -p <port>` in dev mode — e.g. the positional
+     * document of the fast-serve mode (`['./openapi.yaml']`).
+     */
+    args?: string[];
 }
 
 export class XydServer {
@@ -24,6 +30,7 @@ export class XydServer {
     private templateDir?: string;
     private mode: "dev" | "build";
     private extraEnv: Record<string, string>;
+    private args: string[];
 
     constructor(options: XydServerOptions = {}) {
         this.port = options.port || 0; // 0 = auto-assign a free port
@@ -31,6 +38,7 @@ export class XydServer {
         this.templateDir = options.templateDir;
         this.mode = options.mode || "dev";
         this.extraEnv = options.env || {};
+        this.args = options.args || [];
     }
 
     private createTempWorkspace(): string {
@@ -94,7 +102,7 @@ export class XydServer {
 
     private async startDev(env: Record<string, string>): Promise<void> {
         const resolved = await this.resolveXydCommand();
-        this.process = spawn(resolved.cmd, [...resolved.args, '-p', this.port.toString()], {
+        this.process = spawn(resolved.cmd, [...resolved.args, ...this.args, '-p', this.port.toString()], {
             env: { ...env, ...resolved.env },
             cwd: this.testDir,
             stdio: 'inherit'
@@ -108,7 +116,7 @@ export class XydServer {
 
         // Step 1: run xyd build
         console.log(`Running xyd build in ${this.testDir}...`);
-        const buildProcess = spawn(resolved.cmd, [...resolved.args, 'build'], {
+        const buildProcess = spawn(resolved.cmd, [...resolved.args, 'build', ...this.args], {
             env: { ...env, ...resolved.env },
             cwd: this.testDir,
             stdio: 'inherit'
