@@ -9,6 +9,7 @@ import {
     normalizePathBase,
     relocateUnderBasename,
     renamePrerenderedRoutes,
+    resolveBuildBase,
 } from "../src/buildOutput";
 
 let dirs: string[] = [];
@@ -76,6 +77,49 @@ describe("basenameDirs", () => {
         expect(basenameDirs("/docs/reference")).toEqual(["docs", "docs/reference"]);
         expect(basenameDirs("/docs")).toEqual(["docs"]);
         expect(basenameDirs(undefined)).toEqual([]);
+    });
+});
+
+describe("resolveBuildBase", () => {
+    it("derives the asset base from the basename and marks the tree self-contained", () => {
+        expect(resolveBuildBase({ advanced: { basename: "/docs" } })).toEqual({
+            basename: "/docs",
+            base: "/docs/",
+            selfContained: true,
+        });
+        expect(resolveBuildBase({ advanced: { basename: "/docs/reference" } })).toEqual({
+            basename: "/docs/reference",
+            base: "/docs/reference/",
+            selfContained: true,
+        });
+    });
+
+    it("has no base and nothing to gather without a basename", () => {
+        const root = { basename: "", base: undefined, selfContained: false };
+        expect(resolveBuildBase(undefined)).toEqual(root);
+        expect(resolveBuildBase({})).toEqual(root);
+        expect(resolveBuildBase({ advanced: { basename: "/" } })).toEqual({ ...root, basename: "/" });
+    });
+
+    it("lets an explicit advanced.vite.base win, leaving the assets at the client root", () => {
+        expect(resolveBuildBase({ advanced: { basename: "/docs", vite: { base: "/cdn" } } })).toEqual({
+            basename: "/docs",
+            base: "/cdn/",
+            selfContained: false,
+        });
+        expect(
+            resolveBuildBase({ advanced: { basename: "/docs", vite: { base: "https://cdn.example.com/docs" } } })
+        ).toEqual({
+            basename: "/docs",
+            base: "https://cdn.example.com/docs",
+            selfContained: false,
+        });
+        // a user base spelled like the basename is still the basename's own
+        expect(resolveBuildBase({ advanced: { basename: "/docs", vite: { base: "/docs" } } })).toEqual({
+            basename: "/docs",
+            base: "/docs/",
+            selfContained: true,
+        });
     });
 });
 

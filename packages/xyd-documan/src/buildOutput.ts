@@ -2,21 +2,26 @@ import fs from "node:fs";
 import path from "node:path";
 
 /**
- * Post-build shaping of `.xyd/build/client` for the Vite engine — pure fs
- * helpers with no Vite/documan imports, so they are unit-testable in isolation
- * (see __tests__/buildOutput.test.ts).
+ * Post-build shaping of `.xyd/build/client` — pure fs/path helpers with no
+ * Vite/documan imports, so they are unit-testable in isolation (see
+ * __tests__/buildOutput.test.ts). The Vite engine (build.ts) shapes Vite's
+ * root-level output with them after the fact; the Bun engine
+ * (bun/buildStatic.ts) resolves the same base through `resolveBuildBase` and
+ * writes its files to their final place directly. Both engines produce this
+ * tree.
  *
- * Output anatomy with `advanced.basename: "/docs"` (the default Vite `base`
+ * Output anatomy with `advanced.basename: "/docs"` (the default asset `base`
  * is derived from it, so every asset URL carries the prefix too):
  *
  *   client/
- *     .vite/                      build metadata, not servable
+ *     .vite/                      build metadata, not servable (Vite engine only)
  *     docs/                       the whole site — self-contained, mount it at /docs
  *       index.html                the landing page (stays index.html, never docs.html)
  *       <page>.html, <page>.data  one per route (flattened from <page>/index.html)
  *       <page>.md, llms.txt       the raw routes
+ *       sitemap.xml, robots.txt   the SEO files, prerendered relative to the mount
  *       assets/                   hashed js/css/fonts, referenced as /docs/assets/*
- *       __spa-fallback.html       the SPA shell for non-prerendered paths
+ *       __spa-fallback.html       the SPA shell for non-prerendered paths (Vite engine only)
  *
  * Without a basename nothing moves: assets/ and __spa-fallback.html stay at the
  * client root next to the pages, exactly as before.
@@ -26,6 +31,44 @@ import path from "node:path";
 export function basenameViteBase(basename?: string | null): string | undefined {
     const trimmed = (basename || "").replace(/^\/+|\/+$/g, "");
     return trimmed ? `/${trimmed}/` : undefined;
+}
+
+/** The settings fields the asset base is derived from. */
+export interface BuildBaseSettings {
+    advanced?: {
+        basename?: string | null;
+        vite?: { base?: unknown } | null;
+    } | null;
+}
+
+export interface BuildBase {
+    /** `advanced.basename` as configured; "" when the site is mounted at the root */
+    basename: string;
+    /** the URL base every asset href carries (`/docs/`); undefined → the server root */
+    base: string | undefined;
+    /** the base is the basename's own → the assets live under `client/<basename>/` with the pages */
+    selfContained: boolean;
+}
+
+/**
+ * The asset URL base of a build, from the settings. `advanced.basename` mounts
+ * the site under a prefix, so the base has to follow it — or the prerendered
+ * HTML references `/assets/*` at the server root while the pages live under the
+ * prefix. An explicit `advanced.vite.base` still wins (a CDN base, say): then
+ * the assets stay at the client root for the user's own pipeline and
+ * `selfContained` is false. Shared by both engines so they agree on the tree.
+ */
+export function resolveBuildBase(settings?: BuildBaseSettings | null): BuildBase {
+    const basename = settings?.advanced?.basename || "";
+    const defaultBase = basenameViteBase(basename);
+    const configuredBase = settings?.advanced?.vite?.base;
+    const userBase = typeof configuredBase === "string" ? normalizePathBase(configuredBase) : undefined;
+    const base = userBase ?? defaultBase;
+    return {
+        basename,
+        base,
+        selfContained: !!defaultBase && base === defaultBase,
+    };
 }
 
 /**

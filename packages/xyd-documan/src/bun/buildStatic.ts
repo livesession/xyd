@@ -2,7 +2,7 @@ import * as path from "node:path";
 import * as fs from "node:fs";
 import { pathToFileURL } from "node:url";
 
-import { appInit, getHostPath, getBuildPath, getPublicPath } from "../../dist/index.js";
+import { appInit, getHostPath, getBuildPath, getPublicPath, resolveBuildBase } from "../../dist/index.js";
 import { buildBundle, recomputeIconSet, setBuildContext, ensureThemeInstalled } from "./startDevServer";
 import { robotsTxt, sitemapXml, sitemapRoutes } from "./seo";
 import { themePackage, themeShortName } from "./themePkg";
@@ -61,7 +61,22 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
 
   const clientDir = path.join(getBuildPath(), "client");
   fs.rmSync(clientDir, { recursive: true, force: true });
-  fs.mkdirSync(path.join(clientDir, "assets"), { recursive: true });
+
+  // `advanced.basename` (and an explicit `advanced.vite.base`) resolve exactly as
+  // in the Vite engine — see buildOutput.ts for the output anatomy. The pages,
+  // the raw routes and the SEO files always nest under the basename dir (that is
+  // where the prefixed URLs point); the hashed assets/ join them when the base is
+  // the basename's own, so client/<basename>/ is ONE self-contained tree whose
+  // hrefs (`/docs/assets/…`) resolve on a host that mounts it at /docs. A user
+  // base (a CDN) keeps assets/ at the client root for the user's own pipeline.
+  const { basename, base: assetBase, selfContained } = resolveBuildBase(settings);
+  const baseDir = basename.replace(/^\/+|\/+$/g, "");
+  const siteDir = baseDir ? path.join(clientDir, baseDir) : clientDir;
+  const assetsDir = selfContained ? siteDir : clientDir;
+  /** an asset's href from its path relative to assetsDir: `assets/x.js` → `/docs/assets/x.js` */
+  const assetHref = (rel: string) => `${assetBase || "/"}${rel.replace(/^\/+/, "")}`;
+  fs.mkdirSync(path.join(assetsDir, "assets"), { recursive: true });
+  if (assetBase) console.error("[build] asset base:", assetBase);
 
   // S4.3 — in a compiled binary there is no node_modules / on-disk source to run
   // Bun.build against; the client/css/server render bundles were PREBUILT at
@@ -77,15 +92,17 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     process.exit(1);
   }
 
-  // 1) CLIENT bundle — hashed, minified, no live-reload.
+  // 1) CLIENT bundle — hashed, minified, no live-reload. Written under assetsDir
+  // and referenced through assetHref, so the files and the hrefs carry the same
+  // prefix (the embedded manifest's paths are root-relative, `/assets/…`).
   let clientJs: string;
   if (isBin) {
     for (const f of emb.clientFiles) {
-      const dst = path.join(clientDir, f.out);
+      const dst = path.join(assetsDir, f.out);
       fs.mkdirSync(path.dirname(dst), { recursive: true });
       await Bun.write(dst, Bun.file(f.src));
     }
-    clientJs = emb.clientJs;
+    clientJs = assetHref(emb.clientJs);
     console.error(`[build] client (embedded, ${emb.clientFiles.length} file(s)) →`, clientJs);
   } else {
     console.error("[build] bundling client (hashed, minified)…");
@@ -98,7 +115,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
       [],
       true,
       {
-        outdir: clientDir,
+        outdir: assetsDir,
         naming: { entry: "assets/client-[hash].js", chunk: "assets/[name]-[hash].js", asset: "assets/[name]-[hash].[ext]" },
         minify: true,
         sourcemap: "none",
@@ -106,7 +123,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
       }
     );
     const clientEntry = clientRes.outputs.find((o: any) => o.kind === "entry-point").path;
-    clientJs = "/" + path.relative(clientDir, clientEntry).replace(/\\/g, "/");
+    clientJs = assetHref(path.relative(assetsDir, clientEntry).replace(/\\/g, "/"));
     console.error("[build] client →", clientJs);
   }
 
@@ -115,14 +132,14 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   let cssLinks: string[];
   if (isBin) {
     for (const f of emb.cssFiles) {
-      const dst = path.join(clientDir, f.out);
+      const dst = path.join(assetsDir, f.out);
       fs.mkdirSync(path.dirname(dst), { recursive: true });
       await Bun.write(dst, Bun.file(f.src));
     }
-    cssLinks = emb.cssLinks;
+    cssLinks = emb.cssLinks.map(assetHref);
     console.error(`[build] css (embedded) → ${cssLinks.length} files`);
   } else {
-    cssLinks = await emitCss(HOST, themePkg, clientDir);
+    cssLinks = await emitCss(HOST, themePkg, assetsDir, assetHref);
   }
 
   // 2b) Icon set as ONE hashed, cached asset (project-specific) — NOT inlined per
@@ -130,8 +147,8 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   const iconSetSrc = "globalThis.__xydIconSet=" + JSON.stringify((globalThis as any).__xydIconSet || {}) + ";";
   const iconHash = Bun.hash(iconSetSrc).toString(16).slice(0, 8);
   const iconSetOut = `assets/iconset-${iconHash}.js`;
-  fs.writeFileSync(path.join(clientDir, iconSetOut), iconSetSrc);
-  const iconSetJs = "/" + iconSetOut;
+  fs.writeFileSync(path.join(assetsDir, iconSetOut), iconSetSrc);
+  const iconSetJs = assetHref(iconSetOut);
 
   // 2c) Settings as ONE hashed external asset (virtual_xyd-settings-<hash>.js) —
   // parity with the Vite virtual:xyd-settings bundle. Keeps the raw, all-locale
@@ -139,8 +156,8 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   const settingsSrc = settingsBundleJs((globalThis as any).__xydSettings, (globalThis as any).__xydSettingsClone);
   const settingsHash = Bun.hash(settingsSrc).toString(16).slice(0, 8);
   const settingsOut = `assets/virtual_xyd-settings-${settingsHash}.js`;
-  fs.writeFileSync(path.join(clientDir, settingsOut), settingsSrc);
-  const settingsJs = "/" + settingsOut;
+  fs.writeFileSync(path.join(assetsDir, settingsOut), settingsSrc);
+  const settingsJs = assetHref(settingsOut);
 
   // 2d) Project-local user components (sidebar `{ component }` items + MDX/plugin
   // components) — the binary can't fold them into the embedded client/server graph
@@ -150,8 +167,8 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   const fedComponents = isBin ? collectFederatedComponents() : [];
   let userComponentsChunkJs: string | undefined;
   if (fedComponents.length) {
-    const r = await buildUserComponentsClient(fedComponents, clientDir);
-    userComponentsChunkJs = r?.href;
+    const r = await buildUserComponentsClient(fedComponents, assetsDir);
+    userComponentsChunkJs = r ? assetHref(r.href) : undefined;
     console.error(`[build] user-components (federated client, ${fedComponents.length}) → ${userComponentsChunkJs}`);
   }
 
@@ -235,8 +252,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   // client root at step 7b, AFTER prerender, so generated files always win.
   const publicSrc = getPublicPath();
   copyDir(publicSrc, path.join(clientDir, "public"));
-  const baseDir = (settings?.advanced?.basename || "").replace(/^\/+|\/+$/g, "");
-  if (baseDir) copyDir(publicSrc, path.join(clientDir, baseDir, "public"));
+  if (baseDir) copyDir(publicSrc, path.join(siteDir, "public"));
 
   // 6) PRERENDER every content page (shellOnly-aware) → flat <slug>.html.
   const accessMap: Record<string, string> = (globalThis as any).__xydAccessMap || {};
@@ -333,9 +349,11 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
     }
   }
 
-  // 7) NON-PAGE emits (access-filtered where relevant).
-  emitSitemap(clientDir, settings, accessMap, slugs);
-  emitRobots(clientDir, settings);
+  // 7) NON-PAGE emits (access-filtered where relevant). sitemap.xml / robots.txt
+  // sit next to the pages under the basename dir — the Vite engine prerenders
+  // them as routes relative to the mount, so the trees match.
+  emitSitemap(siteDir, settings, accessMap, slugs);
+  emitRobots(siteDir, settings);
   emitRawRouteFiles(clientDir); // /llms.txt + raw .md (already protected-filtered at appInit)
 
   // Same-URL content versions: emit each variant's page payload as
@@ -371,7 +389,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   // generated output always wins (a public/index.html never clobbers the
   // prerendered one, hashed assets/ are untouched).
   copyDirIfAbsent(publicSrc, clientDir);
-  if (baseDir) copyDirIfAbsent(publicSrc, path.join(clientDir, baseDir));
+  if (baseDir) copyDirIfAbsent(publicSrc, siteDir);
 
   // FAIL LOUD on any page that failed to render — otherwise a broken page ships
   // as a 404 while the build reports success (silent broken deploy).
@@ -384,18 +402,21 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   process.exit(0);
 }
 
-/** sitemap.xml — via the shared ./seo helpers (identical to the dev server). */
-function emitSitemap(clientDir: string, settings: any, accessMap: Record<string, string>, slugs: string[]) {
+/** sitemap.xml — via the shared ./seo helpers (identical to the dev server).
+ *  `siteDir` is the basename dir when the site is mounted under one. */
+function emitSitemap(siteDir: string, settings: any, accessMap: Record<string, string>, slugs: string[]) {
   const routes = sitemapRoutes(slugs, accessMap, !!(globalThis as any).__xydHasIndexPage);
   const xml = sitemapXml(settings, routes); // build: no request origin — seo.domain or ""
   if (!xml) return; // no navigation → loader would 404
-  fs.writeFileSync(path.join(clientDir, "sitemap.xml"), xml);
+  fs.mkdirSync(siteDir, { recursive: true });
+  fs.writeFileSync(path.join(siteDir, "sitemap.xml"), xml);
   console.error(`[build] sitemap → ${routes.length} urls`);
 }
 
 /** robots.txt — via the shared ./seo helper (identical to the dev server). */
-function emitRobots(clientDir: string, settings: any) {
-  fs.writeFileSync(path.join(clientDir, "robots.txt"), robotsTxt(settings));
+function emitRobots(siteDir: string, settings: any) {
+  fs.mkdirSync(siteDir, { recursive: true });
+  fs.writeFileSync(path.join(siteDir, "robots.txt"), robotsTxt(settings));
 }
 
 /** /llms.txt + raw .md/.mdx (keys of __xydRawRouteFiles; protected pages were
@@ -417,8 +438,14 @@ function emitRawRouteFiles(clientDir: string) {
 }
 
 /** Resolve the 4 package-dist CSS groups (same order the dev server serves),
- *  concat, content-hash, write to assets/, return the hrefs (order preserved). */
-async function emitCss(HOST: string, themePkg: string, clientDir: string): Promise<string[]> {
+ *  concat, content-hash, write to <assetsDir>/assets/, return the hrefs (order
+ *  preserved) — each through `href`, which adds the asset base. */
+async function emitCss(
+  HOST: string,
+  themePkg: string,
+  assetsDir: string,
+  href: (rel: string) => string
+): Promise<string[]> {
   const rs = (spec: string) => {
     try {
       return Bun.resolveSync(spec, HOST);
@@ -457,8 +484,8 @@ async function emitCss(HOST: string, themePkg: string, clientDir: string): Promi
     if (!css) continue;
     const hash = Bun.hash(css).toString(16).slice(0, 8);
     const name = `assets/${label}-${hash}.css`;
-    fs.writeFileSync(path.join(clientDir, name), css);
-    links.push("/" + name);
+    fs.writeFileSync(path.join(assetsDir, name), css);
+    links.push(href(name));
   }
   console.error(`[build] css → ${links.length} files`);
   return links;
