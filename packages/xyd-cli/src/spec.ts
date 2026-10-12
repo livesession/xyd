@@ -11,11 +11,29 @@ export const cliSpec: CLI = {
     commands: {
         dev: {
             description: 'Run your docs locally in development mode',
-            usage: 'xyd dev [flags]',
+            usage: 'xyd dev [document] [flags]',
+            arguments: [
+                {
+                    name: 'document',
+                    required: false,
+                    description:
+                        'An OpenAPI (.yaml/.yml/.json) or GraphQL (.graphql) document to serve the API reference alone — no docs content, an optional docs.json beside it',
+                    example: './openapi.yaml',
+                },
+            ],
         },
         build: {
             description: 'Build your docs',
-            usage: 'xyd build [flags]',
+            usage: 'xyd build [document] [flags]',
+            arguments: [
+                {
+                    name: 'document',
+                    required: false,
+                    description:
+                        'An OpenAPI (.yaml/.yml/.json) or GraphQL (.graphql) document to build the API reference alone — one page per operation and schema, mounted at `advanced.basename` when docs.json sets one',
+                    example: './openapi.yaml',
+                },
+            ],
         },
         serve: {
             description: 'Serve your built docs in production mode',

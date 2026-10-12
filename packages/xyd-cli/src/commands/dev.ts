@@ -2,7 +2,22 @@ import * as documan from "@xyd-js/documan"
 import { spawn, spawnSync } from "node:child_process"
 import { createRequire } from "node:module"
 
-export async function dev(options: any = {}) {
+/**
+ * The CLI dispatches a command as `(...commandArgs, globalFlags)` (cli.ts): the
+ * global flags are the LAST argument and any positional comes before them —
+ * `xyd dev ./openapi.yaml -p 4000` (the fast-serve document) calls
+ * `dev('./openapi.yaml', {port: 4000})`. Taking the flags from the end keeps
+ * `-p` / `--port` working with a document in front; before, the document
+ * landed in `options` and the port fell back to 5175. The document itself is
+ * read from process.argv by the settings loader (fastServeSetup).
+ */
+export function devOptions(args: unknown[]): any {
+    const last = args[args.length - 1]
+    return last && typeof last === "object" ? last : {}
+}
+
+export async function dev(...args: unknown[]) {
+    const options = devOptions(args)
     // Opt-in Bun engine (S1): drop Vite + React Router in dev and serve via the
     // Bun render server + Rust watcher. Gated on XYD_BUN during migration; the
     // Vite path below stays the default.

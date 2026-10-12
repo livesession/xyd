@@ -11,6 +11,11 @@ tocCard:
       title: OpenAPI Samples
       description: Learn how to setup OpenAPI pages
       icon: docs:github
+
+    - link: https://github.com/xyd-js/examples/tree/master/atlas-only
+      title: API Reference Only
+      description: Build the reference alone, under a prefix
+      icon: docs:github
 ---
 
 # OpenAPI
@@ -160,6 +165,52 @@ Creating multi API specs for more advanced use cases is also possible:
 :::
 
 Thanks to this configuration, you'll have two routes: `docs/api/rest/*` and `docs/api/webhooks/*`.
+
+## API Reference Only
+
+You don't need a docs site to publish an API reference. Point `xyd` at the document itself and it renders the reference alone — one page per operation and one per schema, no docs content:
+
+```bash
+xyd build ./openapi.yaml
+```
+
+The document can be `.yaml`, `.yml` or `.json` (and `.graphql` for a GraphQL schema). `xyd dev ./openapi.yaml` serves the same site locally, and the build is a static site at `.xyd/build/client`, exactly like a regular `xyd build`.
+
+A `docs.json` next to the document is optional. When present it is merged over the defaults (the `gusto` theme, search off), so it is the place for a `theme`, or for `advanced.basename` to [mount the reference under a prefix](#hosting-under-a-prefix).
+
+### The Landing Page
+
+`index.md` (or `index.mdx`) in the project is the landing page. Without one, xyd synthesizes a page from the document's `info.title` and `info.description` — the project directory stays untouched.
+
+### Hosting Under A Prefix
+
+To serve the reference at a path such as `/docs` instead of the site root, set `advanced.basename`:
+
+```json
+{
+    "advanced": {
+        "basename": "/docs"
+    }
+}
+```
+
+Every link, raw file (`llms.txt`, the `.md` twins) and asset URL then carries the prefix, and the build writes the whole site under `.xyd/build/client/docs/`:
+
+```text
+.xyd/build/client/docs/
+├── index.html              the landing page
+├── getBookByTitle.html     one per operation (its operationId), with a .data and a .md twin
+├── objects/Book.html       one per schema
+├── llms.txt
+├── assets/                 hashed js/css/fonts, referenced as /docs/assets/*
+└── __spa-fallback.html     the SPA shell for paths that were not prerendered
+```
+
+That directory is self-contained: mount it at the prefix with any static file server that resolves clean URLs (`/docs/getBookByTitle` → `getBookByTitle.html`, `/docs/` → `index.html`), or copy it into a larger site at that path. The Vite `base` follows the basename automatically; set `advanced.vite.base` yourself to serve the assets from somewhere else — then they stay at the client root for your own pipeline.
+
+:::callout
+A complete project is in the [atlas-only example](https://github.com/xyd-js/examples/tree/master/atlas-only).
+:::
 
 ## API Docs Generation Guides
 

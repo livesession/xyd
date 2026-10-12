@@ -14,6 +14,30 @@ export interface XydServerOptions {
     mode?: "dev" | "build";
     /** Extra env vars passed to xyd process */
     env?: Record<string, string>;
+    /**
+     * Extra CLI arguments, placed right after the command: `xyd build <...args>`
+     * in build mode, `xyd dev <...args> -p <port>` in dev mode — e.g. the
+     * positional document of the fast-serve mode (`['./openapi.yaml']`). The
+     * `dev` is spelled out only when there are extra args: the CLI reads the
+     * first positional as the command (a bare `xyd ./openapi.yaml -p <port>` is
+     * `Unknown command: ./openapi.yaml`); without them the existing
+     * `xyd -p <port>` form stays (`dev` is the CLI's default command).
+     * Readiness is `GET /` answering 200/302 (waitForServer): a project mounted
+     * under `advanced.basename` answers 404 there in dev mode, so such a
+     * project is tested in build mode (the static server lists the root).
+     */
+    args?: string[];
+}
+
+/**
+ * The dev server's argv after the CLI's own: `dev <...args> -p <port>` when
+ * there are extra args (the CLI takes the first positional as the command, so
+ * the document of the fast-serve mode needs `dev` in front of it), the bare
+ * `-p <port>` otherwise — the CLI's default command is `dev`, and the existing
+ * callers rely on that form.
+ */
+export function devArgs(args: string[], port: number): string[] {
+    return [...(args.length ? ['dev', ...args] : []), '-p', port.toString()];
 }
 
 export class XydServer {
@@ -24,6 +48,7 @@ export class XydServer {
     private templateDir?: string;
     private mode: "dev" | "build";
     private extraEnv: Record<string, string>;
+    private args: string[];
 
     constructor(options: XydServerOptions = {}) {
         this.port = options.port || 0; // 0 = auto-assign a free port
@@ -31,6 +56,7 @@ export class XydServer {
         this.templateDir = options.templateDir;
         this.mode = options.mode || "dev";
         this.extraEnv = options.env || {};
+        this.args = options.args || [];
     }
 
     private createTempWorkspace(): string {
@@ -94,7 +120,7 @@ export class XydServer {
 
     private async startDev(env: Record<string, string>): Promise<void> {
         const resolved = await this.resolveXydCommand();
-        this.process = spawn(resolved.cmd, [...resolved.args, '-p', this.port.toString()], {
+        this.process = spawn(resolved.cmd, [...resolved.args, ...devArgs(this.args, this.port)], {
             env: { ...env, ...resolved.env },
             cwd: this.testDir,
             stdio: 'inherit'
@@ -108,7 +134,7 @@ export class XydServer {
 
         // Step 1: run xyd build
         console.log(`Running xyd build in ${this.testDir}...`);
-        const buildProcess = spawn(resolved.cmd, [...resolved.args, 'build'], {
+        const buildProcess = spawn(resolved.cmd, [...resolved.args, 'build', ...this.args], {
             env: { ...env, ...resolved.env },
             cwd: this.testDir,
             stdio: 'inherit'

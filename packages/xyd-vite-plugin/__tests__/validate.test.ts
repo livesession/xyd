@@ -4,6 +4,7 @@ import * as path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
 import { preValidateBasename } from "../src/index";
+import { validateDocsOutput } from "../src/runBuild";
 
 let dirs: string[] = [];
 function docsProject(settings: object | null): string {
@@ -48,5 +49,34 @@ describe("preValidateBasename", () => {
     it("stays silent for docs.ts settings (post-build validation covers those)", () => {
         const dir = docsProject(null);
         expect(() => preValidateBasename(dir, "/docs")).not.toThrow();
+    });
+});
+
+describe("validateDocsOutput", () => {
+    function clientDir(files: Record<string, string>): string {
+        const dir = fs.mkdtempSync(path.join(os.tmpdir(), "xyd-vite-plugin-output-"));
+        dirs.push(dir);
+        for (const [rel, content] of Object.entries(files)) {
+            const abs = path.join(dir, rel);
+            fs.mkdirSync(path.dirname(abs), { recursive: true });
+            fs.writeFileSync(abs, content);
+        }
+        return dir;
+    }
+    const sinceMs = Date.now() - 60_000;
+
+    it("accepts assets/ at the client root (older xyd)", () => {
+        const dir = clientDir({ "assets/app.js": "js", "docs/index.html": "<h1>Docs</h1>" });
+        expect(() => validateDocsOutput(dir, sinceMs)).not.toThrow();
+    });
+
+    it("accepts assets/ under the mount (the self-contained basename layout)", () => {
+        const dir = clientDir({ "docs/assets/app.js": "js", "docs/index.html": "<h1>Docs</h1>" });
+        expect(() => validateDocsOutput(dir, sinceMs)).not.toThrow();
+    });
+
+    it("rejects an output with no assets/ anywhere", () => {
+        const dir = clientDir({ "docs/index.html": "<h1>Docs</h1>" });
+        expect(() => validateDocsOutput(dir, sinceMs)).toThrowError(/no assets\/ output/);
     });
 });

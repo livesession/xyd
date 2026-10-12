@@ -122,6 +122,7 @@ export function loadI18nTranslations(
 }
 
 import { docsPreset } from "./presets/docs";
+import { fastServeIndexPage } from "./presets/docs/settings";
 import { graphqlPreset } from "./presets/graphql";
 import { openapiPreset } from "./presets/openapi";
 import { sourcesPreset } from "./presets/sources";
@@ -528,6 +529,13 @@ async function findIndexPage(): Promise<string> {
 
     if (fs.existsSync("index.mdx")) {
         return "index.mdx"
+    }
+
+    // The landing page the fast-serve mode synthesizes (`xyd build ./openapi.yaml`
+    // with no index.md) — written under .xyd/.cache by readSettings.
+    const generated = fastServeIndexPage()
+    if (generated && fs.existsSync(generated)) {
+        return generated
     }
 
     return ""

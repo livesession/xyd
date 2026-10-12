@@ -9,10 +9,13 @@ import { XydError } from "./log";
  * and reusable.
  *
  * xyd output anatomy (docs.json `advanced.basename: "/docs"`):
- *   assets/       hashed js/css at the CLIENT ROOT — the docs HTML references them as
- *                 absolute `/assets/*` (no basename prefix), so they must merge into
- *                 the host's root assets/ dir
  *   docs/         the page tree under the basename (incl. docs/public/, docs/llms.txt)
+ *   docs/assets/  the self-contained basename layout (xyd derives the Vite base from
+ *                 the basename): hashed js/css under the mount, referenced as
+ *                 `/docs/assets/*` — they merge as part of the page tree
+ *   assets/       older xyd (or an explicit `advanced.vite.base`): hashed js/css at the
+ *                 CLIENT ROOT, referenced as absolute `/assets/*` (no basename prefix),
+ *                 so they must merge into the host's root assets/ dir
  *   public/       root duplicate of the docs public dir — bundled docs JS references
  *                 un-prefixed `/public/*` paths
  *   sitemap.xml   URLs currently LACK the basename prefix (upstream documan issue) —
@@ -189,7 +192,10 @@ export function planMerge(docsClientDir: string, hostOutDir: string, options: Me
     // universal directory-index convention (express 301s to the trailing slash).
     const planned = new Set(plan.ops.map((op) => op.dest));
     for (const op of [...plan.ops]) {
-        if (op.kind !== "page-tree" || !op.dest.endsWith(".html") || path.basename(op.dest) === "index.html") continue;
+        if (op.kind !== "page-tree" || !op.dest.endsWith(".html")) continue;
+        // index.html is already the directory form; the SPA fallback shell is not a route
+        const name = path.basename(op.dest);
+        if (name === "index.html" || name === "__spa-fallback.html") continue;
         const mirror = path.join(op.dest.slice(0, -".html".length), "index.html");
         if (planned.has(mirror) || fs.existsSync(mirror)) continue;
         planned.add(mirror);

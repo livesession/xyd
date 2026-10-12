@@ -1,0 +1,8 @@
+assets/host-1.js :: host
+docs/__spa-fallback.html :: <div id=app></div>
+docs/assets/theme-abc.css :: .docs{color:red}
+docs/guides/intro.html :: <h1>Intro</h1>
+docs/guides/intro/index.html :: <h1>Intro</h1>
+docs/index.html :: <h1>Docs Home</h1>
+docs/llms.txt :: llms
+index.html :: <h1>Host</h1>

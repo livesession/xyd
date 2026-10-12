@@ -628,6 +628,13 @@ function composyingMetaProps(meta: Metadata, ...props: (keyof AllowedMetaProps)[
     return newProps;
 }
 
+// Never user compose pages — and a route-less project (the fast-serve mode,
+// `xyd build ./openapi.yaml`) scans from the project root, where a previous
+// build's generated pages (.xyd/build/client/*.md, the llms twins) carry the
+// very `openapi: <source>#<region>` frontmatter this walk looks for. Mapping
+// those made every second build in the same project fail on a missing file.
+const COMPOSE_SKIP_DIRS = new Set([".xyd", "node_modules", ".git"]);
+
 async function composeFileMap(basePath: string, matchRoute: string) {
     const routeMap: Record<string, string> = {};
 
@@ -638,6 +645,9 @@ async function composeFileMap(basePath: string, matchRoute: string) {
             const fullPath = path.join(dirPath, entry.name);
 
             if (entry.isDirectory()) {
+                if (COMPOSE_SKIP_DIRS.has(entry.name)) {
+                    continue;
+                }
                 await processDirectory(fullPath);
             } else if (entry.isFile() && (entry.name.endsWith('.md') || entry.name.endsWith('.mdx'))) {
                 try {

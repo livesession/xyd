@@ -10,6 +10,7 @@ const tests = [
     { name: "5.public-merge", description: "root public/ merges file-by-file, host-owned files survive" },
     { name: "6.base-mismatch", description: "base option not matching the output tree -> hard error" },
     { name: "7.vite-metadata", description: ".vite build metadata is never merged (host manifest survives)" },
+    { name: "8.self-contained-basename", description: "assets under the mount (the basename-derived base) merge as part of the page tree" },
 ];
 
 describe("mergeDocsBuild", () => {

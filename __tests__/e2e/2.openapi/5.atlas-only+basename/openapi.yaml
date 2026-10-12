@@ -1,0 +1,234 @@
+openapi: 3.0.3
+info:
+  title: Book API
+  description: API for managing books and authors
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+  - url: https://staging-api.example.com/v1
+    description: Staging server
+  
+paths:
+  /books:
+    get:
+      summary: Get a book by title
+      description: Retrieve a book by its title
+      operationId: getBookByTitle
+      parameters:
+        - name: title
+          in: query
+          required: true
+          description: The title of the book v2
+          schema:
+            type: string
+        - name: date
+          in: query
+          required: false
+          description: The date of the book
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Book found successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Book not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+      x-codeSamples:
+        - lang: bash
+          label: List all users
+          source: |
+            curl -X GET https://api.example.com/users
+
+        - lang: javascript
+          label: List all users
+          source: |
+            const api = require('api-client');
+            api.users.list();
+
+        - lang: bash
+          label: Get user by ID
+          source: |
+            curl -X GET https://api.example.com/users/123
+
+        - lang: javascript
+          label: Get user by ID
+          source: |
+            const api = require('api-client');
+            api.users.get('123');
+    post:
+      summary: Add a book
+      description: Create a new book
+      operationId: addBook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookInput'
+      responses:
+        '201':
+          description: Book created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /authors:
+    post:
+      summary: Add an author
+      description: Create a new author
+      operationId: addAuthor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  description: The name of the author
+      responses:
+        '201':
+          description: Author created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Book:
+      type: object
+      required:
+        - title
+        - author_name
+        - info
+      properties:
+        title:
+          type: string
+          description: The title of the book
+        author_name:
+          type: string
+          description: The author of the book
+        info:
+          $ref: '#/components/schemas/BookInfo'
+      example:
+        title: "The Great Gatsby"
+        author_name: "F. Scott Fitzgerald"
+        info:
+          date: "1925-04-10"
+
+    BookInfo:
+      type: object
+      required:
+        - date
+      properties:
+        date:
+          type: string
+          description: The date of the book
+          format: date
+      example:
+        date: "1925-04-10"
+
+    Author:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: The name of the author
+        books:
+          type: array
+          items:
+            type: string
+          description: The books of the author
+      example:
+        name: "F. Scott Fitzgerald"
+        books: ["The Great Gatsby", "Tender Is the Night"]
+
+    BookInput:
+      type: object
+      required:
+        - title
+        - info
+      properties:
+        title:
+          type: string
+          description: The title of the book
+        info:
+          $ref: '#/components/schemas/BookInfoInput'
+      example:
+        title: "The Great Gatsby"
+        info:
+          date: "1925-04-10"
+
+    BookInfoInput:
+      type: object
+      required:
+        - date
+      properties:
+        date:
+          type: string
+          description: The date of the book
+          format: date
+      example:
+        date: "1925-04-10"
+
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          description: Error message
+        code:
+          type: string
+          description: Error code
+      example:
+        message: "Book not found"
+        code: "BOOK_NOT_FOUND"
+
+tags:
+  - name: books
+    description: Operations related to books
+  - name: authors
+    description: Operations related to authors 
