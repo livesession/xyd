@@ -6,23 +6,23 @@ import path from "node:path";
  * helpers with no Vite/documan imports, so they are unit-testable in isolation
  * (see __tests__/buildOutput.test.ts).
  *
- * Output anatomy with `advanced.basename: "/v3/atlas"` (the default Vite `base`
+ * Output anatomy with `advanced.basename: "/docs"` (the default Vite `base`
  * is derived from it, so every asset URL carries the prefix too):
  *
  *   client/
  *     .vite/                      build metadata, not servable
- *     v3/atlas/                   the whole site — self-contained, mount it at /v3/atlas
+ *     v3/atlas/                   the whole site — self-contained, mount it at /docs
  *       index.html                the landing page (stays index.html, never v3/atlas.html)
  *       <page>.html, <page>.data  one per route (flattened from <page>/index.html)
  *       <page>.md, llms.txt       the raw routes
- *       assets/                   hashed js/css/fonts, referenced as /v3/atlas/assets/*
+ *       assets/                   hashed js/css/fonts, referenced as /docs/assets/*
  *       __spa-fallback.html       the SPA shell for non-prerendered paths
  *
  * Without a basename nothing moves: assets/ and __spa-fallback.html stay at the
  * client root next to the pages, exactly as before.
  */
 
-/** `advanced.basename` as the Vite `base` it implies: `/v3/atlas` → `/v3/atlas/`; none → undefined. */
+/** `advanced.basename` as the Vite `base` it implies: `/docs` → `/docs/`; none → undefined. */
 export function basenameViteBase(basename?: string | null): string | undefined {
     const trimmed = (basename || "").replace(/^\/+|\/+$/g, "");
     return trimmed ? `/${trimmed}/` : undefined;
@@ -41,7 +41,7 @@ export function normalizePathBase(base: string): string {
     return trimmed ? `/${trimmed}/` : "/";
 }
 
-/** The basename's directory chain relative to the client root: `/v3/atlas` → ["v3", "v3/atlas"]. */
+/** The basename's directory chain relative to the client root: `/docs` → ["v3", "v3/atlas"]. */
 export function basenameDirs(basename?: string | null): string[] {
     const segments = (basename || "").split("/").filter(Boolean);
     return segments.map((_, i) => segments.slice(0, i + 1).join("/"));

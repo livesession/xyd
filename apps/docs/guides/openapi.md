@@ -184,29 +184,29 @@ A `docs.json` next to the document is optional. When present it is merged over t
 
 ### Hosting Under A Prefix
 
-To serve the reference at a path such as `/v3/atlas` instead of the site root, set `advanced.basename`:
+To serve the reference at a path such as `/docs` instead of the site root, set `advanced.basename`:
 
 ```json
 {
     "advanced": {
-        "basename": "/v3/atlas"
+        "basename": "/docs"
     }
 }
 ```
 
-Every link, raw file (`llms.txt`, the `.md` twins) and asset URL then carries the prefix, and the build writes the whole site under `.xyd/build/client/v3/atlas/`:
+Every link, raw file (`llms.txt`, the `.md` twins) and asset URL then carries the prefix, and the build writes the whole site under `.xyd/build/client/docs/`:
 
 ```text
-.xyd/build/client/v3/atlas/
+.xyd/build/client/docs/
 ├── index.html              the landing page
 ├── getBookByTitle.html     one per operation (its operationId), with a .data and a .md twin
 ├── objects/Book.html       one per schema
 ├── llms.txt
-├── assets/                 hashed js/css/fonts, referenced as /v3/atlas/assets/*
+├── assets/                 hashed js/css/fonts, referenced as /docs/assets/*
 └── __spa-fallback.html     the SPA shell for paths that were not prerendered
 ```
 
-That directory is self-contained: mount it at the prefix with any static file server that resolves clean URLs (`/v3/atlas/getBookByTitle` → `getBookByTitle.html`, `/v3/atlas/` → `index.html`), or copy it into a larger site at that path. The Vite `base` follows the basename automatically; set `advanced.vite.base` yourself to serve the assets from somewhere else — then they stay at the client root for your own pipeline.
+That directory is self-contained: mount it at the prefix with any static file server that resolves clean URLs (`/docs/getBookByTitle` → `getBookByTitle.html`, `/docs/` → `index.html`), or copy it into a larger site at that path. The Vite `base` follows the basename automatically; set `advanced.vite.base` yourself to serve the assets from somewhere else — then they stay at the client root for your own pipeline.
 
 :::callout
 A complete project is in the [atlas-only example](https://github.com/xyd-js/examples/tree/master/atlas-only).

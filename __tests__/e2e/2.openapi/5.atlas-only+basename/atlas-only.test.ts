@@ -8,11 +8,11 @@ import { createXydServer, type XydServer } from '../../utils/xyd-server';
 // Atlas-only: `xyd build ./openapi.yaml` — the fast-serve mode, the positional
 // document and no docs content — mounted under `advanced.basename` from the
 // docs.json beside it. The static output has to be ONE self-contained tree at
-// client/v3/atlas/: the landing page synthesized from info.title, a page per
+// client/docs/: the landing page synthesized from info.title, a page per
 // operation and per schema, the raw routes (llms.txt + the .md twins) and the
 // assets, every URL carrying the prefix. Served by the harness's static server
 // (`npx serve`, clean URLs) exactly like a production host would.
-const BASE = '/v3/atlas';
+const BASE = '/docs';
 
 test.describe('openapi — atlas-only + basename (build)', () => {
     test.describe.configure({ mode: 'serial' });

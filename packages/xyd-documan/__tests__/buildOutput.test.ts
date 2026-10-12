@@ -46,7 +46,7 @@ afterEach(() => {
 
 describe("basenameViteBase", () => {
     it("derives a directory base from the basename", () => {
-        expect(basenameViteBase("/v3/atlas")).toBe("/v3/atlas/");
+        expect(basenameViteBase("/docs")).toBe("/docs/");
         expect(basenameViteBase("/docs/")).toBe("/docs/");
         expect(basenameViteBase("docs")).toBe("/docs/");
     });
@@ -61,7 +61,7 @@ describe("basenameViteBase", () => {
 describe("normalizePathBase", () => {
     it("normalizes an absolute-path base like Vite", () => {
         expect(normalizePathBase("/docs")).toBe("/docs/");
-        expect(normalizePathBase("/v3/atlas/")).toBe("/v3/atlas/");
+        expect(normalizePathBase("/docs/")).toBe("/docs/");
         expect(normalizePathBase("/")).toBe("/");
     });
 
@@ -73,7 +73,7 @@ describe("normalizePathBase", () => {
 
 describe("basenameDirs", () => {
     it("lists the basename's directory chain", () => {
-        expect(basenameDirs("/v3/atlas")).toEqual(["v3", "v3/atlas"]);
+        expect(basenameDirs("/docs/reference")).toEqual(["docs", "docs/reference"]);
         expect(basenameDirs("/docs")).toEqual(["docs"]);
         expect(basenameDirs(undefined)).toEqual([]);
     });
@@ -90,21 +90,21 @@ describe("renamePrerenderedRoutes", () => {
 
     it("keeps the basename's own index.html in place and flattens the routes under it", () => {
         const dir = clientDir([
-            "v3/atlas/index.html",
-            "v3/atlas/getBookByTitle/index.html",
-            "v3/atlas/objects/Book/index.html",
-            "v3/atlas/llms.txt",
+            "docs/reference/index.html",
+            "docs/reference/getBookByTitle/index.html",
+            "docs/reference/objects/Book/index.html",
+            "docs/reference/llms.txt",
         ]);
 
-        renamePrerenderedRoutes({ rootDir: dir, basename: "/v3/atlas" });
+        renamePrerenderedRoutes({ rootDir: dir, basename: "/docs/reference" });
 
         expect(tree(dir)).toEqual([
-            "v3/atlas/getBookByTitle.html",
-            "v3/atlas/index.html",
-            "v3/atlas/llms.txt",
-            "v3/atlas/objects/Book.html",
+            "docs/reference/getBookByTitle.html",
+            "docs/reference/index.html",
+            "docs/reference/llms.txt",
+            "docs/reference/objects/Book.html",
         ]);
-        expect(fs.existsSync(path.join(dir, "v3", "atlas.html"))).toBe(false);
+        expect(fs.existsSync(path.join(dir, "docs", "reference.html"))).toBe(false);
     });
 
     it("flattens a route named like a basename segment when it is not the mount", () => {
@@ -132,20 +132,20 @@ describe("relocateUnderBasename", () => {
             "assets/style.css",
             "__spa-fallback.html",
             ".vite/manifest.json",
-            "v3/atlas/index.html",
-            "v3/atlas/getBookByTitle.html",
+            "docs/reference/index.html",
+            "docs/reference/getBookByTitle.html",
         ]);
 
-        const moved = relocateUnderBasename(dir, "/v3/atlas");
+        const moved = relocateUnderBasename(dir, "/docs/reference");
 
         expect(moved.sort()).toEqual(["__spa-fallback.html", "assets"]);
         expect(tree(dir)).toEqual([
             ".vite/manifest.json",
-            "v3/atlas/__spa-fallback.html",
-            "v3/atlas/assets/app.js",
-            "v3/atlas/assets/style.css",
-            "v3/atlas/getBookByTitle.html",
-            "v3/atlas/index.html",
+            "docs/reference/__spa-fallback.html",
+            "docs/reference/assets/app.js",
+            "docs/reference/assets/style.css",
+            "docs/reference/getBookByTitle.html",
+            "docs/reference/index.html",
         ]);
     });
 

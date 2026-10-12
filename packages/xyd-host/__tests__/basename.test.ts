@@ -18,12 +18,12 @@ describe("stripBasename", () => {
   });
 
   it("strips a multi-segment basename", () => {
-    expect(stripBasename("/v3/atlas/llms.txt", "/v3/atlas")).toBe("/llms.txt");
-    expect(stripBasename("/v3/atlas/objects/Book.md", "/v3/atlas")).toBe("/objects/Book.md");
+    expect(stripBasename("/docs/llms.txt", "/docs")).toBe("/llms.txt");
+    expect(stripBasename("/docs/objects/Book.md", "/docs")).toBe("/objects/Book.md");
   });
 
   it("ignores a trailing slash on the basename", () => {
-    expect(stripBasename("/v3/atlas/llms.txt", "/v3/atlas/")).toBe("/llms.txt");
+    expect(stripBasename("/docs/llms.txt", "/docs/")).toBe("/llms.txt");
   });
 
   it("maps the bare basename to the root", () => {
