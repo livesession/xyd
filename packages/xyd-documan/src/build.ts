@@ -6,10 +6,9 @@ import { build as viteBuild, mergeConfig, Plugin as VitePlugin, PluginOption } f
 import tsconfigPaths from "vite-tsconfig-paths";
 
 import {
-    basenameViteBase,
-    normalizePathBase,
     relocateUnderBasename,
     renamePrerenderedRoutes,
+    resolveBuildBase,
 } from "./buildOutput";
 import {
     appInit,
@@ -86,14 +85,10 @@ export async function build() {
     // follow it, or the prerendered HTML references `/assets/*` at the server
     // root while the pages live under the prefix. An explicit `advanced.vite.base`
     // still wins (a CDN base, say) — then the assets stay at the client root
-    // for the user's own pipeline.
-    const basename = respPluginDocs.settings?.advanced?.basename || "";
-    const defaultBase = basenameViteBase(basename);
-    const configuredBase = (userViteConfig as { base?: unknown }).base;
-    const userBase = typeof configuredBase === "string" ? normalizePathBase(configuredBase) : undefined;
-    const viteBase = userBase ?? defaultBase;
-    // the whole site under client/<basename>/ — see buildOutput.ts for the anatomy
-    const selfContained = !!defaultBase && viteBase === defaultBase;
+    // for the user's own pipeline. Resolved by the helper the Bun engine shares,
+    // so both engines agree on the base; selfContained = the whole site under
+    // client/<basename>/ — see buildOutput.ts for the anatomy.
+    const { basename, base: viteBase, selfContained } = resolveBuildBase(respPluginDocs.settings);
 
     try {
         // Build the client-side bundle

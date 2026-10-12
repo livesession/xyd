@@ -3,7 +3,8 @@ import * as fs from "node:fs";
 
 /** '/' → index.html, else <slug>.html (mkdir -p parents), matching the Vite
  *  build's flattened output. Pages nest under the basename dir (docs/…) when
- *  `advanced.basename` is set — parity with the Vite build; assets stay at root.
+ *  `advanced.basename` is set — parity with the Vite build; the hashed assets
+ *  join them there (buildStatic's assetsDir) so the tree is self-contained.
  *
  *  Lives here (not inline in buildStatic) so the main thread AND the prerender
  *  worker (prerenderWorker.ts) share ONE definition — they must write pages to

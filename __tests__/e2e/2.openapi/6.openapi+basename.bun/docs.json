@@ -1,0 +1,15 @@
+{
+  "theme": {
+    "name": "gusto",
+    "appearance": {
+      "search": false,
+      "colorScheme": false
+    }
+  },
+  "api": {
+    "openapi": "./openapi.yaml"
+  },
+  "advanced": {
+    "basename": "/docs"
+  }
+}
