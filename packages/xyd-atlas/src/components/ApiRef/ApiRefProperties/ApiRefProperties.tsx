@@ -6,6 +6,7 @@ import {
 } from "@xyd-js/uniform";
 
 import * as cn from "./ApiRefProperties.styles";
+import { enumInlineSymbol, isConstant } from "./literals";
 import { AtlasContext, useBaseMatch } from "@/components/Atlas/AtlasContext";
 import { Badge } from "@xyd-js/components/writer";
 
@@ -170,6 +171,9 @@ function PropMeta(props: PropMetaProps) {
     case "nullable":
       return null;
     case "enum-type":
+      return null;
+    case "const":
+      // the type column prints the literal
       return null;
     case "minimum":
       return null;
@@ -371,6 +375,11 @@ function PropToggle(props: PropsToggleProps) {
 }
 
 function isChoiceType(property: DefinitionProperty) {
+  // An enum row is a choice of values whatever its base type (`ofProperty`).
+  if (property.type === DEFINED_DEFINITION_PROPERTY_TYPE.ENUM) {
+    return true;
+  }
+
   if (
     property.type === DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY &&
     property.ofProperty?.type === DEFINED_DEFINITION_PROPERTY_TYPE.ENUM
@@ -417,6 +426,11 @@ function useSymbolLink(property: DefinitionProperty) {
 }
 
 function propProperties(prop: DefinitionProperty): DefinitionProperty[] {
+  // A constant's only child is the value the type column already prints.
+  if (isConstant(prop)) {
+    return [];
+  }
+
   if (prop.properties?.length) {
     return prop.properties;
   }
@@ -473,6 +487,16 @@ function resolvePropertySymbol(property: DefinitionProperty): string {
         case DEFINED_DEFINITION_PROPERTY_TYPE.UNION:
         case DEFINED_DEFINITION_PROPERTY_TYPE.ENUM:
         case DEFINED_DEFINITION_PROPERTY_TYPE.XOR: {
+          // an array of an enum spells the values out: `array of "a" | "b"`
+          if (property.ofProperty.type === DEFINED_DEFINITION_PROPERTY_TYPE.ENUM) {
+            const inline = enumInlineSymbol(property.ofProperty);
+            const atomicDefinedSymbol = atomicDefinedPropertySymbol(property);
+
+            if (inline && atomicDefinedSymbol) {
+              return [[atomicDefinedSymbol, "of", inline].join(" ")];
+            }
+          }
+
           if (property.ofProperty.properties?.length) {
             const atomicDefinedSymbol = atomicDefinedPropertySymbol(property);
 
@@ -594,16 +618,17 @@ function resolvePropertySymbol(property: DefinitionProperty): string {
     return [property.type];
   }
 
-  const symbolsParts = resolvePropertySymbolInner(property);
+  // An enum row prints its values — the one value of a constant (`"widget"`),
+  // else the list (`"active" | "archived"`) — in place of the base type.
+  const inline = enumInlineSymbol(property);
+  const symbol = inline || resolvePropertySymbolInner(property).join(" ");
+
+  // A nullable row reads as a union, `… | null`, whatever its type.
   if (nullableProperty(property)) {
-    if (symbolsParts.length) {
-      symbolsParts.push("or", "null");
-    } else {
-      symbolsParts.push("null");
-    }
+    return symbol ? `${symbol} | null` : "null";
   }
 
-  return symbolsParts.join(" ");
+  return symbol;
 }
 
 function atomicDefinedPropertySymbol(property: DefinitionProperty): string {

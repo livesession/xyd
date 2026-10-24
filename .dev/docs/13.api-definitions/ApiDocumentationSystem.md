@@ -110,8 +110,8 @@ The `VariantContext` manages:
 | `{type: "string"}` | `"string"` |
 | `{type: "$$array", ofProperty: {type: "string"}}` | `"array of string"` |
 | `{type: "$$union", properties: [...]}` | `"TypeA or TypeB or TypeC"` |
-| `{type: "$$enum", properties: [...]}` | `"enum"` |
-| `{meta: [{name: "nullable", value: "true"}]}` | `"type or null"` |
+| `{type: "$$enum", properties: [...]}` | the values inline — `"a" \| "b"` — the literal alone for a constant (the `const` meta) |
+| `{meta: [{name: "nullable", value: "true"}]}` | `"type \| null"` |
 
 ## Integration Points
 
