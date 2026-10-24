@@ -99,9 +99,10 @@ export async function processUniformFunctionCall(
     // Previously `plugins.push(...)` grew globalThis.__xydUserUniformVitePlugins by
     // one on every OpenAPI page, so page K applied the sidebar plugin ~K times
     // (O(N²) over the build, unbounded array growth). The sidebar plugin is
-    // idempotent and its `defer` no-ops when regions are present, so applying it
-    // once is byte-identical to applying it K times — and this keeps the global
-    // clean for parallel worker heaps.
+    // idempotent (with regions present its `defer` only relinks the page's
+    // schema links from the document), so applying it once is byte-identical
+    // to applying it K times — and this keeps the global clean for parallel
+    // worker heaps.
     const userPlugins = globalThis.__xydUserUniformVitePlugins || []
     const matter = file.data?.matter as Metadata
     const plugins = matter?.openapi

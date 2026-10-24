@@ -534,6 +534,12 @@ async function uniformResolver(
                 meta.sdkLanguages = sdkLanguages
             }
 
+            // The base of the page's schema links: the converter writes them
+            // relative to the reference (`objects/Widget`), and the layouts
+            // cannot tell the reference's prefix from the route they render —
+            // `/docs/api` under `route: docs/api`, "" at the root.
+            meta.baseMatch = pageBaseMatch(urlPrefix)
+
             let composedContent = ""
             if (region && composedFileMap[region]) {
                 const content = await fs.readFile(composedFileMap[region], 'utf-8');
@@ -631,6 +637,13 @@ function composyingMetaProps(meta: Metadata, ...props: (keyof AllowedMetaProps)[
 // Never user compose pages — and a route-less project (the fast-serve mode,
 // `xyd build ./openapi.yaml`) scans from the project root, where a previous
 // build's generated pages (.xyd/build/client/*.md, the llms twins) carry the
+/** The `baseMatch` frontmatter of a generated page: the reference's URL prefix
+ *  as a path (`/docs/api`), "" at the root. */
+export function pageBaseMatch(urlPrefix: string | undefined): string {
+    const trimmed = (urlPrefix || "").replace(/^\/+|\/+$/g, "")
+    return trimmed ? `/${trimmed}` : ""
+}
+
 // very `openapi: <source>#<region>` frontmatter this walk looks for. Mapping
 // those made every second build in the same project fail on a missing file.
 const COMPOSE_SKIP_DIRS = new Set([".xyd", "node_modules", ".git"]);

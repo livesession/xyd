@@ -1,0 +1,157 @@
+# x-docs on component schemas, outside sidebar mode:
+# - `Widget` carries `x-docs: { name, group }` → "The widget object" in the
+#   `widgets` group, after that tag's endpoints
+# - `Part` is an `allOf` composition whose member carries the x-docs
+# - `WidgetList` / `Error` / `Tag` are `hidden` → no page; so is the `health` operation
+# - `PartBase` has no x-docs → the defaults (`<Name>` under "Objects")
+# - `Widget.tags` links to the hidden `Tag`: the link keeps its `id` and loses
+#   its `canonical` (no page to land on); `WidgetList.data` links to `Widget`,
+#   whose page exists, so that link stays whole
+openapi: 3.0.3
+info:
+  title: Widgets API
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/v1
+tags:
+  - name: widgets
+paths:
+  /widgets:
+    get:
+      operationId: listWidgets
+      summary: List widgets
+      description: Returns a page of widgets, newest first.
+      tags: [widgets]
+      responses:
+        '200':
+          description: A page of widgets.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WidgetList'
+    post:
+      operationId: createWidget
+      summary: Create widget
+      description: Creates a widget.
+      tags: [widgets]
+      x-docs:
+        name: Create a widget
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Widget'
+      responses:
+        '201':
+          description: The widget that was created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Widget'
+        '400':
+          description: The request was invalid.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /widgets/{widgetId}:
+    get:
+      operationId: getWidget
+      summary: Retrieve widget
+      description: Returns one widget.
+      tags: [widgets]
+      parameters:
+        - name: widgetId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The widget.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Widget'
+  /internal/health:
+    get:
+      operationId: health
+      summary: Health check
+      tags: [widgets]
+      x-docs:
+        hidden: true
+      responses:
+        '200':
+          description: The service is up.
+components:
+  schemas:
+    Widget:
+      x-docs:
+        name: The widget object
+        group: widgets
+      type: object
+      description: A widget.
+      required: [object, id]
+      properties:
+        object:
+          type: string
+          enum: [widget]
+          description: The object type, always `widget`.
+        id:
+          type: string
+          description: Unique identifier for the widget.
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    WidgetList:
+      x-docs:
+        hidden: true
+      type: object
+      required: [object, data]
+      properties:
+        object:
+          type: string
+          enum: [list]
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Widget'
+    Error:
+      x-docs:
+        hidden: true
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+    Part:
+      description: A part of a widget.
+      allOf:
+        - $ref: '#/components/schemas/PartBase'
+        - x-docs:
+            name: The part object
+            group: parts
+          type: object
+          required: [sku]
+          properties:
+            sku:
+              type: string
+              description: The part's stock-keeping unit.
+    PartBase:
+      type: object
+      required: [id]
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the part.
+    Tag:
+      x-docs:
+        hidden: true
+      type: object
+      properties:
+        name:
+          type: string

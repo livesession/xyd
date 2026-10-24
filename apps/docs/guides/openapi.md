@@ -348,6 +348,75 @@ above example will create sidebar:
 ::::
 
 
+### Titles, Groups And Hidden Pages
+
+Outside a full `sidebar`, the generated navigation is still adjustable page by page. On an operation, `x-docs.name` replaces the summary as the page title and sidebar label, `x-docs.group` places the page under another group than its first tag, and `x-docs.hidden: true` leaves it out of the navigation:
+
+```yaml
+paths:
+  /widgets:
+    post:
+      operationId: createWidget
+      summary: Create widget
+      tags: [widgets]
+      x-docs:
+        name: Create a widget
+  /internal/health:
+    get:
+      operationId: health
+      x-docs:
+        hidden: true
+```
+
+The same keys work on a component schema. That is how an object page sits beside the endpoints that return it, after them, instead of under the default `Objects` group:
+
+```yaml
+components:
+  schemas:
+    Widget:
+      x-docs:
+        name: The widget object
+        group: widgets          # after the `widgets` endpoints
+      type: object
+      properties: ...
+    WidgetList:
+      x-docs:
+        hidden: true            # an envelope: no page
+      type: object
+      properties: ...
+    Part:
+      allOf:
+        - $ref: '#/components/schemas/PartBase'
+        - x-docs:               # a composition documents itself on a member
+            name: The part object
+            group: parts
+          type: object
+          properties: ...
+```
+
+| key | on an operation | on a component schema |
+|---|---|---|
+| `name` | the page title and sidebar label instead of the summary | instead of the schema name |
+| `group` | the sidebar group instead of the first tag | instead of `Objects` |
+| `hidden` | no page in the generated navigation | no page (envelopes, errors) |
+
+The keys are read on the schema itself, else on the first `allOf` member that carries them. `hidden` applies to the generated navigation only: a `sidebar` is a complete enumeration and still shows a page it lists.
+
+Schema links follow the page. A property typed by a component schema (a `$ref`, or an `allOf` with one member) links to that schema's page wherever the navigation put it — a `sidebar` that moves an object page under another path included — and keeps its own attributes behind *Show properties*. A property that references a schema without a page (hidden, or not listed by a `sidebar`) renders as plain type text, so a link never lands on a page that does not exist.
+
+### Constants And Enums
+
+A property that holds exactly one value — a single-value `enum`, or an OpenAPI 3.1 `const` — shows that value in the type column, the way the document writes it:
+
+```yaml
+object:
+  type: string
+  enum: [widget]
+  description: The object type, always `widget`.
+```
+
+renders as `object` `"widget"`, with no list of possible values to expand. An enum with several values prints them inline (`"active" | "archived"`, `1 | 2 | 3` for a numeric one); past six values the column shows the first six and `…`, and the full list stays behind the row's *Show possible types* toggle.
+
 ### Request Code Snippets
 You can also specify supported programming languages for request code snippets using `x-docs.codeLanguages`:
 ```yml
