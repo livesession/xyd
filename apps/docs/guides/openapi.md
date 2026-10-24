@@ -368,7 +368,7 @@ paths:
         hidden: true
 ```
 
-The same keys work on a component schema. That is how an object page sits beside the endpoints that return it, after them, instead of under the default `Objects` group:
+The same keys work on a component schema. That is how an object page sits beside the endpoints that return it — nested under an `Objects` sub-group of its resource's group, after the endpoints — instead of under the top-level `Objects` group:
 
 ```yaml
 components:
@@ -397,12 +397,64 @@ components:
 | key | on an operation | on a component schema |
 |---|---|---|
 | `name` | the page title and sidebar label instead of the summary | instead of the schema name |
-| `group` | the sidebar group instead of the first tag | instead of `Objects` |
+| `group` | the sidebar group instead of the first tag | the resource group whose `Objects` sub-group lists the page |
 | `hidden` | no page in the generated navigation | no page (envelopes, errors) |
 
 The keys are read on the schema itself, else on the first `allOf` member that carries them. `hidden` applies to the generated navigation only: a `sidebar` is a complete enumeration and still shows a page it lists.
 
+The generated sidebar of the example above lists each resource's endpoints first, then its objects in a nested `Objects` group; the schemas with no `group` keep the top-level `Objects` group:
+
+```
+widgets
+  List widgets
+  Create a widget
+  Retrieve widget
+  Objects            ← collapsed until opened, or until one of its pages is the current one
+    The widget object
+parts
+  Objects
+    The part object
+Objects
+  PartBase
+```
+
+The nested group behaves like any other nested sidebar group: it starts collapsed and opens when the reader expands it or lands on one of its pages, so the endpoints stay in view. Both groups can be renamed with the `objectsGroup` option of the source:
+
+```json [descHead="Tip" desc="The option takes the advanced form of <code>api.openapi</code>; a plain path keeps the default name."]
+{
+  "api": {
+    "openapi": {
+      "source": "./openapi.yaml",
+      "options": { "objectsGroup": "Types" }
+    }
+  }
+}
+```
+
 Schema links follow the page. A property typed by a component schema (a `$ref`, or an `allOf` with one member) links to that schema's page wherever the navigation put it — a `sidebar` that moves an object page under another path included — and keeps its own attributes behind *Show properties*. A property that references a schema without a page (hidden, or not listed by a `sidebar`) renders as plain type text, so a link never lands on a page that does not exist.
+
+The type column names the schema it links to instead of saying `object`. The name is the schema's constant `object` value when it has one (`widget` for `object: { type: string, enum: [widget] }` — the "object type" convention), else the schema name (`Material`):
+
+```yaml
+components:
+  schemas:
+    WidgetList:
+      properties:
+        object: { type: string, enum: [list] }
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Widget'   # data: array of widget
+    Slot:
+      properties:
+        widget:
+          allOf: [{ $ref: '#/components/schemas/Widget' }]
+          nullable: true                            # widget: widget | null
+        material:
+          $ref: '#/components/schemas/Material'     # material: Material
+```
+
+An array of a schema reads `array of widget`, a nullable one `widget | null`, and a schema without a page keeps its name as plain text. Only `object` gives way: a property typed by a scalar schema (a string alias) keeps its primitive type, and an enum its values. The name is independent of `x-docs.name`, which titles the page.
 
 ### Constants And Enums
 

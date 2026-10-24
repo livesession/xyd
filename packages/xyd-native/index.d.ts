@@ -176,7 +176,9 @@ export declare function processSettings(settingsJson: string, envJson: string): 
  * pageFrontMatter + per-page {pagePath, region} in ONE call — conversion,
  * the x-docs sidebar plugin and pluginNavigation run natively; references
  * never materialize in JS. Input JSON:
- * `{source, urlPrefix, matchRoute, optionsUrlPrefix, store}`.
+ * `{source, urlPrefix, matchRoute, optionsUrlPrefix, store, objectsGroup?}` —
+ * `objectsGroup` names the component-schema pages' group (the converter's
+ * `objectsGroup` option; absent → the converter's default).
  */
 export declare function uniformOasPages(inputJson: string): string
 

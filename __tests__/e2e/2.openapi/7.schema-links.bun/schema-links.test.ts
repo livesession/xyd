@@ -20,10 +20,18 @@ const CASES = [
     { name: 'api.openapi.route', dir: 'route', prefix: '/docs/api' },
 ];
 
+/** The type column of every property row on a page: its text and the link it carries, if any. */
+function typeColumns(html: string): { text: string; href: string | null }[] {
+    const cells = [...html.matchAll(/<atlas-apiref-proptype[^>]*>([\s\S]*?)<\/atlas-apiref-proptype>/g)];
+    return cells.map((m) => ({
+        text: m[1].replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').trim(),
+        href: m[1].match(/href="([^"]+)"/)?.[1] ?? null,
+    }));
+}
+
 /** The hrefs inside the type column of every property row on a page. */
 function typeColumnLinks(html: string): string[] {
-    const cells = [...html.matchAll(/<atlas-apiref-proptype[^>]*>([\s\S]*?)<\/atlas-apiref-proptype>/g)];
-    return cells.flatMap((m) => [...m[1].matchAll(/href="([^"]+)"/g)].map((h) => h[1]));
+    return typeColumns(html).flatMap((cell) => (cell.href ? [cell.href] : []));
 }
 
 for (const kase of CASES) {
@@ -52,6 +60,9 @@ for (const kase of CASES) {
             const links = typeColumnLinks(body);
             // listWidgets → (hidden envelope) → data: array of Widget
             expect(links).toContain(`${kase.prefix}/objects/Widget`);
+            // the type column names the schema by its label (its constant `object`
+            // value) instead of `object`: the array row reads `array of widget`
+            expect(typeColumns(body)).toContainEqual({ text: 'array of widget', href: `${kase.prefix}/objects/Widget` });
             for (const href of links) {
                 expect(href.startsWith(`${kase.prefix}/`), href).toBe(true);
                 expect((await get(href)).status, href).toBe(200);
@@ -66,6 +77,11 @@ for (const kase of CASES) {
                 expect(status, page).toBe(200);
                 const links = typeColumnLinks(body);
                 expect(links.some((href) => href.endsWith('/objects/Tag')), `${page}: ${links.join(' ')}`).toBe(false);
+                // a hidden schema keeps its label (its name — `Tag` has no constant
+                // `object`), as plain text
+                if (page === 'objects/Widget') {
+                    expect(typeColumns(body)).toContainEqual({ text: 'array of Tag', href: null });
+                }
                 for (const href of links) {
                     expect((await get(href)).status, href).toBe(200);
                 }

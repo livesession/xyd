@@ -12,6 +12,7 @@ import { loadOpencliSpec, opencliToReferences } from "@xyd-js/opencli"
 
 import { downloadContent, LineRange, parseImportPath, Region, resolvePathAlias } from './utils';
 import { tsxToReactUniform } from './tsxExtractor';
+import { resolveApiFileOptions } from '../../../../src/apiFileOptions';
 import uniform, { Reference, ReferenceContext } from '@xyd-js/uniform';
 // TODO: rewrite to async
 
@@ -258,8 +259,12 @@ async function processUniformFile(
                         ? pristineServers.slice()
                         : pristineServers;
                 }
+                // `api.openapi[..].options.objectsGroup` names the object pages'
+                // group — the same name the preset gave the sidebar build.
+                const objectsGroup = resolveApiFileOptions(settings?.api?.openapi, resolvedFilePath)?.objectsGroup;
                 const references = oapSchemaToReferences(schema, {
-                    regions: regions.map(region => region.name)
+                    regions: regions.map(region => region.name),
+                    ...(objectsGroup ? { objectsGroup } : {}),
                 });
 
                 // SDK-native docs: the enrichment hook (installed by documan's

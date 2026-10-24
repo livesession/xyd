@@ -6,6 +6,7 @@ import type { Reference } from "@xyd-js/uniform";
 import { Atlas } from "@/components/Atlas";
 import { AtlasContext } from "@/components/Atlas/AtlasContext";
 import widgetReferences from "./widget.references.json";
+import labelsReferences from "./labels.references.json";
 
 // The property rows of an object page, as the OpenAPI converter emits them for
 // the `9.schema-links` fixture, plus a long enum and a nullable numeric enum:
@@ -41,3 +42,33 @@ const Template = () => {
 };
 
 export const ConstantsEnumsAndSchemaLinks = Template.bind({});
+
+// The rows of a list endpoint and of an object page, as the converter emits
+// them for a document whose schemas follow the "object type" convention
+// (`object: { enum: [widget] }`): a row typed by a component schema prints that
+// schema's label where it would otherwise print `object` —
+//   - the response of `listWidgets` is a list whose `data` reads `array of
+//     widget`, both the row and its item linked to the widget page
+//   - on the slot page, `widget` is a nullable widget (`widget | null`),
+//     `material` / `assembly` / `parts` link under their labels (`Material` is a
+//     schema without an `object` property, so its label is its name), and the
+//     `spare` union lists a `widget` branch beside `string | null`
+const LabelsTemplate = () => {
+  return (
+    <AtlasContext value={{ syntaxHighlight: null, baseMatch: "" }}>
+      <div
+        style={{
+          width: "1200px",
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          margin: "0 auto",
+        }}
+      >
+        <Atlas kind="primary" references={labelsReferences as unknown as Reference[]} />
+      </div>
+    </AtlasContext>
+  );
+};
+
+export const SchemaLabels = LabelsTemplate.bind({});

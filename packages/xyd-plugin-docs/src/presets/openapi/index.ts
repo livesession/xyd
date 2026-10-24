@@ -1,4 +1,5 @@
-import {Settings} from "@xyd-js/core";
+import {APIFile, Settings} from "@xyd-js/core";
+import {resolveApiFileOptions} from "@xyd-js/content";
 import {deferencedOpenAPI, oapSchemaToReferences, getXDocs} from "@xyd-js/openapi";
 import type {Reference} from "@xyd-js/uniform";
 
@@ -21,6 +22,8 @@ function preset(
 export const openapiPreset = preset satisfies Preset<unknown>
 
 class OpenAPIUniformPreset extends UniformPreset {
+    private readonly openapiApi: APIFile | undefined
+
     private constructor(
         settings: Settings,
         options: {
@@ -33,6 +36,7 @@ class OpenAPIUniformPreset extends UniformPreset {
             settings?.navigation?.sidebar || [],
             options.disableFSWrite
         )
+        this.openapiApi = settings.api?.openapi
         this.uniformRefResolver = this.uniformRefResolver.bind(this)
     }
 
@@ -60,7 +64,10 @@ class OpenAPIUniformPreset extends UniformPreset {
             }
         }
 
-        return oapSchemaToReferences(schema)
+        // `api.openapi[..].options.objectsGroup` — the object pages' group name.
+        const objectsGroup = resolveApiFileOptions(this.openapiApi, filePath)?.objectsGroup
+
+        return oapSchemaToReferences(schema, objectsGroup ? { objectsGroup } : undefined)
     }
 }
 

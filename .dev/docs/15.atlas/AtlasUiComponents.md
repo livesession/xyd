@@ -48,7 +48,7 @@ The `SubProperties` component handles recursive rendering with expand/collapse f
 
 ### Property Linking
 
-When a property has a `symbolDef.canonical` value, `PropType` renders it as a link using `useSymbolLink`.
+When a property has a `symbolDef.canonical` value, `PropType` renders it as a link using `useSymbolLink`. The link text is the type column's symbol (`symbols.ts`): a row typed by a component schema prints `symbolDef.label` — the schema's constant `object` value, else its name — in place of `object` (`widget`, `array of widget`, `widget | null`); a label without a `canonical` renders as plain text.
 
 ## Variant Selection System
 
