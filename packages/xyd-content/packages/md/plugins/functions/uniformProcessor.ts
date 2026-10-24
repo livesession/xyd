@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import { VFile } from 'vfile';
 
-import { Metadata, Settings } from '@xyd-js/core';
+import { Metadata, Settings, resolveApiFileOptions } from '@xyd-js/core';
 import { sourcesToUniform, sourcesToUniformV2, type TypeDocReferenceContext } from '@xyd-js/sources/ts';
 import { reactDocgenToUniform, uniformToReactUniform } from '@xyd-js/sources/react';
 import { gqlSchemaToReferences } from "@xyd-js/gql"
@@ -258,8 +258,12 @@ async function processUniformFile(
                         ? pristineServers.slice()
                         : pristineServers;
                 }
+                // `api.openapi[..].options.objectsGroup` names the object pages'
+                // group — the same name the preset gave the sidebar build.
+                const objectsGroup = resolveApiFileOptions(settings?.api?.openapi, resolvedFilePath)?.objectsGroup;
                 const references = oapSchemaToReferences(schema, {
-                    regions: regions.map(region => region.name)
+                    regions: regions.map(region => region.name),
+                    ...(objectsGroup ? { objectsGroup } : {}),
                 });
 
                 // SDK-native docs: the enrichment hook (installed by documan's

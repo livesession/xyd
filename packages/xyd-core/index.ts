@@ -11,6 +11,7 @@ export * from "./src/i18n/resolver";
 export * from "./src/asToc";
 
 export * from "./src/api-sdk";
+export * from "./src/api-options";
 
 export * from "./src/types/context-controls";
 

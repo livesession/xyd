@@ -137,6 +137,10 @@
         "globalOptionsPerCommand": {
           "description": "(CLI) Render the CLI's global options on every command page. When `false` (the default), the global options are rendered once as a dedicated \"Global options\" page in the sidebar instead of repeated on each command.",
           "type": "boolean"
+        },
+        "objectsGroup": {
+          "description": "(OpenAPI) The name of the group that lists the component-schema (\"object\") pages: the top-level group of the schemas with no resource group, and the sub-group an object page with an `x-docs.group` is nested under inside that resource group, after its endpoints. Default `\"Objects\"`.",
+          "type": "string"
         }
       },
       "type": "object"

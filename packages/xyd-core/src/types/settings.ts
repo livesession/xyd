@@ -1428,6 +1428,14 @@ export interface APIFileOptions {
    * "Global options" page in the sidebar instead of repeated on each command.
    */
   globalOptionsPerCommand?: boolean;
+
+  /**
+   * (OpenAPI) The name of the group that lists the component-schema ("object")
+   * pages: the top-level group of the schemas with no resource group, and the
+   * sub-group an object page with an `x-docs.group` is nested under inside
+   * that resource group, after its endpoints. Default `"Objects"`.
+   */
+  objectsGroup?: string;
 }
 
 /**

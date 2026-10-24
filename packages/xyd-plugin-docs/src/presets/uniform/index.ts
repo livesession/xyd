@@ -18,6 +18,7 @@ import {
     Sidebar,
     SidebarRoute,
     Metadata,
+    resolveApiFileOptions,
 } from "@xyd-js/core";
 import uniform, {
     pluginNavigation,
@@ -259,12 +260,17 @@ async function uniformResolver(
         if (process.env.XYD_VERBOSE) {
             console.log("[uniform] fused native path:", resolvedApiFile)
         }
+        // `api.openapi[..].options.objectsGroup` names the object pages' group
+        // (the converter's `objectsGroup`); the fused call builds the sidebar,
+        // so it needs the same name as the per-page conversion.
+        const objectsGroup = resolveApiFileOptions(settings.api?.openapi, apiFile)?.objectsGroup
         const fused = JSON.parse(fusedNative.uniformOasPages(JSON.stringify({
             source: resolvedApiFile,
             urlPrefix,
             matchRoute,
             optionsUrlPrefix: options?.urlPrefix || "",
             store: !!settings.engine?.uniform?.store,
+            ...(objectsGroup ? { objectsGroup } : {}),
         })))
 
         if (fused.newRoutePushed) {
