@@ -7,6 +7,7 @@ import {
   embedXSdk,
   getXSdk,
   loadSpecSource,
+  orderSdkLanguageIds,
   prepareSdk,
   type XSdkOperation,
 } from '../src/index';
@@ -176,5 +177,57 @@ describe('loadSpecSource', () => {
     expect(Object.keys(loaded!.paths ?? {}).length).toBeGreaterThan(0);
 
     expect(await loadSpecSource('/definitely/missing.yaml')).toBeNull();
+  });
+});
+
+// The switcher ORDER. The raw-HTTP (curl) entry is always first; the SDK
+// languages follow the configured order — a `langs` request when given (the
+// docs config's `sdk.languages`), else a spec's own root `x-sdk.languages`
+// (the order `embedXSdk` / `opensdk xsdk` was asked for), else SDK_LANGS.
+describe('the switcher order', () => {
+  const tabLangs = (ref: Reference) => ref.examples!.groups[0].examples[0].codeblock.tabs.map((t) => t.language);
+  const returnVariants = (ref: Reference) =>
+    ref.definitions!.find((d) => d.title === 'Returns')!.variants!.map((v) => v.meta![0].value);
+
+  it('orderSdkLanguageIds: the request narrows + orders; unknown ids drop; repeats collapse; no request → as available', () => {
+    const available = ['go', 'python', 'typescript'];
+    expect(orderSdkLanguageIds(available)).toEqual(['go', 'python', 'typescript']);
+    expect(orderSdkLanguageIds(available, null)).toEqual(['go', 'python', 'typescript']);
+    expect(orderSdkLanguageIds(available, ['typescript', 'go'])).toEqual(['typescript', 'go']);
+    expect(orderSdkLanguageIds(available, ['ruby', 'typescript', 'cobol', 'python', 'typescript'])).toEqual(['typescript', 'python']);
+    expect(orderSdkLanguageIds(available, ['cobol'])).toEqual([]);
+  });
+
+  it('embedXSdk writes the REQUESTED order to the root list and to every operation', () => {
+    const { doc: embedded, languages } = embedXSdk(doc, { langs: ['python', 'typescript', 'go', 'python'] });
+    expect(languages).toEqual(['python', 'typescript', 'go']);
+    expect(getXSdk(embedded)).toEqual({ languages: ['python', 'typescript', 'go'] });
+    expect(Object.keys(opXSdk(embedded, 'post'))).toEqual(['python', 'typescript', 'go']);
+  });
+
+  it("attachSdkFromSpec keeps the spec's order without a request — curl first", () => {
+    const embedded = embedXSdk(doc, { langs: ['python', 'typescript', 'go'] }).doc;
+    const ref = makeRef('post', '/widgets');
+    attachSdkFromSpec([ref], embedded, { keepRest: true });
+    expect(tabLangs(ref)).toEqual(['shell', 'python', 'typescript', 'go']);
+    expect(returnVariants(ref)).toEqual(['python', 'typescript', 'go']);
+  });
+
+  it('attachSdkFromSpec follows a requested order (the docs config) over the spec order — curl still first', () => {
+    const embedded = embedXSdk(doc, { langs: ['python', 'typescript', 'go'] }).doc;
+    const ref = makeRef('post', '/widgets');
+    attachSdkFromSpec([ref], embedded, { keepRest: true, langs: ['go', 'cobol', 'python', 'go'] });
+    expect(tabLangs(ref)).toEqual(['shell', 'go', 'python']);
+    expect(returnVariants(ref)).toEqual(['go', 'python']);
+  });
+
+  it('attachSdk (generate mode) follows the requested order too — and matches the spec path byte for byte', () => {
+    const generated = makeRef('post', '/widgets');
+    attachSdk([generated], prepareSdk(doc)!, { keepRest: true, langs: ['typescript', 'go', 'python'] });
+    expect(tabLangs(generated)).toEqual(['shell', 'typescript', 'go', 'python']);
+
+    const fromSpec = makeRef('post', '/widgets');
+    attachSdkFromSpec([fromSpec], embedXSdk(doc, { langs: ['typescript', 'go', 'python'] }).doc, { keepRest: true });
+    expect(JSON.parse(JSON.stringify(fromSpec))).toEqual(JSON.parse(JSON.stringify(generated)));
   });
 });

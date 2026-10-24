@@ -9,8 +9,9 @@ import type { Reference } from "@xyd-js/uniform";
 // 1. **x-sdk (spec mode)** — the OpenAPI document itself carries the SDK
 //    artifacts as `x-sdk` extensions (embedded upstream in CI/CD via
 //    `opensdk xsdk` / `embedXSdk`). Auto-detected from the spec, like
-//    `x-docs` — no docs.json opt-in. A `sdk: { languages }` config, when
-//    present, only NARROWS the spec's language list.
+//    `x-docs` — no docs.json opt-in. A `sdk: { languages }` list, when
+//    configured, NARROWS the spec's language list and sets the switcher
+//    order; `sdk: true` (or no config) keeps the spec's own order.
 // 2. **generate mode** (`api.openapi[..].sdk`) — xyd runs the OpenSDK
 //    emitters itself at build time.
 //
@@ -85,20 +86,32 @@ function xsdkInfo(sourcePath: string): Promise<XSdkInfo> {
 }
 
 /**
- * The SDK language ids a source's docs render with, or null when the source
- * has no SDK docs at all — the preset uses this to skip the fused native path
- * per-file and to stamp `sdkLanguages` into every generated page's
- * frontmatter (the client layouts read it back; they cannot read the spec).
+ * The SDK language ids a spec-mode source renders, in switcher order, or null
+ * when none is left: a configured `sdk.languages` list narrows the spec's root
+ * `x-sdk.languages` AND sets the order (unknown ids drop, repeats collapse);
+ * without a configured list the spec's own order is kept. The raw-HTTP entry
+ * is not part of either list — the switcher always shows it first.
+ */
+export function orderSdkLanguages(specLanguages: readonly string[], configured?: readonly string[] | null): string[] | null {
+    const ordered = configured
+        ? configured.filter((id, i) => specLanguages.includes(id) && configured.indexOf(id) === i)
+        : [...specLanguages];
+    return ordered.length ? ordered : null;
+}
+
+/**
+ * The SDK language ids a source's docs render with, in switcher order, or null
+ * when the source has no SDK docs at all — the preset uses this to skip the
+ * fused native path per-file and to stamp `sdkLanguages` into every generated
+ * page's frontmatter (the client layouts read it back; they cannot read the
+ * spec).
  */
 export async function sourceSdkLanguages(settings: Settings, absSource: string): Promise<string[] | null> {
     try {
         const cfg = resolveApiSdkConfig(settings?.api?.openapi, absSource);
         const xsdk = await xsdkInfo(absSource);
         if (xsdk) {
-            const langs = cfg?.languages
-                ? xsdk.languages.filter((l) => (cfg.languages as string[]).includes(l))
-                : xsdk.languages;
-            return langs.length ? langs : null;
+            return orderSdkLanguages(xsdk.languages, cfg?.configuredLanguages);
         }
         return cfg ? cfg.languages : null;
     } catch {
@@ -128,9 +141,11 @@ export function setupUniformSdkEnrichment(settings: Settings): void {
             const xsdk = await xsdkInfo(sourcePath);
             if (xsdk) {
                 const mod = await import("@xyd-js/opensdk-uniform");
+                // Only a CONFIGURED list narrows + orders the spec's languages;
+                // `sdk: true` passes nothing, so the spec's own order stands.
                 mod.attachSdkFromSpec(references as any, xsdk.doc as any, {
                     keepRest: true,
-                    langs: cfg?.languages,
+                    langs: cfg?.configuredLanguages,
                 });
                 if (verbose) console.log(`[sdk] enriched ${references.length} reference(s) from x-sdk in ${sourcePath}`);
                 return;

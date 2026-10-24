@@ -11,7 +11,8 @@ import type { APIFile, APIFileAdvanced, APISdkConfig, APISdkLanguage } from "./t
 // exact equality first, then a normalized suffix match.
 // ---------------------------------------------------------------------------
 
-/** Canonical SDK languages — ids/titles/order mirror opensdk-uniform's SDK_LANGS. */
+/** The SDK languages — ids/titles mirror opensdk-uniform's SDK_LANGS; this is the
+ * DEFAULT switcher order, used when a config enables every language (`sdk: true`). */
 export const API_SDK_LANGUAGES: ReadonlyArray<{ language: APISdkLanguage; title: string }> = [
     { language: "go", title: "Go" },
     { language: "python", title: "Python" },
@@ -25,8 +26,17 @@ export const API_SDK_LANGUAGES: ReadonlyArray<{ language: APISdkLanguage; title:
 export const API_SDK_HTTP_LANGUAGE = "shell";
 
 export interface ResolvedApiSdkConfig {
-    /** Enabled languages, filtered + reordered to the canonical SDK order. */
+    /** Enabled languages, in switcher order: the order of `sdk.languages` when
+     * configured (unknown ids dropped, repeats collapsed), else the default order. */
     languages: APISdkLanguage[];
+    /**
+     * The `sdk.languages` list as configured (unknown ids dropped, repeats
+     * collapsed), or undefined when the config enables every language (`sdk:
+     * true`, no list, or a list without a known id). For a spec that carries
+     * `x-sdk`, the switcher follows this list when present and the spec's own
+     * `x-sdk.languages` otherwise — `languages` alone cannot tell the two apart.
+     */
+    configuredLanguages?: APISdkLanguage[];
     /**
      * The switcher's initial language. The raw-HTTP ("shell") view — readers
      * start from the classic REST reference and opt into an SDK language.
@@ -48,14 +58,18 @@ function entriesOf(openapi: APIFile | undefined): Array<string | APIFileAdvanced
     return Object.values(openapi as Record<string, string | APIFileAdvanced>);
 }
 
-function resolveLanguages(sdk: boolean | APISdkConfig): APISdkLanguage[] {
+function resolveLanguages(sdk: boolean | APISdkConfig): Pick<ResolvedApiSdkConfig, "languages" | "configuredLanguages"> {
     const known = API_SDK_LANGUAGES.map(l => l.language);
     if (sdk === true || typeof sdk !== "object" || !Array.isArray(sdk.languages)) {
-        return known;
+        return { languages: known };
     }
-    const wanted = new Set(sdk.languages);
-    const filtered = known.filter(l => wanted.has(l));
-    return filtered.length ? filtered : known;
+    // The configured list IS the switcher order (the raw-HTTP "shell" entry stays
+    // first regardless): unknown ids drop, a repeated id keeps its first position.
+    const ordered: APISdkLanguage[] = [];
+    for (const id of sdk.languages) {
+        if (known.includes(id) && !ordered.includes(id)) ordered.push(id);
+    }
+    return ordered.length ? { languages: ordered, configuredLanguages: ordered } : { languages: known };
 }
 
 const isRemote = (s: string) => s.startsWith("http://") || s.startsWith("https://");
@@ -100,8 +114,7 @@ export function resolveApiSdkConfig(
         if (!isAdvanced(entry)) continue;
         if (!entry.sdk) continue;
         if (!sourceMatches(entry.source, source)) continue;
-        const languages = resolveLanguages(entry.sdk);
-        return { languages, defaultLanguage: API_SDK_HTTP_LANGUAGE };
+        return { ...resolveLanguages(entry.sdk), defaultLanguage: API_SDK_HTTP_LANGUAGE };
     }
     return null;
 }

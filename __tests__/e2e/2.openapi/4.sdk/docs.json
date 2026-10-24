@@ -3,11 +3,13 @@
         "name": "poetry"
     },
     "navigation": {
-        "sidebar": []
+        "sidebar": [
+            { "group": "Guides", "pages": ["guide"] }
+        ]
     },
     "api": {
         "openapi": [
-            { "source": "../../../__fixtures__/openapi/basic.yaml", "route": "docs/api", "sdk": true },
+            { "source": "../../../__fixtures__/openapi/basic.yaml", "route": "docs/api", "sdk": { "languages": ["typescript", "python", "go", "ruby", "java", "csharp"] } },
             { "source": "../../../__fixtures__/openapi/basic2.yaml", "route": "docs/plain" },
             { "source": "../../../__fixtures__/openapi/basic.xsdk.yaml", "route": "docs/xsdk" }
         ]

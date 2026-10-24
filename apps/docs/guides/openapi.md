@@ -540,6 +540,31 @@ paths:
             api.users.get('123');
 ```
 
+## SDK Code Samples
+
+An operation page can show, beside the raw HTTP request (`Shell`), how the call reads in each SDK generated from the document — the usage sample, the method signature and the typed parameters — all driven by one language switcher. Two ways to get there:
+
+- **`x-sdk` in the document** — a pipeline embeds the per-language samples once (`opensdk xsdk`) and xyd reads them from the document; the root `x-sdk.languages` lists the languages. Detected from the document, like `x-docs`, with no `docs.json` opt-in.
+- **Generate at build** — `sdk: true` on an `api.openapi` entry runs the generators while the docs build.
+
+```json
+{
+    "api": {
+        "openapi": [
+            {
+                "source": "./openapi.yaml",
+                "route": "docs/api",
+                "sdk": { "languages": ["typescript", "python", "go"] }
+            }
+        ]
+    }
+}
+```
+
+`sdk.languages` picks the languages and their order in the switcher (`go`, `python`, `typescript`, `ruby`, `java`, `csharp`); `Shell` always comes first and is the default view. `sdk: true` shows all six in that default order. For a document that carries `x-sdk`, the list narrows the document's own `x-sdk.languages` and sets their order; without a list the document's order is kept.
+
+The reader's choice is one per site: it is stored in the browser under `xyd:sdk-language`, so every operation page opens on the same language. `?lang=<id>` in a page URL seeds it — `/docs/api/create-widget?lang=python` opens the Python view and remembers it — and the switcher writes the chosen language back to the URL, so a copied link carries it. Markdown code groups whose tabs are different languages follow the same choice: a `:::code-group` with a Python and a Go block on a guide page switches together with the reference, and picking a tab there switches the reference too. A group of one language, such as `npm | pnpm | yarn` install commands, keeps its own tab.
+
 ## Webhooks {label="Coming Soon"}
 Support for OpenAPI webhook documentation is currently in development and will be available in the future.
 
