@@ -1,4 +1,5 @@
-import {APIFile, Settings, resolveApiFileOptions} from "@xyd-js/core";
+import {APIFile, Settings} from "@xyd-js/core";
+import {resolveApiFileOptions} from "@xyd-js/content";
 import {deferencedOpenAPI, oapSchemaToReferences, getXDocs} from "@xyd-js/openapi";
 import type {Reference} from "@xyd-js/uniform";
 

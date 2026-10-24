@@ -18,8 +18,8 @@ import {
     Sidebar,
     SidebarRoute,
     Metadata,
-    resolveApiFileOptions,
 } from "@xyd-js/core";
+import { resolveApiFileOptions } from "@xyd-js/content";
 import uniform, {
     pluginNavigation,
     Reference,

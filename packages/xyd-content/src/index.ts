@@ -12,3 +12,5 @@ export {
 export type { ComposedAsToc } from "./asToc"
 
 export type { VarCode } from "./types"
+
+export { resolveApiFileOptions } from "./apiFileOptions"

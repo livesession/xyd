@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import { VFile } from 'vfile';
 
-import { Metadata, Settings, resolveApiFileOptions } from '@xyd-js/core';
+import { Metadata, Settings } from '@xyd-js/core';
 import { sourcesToUniform, sourcesToUniformV2, type TypeDocReferenceContext } from '@xyd-js/sources/ts';
 import { reactDocgenToUniform, uniformToReactUniform } from '@xyd-js/sources/react';
 import { gqlSchemaToReferences } from "@xyd-js/gql"
@@ -12,6 +12,7 @@ import { loadOpencliSpec, opencliToReferences } from "@xyd-js/opencli"
 
 import { downloadContent, LineRange, parseImportPath, Region, resolvePathAlias } from './utils';
 import { tsxToReactUniform } from './tsxExtractor';
+import { resolveApiFileOptions } from '../../../../src/apiFileOptions';
 import uniform, { Reference, ReferenceContext } from '@xyd-js/uniform';
 // TODO: rewrite to async
 

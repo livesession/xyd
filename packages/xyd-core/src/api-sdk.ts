@@ -34,12 +34,12 @@ export interface ResolvedApiSdkConfig {
     defaultLanguage: string;
 }
 
-export function isAdvanced(entry: unknown): entry is APIFileAdvanced {
+function isAdvanced(entry: unknown): entry is APIFileAdvanced {
     return !!entry && typeof entry === "object" && typeof (entry as any).source === "string";
 }
 
 /** Every entry of an APIFile across all its shapes (string / mixed array / map / advanced). */
-export function entriesOf(openapi: APIFile | undefined): Array<string | APIFileAdvanced> {
+function entriesOf(openapi: APIFile | undefined): Array<string | APIFileAdvanced> {
     if (!openapi) return [];
     if (typeof openapi === "string") return [openapi];
     if (Array.isArray(openapi)) return openapi as Array<string | APIFileAdvanced>;
@@ -76,7 +76,7 @@ function sourceTail(source: string): string {
  * absolute form matches when it ends with the config source's normalized
  * tail. First matching entry wins (documented ambiguity for twin tails).
  */
-export function sourceMatches(entrySource: string, source: string): boolean {
+function sourceMatches(entrySource: string, source: string): boolean {
     if (entrySource === source) return true;
     if (isRemote(entrySource) || isRemote(source)) return false;
 
