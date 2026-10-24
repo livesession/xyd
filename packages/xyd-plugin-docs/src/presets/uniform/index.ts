@@ -261,9 +261,12 @@ async function uniformResolver(
             console.log("[uniform] fused native path:", resolvedApiFile)
         }
         // `api.openapi[..].options.objectsGroup` names the object pages' group
-        // (the converter's `objectsGroup`); the fused call builds the sidebar,
-        // so it needs the same name as the per-page conversion.
-        const objectsGroup = resolveApiFileOptions(settings.api?.openapi, apiFile)?.objectsGroup
+        // and `.objectsLayout` places them (the converter's options of the same
+        // names); the fused call builds the sidebar, so it needs the same
+        // values as the per-page conversion.
+        const apiOptions = resolveApiFileOptions(settings.api?.openapi, apiFile)
+        const objectsGroup = apiOptions?.objectsGroup
+        const objectsLayout = apiOptions?.objectsLayout
         const fused = JSON.parse(fusedNative.uniformOasPages(JSON.stringify({
             source: resolvedApiFile,
             urlPrefix,
@@ -271,6 +274,7 @@ async function uniformResolver(
             optionsUrlPrefix: options?.urlPrefix || "",
             store: !!settings.engine?.uniform?.store,
             ...(objectsGroup ? { objectsGroup } : {}),
+            ...(objectsLayout ? { objectsLayout } : {}),
         })))
 
         if (fused.newRoutePushed) {

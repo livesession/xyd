@@ -64,10 +64,16 @@ class OpenAPIUniformPreset extends UniformPreset {
             }
         }
 
-        // `api.openapi[..].options.objectsGroup` — the object pages' group name.
-        const objectsGroup = resolveApiFileOptions(this.openapiApi, filePath)?.objectsGroup
+        // `api.openapi[..].options.objectsGroup` / `.objectsLayout` — the object
+        // pages' group name and their layout.
+        const apiOptions = resolveApiFileOptions(this.openapiApi, filePath)
+        const objectsGroup = apiOptions?.objectsGroup
+        const objectsLayout = apiOptions?.objectsLayout
 
-        return oapSchemaToReferences(schema, objectsGroup ? { objectsGroup } : undefined)
+        return oapSchemaToReferences(schema, objectsGroup || objectsLayout ? {
+            ...(objectsGroup ? { objectsGroup } : {}),
+            ...(objectsLayout ? { objectsLayout } : {}),
+        } : undefined)
     }
 }
 

@@ -259,12 +259,16 @@ async function processUniformFile(
                         ? pristineServers.slice()
                         : pristineServers;
                 }
-                // `api.openapi[..].options.objectsGroup` names the object pages'
-                // group — the same name the preset gave the sidebar build.
-                const objectsGroup = resolveApiFileOptions(settings?.api?.openapi, resolvedFilePath)?.objectsGroup;
+                // `api.openapi[..].options.objectsGroup` / `.objectsLayout` — the
+                // object pages' group name and layout, the same values the preset
+                // gave the sidebar build.
+                const apiOptions = resolveApiFileOptions(settings?.api?.openapi, resolvedFilePath);
+                const objectsGroup = apiOptions?.objectsGroup;
+                const objectsLayout = apiOptions?.objectsLayout;
                 const references = oapSchemaToReferences(schema, {
                     regions: regions.map(region => region.name),
                     ...(objectsGroup ? { objectsGroup } : {}),
+                    ...(objectsLayout ? { objectsLayout } : {}),
                 });
 
                 // SDK-native docs: the enrichment hook (installed by documan's

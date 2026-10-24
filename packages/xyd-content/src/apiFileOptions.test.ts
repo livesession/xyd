@@ -37,6 +37,12 @@ describe('resolveApiFileOptions', () => {
         expect(resolveApiFileOptions(map, ABS)?.objectsGroup).toBe('Mapped');
     });
 
+    it('returns every option of the matching entry, the objects layout included', () => {
+        const api = { source: './specs/widgets.yaml', options: { objectsGroup: 'Types', objectsLayout: 'per-area' as const } };
+        expect(resolveApiFileOptions(api, ABS)).toEqual({ objectsGroup: 'Types', objectsLayout: 'per-area' });
+        expect(resolveApiFileOptions({ source: './specs/widgets.yaml', options: { objectsLayout: 'grouped' } }, ABS)?.objectsLayout).toBe('grouped');
+    });
+
     it('returns null for a matching entry without options', () => {
         expect(resolveApiFileOptions({ source: './specs/widgets.yaml' }, ABS)).toBeNull();
         expect(resolveApiFileOptions([{ source: './specs/widgets.yaml' }, { source: 'specs/widgets.yaml', options: { objectsGroup: 'Later' } }], ABS)).toBeNull();
