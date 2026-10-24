@@ -368,7 +368,7 @@ paths:
         hidden: true
 ```
 
-The same keys work on a component schema. That is how an object page sits beside the endpoints that return it — nested under an `Objects` sub-group of its resource's group, after the endpoints — instead of under the top-level `Objects` group:
+The same keys work on a component schema. That is how an object page gets a title and a resource group — the group whose endpoints return it — instead of the schema name alone:
 
 ```yaml
 components:
@@ -376,7 +376,7 @@ components:
     Widget:
       x-docs:
         name: The widget object
-        group: widgets          # after the `widgets` endpoints
+        group: widgets          # the `widgets` resource
       type: object
       properties: ...
     WidgetList:
@@ -397,12 +397,40 @@ components:
 | key | on an operation | on a component schema |
 |---|---|---|
 | `name` | the page title and sidebar label instead of the summary | instead of the schema name |
-| `group` | the sidebar group instead of the first tag | the resource group whose `Objects` sub-group lists the page |
+| `group` | the sidebar group instead of the first tag | the resource group the page belongs to (see the layouts below) |
 | `hidden` | no page in the generated navigation | no page (envelopes, errors) |
 
 The keys are read on the schema itself, else on the first `allOf` member that carries them. `hidden` applies to the generated navigation only: a `sidebar` is a complete enumeration and still shows a page it lists.
 
-The generated sidebar of the example above lists each resource's endpoints first, then its objects in a nested `Objects` group; the schemas with no `group` keep the top-level `Objects` group:
+#### Where The Object Pages Go
+
+The object pages sit in one of two layouts, picked with the `objectsLayout` option of the source. The default, `grouped`, keeps every object page under one `Objects` group, the last group of the sidebar, after every resource's endpoints: the schemas with no `group` come first, then one sub-group per resource group, in the order the resource groups appear above it (a group with no endpoints of its own, `parts` here, after the ones that have). The sub-groups start collapsed and open on a click, or when one of their pages is the current one, so the list of objects stays short:
+
+```
+widgets
+  List widgets
+  Create a widget
+  Retrieve widget
+Objects
+  PartBase
+  widgets            ← collapsed until opened, or until one of its pages is the current one
+    The widget object
+  parts
+    The part object
+```
+
+The `per-area` layout nests an object page under an `Objects` sub-group of its own resource's group, after the endpoints, so each resource reads endpoints-then-objects; the schemas with no `group` keep the top-level `Objects` group:
+
+```json [descHead="Tip" desc="The options take the advanced form of <code>api.openapi</code>; a plain path keeps the defaults."]
+{
+  "api": {
+    "openapi": {
+      "source": "./openapi.yaml",
+      "options": { "objectsLayout": "per-area" }
+    }
+  }
+}
+```
 
 ```
 widgets
@@ -418,9 +446,9 @@ Objects
   PartBase
 ```
 
-The nested group behaves like any other nested sidebar group: it starts collapsed and opens when the reader expands it or lands on one of its pages, so the endpoints stay in view. Both groups can be renamed with the `objectsGroup` option of the source:
+In both layouts the nested groups behave like any other nested sidebar group, and the `objectsGroup` option renames the `Objects` groups — the top-level one and the `per-area` sub-groups alike:
 
-```json [descHead="Tip" desc="The option takes the advanced form of <code>api.openapi</code>; a plain path keeps the default name."]
+```json
 {
   "api": {
     "openapi": {

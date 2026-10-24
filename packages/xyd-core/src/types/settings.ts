@@ -1431,11 +1431,22 @@ export interface APIFileOptions {
 
   /**
    * (OpenAPI) The name of the group that lists the component-schema ("object")
-   * pages: the top-level group of the schemas with no resource group, and the
+   * pages: the top-level objects group and, under the `per-area` layout, the
    * sub-group an object page with an `x-docs.group` is nested under inside
    * that resource group, after its endpoints. Default `"Objects"`.
    */
   objectsGroup?: string;
+
+  /**
+   * (OpenAPI) Where the object pages sit in the generated navigation (no
+   * `x-docs.sidebar`). `"grouped"` (the default): one top-level objects group,
+   * the last group of the navigation — the pages without a resource group
+   * first, then one collapsed sub-group per resource group (`x-docs.group`)
+   * in the order the groups appear above it. `"per-area"`: an object page with
+   * a resource group is nested under that group's own objects sub-group, after
+   * its endpoints; the pages without one keep the top-level objects group.
+   */
+  objectsLayout?: "grouped" | "per-area";
 }
 
 /**

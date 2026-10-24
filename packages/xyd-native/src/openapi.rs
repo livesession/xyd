@@ -32,9 +32,10 @@ pub fn oap_schema_to_references_from_file(
 /// pageFrontMatter + per-page {pagePath, region} in ONE call — conversion,
 /// the x-docs sidebar plugin and pluginNavigation run natively; references
 /// never materialize in JS. Input JSON:
-/// `{source, urlPrefix, matchRoute, optionsUrlPrefix, store, objectsGroup?}` —
-/// `objectsGroup` names the component-schema pages' group (the converter's
-/// `objectsGroup` option; absent → the converter's default).
+/// `{source, urlPrefix, matchRoute, optionsUrlPrefix, store, objectsGroup?,
+/// objectsLayout?}` — `objectsGroup` names the component-schema pages' group
+/// and `objectsLayout` (`"grouped"` | `"per-area"`) places them (the
+/// converter's options of the same names; absent → the converter's defaults).
 #[napi]
 pub fn uniform_oas_pages(input_json: String) -> Result<String> {
     let input: serde_json::Value = serde_json::from_str(&input_json)
@@ -54,6 +55,11 @@ pub fn uniform_oas_pages(input_json: String) -> Result<String> {
         store: input.get("store").and_then(|v| v.as_bool()).unwrap_or(false),
         objects_group: input
             .get("objectsGroup")
+            .and_then(|v| v.as_str())
+            .filter(|s| !s.is_empty())
+            .map(String::from),
+        objects_layout: input
+            .get("objectsLayout")
             .and_then(|v| v.as_str())
             .filter(|s| !s.is_empty())
             .map(String::from),
