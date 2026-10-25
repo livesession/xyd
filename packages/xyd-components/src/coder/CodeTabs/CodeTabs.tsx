@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import { Tabs as TabsPrimitive, Select as SelectPrimitive } from "radix-ui"; // TODO: remove and use separation
 import { HighlightedCode } from "codehike/code";
 
@@ -8,6 +8,7 @@ import { SyntaxHighlightedCode } from "../CodeTheme/CodeTheme";
 import { useCodeSampleAnalytics } from "../CodeSample/CodeSampleAnalytics";
 import { useUXEvents } from "../../uxsdk";
 import { CodeContext } from "../CodeSample/CodeSample";
+import { languageGroupTab, languageGroupTabs, useSdkLanguageStore } from "../sdkLanguage";
 import { Icon, IconProvider } from "../../writer/Icon/Icon";
 import {
   CODE_LANG_ICONS,
@@ -37,9 +38,23 @@ export function withCodeTabs(PreComponent) {
     const [localTab, setLocalTab] = useState(defaultValue);
     const hasLang = (v?: string) =>
       !!v && props.highlighted.some((h) => (h.meta || h.lang) === v);
+
+    // SHARED mode (uncontrolled LANGUAGE groups only): a sample whose tabs are
+    // different languages — a markdown `:::code-group` of Python / Go / …, the
+    // raw-HTTP shell / javascript / … row — follows the page-wide language (the
+    // key the Atlas SDK switcher persists, seeded from `?lang=`), and picking a
+    // tab there stores it for the rest of the site. A group without the stored
+    // language keeps its local tab; a `npm | pnpm | yarn` group (all shell) is
+    // never shared. Server: null → the first tab, like before.
+    const languageGroup = useMemo(
+      () => (controlled ? null : languageGroupTabs(props.highlighted)),
+      [controlled, props.highlighted],
+    );
+    const [sharedLang, setSharedLang] = useSdkLanguageStore();
+    const sharedTab = languageGroup ? languageGroupTab(languageGroup, sharedLang) : undefined;
     const activeTab = controlled
       ? (hasLang(activeLang) ? (activeLang as string) : defaultValue)
-      : localTab;
+      : (sharedTab ?? localTab);
 
     const codeSampleAnalytics = useCodeSampleAnalytics();
     const ux = useUXEvents();
@@ -55,7 +70,11 @@ export function withCodeTabs(PreComponent) {
 
     function changeTab(value: string) {
       if (controlled) onLangChange?.(value);
-      else setLocalTab(value);
+      else {
+        setLocalTab(value);
+        const shared = languageGroup?.get(value);
+        if (shared) setSharedLang(shared);
+      }
       codeSampleAnalytics.setActiveTab(value);
       ux.docs.code.tab_change({ tab: value });
     }

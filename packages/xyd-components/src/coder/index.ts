@@ -53,3 +53,17 @@ export type {
     HighlighterName,
     RustHighlightFn,
 } from "./highlightEngine";;
+// The page-wide code language — the API reference's SDK switcher and the
+// markdown code groups of different languages share it: the store (one
+// localStorage key, seeded from `?lang=`), its hook and the group detection.
+export {
+    SDK_LANGUAGE_STORAGE_KEY,
+    SDK_LANGUAGE_URL_PARAM,
+    canonicalSdkLanguage,
+    languageGroupTabs,
+    languageGroupTab,
+    sdkLanguageStore,
+    resetSdkLanguageStores,
+    useSdkLanguageStore,
+} from "./sdkLanguage";
+export type { SdkLanguageStore } from "./sdkLanguage";

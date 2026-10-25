@@ -149,7 +149,7 @@ export interface SdkLang {
   compileLang: string;
 }
 
-/** The SDK languages, in switcher order. */
+/** The SDK languages, in the DEFAULT switcher order (a `langs` request sets its own). */
 export const SDK_LANGS: SdkLang[] = [
   { language: 'go', title: 'Go', compileLang: 'go' },
   { language: 'python', title: 'Python', compileLang: 'python' },
@@ -169,7 +169,7 @@ export function resolveCompileLang(language: string): string | undefined {
 }
 
 export interface AttachSdkExamplesOptions {
-  /** Restrict to a subset of SDK tab-`language` ids (default: all six). */
+  /** The SDK tab-`language` ids to attach, in switcher order (default: all six, in SDK_LANGS order). */
   langs?: string[];
 }
 
@@ -244,8 +244,29 @@ export async function prepareSdkFromSource(source: string): Promise<PreparedSdk 
   }
 }
 
+/**
+ * The language ids to render, in switcher order: a `requested` list (a docs
+ * config's `sdk.languages`) narrows `available` (SDK_LANGS, or a spec's root
+ * `x-sdk.languages`) AND sets the order — unknown ids drop, a repeated id keeps
+ * its first position. No request → `available` as is. The raw-HTTP (cURL) entry
+ * is not part of either list: it always comes first in the switcher.
+ */
+export function orderSdkLanguageIds(available: readonly string[], requested?: readonly string[] | null): string[] {
+  if (!requested) return [...available];
+  const out: string[] = [];
+  for (const id of requested) {
+    if (available.includes(id) && !out.includes(id)) out.push(id);
+  }
+  return out;
+}
+
+/** The SDK languages of a `langs` request, in the REQUESTED order — that order is
+ * the switcher order (curl stays first). No request → every language, in SDK_LANGS order. */
 function resolveLangs(langs?: string[]): SdkLang[] {
-  return langs ? SDK_LANGS.filter((l) => langs.includes(l.language)) : SDK_LANGS;
+  if (!langs) return SDK_LANGS;
+  return orderSdkLanguageIds(SDK_LANGS.map((l) => l.language), langs).map(
+    (id) => SDK_LANGS.find((l) => l.language === id) as SdkLang,
+  );
 }
 
 const isCurl = (lang?: string): boolean => lang === 'shell' || lang === 'curl';
@@ -468,7 +489,7 @@ function sdkResponseVariant(lang: SdkLangLike, response: RenderedTypeReference['
 }
 
 export interface AttachSdkTypesOptions {
-  /** Restrict to a subset of SDK tab-`language` ids (default: all six). */
+  /** The SDK tab-`language` ids to attach, in switcher order (default: all six, in SDK_LANGS order). */
   langs?: string[];
   /**
    * Keep the REST param/response definitions instead of dropping them, tagged
@@ -594,7 +615,7 @@ export interface AttachSdkOptions {
   examples?: boolean;
   /** Attach SDK type definitions + header signatures. Default true. */
   types?: boolean;
-  /** Restrict to a subset of SDK tab-`language` ids (default: all six). */
+  /** The SDK tab-`language` ids to attach, in switcher order (default: all six, in SDK_LANGS order). */
   langs?: string[];
   /** Keep (and tag) the REST definitions — see {@link AttachSdkTypesOptions.keepRest}. */
   keepRest?: boolean;
@@ -685,7 +706,8 @@ export async function loadSpecSource(source: string): Promise<OpenAPIV3.Document
 }
 
 export interface EmbedXSdkOptions {
-  /** Restrict to a subset of SDK language ids (default: all six). */
+  /** The SDK language ids to embed, in this order — it becomes the root `x-sdk.languages`
+   * order, the switcher order (default: all six, in SDK_LANGS order). */
   langs?: string[];
 }
 
@@ -763,7 +785,9 @@ export interface AttachSdkFromSpecOptions {
   examples?: boolean;
   /** Attach SDK type definitions + header signatures. Default true. */
   types?: boolean;
-  /** Narrow the spec's `x-sdk.languages` (e.g. from docs config). */
+  /** The language ids to render, in switcher order — narrows the spec's
+   * `x-sdk.languages` and sets their order (a docs config's `sdk.languages`).
+   * Omit for the spec's own list and order. */
   langs?: string[];
   /** Keep (and tag) the REST definitions — see {@link AttachSdkTypesOptions.keepRest}. */
   keepRest?: boolean;
@@ -784,7 +808,9 @@ export function attachSdkFromSpec(
   const xsdk = getXSdk(doc);
   if (!xsdk) return false;
 
-  const langIds = opts.langs ? xsdk.languages.filter((l) => opts.langs!.includes(l)) : xsdk.languages;
+  // A `langs` request (the docs config) narrows the spec's list AND sets the
+  // switcher order; without one the spec's own `x-sdk.languages` order is kept.
+  const langIds = orderSdkLanguageIds(xsdk.languages, opts.langs);
   const displayLangs: SdkLangLike[] = langIds.map((id) => ({
     language: id,
     title: SDK_LANGS.find((l) => l.language === id)?.title ?? id,

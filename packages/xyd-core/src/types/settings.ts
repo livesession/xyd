@@ -1421,9 +1421,13 @@ export type APISdkLanguage =
 /** Object form of {@link APIFileAdvanced.sdk}. */
 export interface APISdkConfig {
   /**
-   * Restrict the SDK languages shown in the switcher. Unknown ids are
-   * ignored; the rendered order always follows the canonical SDK order
-   * (go, python, typescript, ruby, java, csharp). Empty/omitted → all.
+   * The SDK languages shown in the switcher, in this order — the raw-HTTP
+   * `Shell` entry always comes first. Unknown ids are ignored. Empty/omitted →
+   * all six, in the default order (go, python, typescript, ruby, java, csharp).
+   * For a spec that carries `x-sdk`, the list narrows the spec's own
+   * `x-sdk.languages` and sets their order; without a list the spec's order is
+   * kept. The reader's choice is one per site (`?lang=<id>` in the URL seeds
+   * it) and the markdown code groups of different languages follow it.
    */
   languages?: APISdkLanguage[];
 }
