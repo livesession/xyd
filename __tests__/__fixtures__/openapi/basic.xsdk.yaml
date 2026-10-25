@@ -144,6 +144,222 @@ paths:
                   langType: str
                   required: true
                   description: When the todo was created
+  /todos/summary:
+    get:
+      summary: Get the todo summary
+      description: The owner of the list, its counts, and the most recent todos
+      responses:
+        '200':
+          description: The summary
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoSummary'
+      x-sdk:
+        go:
+          usage: "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/todoapi\"\n\t\"github.com/example/todoapi/option\"\n)\n\nfunc main() {\n\tclient := todoapi.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Todos.Summary.Get(context.TODO())\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n"
+          signature: client.Todos.Summary.Get(ctx) (*TodoSummary, error)
+          types:
+            request:
+              fields: []
+            response:
+              typeName: TodoSummary
+              refTypeName: TodoSummary
+              schemaRef: '#/components/schemas/TodoSummary'
+              fields:
+                - name: Owner
+                  langType: Owner
+                  required: true
+                  description: Who owns the list
+                  refTypeName: Owner
+                  schemaRef: '#/components/schemas/Owner'
+                - name: Stats
+                  langType: TodoSummaryStats
+                  required: true
+                  description: The counts
+                  refTypeName: TodoSummaryStats
+                - name: Recent
+                  langType: '[]Todo'
+                  required: true
+                  description: The most recent todos
+                  refTypeName: Todo
+                  schemaRef: '#/components/schemas/Todo'
+            nested:
+              Owner:
+                typeName: Owner
+                kind: struct
+                schemaRef: '#/components/schemas/Owner'
+                fields:
+                  - name: ID
+                    langType: string
+                    required: true
+                    description: The owner's id
+                  - name: Name
+                    langType: string
+                    required: true
+                    description: The owner's display name
+              Todo:
+                typeName: Todo
+                kind: struct
+                schemaRef: '#/components/schemas/Todo'
+                fields:
+                  - name: ID
+                    langType: string
+                    required: true
+                    description: The unique identifier for the todo
+                  - name: Title
+                    langType: string
+                    required: true
+                    description: The title of the todo
+                  - name: Completed
+                    langType: bool
+                    required: true
+                    description: Whether the todo is completed
+                  - name: CreatedAt
+                    langType: string
+                    required: true
+                    description: When the todo was created
+              TodoSummary:
+                typeName: TodoSummary
+                kind: struct
+                schemaRef: '#/components/schemas/TodoSummary'
+                fields:
+                  - name: Owner
+                    langType: Owner
+                    required: true
+                    description: Who owns the list
+                    refTypeName: Owner
+                    schemaRef: '#/components/schemas/Owner'
+                  - name: Stats
+                    langType: TodoSummaryStats
+                    required: true
+                    description: The counts
+                    refTypeName: TodoSummaryStats
+                  - name: Recent
+                    langType: '[]Todo'
+                    required: true
+                    description: The most recent todos
+                    refTypeName: Todo
+                    schemaRef: '#/components/schemas/Todo'
+              TodoSummaryStats:
+                typeName: TodoSummaryStats
+                kind: struct
+                fields:
+                  - name: Total
+                    langType: int64
+                    required: true
+                    description: How many todos there are
+                  - name: Done
+                    langType: int64
+                    required: true
+                    description: How many are completed
+        python:
+          usage: |
+            import os
+
+            from todo_api import Client
+
+            client = Client(
+                api_key=os.environ.get("TODO_API_API_KEY"),
+            )
+
+            result = client.todos.summary.retrieve()
+            print(result)
+          signature: client.todos.summary.retrieve() -> TodoSummary
+          types:
+            request:
+              fields: []
+            response:
+              typeName: TodoSummary
+              refTypeName: TodoSummary
+              schemaRef: '#/components/schemas/TodoSummary'
+              fields:
+                - name: owner
+                  langType: Owner
+                  required: true
+                  description: Who owns the list
+                  refTypeName: Owner
+                  schemaRef: '#/components/schemas/Owner'
+                - name: stats
+                  langType: TodoSummaryStats
+                  required: true
+                  description: The counts
+                  refTypeName: TodoSummaryStats
+                - name: recent
+                  langType: List[Todo]
+                  required: true
+                  description: The most recent todos
+                  refTypeName: Todo
+                  schemaRef: '#/components/schemas/Todo'
+            nested:
+              Owner:
+                typeName: Owner
+                kind: struct
+                schemaRef: '#/components/schemas/Owner'
+                fields:
+                  - name: id
+                    langType: str
+                    required: true
+                    description: The owner's id
+                  - name: name
+                    langType: str
+                    required: true
+                    description: The owner's display name
+              Todo:
+                typeName: Todo
+                kind: struct
+                schemaRef: '#/components/schemas/Todo'
+                fields:
+                  - name: id
+                    langType: str
+                    required: true
+                    description: The unique identifier for the todo
+                  - name: title
+                    langType: str
+                    required: true
+                    description: The title of the todo
+                  - name: completed
+                    langType: bool
+                    required: true
+                    description: Whether the todo is completed
+                  - name: created_at
+                    langType: str
+                    required: true
+                    description: When the todo was created
+              TodoSummary:
+                typeName: TodoSummary
+                kind: struct
+                schemaRef: '#/components/schemas/TodoSummary'
+                fields:
+                  - name: owner
+                    langType: Owner
+                    required: true
+                    description: Who owns the list
+                    refTypeName: Owner
+                    schemaRef: '#/components/schemas/Owner'
+                  - name: stats
+                    langType: TodoSummaryStats
+                    required: true
+                    description: The counts
+                    refTypeName: TodoSummaryStats
+                  - name: recent
+                    langType: List[Todo]
+                    required: true
+                    description: The most recent todos
+                    refTypeName: Todo
+                    schemaRef: '#/components/schemas/Todo'
+              TodoSummaryStats:
+                typeName: TodoSummaryStats
+                kind: struct
+                fields:
+                  - name: total
+                    langType: int
+                    required: true
+                    description: How many todos there are
+                  - name: done
+                    langType: int
+                    required: true
+                    description: How many are completed
   /todos/{id}:
     parameters:
       - name: id
@@ -393,6 +609,47 @@ components:
           description: Whether the todo is completed
       required:
         - title
+    Owner:
+      type: object
+      description: Who owns a todo list
+      properties:
+        id:
+          type: string
+          description: The owner's id
+        name:
+          type: string
+          description: The owner's display name
+      required:
+        - id
+        - name
+    TodoSummary:
+      type: object
+      description: The owner of the list, its counts, and the most recent todos
+      properties:
+        owner:
+          $ref: '#/components/schemas/Owner'
+        stats:
+          type: object
+          description: The counts
+          properties:
+            total:
+              type: integer
+              description: How many todos there are
+            done:
+              type: integer
+              description: How many are completed
+          required:
+            - total
+            - done
+        recent:
+          type: array
+          description: The most recent todos
+          items:
+            $ref: '#/components/schemas/Todo'
+      required:
+        - owner
+        - stats
+        - recent
 x-sdk:
   languages:
     - go

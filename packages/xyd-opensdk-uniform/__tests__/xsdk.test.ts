@@ -231,3 +231,49 @@ describe('the switcher order', () => {
     expect(JSON.parse(JSON.stringify(fromSpec))).toEqual(JSON.parse(JSON.stringify(generated)));
   });
 });
+
+// The nested table travels with the x-sdk: `types.nested` behind the two
+// one-level groups, left out when nothing is referenced — the shape
+// `opensdk xsdk` writes. An x-sdk written before it existed (no `nested`, no
+// `schemaRef`) still renders: one level deep, linked only to the pages the
+// reference's own evidence knows, never a guessed `objects/<Type>`.
+describe('x-sdk nested types', () => {
+  it('embedXSdk carries the nested table behind request/response', () => {
+    const { doc: enriched } = embedXSdk(doc, { langs: ['go', 'typescript'] });
+    const post = opXSdk(enriched, 'post');
+    expect(post.go.types!.nested?.WidgetCreate?.schemaRef).toBe('#/components/schemas/WidgetCreate');
+    expect(post.go.types!.nested?.Widget?.fields?.map((f) => f.name)).toEqual(['ID', 'Name']);
+    expect(post.typescript.types!.nested?.Widget?.fields?.map((f) => f.name)).toEqual(['id', 'name']);
+    expect(post.go.types!.response.schemaRef).toBe('#/components/schemas/Widget');
+  });
+
+  it('a hand-authored x-sdk without schemaRef links only to what the REST rows know', () => {
+    const custom = JSON.parse(JSON.stringify(doc)) as OpenAPIV3.Document;
+    (custom as any)['x-sdk'] = { languages: ['go'] };
+    (custom.paths!['/widgets']!.get as any)['x-sdk'] = {
+      go: {
+        signature: 'client.Widgets.List(ctx) ([]Widget, error)',
+        types: {
+          request: { fields: [] },
+          response: { typeName: '[]Widget', langType: '[]Widget', refTypeName: 'Widget' },
+        },
+      },
+    } satisfies XSdkOperation;
+
+    // no evidence: the type text alone — never a guessed `objects/Widget`
+    const bare = makeRef('get', '/widgets');
+    attachSdkFromSpec([bare], custom, { keepRest: true });
+    const returns = (ref: Reference) => ref.definitions!.find((d) => d.title === 'Returns')!.variants![0].properties!;
+    expect(returns(bare)[0].type).toBe('[]Widget');
+    expect(returns(bare)[0].symbolDef).toBeUndefined();
+    expect(returns(bare)[0].properties).toBeUndefined();
+
+    // the REST response row links the schema: the SDK row follows it
+    const evidenced = makeRef('get', '/widgets');
+    evidenced.definitions![1].properties = [
+      { name: '', type: 'object', description: '', symbolDef: { id: '#/components/schemas/Widget', canonical: 'objects/Widget', label: 'widget' } },
+    ];
+    attachSdkFromSpec([evidenced], custom, { keepRest: true });
+    expect(returns(evidenced)[0].symbolDef).toEqual({ id: '#/components/schemas/Widget', canonical: 'objects/Widget' });
+  });
+});
