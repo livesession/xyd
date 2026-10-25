@@ -764,6 +764,16 @@ export interface Sidebar {
   expanded?: boolean;
 
   /**
+   * Fold this group behind a toggle on its header: it starts collapsed and
+   * opens on a click, or when it holds the active page (like the rest of the
+   * sidebar's open state, it starts over on the next page). Only meaningful
+   * for a TOP-LEVEL group — a nested group starts collapsed anyway (see
+   * `expanded`). The generated API reference sets it on its objects group
+   * (`api.openapi[..].options.objectsCollapsed`).
+   */
+  collapsed?: boolean;
+
+  /**
    * The order of the group.
    */
   order?: Order;
@@ -1462,6 +1472,16 @@ export interface APIFileOptions {
    * modes; the sidebar labels and groups are unchanged either way.
    */
   operationPaths?: "operation-id" | "title";
+
+  /**
+   * (OpenAPI) Whether the generated navigation's top-level objects group (the
+   * `grouped` layout's last group) starts collapsed behind a toggle on its
+   * header — it opens on a click, or when the current page is one of its
+   * pages. Default `true`; `false` keeps the group open like the resource
+   * groups above it. Nothing to fold under `per-area` or with an
+   * `x-docs.sidebar`.
+   */
+  objectsCollapsed?: boolean;
 }
 
 /**

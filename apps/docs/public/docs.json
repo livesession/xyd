@@ -138,6 +138,10 @@
           "description": "(CLI) Render the CLI's global options on every command page. When `false` (the default), the global options are rendered once as a dedicated \"Global options\" page in the sidebar instead of repeated on each command.",
           "type": "boolean"
         },
+        "objectsCollapsed": {
+          "description": "(OpenAPI) Whether the generated navigation's top-level objects group (the `grouped` layout's last group) starts collapsed behind a toggle on its header — it opens on a click, or when the current page is one of its pages. Default `true`; `false` keeps the group open like the resource groups above it. Nothing to fold under `per-area` or with an `x-docs.sidebar`.",
+          "type": "boolean"
+        },
         "objectsGroup": {
           "description": "(OpenAPI) The name of the group that lists the component-schema (\"object\") pages: the top-level objects group and, under the `per-area` layout, the sub-group an object page with an `x-docs.group` is nested under inside that resource group, after its endpoints. Default `\"Objects\"`.",
           "type": "string"
@@ -2979,6 +2983,10 @@
             }
           ],
           "description": "Treat this group's pages as a table of contents instead of real pages. Their markdown files are NOT routable (no routes, no prerender) — the content of every page is injected as a section into the enclosing route's index page, sidebar items scroll to those sections (with scroll-spy active marking), and the right-hand TOC is hidden on that composed page.\n\n`true` enables it with defaults; the object form tunes behaviors (all default to enabled)."
+        },
+        "collapsed": {
+          "description": "Fold this group behind a toggle on its header: it starts collapsed and opens on a click, or when it holds the active page (like the rest of the sidebar's open state, it starts over on the next page). Only meaningful for a TOP-LEVEL group — a nested group starts collapsed anyway (see `expanded`). The generated API reference sets it on its objects group (`api.openapi[..].options.objectsCollapsed`).",
+          "type": "boolean"
         },
         "expanded": {
           "description": "Open this group on load, even when the reader is on a page outside it. Sets the INITIAL state only — it is a default, not a lock: the group still opens by itself when it holds the active page, and a reader who collapses it keeps it collapsed for as long as they stay on the page (like the rest of the sidebar's open state, it starts over on the next one). Only meaningful for a nested group — top-level groups are always open.",

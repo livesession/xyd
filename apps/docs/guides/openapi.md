@@ -404,24 +404,39 @@ The keys are read on the schema itself, else on the first `allOf` member that ca
 
 #### Where The Object Pages Go
 
-The object pages sit in one of two layouts, picked with the `objectsLayout` option of the source. The default, `grouped`, keeps every object page under one `Objects` group, the last group of the sidebar, after every resource's endpoints: the schemas with no `group` come first, then one sub-group per resource group, in the order the resource groups appear above it (a group with no endpoints of its own, `parts` here, after the ones that have). The sub-groups start collapsed and open on a click, or when one of their pages is the current one, so the list of objects stays short:
+The object pages sit in one of two layouts, picked with the `objectsLayout` option of the source. The default, `grouped`, keeps every object page under one `Objects` group, the last group of the sidebar, after every resource's endpoints: the schemas with no `group` come first, then one sub-group per resource group, in the order the resource groups appear above it (a group with no endpoints of its own, `parts` here, after the ones that have). The `Objects` group itself starts collapsed, with a toggle on its header, and so do the sub-groups inside it: each opens on a click, or when one of its pages is the current one, so the endpoints stay in view and the list of objects stays short:
 
 ```
 widgets
   List widgets
   Create a widget
   Retrieve widget
-Objects
+Objects ▸            ← collapsed until opened, or until one of its pages is the current one
   PartBase
-  widgets            ← collapsed until opened, or until one of its pages is the current one
+  widgets ▸          ← the sub-groups fold the same way
     The widget object
-  parts
+  parts ▸
     The part object
 ```
 
-The `per-area` layout nests an object page under an `Objects` sub-group of its own resource's group, after the endpoints, so each resource reads endpoints-then-objects; the schemas with no `group` keep the top-level `Objects` group:
+`objectsCollapsed: false` keeps the `Objects` group open like the resource groups above it (its sub-groups still fold):
 
 ```json [descHead="Tip" desc="The options take the advanced form of <code>api.openapi</code>; a plain path keeps the defaults."]
+{
+  "api": {
+    "openapi": {
+      "source": "./openapi.yaml",
+      "options": { "objectsCollapsed": false }
+    }
+  }
+}
+```
+
+The same fold is available to any top-level group of a hand-written sidebar: `{ "group": "Reference", "collapsed": true, "pages": [...] }` draws the toggle and starts the group collapsed.
+
+The `per-area` layout nests an object page under an `Objects` sub-group of its own resource's group, after the endpoints, so each resource reads endpoints-then-objects; the schemas with no `group` keep the top-level `Objects` group, which stays open (there is nothing left to fold at the top level):
+
+```json
 {
   "api": {
     "openapi": {

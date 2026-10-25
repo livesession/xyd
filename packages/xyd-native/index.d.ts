@@ -177,11 +177,13 @@ export declare function processSettings(settingsJson: string, envJson: string): 
  * the x-docs sidebar plugin and pluginNavigation run natively; references
  * never materialize in JS. Input JSON:
  * `{source, urlPrefix, matchRoute, optionsUrlPrefix, store, objectsGroup?,
- * objectsLayout?, operationPaths?}` — `objectsGroup` names the
- * component-schema pages' group, `objectsLayout` (`"grouped"` | `"per-area"`)
- * places them and `operationPaths` (`"operation-id"` | `"title"`) picks how a
- * page without an `x-docs.path` gets its canonical (the converter's options of
- * the same names; absent → the converter's defaults).
+ * objectsLayout?, operationPaths?, objectsCollapsed?}` — `objectsGroup` names
+ * the component-schema pages' group, `objectsLayout` (`"grouped"` |
+ * `"per-area"`) places them, `operationPaths` (`"operation-id"` | `"title"`)
+ * picks how a page without an `x-docs.path` gets its canonical and
+ * `objectsCollapsed` (a bool) flags the top-level objects group `collapsed:
+ * true` on the sidebar it returns (the converter's options of the same names;
+ * absent → the converter's defaults).
  */
 export declare function uniformOasPages(inputJson: string): string
 
