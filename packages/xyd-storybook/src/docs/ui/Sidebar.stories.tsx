@@ -30,6 +30,81 @@ export const Default = () => {
 }
 
 
+/**
+ * A top-level group folded behind a toggle on its header (`ItemHeader toggle`
+ * + `GroupTree`): the reference's `Objects` group, collapsed until opened,
+ * after two static groups.
+ */
+export const CollapsibleGroup = () => {
+    return <div style={{
+        padding: "100px",
+        paddingTop: "0px",
+        margin: "0 auto",
+    }}>
+        <LayoutPrimary
+            header={<></>}
+            aside={<DemoCollapsibleGroupSidebar/>}
+            content={<></>}
+            contentNav={<></>}
+        />
+    </div>
+}
+
+function DemoCollapsibleGroupSidebar() {
+    const [objectsOpen, setObjectsOpen] = useState(false)
+    const [areaOpen, setAreaOpen] = useState(false)
+
+    return <UISidebar>
+        <UISidebar.ItemHeader>
+            Widgets
+        </UISidebar.ItemHeader>
+        <UISidebar.Item href="#">
+            List widgets
+        </UISidebar.Item>
+        <UISidebar.Item href="#" active>
+            Create a widget
+        </UISidebar.Item>
+
+        <UISidebar.ItemHeader>
+            Parts
+        </UISidebar.ItemHeader>
+        <UISidebar.Item href="#">
+            List parts
+        </UISidebar.Item>
+
+        <UISidebar.ItemHeader
+            toggle={{
+                open: objectsOpen,
+                onToggle: () => setObjectsOpen(!objectsOpen),
+                controls: "demo-objects-tree",
+            }}
+        >
+            Objects
+        </UISidebar.ItemHeader>
+        <UISidebar.GroupTree id="demo-objects-tree" isOpen={objectsOpen}>
+            <UISidebar.Item href="#">
+                PartBase
+            </UISidebar.Item>
+            <UISidebar.Item
+                button
+                active={areaOpen}
+                activeTheme="secondary"
+                onClick={() => setAreaOpen(!areaOpen)}
+            >
+                Widgets
+                <UISidebar.SubTree isOpen={areaOpen}>
+                    <UISidebar.Item href="#">
+                        The widget object
+                    </UISidebar.Item>
+                    <UISidebar.Item href="#">
+                        The widget list
+                    </UISidebar.Item>
+                </UISidebar.SubTree>
+            </UISidebar.Item>
+        </UISidebar.GroupTree>
+    </UISidebar>
+}
+
 function DemoSidebar() {
     const [isOpen, setIsOpen] = useState(false)
 

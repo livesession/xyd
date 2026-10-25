@@ -1,6 +1,7 @@
-import {APIFile, Settings} from "@xyd-js/core";
+import {APIFile, Settings, Sidebar} from "@xyd-js/core";
 import {resolveApiFileOptions} from "@xyd-js/content";
-import {deferencedOpenAPI, oapSchemaToReferences, getXDocs} from "@xyd-js/openapi";
+import {deferencedOpenAPI, oapSchemaToReferences, getXDocs, collapseObjectsGroup} from "@xyd-js/openapi";
+import type {NavigationGroupEntry} from "@xyd-js/openapi";
 import type {Reference} from "@xyd-js/uniform";
 
 import {Preset} from "../../types"
@@ -23,6 +24,10 @@ export const openapiPreset = preset satisfies Preset<unknown>
 
 class OpenAPIUniformPreset extends UniformPreset {
     private readonly openapiApi: APIFile | undefined
+
+    /** The dereferenced document per source, for the navigation's finishing
+     *  pass (its `x-docs.sidebar` probe) — filled by the ref resolver. */
+    private readonly schemas = new Map<string, Parameters<typeof collapseObjectsGroup>[1]>()
 
     private constructor(
         settings: Settings,
@@ -58,6 +63,7 @@ class OpenAPIUniformPreset extends UniformPreset {
 
         const schema = await deferencedOpenAPI(filePath)
         if (schema) {
+            this.schemas.set(filePath, schema)
             const xdocs = getXDocs(schema)
             if (xdocs?.route) {
                 this.fileRouting(filePath, xdocs.route)
@@ -74,6 +80,33 @@ class OpenAPIUniformPreset extends UniformPreset {
             ...(objectsGroup ? { objectsGroup } : {}),
             ...(objectsLayout ? { objectsLayout } : {}),
         } : undefined)
+    }
+
+    /**
+     * The JS path's twin of the fused native pass: the top-level objects group
+     * flagged `collapsed: true` (`api.openapi[..].options.objectsCollapsed`,
+     * default `true`), so the sidebar folds it behind a toggle on its header.
+     */
+    protected override navigationFinish(
+        sidebar: Sidebar[],
+        references: Reference[],
+        urlPrefix: string,
+        filePath: string,
+    ): Sidebar[] {
+        const apiOptions = resolveApiFileOptions(this.openapiApi, filePath)
+        // Sidebar and NavigationGroupEntry are the same generated shape; the
+        // entry type's index signature is what the interface cannot state.
+        return collapseObjectsGroup(
+            sidebar as unknown as NavigationGroupEntry[],
+            this.schemas.get(filePath),
+            references,
+            urlPrefix,
+            {
+                ...(apiOptions?.objectsGroup ? { objectsGroup: apiOptions.objectsGroup } : {}),
+                ...(apiOptions?.objectsLayout ? { objectsLayout: apiOptions.objectsLayout } : {}),
+                ...(typeof apiOptions?.objectsCollapsed === "boolean" ? { objectsCollapsed: apiOptions.objectsCollapsed } : {}),
+            },
+        ) as unknown as Sidebar[]
     }
 }
 

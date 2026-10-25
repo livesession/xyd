@@ -135,6 +135,17 @@ UISidebar.Item = function SidebarItem({
 export interface UISidebarItemHeaderProps {
     children: React.ReactNode;
     icon?: React.ReactNode;
+    /**
+     * Makes the header the toggle of a collapsible top-level group: a button
+     * carrying the group's name and a chevron, `aria-expanded` from `open`,
+     * `aria-controls` the id of the `UISidebar.GroupTree` it folds. Without it
+     * the header is static, as a top-level group's always was.
+     */
+    toggle?: {
+        open: boolean;
+        onToggle: () => void;
+        controls?: string;
+    };
 }
 
 /**
@@ -149,7 +160,27 @@ UISidebar.ItemSeparator = function SidebarItemSeparator() {
     return <li part="item-separator" role="presentation" />
 }
 
-UISidebar.ItemHeader = function SidebarItemHeader({ children, icon }: UISidebarItemHeaderProps) {
+UISidebar.ItemHeader = function SidebarItemHeader({ children, icon, toggle }: UISidebarItemHeaderProps) {
+    if (toggle) {
+        return <li
+            part="item-header"
+            className={cn.ItemHeaderHost}
+            data-collapsible="true"
+            data-open={String(toggle.open)}
+        >
+            <button
+                type="button"
+                part="item-header-toggle"
+                aria-expanded={toggle.open}
+                aria-controls={toggle.controls}
+                onClick={toggle.onToggle}
+            >
+                {icon}
+                <span part="item-header-title">{children}</span>
+            </button>
+        </li>
+    }
+
     return <li part="item-header" className={cn.ItemHeaderHost}>
         {icon}
         {children}
@@ -185,6 +216,29 @@ UISidebar.SubTree = function SidebarSubItem({ children, isOpen }: UISidebarSubTr
             {children}
         </UICollapse>
     </ul>
+}
+
+export interface UISidebarGroupTreeProps {
+    children: React.ReactNode;
+    isOpen?: boolean;
+    /** the id a toggling `ItemHeader` points at with `aria-controls` */
+    id?: string;
+}
+
+/**
+ * The rows of a collapsible top-level group, folded under its header's toggle.
+ * A row of the list itself — so the themes' spacing rules still see an
+ * `[part="item"]` before the next header — holding one ROOT-level subtree: the
+ * same `xyd-collapse` mechanism as a nested group's, without its indent.
+ */
+UISidebar.GroupTree = function SidebarGroupTree({ children, isOpen, id }: UISidebarGroupTreeProps) {
+    return <li part="item" data-group-tree="true">
+        <ul part="subtree" data-root="true" id={id} className={cn.TreeHost}>
+            <UICollapse isOpen={isOpen || false}>
+                {children}
+            </UICollapse>
+        </ul>
+    </li>
 }
 
 // TODO: move to shared code

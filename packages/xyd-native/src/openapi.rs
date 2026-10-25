@@ -33,9 +33,11 @@ pub fn oap_schema_to_references_from_file(
 /// the x-docs sidebar plugin and pluginNavigation run natively; references
 /// never materialize in JS. Input JSON:
 /// `{source, urlPrefix, matchRoute, optionsUrlPrefix, store, objectsGroup?,
-/// objectsLayout?}` — `objectsGroup` names the component-schema pages' group
-/// and `objectsLayout` (`"grouped"` | `"per-area"`) places them (the
-/// converter's options of the same names; absent → the converter's defaults).
+/// objectsLayout?, objectsCollapsed?}` — `objectsGroup` names the
+/// component-schema pages' group, `objectsLayout` (`"grouped"` | `"per-area"`)
+/// places them and `objectsCollapsed` (a bool) flags the top-level objects
+/// group `collapsed: true` on the sidebar it returns (the converter's options
+/// of the same names; absent → the converter's defaults).
 #[napi]
 pub fn uniform_oas_pages(input_json: String) -> Result<String> {
     let input: serde_json::Value = serde_json::from_str(&input_json)
@@ -63,6 +65,7 @@ pub fn uniform_oas_pages(input_json: String) -> Result<String> {
             .and_then(|v| v.as_str())
             .filter(|s| !s.is_empty())
             .map(String::from),
+        objects_collapsed: input.get("objectsCollapsed").and_then(|v| v.as_bool()),
     })
     .map_err(|e| Error::from_reason(format!("[openapi] {e}")))?;
 

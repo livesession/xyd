@@ -43,6 +43,12 @@ describe('resolveApiFileOptions', () => {
         expect(resolveApiFileOptions({ source: './specs/widgets.yaml', options: { objectsLayout: 'grouped' } }, ABS)?.objectsLayout).toBe('grouped');
     });
 
+    it('returns the objects collapsed flag of the entry, either way it is set', () => {
+        expect(resolveApiFileOptions({ source: './specs/widgets.yaml', options: { objectsCollapsed: false } }, ABS)).toEqual({ objectsCollapsed: false });
+        expect(resolveApiFileOptions({ source: './specs/widgets.yaml', options: { objectsCollapsed: true, objectsGroup: 'Types' } }, ABS)).toEqual({ objectsCollapsed: true, objectsGroup: 'Types' });
+        expect(resolveApiFileOptions({ source: './specs/widgets.yaml', options: { objectsGroup: 'Types' } }, ABS)?.objectsCollapsed).toBeUndefined();
+    });
+
     it('returns null for a matching entry without options', () => {
         expect(resolveApiFileOptions({ source: './specs/widgets.yaml' }, ABS)).toBeNull();
         expect(resolveApiFileOptions([{ source: './specs/widgets.yaml' }, { source: 'specs/widgets.yaml', options: { objectsGroup: 'Later' } }], ABS)).toBeNull();

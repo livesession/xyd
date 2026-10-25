@@ -7,7 +7,7 @@ import {useSidebarGroups} from "../contexts";
 import {useSidebarActive} from "../lib";
 import {trailingSlash} from "../utils";
 
-import {FwSidebarItem, FwSidebarItemElementProps, FwSidebarItemProps} from "./FwSidebarItem";
+import {FwSidebarItem, FwSidebarItemElementProps, FwSidebarItemProps, groupToggleItem} from "./FwSidebarItem";
 
 export function useSidebarTree(): [React.ReactElement[], { initialActiveItems: any[] }] {
     const location = useLocation()
@@ -79,6 +79,13 @@ export function useSidebarTree(): [React.ReactElement[], { initialActiveItems: a
         const items: any[] = []
         groups.forEach((group, groupIndex) => {
             const activeLevels = recursiveSearch(group.items, effectiveHref) || []
+
+            // A collapsible top-level group opens when it holds the active page:
+            // its toggle shares the item key space (groupToggleItem), so it is
+            // seeded here along with the branch itself.
+            if (group.collapsed && activeLevels.length) {
+                items.push(groupToggleItem(groupIndex))
+            }
 
             activeLevels.reduce((acc, index, level) => {
                 items.push({
