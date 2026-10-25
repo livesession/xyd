@@ -275,13 +275,15 @@ async function uniformResolver(
             console.log("[uniform] fused native path:", resolvedApiFile)
         }
         // `api.openapi[..].options.objectsGroup` names the object pages' group,
-        // `.objectsLayout` places them and `.objectsCollapsed` folds their
-        // top-level group (the converter's options of the same names); the
-        // fused call builds the sidebar, so it needs the same values as the
-        // per-page conversion.
+        // `.objectsLayout` places them, `.operationPaths` picks how a page
+        // without an `x-docs.path` gets its path and `.objectsCollapsed` folds
+        // their top-level group (the converter's options of the same names); the
+        // fused call builds the sidebar and the page map, so it needs the same
+        // values as the per-page conversion.
         const apiOptions = resolveApiFileOptions(settings.api?.openapi, apiFile)
         const objectsGroup = apiOptions?.objectsGroup
         const objectsLayout = apiOptions?.objectsLayout
+        const operationPaths = apiOptions?.operationPaths
         const objectsCollapsed = apiOptions?.objectsCollapsed
         const fused = JSON.parse(fusedNative.uniformOasPages(JSON.stringify({
             source: resolvedApiFile,
@@ -291,6 +293,7 @@ async function uniformResolver(
             store: !!settings.engine?.uniform?.store,
             ...(objectsGroup ? { objectsGroup } : {}),
             ...(objectsLayout ? { objectsLayout } : {}),
+            ...(operationPaths ? { operationPaths } : {}),
             ...(typeof objectsCollapsed === "boolean" ? { objectsCollapsed } : {}),
         })))
 

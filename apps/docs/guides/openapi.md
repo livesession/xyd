@@ -474,6 +474,45 @@ In both layouts the nested groups behave like any other nested sidebar group, an
 }
 ```
 
+#### Page Paths
+
+Outside a `sidebar`, a page's path under the route is the `operationId` of the operation (a slug of the summary without one) and `objects/<Name>` for a component schema. An `x-docs.path` on the operation or the schema names the path outright — relative to the route, no leading slash:
+
+```yaml
+paths:
+  /widgets/{widgetId}:
+    delete:
+      summary: Delete widget
+      x-docs:
+        path: widgets/remove        # the page is …/widgets/remove
+components:
+  schemas:
+    Assembly:
+      x-docs:
+        group: assemblies
+        path: assemblies/object     # the page is …/assemblies/object
+```
+
+The `operationPaths` option of the source decides how the pages without an `x-docs.path` are named. The default, `operation-id`, is the behaviour above. `title` derives the paths from the group and the title instead, so the URLs read like the sidebar — `widgets/create`, `widgets/parts/list`, `widgets/widget`:
+
+```json [descHead="Tip" desc="The option takes the advanced form of <code>api.openapi</code>; a plain path keeps the default."]
+{
+  "api": {
+    "openapi": {
+      "source": "./openapi.yaml",
+      "options": { "operationPaths": "title" }
+    }
+  }
+}
+```
+
+- An operation becomes `<group>/[<sub-resource>/]<verb>`. The group is its `x-docs.group`, else its first tag, slugged. The verb is the first word of a *verb-first* summary, lowercased, a third-person "s" dropped ("Lists" → `list`). What remains of the summary — minus the function words (a, an, the, all, of, for, by, to, in, on, from, with) and the group's own noun, singular or plural — is the sub-resource, hyphenated. In the group `widgets`: "Create widget" → `widgets/create`, "List widget parts" → `widgets/parts/list`, "Retrieve part snapshot" → `widgets/part-snapshot/retrieve`, "Lists all widgets" → `widgets/list`. A summary that does not start with one of the known verbs ("Widget archival") and an operation without a group keep the `operationId`.
+- A component schema becomes `<group>/<label>` with an `x-docs.group`, `objects/<label>` without one. The label is the schema's constant `object` value, verbatim (`widgets/widget`, `widgets/widget_part`), else the schema name in kebab-case (`PartSnapshot` → `widgets/part-snapshot`, `Color` → `objects/color`).
+
+The known verbs: accept, activate, add, approve, archive, assign, attach, cancel, check, clear, clone, close, complete, confirm, copy, count, create, deactivate, decline, delete, detach, disable, download, duplicate, enable, execute, export, fetch, finalize, find, generate, get, import, invite, link, list, lock, mark, merge, move, open, patch, pause, preview, publish, query, read, refresh, regenerate, register, reject, release, remove, rename, reopen, replace, reset, resend, resolve, restore, resume, retrieve, retry, revoke, rotate, run, search, send, set, share, start, stop, submit, subscribe, suspend, sync, test, toggle, trigger, unarchive, unassign, unlink, unlock, unpublish, unsubscribe, update, upload, upsert, validate, verify, void.
+
+Whatever decides the path, the sidebar labels and groups are unchanged, and every link to the page — its sidebar entry, a property's type link, a request or response root — follows it. Two pages at one path (two equal `x-docs.path`s, or two summaries that derive the same path) stop the build with an error that names both pages; give one of them an `x-docs.path`. A `sidebar` places the pages itself: an entry's own `path` wins over the page's `x-docs.path`, and an entry without one leaves the page where the keys above put it.
+
 Schema links follow the page. A property typed by a component schema (a `$ref`, or an `allOf` with one member) links to that schema's page wherever the navigation put it — a `sidebar` that moves an object page under another path included — and keeps its own attributes behind *Show properties*. A property that references a schema without a page (hidden, or not listed by a `sidebar`) renders as plain type text, so a link never lands on a page that does not exist.
 
 The type column names the schema it links to instead of saying `object`. The name is the schema's constant `object` value when it has one (`widget` for `object: { type: string, enum: [widget] }` — the "object type" convention), else the schema name (`Material`):

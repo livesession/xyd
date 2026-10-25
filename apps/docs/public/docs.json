@@ -153,6 +153,14 @@
             "per-area"
           ],
           "type": "string"
+        },
+        "operationPaths": {
+          "description": "(OpenAPI) How a page without an `x-docs.path` gets its path under the route. `\"operation-id\"` (the default): the `operationId` of an operation (else a slug of its summary), `objects/<Name>` for a component schema. `\"title\"`: an operation derives `<group>/[<sub-resource>/]<verb>` from its group and a verb-first summary (\"Create widget\" in `widgets` → `widgets/create`, \"List widget parts\" → `widgets/parts/list`), keeping the default when the summary is not verb-first or the operation has no group; a component schema derives `<group>/<label>` (`objects/<label>` without a group), the label its constant `object` value verbatim, else its name in kebab-case. An `x-docs.path` on the operation or the schema wins in both modes; the sidebar labels and groups are unchanged either way.",
+          "enum": [
+            "operation-id",
+            "title"
+          ],
+          "type": "string"
         }
       },
       "type": "object"

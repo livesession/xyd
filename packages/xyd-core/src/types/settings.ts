@@ -1459,6 +1459,21 @@ export interface APIFileOptions {
   objectsLayout?: "grouped" | "per-area";
 
   /**
+   * (OpenAPI) How a page without an `x-docs.path` gets its path under the
+   * route. `"operation-id"` (the default): the `operationId` of an operation
+   * (else a slug of its summary), `objects/<Name>` for a component schema.
+   * `"title"`: an operation derives `<group>/[<sub-resource>/]<verb>` from its
+   * group and a verb-first summary ("Create widget" in `widgets` →
+   * `widgets/create`, "List widget parts" → `widgets/parts/list`), keeping the
+   * default when the summary is not verb-first or the operation has no group;
+   * a component schema derives `<group>/<label>` (`objects/<label>` without a
+   * group), the label its constant `object` value verbatim, else its name in
+   * kebab-case. An `x-docs.path` on the operation or the schema wins in both
+   * modes; the sidebar labels and groups are unchanged either way.
+   */
+  operationPaths?: "operation-id" | "title";
+
+  /**
    * (OpenAPI) Whether the generated navigation's top-level objects group (the
    * `grouped` layout's last group) starts collapsed behind a toggle on its
    * header — it opens on a click, or when the current page is one of its
