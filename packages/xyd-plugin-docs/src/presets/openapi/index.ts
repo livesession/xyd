@@ -64,15 +64,18 @@ class OpenAPIUniformPreset extends UniformPreset {
             }
         }
 
-        // `api.openapi[..].options.objectsGroup` / `.objectsLayout` — the object
-        // pages' group name and their layout.
+        // `api.openapi[..].options.objectsGroup` / `.objectsLayout` /
+        // `.operationPaths` — the object pages' group name and layout, and how a
+        // page without an `x-docs.path` gets its path.
         const apiOptions = resolveApiFileOptions(this.openapiApi, filePath)
         const objectsGroup = apiOptions?.objectsGroup
         const objectsLayout = apiOptions?.objectsLayout
+        const operationPaths = apiOptions?.operationPaths
 
-        return oapSchemaToReferences(schema, objectsGroup || objectsLayout ? {
+        return oapSchemaToReferences(schema, objectsGroup || objectsLayout || operationPaths ? {
             ...(objectsGroup ? { objectsGroup } : {}),
             ...(objectsLayout ? { objectsLayout } : {}),
+            ...(operationPaths ? { operationPaths } : {}),
         } : undefined)
     }
 }

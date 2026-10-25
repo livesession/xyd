@@ -37,10 +37,11 @@ describe('resolveApiFileOptions', () => {
         expect(resolveApiFileOptions(map, ABS)?.objectsGroup).toBe('Mapped');
     });
 
-    it('returns every option of the matching entry, the objects layout included', () => {
-        const api = { source: './specs/widgets.yaml', options: { objectsGroup: 'Types', objectsLayout: 'per-area' as const } };
-        expect(resolveApiFileOptions(api, ABS)).toEqual({ objectsGroup: 'Types', objectsLayout: 'per-area' });
+    it('returns every option of the matching entry, the objects layout and the page-path mode included', () => {
+        const api = { source: './specs/widgets.yaml', options: { objectsGroup: 'Types', objectsLayout: 'per-area' as const, operationPaths: 'title' as const } };
+        expect(resolveApiFileOptions(api, ABS)).toEqual({ objectsGroup: 'Types', objectsLayout: 'per-area', operationPaths: 'title' });
         expect(resolveApiFileOptions({ source: './specs/widgets.yaml', options: { objectsLayout: 'grouped' } }, ABS)?.objectsLayout).toBe('grouped');
+        expect(resolveApiFileOptions({ source: './specs/widgets.yaml', options: { operationPaths: 'operation-id' } }, ABS)?.operationPaths).toBe('operation-id');
     });
 
     it('returns null for a matching entry without options', () => {
