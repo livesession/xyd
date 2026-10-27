@@ -276,4 +276,42 @@ describe('x-sdk nested types', () => {
     attachSdkFromSpec([evidenced], custom, { keepRest: true });
     expect(returns(evidenced)[0].symbolDef).toEqual({ id: '#/components/schemas/Widget', canonical: 'objects/Widget' });
   });
+
+  it('a hand-authored x-sdk without schemaRef, on a list with component pages, links only to the schemas the list knows', () => {
+    const custom = JSON.parse(JSON.stringify(doc)) as OpenAPIV3.Document;
+    (custom as any)['x-sdk'] = { languages: ['go'] };
+    (custom.paths!['/widgets']!.get as any)['x-sdk'] = {
+      go: {
+        signature: 'client.Widgets.List(ctx) (*WidgetPage, error)',
+        types: {
+          request: { fields: [] },
+          // a synthesized envelope: an array of a component beside an inline block the generator named
+          response: {
+            typeName: 'WidgetPage',
+            refTypeName: 'WidgetPage',
+            fields: [
+              { name: 'Data', langType: '[]Widget', required: true, refTypeName: 'Widget' },
+              { name: 'Stats', langType: 'WidgetPageStats', required: false, refTypeName: 'WidgetPageStats' },
+            ],
+          },
+        },
+      },
+    } satisfies XSdkOperation;
+    const list = makeRef('get', '/widgets');
+    const widgetPage = {
+      title: 'Widget',
+      canonical: 'objects/Widget',
+      description: '',
+      definitions: [],
+      examples: { groups: [] },
+      context: { componentSchema: 'Widget' },
+    } as unknown as Reference;
+    attachSdkFromSpec([list, widgetPage], custom, { keepRest: true });
+
+    const rows = list.definitions!.find((d) => d.title === 'Returns')!.variants![0].rootProperty!.properties!;
+    // the component the list has a page for: that page
+    expect(rows[0].symbolDef).toEqual({ id: '#/components/schemas/Widget', canonical: 'objects/Widget' });
+    // a name the list does not know: no schema id at all — not even an unlinked one
+    expect(rows[1].symbolDef).toBeUndefined();
+  });
 });

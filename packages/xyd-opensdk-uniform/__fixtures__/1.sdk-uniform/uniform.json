@@ -46,19 +46,19 @@
               },
               {
                 "name": "Status",
-                "type": "WidgetCreateStatus",
+                "type": "$$enum",
                 "properties": [
                   {
-                    "name": "\"active\"",
-                    "type": ""
+                    "name": "active",
+                    "type": "string"
                   },
                   {
-                    "name": "\"inactive\"",
-                    "type": ""
+                    "name": "inactive",
+                    "type": "string"
                   },
                   {
-                    "name": "\"archived\"",
-                    "type": ""
+                    "name": "archived",
+                    "type": "string"
                   }
                 ]
               },
@@ -96,19 +96,19 @@
               },
               {
                 "name": "status",
-                "type": "Optional[WidgetCreateStatus]",
+                "type": "$$enum",
                 "properties": [
                   {
-                    "name": "\"active\"",
-                    "type": ""
+                    "name": "active",
+                    "type": "string"
                   },
                   {
-                    "name": "\"inactive\"",
-                    "type": ""
+                    "name": "inactive",
+                    "type": "string"
                   },
                   {
-                    "name": "\"archived\"",
-                    "type": ""
+                    "name": "archived",
+                    "type": "string"
                   }
                 ]
               },
@@ -149,19 +149,19 @@
               },
               {
                 "name": "status",
-                "type": "WidgetCreateStatus",
+                "type": "$$enum",
                 "properties": [
                   {
-                    "name": "\"active\"",
-                    "type": ""
+                    "name": "active",
+                    "type": "string"
                   },
                   {
-                    "name": "\"inactive\"",
-                    "type": ""
+                    "name": "inactive",
+                    "type": "string"
                   },
                   {
-                    "name": "\"archived\"",
-                    "type": ""
+                    "name": "archived",
+                    "type": "string"
                   }
                 ]
               },
@@ -199,19 +199,19 @@
               },
               {
                 "name": "status",
-                "type": "Models::WidgetCreateStatus",
+                "type": "$$enum",
                 "properties": [
                   {
-                    "name": "\"active\"",
-                    "type": ""
+                    "name": "active",
+                    "type": "string"
                   },
                   {
-                    "name": "\"inactive\"",
-                    "type": ""
+                    "name": "inactive",
+                    "type": "string"
                   },
                   {
-                    "name": "\"archived\"",
-                    "type": ""
+                    "name": "archived",
+                    "type": "string"
                   }
                 ]
               },
@@ -252,19 +252,19 @@
               },
               {
                 "name": "status",
-                "type": "Optional<WidgetCreateStatus>",
+                "type": "$$enum",
                 "properties": [
                   {
-                    "name": "\"active\"",
-                    "type": ""
+                    "name": "active",
+                    "type": "string"
                   },
                   {
-                    "name": "\"inactive\"",
-                    "type": ""
+                    "name": "inactive",
+                    "type": "string"
                   },
                   {
-                    "name": "\"archived\"",
-                    "type": ""
+                    "name": "archived",
+                    "type": "string"
                   }
                 ]
               },
@@ -302,19 +302,19 @@
               },
               {
                 "name": "Status",
-                "type": "WidgetCreateStatus?",
+                "type": "$$enum",
                 "properties": [
                   {
-                    "name": "\"active\"",
-                    "type": ""
+                    "name": "active",
+                    "type": "string"
                   },
                   {
-                    "name": "\"inactive\"",
-                    "type": ""
+                    "name": "inactive",
+                    "type": "string"
                   },
                   {
-                    "name": "\"archived\"",
-                    "type": ""
+                    "name": "archived",
+                    "type": "string"
                   }
                 ]
               },

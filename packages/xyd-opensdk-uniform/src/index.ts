@@ -515,19 +515,20 @@ interface RowContext {
  * a schema neither knows (regions mode, a schema the REST rows do not reach)
  * takes the converter's own page canonical, `objects/<Name>` — the x-docs pass
  * that runs on every generated page finalises or drops it like the REST rows'.
- * A type naming only an IR type (an `x-sdk` written before `schemaRef`) cannot
- * be verified against the document, so it links only when the page evidence
- * knows the schema — never a guessed `objects/<Type>`.
+ * A type naming only an IR type (an `x-sdk` written before `schemaRef`) is a
+ * guess at a schema — a synthesized type's name names none — so it links only
+ * when the page evidence knows that schema: never a guessed `objects/<Type>`,
+ * and no schema id either.
  */
 function typeLink(origin: TypeOrigin, ctx: RowContext): SymbolDef | undefined {
   const id = origin.schemaRef ?? (origin.refTypeName ? `${COMPONENT_SCHEMA_PREFIX}${origin.refTypeName}` : undefined);
   if (!id || !id.startsWith(COMPONENT_SCHEMA_PREFIX)) return undefined;
   const known = ctx.pages ? ctx.pages : ctx.restPages.has(id) ? ctx.restPages : null;
+  if (!origin.schemaRef && !known?.has(id)) return undefined;
   if (known) {
     const canonical = known.get(id);
     return canonical ? { id, canonical } : { id };
   }
-  if (!origin.schemaRef) return undefined;
   return { id, canonical: `objects/${id.slice(COMPONENT_SCHEMA_PREFIX.length)}` };
 }
 
@@ -538,54 +539,116 @@ function typeLink(origin: TypeOrigin, ctx: RowContext): SymbolDef | undefined {
  * a table carries more. */
 const NESTED_ROW_DEPTH = 8;
 
-/** One enum value as a row name: strings quoted (`"active"`), the rest as is. */
-function enumLiteral(value: unknown): string {
-  if (typeof value === 'string') return JSON.stringify(value);
+/** The uniform property types the REST converter gives a choice row — an
+ * enum's values, a union's variants — which Atlas presents as "possible
+ * types": the type column prints the choices (`"a" | "b"`, `Assembly or
+ * Part`) and the toggle reads `Show possible types`. Literals: this module
+ * takes no runtime value from `@xyd-js/uniform` (`DEFINED_DEFINITION_PROPERTY_TYPE`). */
+const ENUM_TYPE = '$$enum';
+const XOR_TYPE = '$$xor';
+
+/** The base type of an enum's values — the `enum-type` meta Atlas quotes a
+ * string value by, the type of each value row — read off the values (the IR
+ * carries them untyped): all strings `string`, all integers `integer`, all
+ * numbers `number`, all booleans `boolean`; anything else is unknown (an empty
+ * type, no `enum-type`, and Atlas reads the values as strings). */
+function enumBaseType(values: readonly unknown[]): string {
+  const kinds = new Set(values.map((v) => (typeof v === 'number' ? (Number.isInteger(v) ? 'integer' : 'number') : typeof v)));
+  if (kinds.size === 1) {
+    const [kind] = kinds;
+    return kind === 'string' || kind === 'integer' || kind === 'number' || kind === 'boolean' ? kind : '';
+  }
+  return kinds.size === 2 && kinds.has('integer') && kinds.has('number') ? 'number' : '';
+}
+
+/** One enum value as the REST converter names its row: the value's text
+ * (`basic`, `2`, `true`, `null`), an object or array value as JSON. Unquoted —
+ * the type column quotes a string value from the `enum-type` meta. */
+function enumValueName(value: unknown): string {
   if (value === null || value === undefined) return 'null';
+  if (typeof value === 'object') return JSON.stringify(value);
   return String(value);
 }
 
+/** The `const` meta's value: a scalar as it is, an object or array as JSON. */
+function literalMetaValue(value: unknown): unknown {
+  return value !== null && typeof value === 'object' ? JSON.stringify(value) : value;
+}
+
 /**
- * The child rows of a type, from the nested table: a struct's fields (each
- * expanding in turn), an enum's values, a union's variants, an alias's target.
- * `stack` is the chain of types above the row — a type already on it stops
- * (a self- or mutually-referencing type renders once per chain), as does the
- * depth cap. Empty for a scalar, a type outside the table, or no type at all.
+ * Shape a row by the type it names, from the nested table: a struct's fields
+ * become its rows (each shaped in turn); an enum's values and a union's
+ * variants become its possible types, in the shape the REST converter gives
+ * such rows, so the SDK and the REST view of one field read alike; an alias
+ * takes its target's shape. `stack` is the chain of types above the row — a
+ * type already on it stops (a self- or mutually-referencing type renders once
+ * per chain), as does the depth cap. A scalar, a type outside the table, or
+ * no type at all leaves the row as it is: the language's type text.
  */
-function nestedRows(refTypeName: string | undefined, ctx: RowContext, stack: readonly string[]): DefinitionProperty[] {
-  if (!refTypeName || stack.includes(refTypeName) || stack.length >= NESTED_ROW_DEPTH) return [];
+function shapeRow(row: DefinitionProperty, refTypeName: string | undefined, ctx: RowContext, stack: readonly string[]): void {
+  if (!refTypeName || stack.includes(refTypeName) || stack.length >= NESTED_ROW_DEPTH) return;
   const type = ctx.nested[refTypeName];
-  if (!type) return [];
+  if (!type) return;
   const chain = [...stack, refTypeName];
   switch (type.kind) {
-    case 'struct':
-      return (type.fields ?? []).map((field) => toDefinitionProperty(field, ctx, chain));
+    case 'struct': {
+      const rows = (type.fields ?? []).map((field) => toDefinitionProperty(field, ctx, chain));
+      if (rows.length) row.properties = rows;
+      return;
+    }
     case 'enum':
-      return (type.values ?? []).map((value) => ({ name: enumLiteral(value), type: '', description: '' }));
+      shapeEnumRow(row, type.values ?? []);
+      return;
     case 'union':
-      return (type.variants ?? []).map((variant) => typeExprRow(variant, ctx, chain));
+      shapeUnionRow(row, type.variants ?? [], ctx, chain);
+      return;
     case 'alias':
-      return type.of ? nestedRows(type.of.refTypeName, ctx, chain) : [];
+      if (type.of) shapeRow(row, type.of.refTypeName, ctx, chain);
+      return;
     default:
-      return [];
+      return;
   }
 }
 
-/** A nameless row for a type expression (a union variant): the type text, its
- * link, and the type's own rows beneath. */
-function typeExprRow(expr: RenderedTypeExpr, ctx: RowContext, stack: readonly string[]): DefinitionProperty {
-  const row: DefinitionProperty = { name: '', type: expr.langType, description: '', symbolDef: typeLink(expr, ctx) };
-  const rows = nestedRows(expr.refTypeName, ctx, stack);
-  if (rows.length) row.properties = rows;
-  return row;
+/** An enum row as the REST converter shapes one: `$$enum`, the `enum-type`
+ * meta (and the `const` meta of a single value), one row per value — named by
+ * the value, typed by the base type — and the base type as the `ofProperty`.
+ * The type column then prints the values in place of the language's type
+ * name, as it does for the REST rows. */
+function shapeEnumRow(row: DefinitionProperty, values: readonly unknown[]): void {
+  if (!values.length) return;
+  const base = enumBaseType(values);
+  const meta = [...(row.meta ?? [])];
+  if (base) meta.push({ name: 'enum-type', value: base });
+  if (values.length === 1) meta.push({ name: 'const', value: literalMetaValue(values[0]) });
+  row.type = ENUM_TYPE;
+  row.meta = meta;
+  row.properties = values.map((value) => ({ name: enumValueName(value), type: base, description: '' }));
+  row.ofProperty = { name: '', type: base, description: '' };
+}
+
+/** A union row as the REST converter shapes a `oneOf`: `$$xor` — the type
+ * column spells the variants out, `Assembly or Part` — with one row per
+ * variant, named after the row like the REST variants, typed and linked by
+ * the variant and shaped by its type in turn. */
+function shapeUnionRow(row: DefinitionProperty, variants: readonly RenderedTypeExpr[], ctx: RowContext, chain: readonly string[]): void {
+  if (!variants.length) return;
+  row.type = XOR_TYPE;
+  row.properties = variants.map((variant) => {
+    const option: DefinitionProperty = { name: row.name, type: variant.langType, description: '', symbolDef: typeLink(variant, ctx) };
+    shapeRow(option, variant.refTypeName, ctx, chain);
+    return option;
+  });
 }
 
 /** One rendered SDK field → a Uniform property row: the language's name and
  * type text, the required/deprecated badges, the link to the type's schema
  * page when it has one, and — for a field typed by another type, through
- * arrays and maps — that type's rows beneath (the same expand/collapse the
- * REST rows use). The type column keeps the language's spelling
- * (`[]Widget`, `Widget[]`, `List[Widget]`). */
+ * arrays and maps — that type's shape: a struct's rows beneath (the same
+ * expand/collapse the REST rows use), an enum's values or a union's variants
+ * as its possible types. The type column keeps the language's spelling
+ * (`[]Widget`, `Widget[]`, `List[Widget]`) except where the REST rows print
+ * the choices too. */
 function toDefinitionProperty(field: RenderedTypeField, ctx: RowContext, stack: readonly string[] = []): DefinitionProperty {
   const meta: DefinitionProperty['meta'] = [];
   if (field.required) meta.push({ name: 'required' });
@@ -597,14 +660,13 @@ function toDefinitionProperty(field: RenderedTypeField, ctx: RowContext, stack: 
     meta: meta.length ? meta : undefined,
     symbolDef: typeLink(field, ctx),
   };
-  const rows = nestedRows(field.refTypeName, ctx, stack);
-  if (rows.length) row.properties = rows;
+  shapeRow(row, field.refTypeName, ctx, stack);
   return row;
 }
 
 /** The property rows of a response type: struct → field rows; else a single row
  * naming the type (+ a note like "binary download"), linked to its schema page
- * and expanded through the nested table when the type names one (`[]Widget`
+ * and shaped by the nested table when the type names one (`[]Widget`
  * → the widget's fields). */
 function responseProperties(response: RenderedTypeResponse, ctx: RowContext): DefinitionProperty[] {
   if (response.fields?.length) return response.fields.map((field) => toDefinitionProperty(field, ctx));
@@ -614,8 +676,7 @@ function responseProperties(response: RenderedTypeResponse, ctx: RowContext): De
     description: response.note ?? '',
     symbolDef: typeLink(response, ctx),
   };
-  const rows = nestedRows(response.refTypeName, ctx, []);
-  if (rows.length) row.properties = rows;
+  shapeRow(row, response.refTypeName, ctx, []);
   return [row];
 }
 

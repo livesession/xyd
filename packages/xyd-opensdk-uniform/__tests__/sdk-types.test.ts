@@ -126,9 +126,12 @@ describe('opensdk-uniform: attachSdkTypes', () => {
     expect(goName?.type).toBe('string');
     expect(goName?.meta?.some((m) => m.name === 'required')).toBe(true);
     expect(goRows.find((p) => p.name === 'Meta')?.symbolDef?.canonical).toBe('objects/Meta');
-    // Python: snake_case names, Optional for the optional status.
+    // Python: snake_case names, Optional for the optional meta.
     expect(pyRows.find((p) => p.name === 'name')).toBeDefined();
-    expect(pyRows.find((p) => p.name === 'status')?.type).toContain('Optional');
+    expect(pyRows.find((p) => p.name === 'meta')?.type).toContain('Optional');
+    // an enum field reads as its values in every language (the REST rows' shape)
+    expect(pyRows.find((p) => p.name === 'status')?.type).toBe('$$enum');
+    expect(pyRows.find((p) => p.name === 'status')?.properties?.map((p) => p.name)).toEqual(['draft', 'published']);
   });
 
   it('attaches a per-language method signature on context.sdk', () => {
@@ -229,10 +232,16 @@ const nestedDoc: OpenAPIV3.Document = {
         properties: {
           name: { type: 'string' },
           status: { $ref: '#/components/schemas/ItemStatus' },
+          level: { type: 'integer', enum: [1, 2, 3] },
           meta: { $ref: '#/components/schemas/Meta' },
+          owner: { $ref: '#/components/schemas/Owner' },
         },
       },
       ItemStatus: { type: 'string', enum: ['draft', 'published'] },
+      // a union of two components; the second carries an enum of its own
+      Owner: { oneOf: [{ $ref: '#/components/schemas/Person' }, { $ref: '#/components/schemas/Team' }] },
+      Person: { type: 'object', required: ['id'], properties: { id: { type: 'string' } } },
+      Team: { type: 'object', properties: { name: { type: 'string' }, kind: { type: 'string', enum: ['core', 'guest'] } } },
       // self-referencing: the cycle guard
       Meta: { type: 'object', properties: { key: { type: 'string' }, parent: { $ref: '#/components/schemas/Meta' } } },
       Item: {
@@ -257,7 +266,14 @@ const nestedDoc: OpenAPIV3.Document = {
   },
 };
 
-type Row = { name: string; type: string; symbolDef?: { id?: string | string[]; canonical?: string | string[] }; properties?: Row[] };
+type Row = {
+  name: string;
+  type: string;
+  symbolDef?: { id?: string | string[]; canonical?: string | string[] };
+  meta?: { name: string; value?: unknown }[];
+  properties?: Row[];
+  ofProperty?: Row;
+};
 
 /** A REST Reference whose definitions carry the given rows (the page evidence). */
 function makeRestRef(method: string, path: string, restRows: Row[] = []): Reference {
@@ -303,12 +319,47 @@ describe('opensdk-uniform: nested rows and page-resolved links', () => {
     expect(parent?.properties).toBeUndefined();
   });
 
-  it('lists an enum\'s values beneath the field, the type column keeping the language type', () => {
+  it('shapes an enum field as the REST rows do: `$$enum`, its values as the possible types', () => {
     const ref = makeRestRef('post', '/items');
     attachSdkTypes([ref], nestedDoc);
-    const status = row(goRows(ref, 'Parameters'), 'Status');
-    expect(status?.type).toBe('ItemStatus');
-    expect(status?.properties?.map((p) => p.name)).toEqual(['"draft"', '"published"']);
+    const params = goRows(ref, 'Parameters');
+    const status = row(params, 'Status');
+    expect(status?.type).toBe('$$enum');
+    expect(status?.meta).toEqual([{ name: 'enum-type', value: 'string' }]);
+    expect(status?.ofProperty?.type).toBe('string');
+    // unquoted, typed by the base type — the type column quotes them from `enum-type`
+    expect(status?.properties?.map((p) => [p.name, p.type])).toEqual([
+      ['draft', 'string'],
+      ['published', 'string'],
+    ]);
+    // the schema's page, as on the REST row
+    expect(status?.symbolDef).toEqual({ id: '#/components/schemas/ItemStatus', canonical: 'objects/ItemStatus' });
+    // the base type read off the values
+    const level = row(params, 'Level');
+    expect(level?.meta).toEqual([{ name: 'enum-type', value: 'integer' }]);
+    expect(level?.properties?.map((p) => [p.name, p.type])).toEqual([
+      ['1', 'integer'],
+      ['2', 'integer'],
+      ['3', 'integer'],
+    ]);
+  });
+
+  it('shapes a union field as the REST rows do: `$$xor`, a variant row per type, named after the field', () => {
+    const ref = makeRestRef('post', '/items');
+    attachSdkTypes([ref], nestedDoc);
+    const owner = row(goRows(ref, 'Parameters'), 'Owner');
+    expect(owner?.type).toBe('$$xor');
+    expect(owner?.symbolDef).toEqual({ id: '#/components/schemas/Owner', canonical: 'objects/Owner' });
+    expect(owner?.properties?.map((p) => [p.name, p.type])).toEqual([
+      ['Owner', 'Person'],
+      ['Owner', 'Team'],
+    ]);
+    const [person, team] = owner?.properties ?? [];
+    // each variant links to its schema's page and carries its own rows, shaped in turn
+    expect(person?.symbolDef).toEqual({ id: '#/components/schemas/Person', canonical: 'objects/Person' });
+    expect(person?.properties?.map((p) => p.name)).toEqual(['ID']);
+    expect(row(team?.properties, 'Kind')?.type).toBe('$$enum');
+    expect(row(team?.properties, 'Kind')?.properties?.map((p) => p.name)).toEqual(['core', 'guest']);
   });
 
   it('renders a synthesized inline type as plain text (no link) with its rows beneath', () => {
