@@ -38,7 +38,10 @@ The document may be a path or a URL. The API is called at the document's first `
 1. [HTTP (sessions)](mode=http)
 
     The default. Streamable HTTP with sessions: `initialize` opens one (`Mcp-Session-Id`), answers may
-    stream as server-sent events, and `GET` / `DELETE` work on the session.
+    stream as server-sent events, and `GET` / `DELETE` work on the session. Sessions live in memory:
+    one idle for `--session-idle-timeout` seconds (default 1800) is closed, and beyond `--max-sessions`
+    (default 1000) an `initialize` answers `503`. Every request of a session has to reach the same
+    instance, so for a remote deployment use the stateless mode.
 
     ```bash
     npx @xyd-js/mcp-server http ./openapi.yaml --port 3000
@@ -48,7 +51,7 @@ The document may be a path or a URL. The API is called at the document's first `
 
     No sessions: every `POST` gets a fresh server, answers are plain JSON, no `Mcp-Session-Id` is
     issued or expected, and `GET` / `DELETE` answer `405`. Any instance can answer any request, so it
-    runs behind a load balancer without sticky sessions.
+    runs behind a load balancer without sticky sessions — the mode for a remote deployment.
 
     ```bash
     npx @xyd-js/mcp-server http ./openapi.yaml --stateless --path /mcp --path /v1/mcp
@@ -60,7 +63,7 @@ The document may be a path or a URL. The API is called at the document's first `
     stdout (logs go to stderr). The API bearer comes from an environment variable.
 
     ```bash
-    API_TOKEN=... npx @xyd-js/mcp-server stdio ./openapi.yaml
+    XYD_API_TOKEN=... npx @xyd-js/mcp-server stdio ./openapi.yaml
     ```
 :::
 
@@ -71,7 +74,8 @@ The server keeps no credentials of its own.
 - **HTTP**: every request's `Authorization: Bearer <token>` is sent on by the tool calls *of that
   request* — read on every request, not only on `initialize`, and stored nowhere. A request without
   one calls the API without one, and the API answers for itself (e.g. `401`, returned as a tool error).
-- **stdio**: the bearer is read from `API_TOKEN` (`--token-env <NAME>` names another variable).
+- **stdio**: the bearer is read from `XYD_API_TOKEN` (`--token-env <NAME>` names another variable);
+  stderr says which variable it came from, or warns when it is not set.
 
 ## Host check
 
@@ -92,9 +96,11 @@ npx @xyd-js/mcp-server ./openapi.yaml --host 0.0.0.0 --disable-host-check
 | `--host <host>` | the interface to listen on (default: all) |
 | `--path <path>` | a mount path, repeatable or comma-separated (default `/mcp`) |
 | `--stateless` | the stateless HTTP mode |
-| `--allowed-hosts <names>` | more accepted `Host` names, comma-separated |
+| `--session-idle-timeout <seconds>` | sessions mode: close a session idle this long (default `1800`; `0` keeps them) |
+| `--max-sessions <n>` | sessions mode: the most open sessions (default `1000`) |
+| `--allowed-hosts <names>` | more accepted `Host` names, comma-separated (a port is ignored) |
 | `--disable-host-check` | accept any `Host` |
-| `--token-env <NAME>` | stdio: the variable holding the API bearer (default `API_TOKEN`) |
+| `--token-env <NAME>` | stdio: the variable holding the API bearer (default `XYD_API_TOKEN`) |
 | `--base-url <url>` | the API base URL (default: the document's first server) |
 | `--header "Name: value"` | a header on every API call, e.g. an API version header; repeatable |
 | `--read-only` | only the read-only tools (`GET`, `HEAD`, `OPTIONS`, `TRACE`) |
@@ -128,7 +134,7 @@ A second positional argument takes `llms.txt` URLs: their pages become a search 
     "my-api": {
       "command": "npx",
       "args": ["-y", "@xyd-js/mcp-server", "stdio", "/path/to/openapi.yaml", "--read-only"],
-      "env": { "API_TOKEN": "<your API token>" }
+      "env": { "XYD_API_TOKEN": "<your API token>" }
     }
   }
 }
