@@ -214,6 +214,52 @@ for (const engine of ENGINES) {
             expect(await page.locator('h3').allInnerTexts()).toContain('Returns');
         });
 
+        // The SDK rows follow the SDK's types: a field typed by another type
+        // expands into that type's rows (arrays through their item type), a
+        // type that comes from a component schema links to the schema's page,
+        // and a synthesized inline type (no schema, no page) is plain text.
+        test('SDK rows expand nested types and link only to pages that exist', async ({ page }) => {
+            await goto(page, '/docs/xsdk/get-the-todo-summary?lang=go');
+            await expect(page.locator('[part="sdk-header"]')).toHaveCount(1);
+            await expect(signature(page)).toContainText('client.Todos.Summary.Get');
+
+            // the row OWNING the name: its name cell's nearest row ancestor (a
+            // `has:` filter would also match every row that contains it)
+            const rowNamed = (name: string) =>
+                page.locator('atlas-apiref-propname', { hasText: new RegExp(`^${name}$`) }).first().locator('xpath=ancestor::atlas-apiref-prop[1]');
+            const typeOf = (row: ReturnType<typeof rowNamed>) => row.locator('atlas-apiref-proptype').first();
+            const toggleOf = (row: ReturnType<typeof rowNamed>) => row.locator('button[aria-expanded]').first();
+
+            // a component type: the language's type text, linked to the schema's page
+            const owner = rowNamed('Owner');
+            await expect(typeOf(owner)).toHaveText('Owner');
+            await expect(typeOf(owner).locator('a')).toHaveAttribute('href', '/docs/xsdk/objects/Owner');
+            await expect(toggleOf(owner)).toHaveText('Show properties');
+            await toggleOf(owner).click();
+            await expect(toggleOf(owner)).toHaveText('Hide properties');
+            await expect(rowNamed('ID')).toBeVisible();
+
+            // an array of a component type: the item type's page and rows
+            const recent = rowNamed('Recent');
+            await expect(typeOf(recent)).toHaveText('[]Todo');
+            await expect(typeOf(recent).locator('a')).toHaveAttribute('href', '/docs/xsdk/objects/Todo');
+            await expect(toggleOf(recent)).toHaveText('Show properties');
+
+            // a synthesized inline type: plain text — no link — with its rows beneath
+            const stats = rowNamed('Stats');
+            await expect(typeOf(stats)).toHaveText('TodoSummaryStats');
+            await expect(typeOf(stats).locator('a')).toHaveCount(0);
+            await toggleOf(stats).click();
+            await expect(rowNamed('Total')).toBeVisible();
+            await expect(typeOf(rowNamed('Total'))).toHaveText('int64');
+
+            // the other language renders the same shape in its own spelling
+            await pick(page, 'Python');
+            await expect(typeOf(rowNamed('recent'))).toHaveText('List[Todo]');
+            await expect(typeOf(rowNamed('recent')).locator('a')).toHaveAttribute('href', '/docs/xsdk/objects/Todo');
+            await expect(typeOf(rowNamed('stats')).locator('a')).toHaveCount(0);
+        });
+
         test('a source WITHOUT sdk renders the classic REST-only view (regression)', async ({ page }) => {
             await goto(page, '/docs/plain/get-all-users');
 

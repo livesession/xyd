@@ -4,7 +4,7 @@
     "sdkTabs": [
       {
         "language": "go",
-        "code": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/widgetapi\"\n\t\"github.com/example/widgetapi/option\"\n)\n\nfunc main() {\n\tclient := widgetapi.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Widgets.New(\n\t\tcontext.TODO(),\n\t\twidgetapi.WidgetNewParams{\n\t\t\tName: \"string\",\n\t\t\tStatus: widgetapi.WidgetCreateStatusActive,\n\t\t\tTags: []string{\"string\"},\n\t\t\tOwner: widgetapi.Owner{ID: \"string\", Name: \"string\"},\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n"
+        "code": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"os\"\n\n\t\"github.com/example/widgetapi\"\n\t\"github.com/example/widgetapi/option\"\n)\n\nfunc main() {\n\tclient := widgetapi.NewClient(\n\t\toption.WithAPIKey(os.Getenv(\"WIDGETAPI_API_KEY\")),\n\t)\n\tresult, err := client.Widgets.New(\n\t\tcontext.TODO(),\n\t\twidgetapi.WidgetNewParams{\n\t\t\tName: \"string\",\n\t\t\tStatus: widgetapi.WidgetCreateStatusActive,\n\t\t\tTags: []string{\"string\"},\n\t\t\tOwner: widgetapi.Owner{ID: \"string\", Name: \"string\"},\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n"
       },
       {
         "language": "python",
@@ -46,8 +46,21 @@
               },
               {
                 "name": "Status",
-                "type": "WidgetCreateStatus",
-                "symbolDef": "objects/WidgetCreateStatus"
+                "type": "$$enum",
+                "properties": [
+                  {
+                    "name": "active",
+                    "type": "string"
+                  },
+                  {
+                    "name": "inactive",
+                    "type": "string"
+                  },
+                  {
+                    "name": "archived",
+                    "type": "string"
+                  }
+                ]
               },
               {
                 "name": "Tags",
@@ -56,7 +69,18 @@
               {
                 "name": "Owner",
                 "type": "Owner",
-                "symbolDef": "objects/Owner"
+                "symbolDef": "objects/Owner",
+                "symbolId": "#/components/schemas/Owner",
+                "properties": [
+                  {
+                    "name": "ID",
+                    "type": "string"
+                  },
+                  {
+                    "name": "Name",
+                    "type": "string"
+                  }
+                ]
               }
             ]
           },
@@ -72,8 +96,21 @@
               },
               {
                 "name": "status",
-                "type": "Optional[WidgetCreateStatus]",
-                "symbolDef": "objects/WidgetCreateStatus"
+                "type": "$$enum",
+                "properties": [
+                  {
+                    "name": "active",
+                    "type": "string"
+                  },
+                  {
+                    "name": "inactive",
+                    "type": "string"
+                  },
+                  {
+                    "name": "archived",
+                    "type": "string"
+                  }
+                ]
               },
               {
                 "name": "tags",
@@ -82,7 +119,18 @@
               {
                 "name": "owner",
                 "type": "Optional[Owner]",
-                "symbolDef": "objects/Owner"
+                "symbolDef": "objects/Owner",
+                "symbolId": "#/components/schemas/Owner",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "str"
+                  },
+                  {
+                    "name": "name",
+                    "type": "str"
+                  }
+                ]
               }
             ]
           },
@@ -101,8 +149,21 @@
               },
               {
                 "name": "status",
-                "type": "WidgetCreateStatus",
-                "symbolDef": "objects/WidgetCreateStatus"
+                "type": "$$enum",
+                "properties": [
+                  {
+                    "name": "active",
+                    "type": "string"
+                  },
+                  {
+                    "name": "inactive",
+                    "type": "string"
+                  },
+                  {
+                    "name": "archived",
+                    "type": "string"
+                  }
+                ]
               },
               {
                 "name": "tags",
@@ -111,7 +172,18 @@
               {
                 "name": "owner",
                 "type": "Owner",
-                "symbolDef": "objects/Owner"
+                "symbolDef": "objects/Owner",
+                "symbolId": "#/components/schemas/Owner",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string"
+                  },
+                  {
+                    "name": "name",
+                    "type": "string"
+                  }
+                ]
               }
             ]
           },
@@ -127,8 +199,21 @@
               },
               {
                 "name": "status",
-                "type": "Models::WidgetCreateStatus",
-                "symbolDef": "objects/WidgetCreateStatus"
+                "type": "$$enum",
+                "properties": [
+                  {
+                    "name": "active",
+                    "type": "string"
+                  },
+                  {
+                    "name": "inactive",
+                    "type": "string"
+                  },
+                  {
+                    "name": "archived",
+                    "type": "string"
+                  }
+                ]
               },
               {
                 "name": "tags",
@@ -137,7 +222,18 @@
               {
                 "name": "owner",
                 "type": "Models::Owner",
-                "symbolDef": "objects/Owner"
+                "symbolDef": "objects/Owner",
+                "symbolId": "#/components/schemas/Owner",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "String"
+                  },
+                  {
+                    "name": "name",
+                    "type": "String"
+                  }
+                ]
               }
             ]
           },
@@ -156,8 +252,21 @@
               },
               {
                 "name": "status",
-                "type": "Optional<WidgetCreateStatus>",
-                "symbolDef": "objects/WidgetCreateStatus"
+                "type": "$$enum",
+                "properties": [
+                  {
+                    "name": "active",
+                    "type": "string"
+                  },
+                  {
+                    "name": "inactive",
+                    "type": "string"
+                  },
+                  {
+                    "name": "archived",
+                    "type": "string"
+                  }
+                ]
               },
               {
                 "name": "tags",
@@ -166,7 +275,18 @@
               {
                 "name": "owner",
                 "type": "Optional<Owner>",
-                "symbolDef": "objects/Owner"
+                "symbolDef": "objects/Owner",
+                "symbolId": "#/components/schemas/Owner",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "String"
+                  },
+                  {
+                    "name": "name",
+                    "type": "String"
+                  }
+                ]
               }
             ]
           },
@@ -182,8 +302,21 @@
               },
               {
                 "name": "Status",
-                "type": "WidgetCreateStatus?",
-                "symbolDef": "objects/WidgetCreateStatus"
+                "type": "$$enum",
+                "properties": [
+                  {
+                    "name": "active",
+                    "type": "string"
+                  },
+                  {
+                    "name": "inactive",
+                    "type": "string"
+                  },
+                  {
+                    "name": "archived",
+                    "type": "string"
+                  }
+                ]
               },
               {
                 "name": "Tags",
@@ -192,7 +325,18 @@
               {
                 "name": "Owner",
                 "type": "Owner?",
-                "symbolDef": "objects/Owner"
+                "symbolDef": "objects/Owner",
+                "symbolId": "#/components/schemas/Owner",
+                "properties": [
+                  {
+                    "name": "Id",
+                    "type": "string"
+                  },
+                  {
+                    "name": "Name",
+                    "type": "string"
+                  }
+                ]
               }
             ]
           }
@@ -343,7 +487,7 @@
     "sdkTabs": [
       {
         "language": "go",
-        "code": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/widgetapi\"\n\t\"github.com/example/widgetapi/option\"\n\t\"github.com/example/widgetapi/packages/param\"\n)\n\nfunc main() {\n\tclient := widgetapi.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Widgets.List(\n\t\tcontext.TODO(),\n\t\twidgetapi.WidgetListParams{\n\t\t\tQ: param.NewOpt[string](\"q\"),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n"
+        "code": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"os\"\n\n\t\"github.com/example/widgetapi\"\n\t\"github.com/example/widgetapi/option\"\n\t\"github.com/example/widgetapi/packages/param\"\n)\n\nfunc main() {\n\tclient := widgetapi.NewClient(\n\t\toption.WithAPIKey(os.Getenv(\"WIDGETAPI_API_KEY\")),\n\t)\n\tresult, err := client.Widgets.List(\n\t\tcontext.TODO(),\n\t\twidgetapi.WidgetListParams{\n\t\t\tQ: param.NewOpt[string](\"q\"),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n"
       },
       {
         "language": "python",
@@ -458,7 +602,21 @@
             "properties": [
               {
                 "name": "[]Widget",
-                "type": "[]Widget"
+                "type": "[]Widget",
+                "symbolDef": "objects/Widget",
+                "symbolId": "#/components/schemas/Widget",
+                "properties": [
+                  {
+                    "name": "ID",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "name": "Name",
+                    "type": "string",
+                    "required": true
+                  }
+                ]
               }
             ]
           },
@@ -469,7 +627,21 @@
             "properties": [
               {
                 "name": "list[Widget]",
-                "type": "list[Widget]"
+                "type": "list[Widget]",
+                "symbolDef": "objects/Widget",
+                "symbolId": "#/components/schemas/Widget",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "str",
+                    "required": true
+                  },
+                  {
+                    "name": "name",
+                    "type": "str",
+                    "required": true
+                  }
+                ]
               }
             ]
           },
@@ -480,7 +652,21 @@
             "properties": [
               {
                 "name": "Widget[]",
-                "type": "Widget[]"
+                "type": "Widget[]",
+                "symbolDef": "objects/Widget",
+                "symbolId": "#/components/schemas/Widget",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "required": true
+                  }
+                ]
               }
             ]
           },
@@ -491,7 +677,21 @@
             "properties": [
               {
                 "name": "Array<Models::Widget>",
-                "type": "Array<Models::Widget>"
+                "type": "Array<Models::Widget>",
+                "symbolDef": "objects/Widget",
+                "symbolId": "#/components/schemas/Widget",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "String",
+                    "required": true
+                  },
+                  {
+                    "name": "name",
+                    "type": "String",
+                    "required": true
+                  }
+                ]
               }
             ]
           },
@@ -502,7 +702,21 @@
             "properties": [
               {
                 "name": "List<Widget>",
-                "type": "List<Widget>"
+                "type": "List<Widget>",
+                "symbolDef": "objects/Widget",
+                "symbolId": "#/components/schemas/Widget",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "String",
+                    "required": true
+                  },
+                  {
+                    "name": "name",
+                    "type": "String",
+                    "required": true
+                  }
+                ]
               }
             ]
           },
@@ -513,7 +727,21 @@
             "properties": [
               {
                 "name": "List<Widget>",
-                "type": "List<Widget>"
+                "type": "List<Widget>",
+                "symbolDef": "objects/Widget",
+                "symbolId": "#/components/schemas/Widget",
+                "properties": [
+                  {
+                    "name": "Id",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "name": "Name",
+                    "type": "string",
+                    "required": true
+                  }
+                ]
               }
             ]
           }
@@ -538,7 +766,7 @@
     "sdkTabs": [
       {
         "language": "go",
-        "code": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/widgetapi\"\n\t\"github.com/example/widgetapi/option\"\n)\n\nfunc main() {\n\tclient := widgetapi.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Widgets.Get(context.TODO(), \"widgetId\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n"
+        "code": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"os\"\n\n\t\"github.com/example/widgetapi\"\n\t\"github.com/example/widgetapi/option\"\n)\n\nfunc main() {\n\tclient := widgetapi.NewClient(\n\t\toption.WithAPIKey(os.Getenv(\"WIDGETAPI_API_KEY\")),\n\t)\n\tresult, err := client.Widgets.Get(context.TODO(), \"widgetId\")\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n"
       },
       {
         "language": "python",
@@ -702,11 +930,506 @@
     }
   },
   {
+    "operation": "post /widgets/search",
+    "sdkTabs": [
+      {
+        "language": "go",
+        "code": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"os\"\n\n\t\"github.com/example/widgetapi\"\n\t\"github.com/example/widgetapi/option\"\n\t\"github.com/example/widgetapi/packages/param\"\n)\n\nfunc main() {\n\tclient := widgetapi.NewClient(\n\t\toption.WithAPIKey(os.Getenv(\"WIDGETAPI_API_KEY\")),\n\t)\n\tresult, err := client.Widgets.Search.New(\n\t\tcontext.TODO(),\n\t\twidgetapi.WidgetSearchNewParams{\n\t\t\tQ: param.NewOpt[string](\"string\"),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n"
+      },
+      {
+        "language": "python",
+        "code": "import os\n\nfrom widget_api import Client\n\nclient = Client(\n    api_key=os.environ.get(\"WIDGET_API_API_KEY\"),\n)\n\nresult = client.widgets.search.create(q=\"string\")\nprint(result)\n"
+      },
+      {
+        "language": "typescript",
+        "code": "import WidgetApi from \"widget-api\";\n\nconst client = new WidgetApi({\n  apiKey: process.env[\"WIDGET_API_API_KEY\"],\n});\n\nconst result = await client.widgets.search.create({ q: \"string\" });\nconsole.log(result);\n"
+      },
+      {
+        "language": "ruby",
+        "code": "require \"widget_api\"\n\nclient = WidgetApi::Client.new(api_key: ENV[\"WIDGET_API_API_KEY\"])\n\nresult = client.widgets.search.create(q: \"string\")\npp result\n"
+      },
+      {
+        "language": "java",
+        "code": "// Code generated by opensdk. DO NOT EDIT.\n\npackage com.example.widgetapi;\n\npublic final class Example {\n  public static void main(String[] args) {\n    Client client = Client.builder().apiKey(System.getenv(\"WIDGETAPI_API_KEY\")).build();\n    var result = client.widgets().search().create(WidgetSearchCreateParams.builder()\n          .q(\"string\")\n          .build());\n    System.out.println(result);\n  }\n}\n"
+      },
+      {
+        "language": "csharp",
+        "code": "// <auto-generated>\n//     Code generated by opensdk. DO NOT EDIT.\n// </auto-generated>\n#nullable enable annotations\n\nusing Example.WidgetApi;\nusing System;\nusing System.Collections.Generic;\nusing System.Threading.Tasks;\n\nnamespace Example.WidgetApi.Usage;\n\npublic static class Program\n{\n    public static async Task Main()\n    {\n        var client = new WidgetApiClient(apiKey: Environment.GetEnvironmentVariable(\"WIDGET_API_API_KEY\"));\n        var result = await client.Widgets.Search.Create(new WidgetsSearchCreateRequest { Q = \"string\" });\n        Console.WriteLine(result);\n    }\n}\n"
+      }
+    ],
+    "definitions": [
+      {
+        "title": "Parameters",
+        "variants": [
+          {
+            "title": "Go",
+            "sdkLang": "go",
+            "root": {
+              "name": "body",
+              "type": "WidgetSearchNewParams"
+            },
+            "properties": [
+              {
+                "name": "Q",
+                "type": "param.Opt[string]"
+              }
+            ]
+          },
+          {
+            "title": "Python",
+            "sdkLang": "python",
+            "root": null,
+            "properties": [
+              {
+                "name": "q",
+                "type": "Optional[str]"
+              }
+            ]
+          },
+          {
+            "title": "TypeScript",
+            "sdkLang": "typescript",
+            "root": {
+              "name": "body",
+              "type": "WidgetSearchCreateParams"
+            },
+            "properties": [
+              {
+                "name": "q",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "title": "Ruby",
+            "sdkLang": "ruby",
+            "root": null,
+            "properties": [
+              {
+                "name": "q",
+                "type": "String"
+              }
+            ]
+          },
+          {
+            "title": "Java",
+            "sdkLang": "java",
+            "root": {
+              "name": "params",
+              "type": "WidgetSearchCreateParams"
+            },
+            "properties": [
+              {
+                "name": "q",
+                "type": "Optional<String>"
+              }
+            ]
+          },
+          {
+            "title": "C#",
+            "sdkLang": "csharp",
+            "root": null,
+            "properties": [
+              {
+                "name": "Q",
+                "type": "string?"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Returns",
+        "type": "return",
+        "variants": [
+          {
+            "title": "Go",
+            "sdkLang": "go",
+            "root": {
+              "name": "WidgetSearchResult",
+              "type": ""
+            },
+            "properties": [
+              {
+                "name": "Data",
+                "type": "[]Widget",
+                "required": true,
+                "symbolDef": "objects/Widget",
+                "symbolId": "#/components/schemas/Widget",
+                "properties": [
+                  {
+                    "name": "ID",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "name": "Name",
+                    "type": "string",
+                    "required": true
+                  }
+                ]
+              },
+              {
+                "name": "Summary",
+                "type": "WidgetSearchResultSummary",
+                "required": true,
+                "properties": [
+                  {
+                    "name": "Total",
+                    "type": "int64",
+                    "required": true
+                  },
+                  {
+                    "name": "HasMore",
+                    "type": "bool"
+                  },
+                  {
+                    "name": "Owner",
+                    "type": "Owner",
+                    "symbolDef": "objects/Owner",
+                    "symbolId": "#/components/schemas/Owner",
+                    "properties": [
+                      {
+                        "name": "ID",
+                        "type": "string"
+                      },
+                      {
+                        "name": "Name",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Python",
+            "sdkLang": "python",
+            "root": {
+              "name": "WidgetSearchResult",
+              "type": ""
+            },
+            "properties": [
+              {
+                "name": "data",
+                "type": "list[Widget]",
+                "required": true,
+                "symbolDef": "objects/Widget",
+                "symbolId": "#/components/schemas/Widget",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "str",
+                    "required": true
+                  },
+                  {
+                    "name": "name",
+                    "type": "str",
+                    "required": true
+                  }
+                ]
+              },
+              {
+                "name": "summary",
+                "type": "WidgetSearchResultSummary",
+                "required": true,
+                "properties": [
+                  {
+                    "name": "total",
+                    "type": "int",
+                    "required": true
+                  },
+                  {
+                    "name": "has_more",
+                    "type": "bool"
+                  },
+                  {
+                    "name": "owner",
+                    "type": "Owner",
+                    "symbolDef": "objects/Owner",
+                    "symbolId": "#/components/schemas/Owner",
+                    "properties": [
+                      {
+                        "name": "id",
+                        "type": "str"
+                      },
+                      {
+                        "name": "name",
+                        "type": "str"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "TypeScript",
+            "sdkLang": "typescript",
+            "root": {
+              "name": "WidgetSearchResult",
+              "type": ""
+            },
+            "properties": [
+              {
+                "name": "data",
+                "type": "Widget[]",
+                "required": true,
+                "symbolDef": "objects/Widget",
+                "symbolId": "#/components/schemas/Widget",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "name": "name",
+                    "type": "string",
+                    "required": true
+                  }
+                ]
+              },
+              {
+                "name": "summary",
+                "type": "WidgetSearchResultSummary",
+                "required": true,
+                "properties": [
+                  {
+                    "name": "total",
+                    "type": "number",
+                    "required": true
+                  },
+                  {
+                    "name": "has_more",
+                    "type": "boolean"
+                  },
+                  {
+                    "name": "owner",
+                    "type": "Owner",
+                    "symbolDef": "objects/Owner",
+                    "symbolId": "#/components/schemas/Owner",
+                    "properties": [
+                      {
+                        "name": "id",
+                        "type": "string"
+                      },
+                      {
+                        "name": "name",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Ruby",
+            "sdkLang": "ruby",
+            "root": {
+              "name": "Models::WidgetSearchResult",
+              "type": ""
+            },
+            "properties": [
+              {
+                "name": "data",
+                "type": "Array<Models::Widget>",
+                "required": true,
+                "symbolDef": "objects/Widget",
+                "symbolId": "#/components/schemas/Widget",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "String",
+                    "required": true
+                  },
+                  {
+                    "name": "name",
+                    "type": "String",
+                    "required": true
+                  }
+                ]
+              },
+              {
+                "name": "summary",
+                "type": "Models::WidgetSearchResultSummary",
+                "required": true,
+                "properties": [
+                  {
+                    "name": "total",
+                    "type": "Integer",
+                    "required": true
+                  },
+                  {
+                    "name": "has_more",
+                    "type": "Boolean"
+                  },
+                  {
+                    "name": "owner",
+                    "type": "Models::Owner",
+                    "symbolDef": "objects/Owner",
+                    "symbolId": "#/components/schemas/Owner",
+                    "properties": [
+                      {
+                        "name": "id",
+                        "type": "String"
+                      },
+                      {
+                        "name": "name",
+                        "type": "String"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "Java",
+            "sdkLang": "java",
+            "root": {
+              "name": "WidgetSearchResult",
+              "type": ""
+            },
+            "properties": [
+              {
+                "name": "data",
+                "type": "List<Widget>",
+                "required": true,
+                "symbolDef": "objects/Widget",
+                "symbolId": "#/components/schemas/Widget",
+                "properties": [
+                  {
+                    "name": "id",
+                    "type": "String",
+                    "required": true
+                  },
+                  {
+                    "name": "name",
+                    "type": "String",
+                    "required": true
+                  }
+                ]
+              },
+              {
+                "name": "summary",
+                "type": "WidgetSearchResultSummary",
+                "required": true,
+                "properties": [
+                  {
+                    "name": "total",
+                    "type": "Long",
+                    "required": true
+                  },
+                  {
+                    "name": "hasMore",
+                    "type": "Boolean"
+                  },
+                  {
+                    "name": "owner",
+                    "type": "Owner",
+                    "symbolDef": "objects/Owner",
+                    "symbolId": "#/components/schemas/Owner",
+                    "properties": [
+                      {
+                        "name": "id",
+                        "type": "String"
+                      },
+                      {
+                        "name": "name",
+                        "type": "String"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "title": "C#",
+            "sdkLang": "csharp",
+            "root": {
+              "name": "WidgetSearchResult",
+              "type": ""
+            },
+            "properties": [
+              {
+                "name": "Data",
+                "type": "List<Widget>",
+                "required": true,
+                "symbolDef": "objects/Widget",
+                "symbolId": "#/components/schemas/Widget",
+                "properties": [
+                  {
+                    "name": "Id",
+                    "type": "string",
+                    "required": true
+                  },
+                  {
+                    "name": "Name",
+                    "type": "string",
+                    "required": true
+                  }
+                ]
+              },
+              {
+                "name": "Summary",
+                "type": "WidgetSearchResultSummary",
+                "required": true,
+                "properties": [
+                  {
+                    "name": "Total",
+                    "type": "long",
+                    "required": true
+                  },
+                  {
+                    "name": "HasMore",
+                    "type": "bool"
+                  },
+                  {
+                    "name": "Owner",
+                    "type": "Owner",
+                    "symbolDef": "objects/Owner",
+                    "symbolId": "#/components/schemas/Owner",
+                    "properties": [
+                      {
+                        "name": "Id",
+                        "type": "string"
+                      },
+                      {
+                        "name": "Name",
+                        "type": "string"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "sdk": {
+      "signatures": {
+        "go": "client.Widgets.Search.New(ctx, body) (*WidgetSearchResult, error)",
+        "python": "client.widgets.search.create(q=...) -> WidgetSearchResult",
+        "typescript": "client.widgets.search.create(body): Promise<WidgetSearchResult>",
+        "ruby": "client.widgets.search.create(q: nil) -> Models::WidgetSearchResult",
+        "java": "client.widgets().search().create(params) -> WidgetSearchResult",
+        "csharp": "client.Widgets.Search.Create(body) -> Task<WidgetSearchResult>"
+      },
+      "requestTypeName": "WidgetSearchNewParams",
+      "responseTypeName": "WidgetSearchResult"
+    }
+  },
+  {
     "operation": "get /widgets/paged",
     "sdkTabs": [
       {
         "language": "go",
-        "code": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\n\t\"github.com/example/widgetapi\"\n\t\"github.com/example/widgetapi/option\"\n\t\"github.com/example/widgetapi/packages/param\"\n)\n\nfunc main() {\n\tclient := widgetapi.NewClient(\n\t\toption.WithAPIKey(\"My API Key\"),\n\t)\n\tresult, err := client.Widgets.Paged.List(\n\t\tcontext.TODO(),\n\t\twidgetapi.WidgetPagedListParams{\n\t\t\tAfter: param.NewOpt[string](\"after\"),\n\t\t\tLimit: param.NewOpt[int64](20),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n"
+        "code": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"os\"\n\n\t\"github.com/example/widgetapi\"\n\t\"github.com/example/widgetapi/option\"\n\t\"github.com/example/widgetapi/packages/param\"\n)\n\nfunc main() {\n\tclient := widgetapi.NewClient(\n\t\toption.WithAPIKey(os.Getenv(\"WIDGETAPI_API_KEY\")),\n\t)\n\tresult, err := client.Widgets.Paged.List(\n\t\tcontext.TODO(),\n\t\twidgetapi.WidgetPagedListParams{\n\t\t\tAfter: param.NewOpt[string](\"after\"),\n\t\t\tLimit: param.NewOpt[int64](20),\n\t\t},\n\t)\n\tif err != nil {\n\t\tpanic(err.Error())\n\t}\n\tfmt.Printf(\"%+v\\n\", result)\n}\n"
       },
       {
         "language": "python",

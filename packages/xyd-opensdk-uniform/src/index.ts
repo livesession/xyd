@@ -6,8 +6,11 @@ import type {
   FlatMethod,
   NamedType,
   OpensdkSpecJson,
+  RenderedNestedType,
+  RenderedTypeExpr,
   RenderedTypeField,
   RenderedTypeReference,
+  RenderedTypeResponse,
 } from './ir-types';
 import type {
   CodeBlock,
@@ -409,33 +412,272 @@ function isRestDefinition(def: Definition): boolean {
   return def.type === 'return' || (typeof def.type === 'string' && def.type.startsWith('$rest.'));
 }
 
-/** One rendered SDK field → a Uniform property row (name + lang type + required
- * badge + a cross-type link for nested refs). */
-function toDefinitionProperty(field: RenderedTypeField): DefinitionProperty {
+// ── Schema pages: which page a type links to ────────────────────────────────
+//
+// An SDK row typed by a component schema links to that schema's page — the
+// same page the REST rows of the operation link to. A link must never land on
+// a page that does not exist, so the page is RESOLVED, never assumed from the
+// type name: a synthesized type (an inline envelope the converter hoisted) has
+// no schema and no page; a hidden schema (`x-docs.hidden`) has a schema and no
+// page; a schema with an `x-docs.path` has its page elsewhere than
+// `objects/<Name>`.
+
+const COMPONENT_SCHEMA_PREFIX = '#/components/schemas/';
+
+type SymbolDef = NonNullable<DefinitionProperty['symbolDef']>;
+
+/** `#/components/schemas/<Name>` → the page's canonical, or `undefined` when
+ * the schema is known to have no page. Absent from the index = unknown. */
+type SchemaPageIndex = Map<string, string | undefined>;
+
+const firstString = (v: string | string[] | undefined): string | undefined =>
+  Array.isArray(v) ? v.find((s) => typeof s === 'string') : v;
+
+/**
+ * The component pages a references list carries: `componentSchema` → the
+ * page's canonical — the FINAL one after the x-docs pass (an `x-docs.path`),
+ * when the list went through it; a hidden schema is then no longer in the
+ * list, so it resolves to "no page". `null` when the list carries no
+ * component page at all (a one-page, regions-mode list) — then the operation's
+ * own REST rows are the evidence (see {@link restRowPages}).
+ */
+function componentPages(references: Reference[]): SchemaPageIndex | null {
+  let any = false;
+  const index: SchemaPageIndex = new Map();
+  for (const ref of references) {
+    const name = (ref.context as { componentSchema?: unknown } | undefined)?.componentSchema;
+    if (typeof name !== 'string' || !name) continue;
+    any = true;
+    const id = `${COMPONENT_SCHEMA_PREFIX}${name}`;
+    if (!index.has(id)) index.set(id, typeof ref.canonical === 'string' && ref.canonical ? ref.canonical : undefined);
+  }
+  return any ? index : null;
+}
+
+/**
+ * The schema links an operation's own REST rows carry (`symbolDef.id` →
+ * `symbolDef.canonical`), through nested rows and array items: every schema
+ * reachable from the request and the response is linked there, finalised by
+ * the x-docs pass when the rows went through it (a hidden schema's row keeps
+ * its `id` and loses its `canonical`). Read BEFORE the SDK definitions are
+ * written, off the REST definitions only — a prior run's SDK rows are not
+ * evidence.
+ */
+function restRowPages(ref: Reference): SchemaPageIndex {
+  const index: SchemaPageIndex = new Map();
+  const seen = (symbolDef?: SymbolDef): void => {
+    const id = firstString(symbolDef?.id);
+    if (!id || !id.startsWith(COMPONENT_SCHEMA_PREFIX) || index.has(id)) return;
+    index.set(id, firstString(symbolDef?.canonical) || undefined);
+  };
+  const walk = (prop: DefinitionProperty | undefined, depth: number): void => {
+    if (!prop || depth > 64) return;
+    seen(prop.symbolDef);
+    for (const child of prop.properties ?? []) walk(child, depth + 1);
+    walk(prop.ofProperty, depth + 1);
+  };
+  for (const def of ref.definitions ?? []) {
+    if (isSdkDefinition(def)) continue;
+    seen(def.symbolDef);
+    for (const prop of def.properties ?? []) walk(prop, 0);
+    walk(def.rootProperty, 0);
+    for (const variant of def.variants ?? []) {
+      seen(variant.symbolDef);
+      for (const prop of variant.properties ?? []) walk(prop, 0);
+      walk(variant.rootProperty, 0);
+    }
+  }
+  return index;
+}
+
+/** What a rendered type links to — the row's `symbolDef`, or nothing. */
+interface TypeOrigin {
+  refTypeName?: string;
+  schemaRef?: string;
+}
+
+/** The row context of one language's type reference: the nested lookup table
+ * and the page evidence (the list's component pages, else the REST rows). */
+interface RowContext {
+  nested: Record<string, RenderedNestedType>;
+  /** The component pages of the references list — authoritative when present. */
+  pages: SchemaPageIndex | null;
+  /** The operation's REST rows — the evidence in regions mode. */
+  restPages: SchemaPageIndex;
+}
+
+/**
+ * The link of a type: `{ id, canonical }` when its schema has a page, `{ id }`
+ * when the schema is known to have none (the id stays, so a later x-docs pass
+ * can still relink it), nothing when there is no schema to link.
+ *
+ * Resolution: the list's component pages, else the operation's REST rows;
+ * a schema neither knows (regions mode, a schema the REST rows do not reach)
+ * takes the converter's own page canonical, `objects/<Name>` — the x-docs pass
+ * that runs on every generated page finalises or drops it like the REST rows'.
+ * A type naming only an IR type (an `x-sdk` written before `schemaRef`) is a
+ * guess at a schema — a synthesized type's name names none — so it links only
+ * when the page evidence knows that schema: never a guessed `objects/<Type>`,
+ * and no schema id either.
+ */
+function typeLink(origin: TypeOrigin, ctx: RowContext): SymbolDef | undefined {
+  const id = origin.schemaRef ?? (origin.refTypeName ? `${COMPONENT_SCHEMA_PREFIX}${origin.refTypeName}` : undefined);
+  if (!id || !id.startsWith(COMPONENT_SCHEMA_PREFIX)) return undefined;
+  const known = ctx.pages ? ctx.pages : ctx.restPages.has(id) ? ctx.restPages : null;
+  if (!origin.schemaRef && !known?.has(id)) return undefined;
+  if (known) {
+    const canonical = known.get(id);
+    return canonical ? { id, canonical } : { id };
+  }
+  return { id, canonical: `objects/${id.slice(COMPONENT_SCHEMA_PREFIX.length)}` };
+}
+
+// ── Rows ────────────────────────────────────────────────────────────────────
+
+/** How many named-type hops below a definition's rows expand. The nested table
+ * is already capped at the emitter (`nestedDepth`); this bounds the rows when
+ * a table carries more. */
+const NESTED_ROW_DEPTH = 8;
+
+/** The uniform property types the REST converter gives a choice row — an
+ * enum's values, a union's variants — which Atlas presents as "possible
+ * types": the type column prints the choices (`"a" | "b"`, `Assembly or
+ * Part`) and the toggle reads `Show possible types`. Literals: this module
+ * takes no runtime value from `@xyd-js/uniform` (`DEFINED_DEFINITION_PROPERTY_TYPE`). */
+const ENUM_TYPE = '$$enum';
+const XOR_TYPE = '$$xor';
+
+/** The base type of an enum's values — the `enum-type` meta Atlas quotes a
+ * string value by, the type of each value row — read off the values (the IR
+ * carries them untyped): all strings `string`, all integers `integer`, all
+ * numbers `number`, all booleans `boolean`; anything else is unknown (an empty
+ * type, no `enum-type`, and Atlas reads the values as strings). */
+function enumBaseType(values: readonly unknown[]): string {
+  const kinds = new Set(values.map((v) => (typeof v === 'number' ? (Number.isInteger(v) ? 'integer' : 'number') : typeof v)));
+  if (kinds.size === 1) {
+    const [kind] = kinds;
+    return kind === 'string' || kind === 'integer' || kind === 'number' || kind === 'boolean' ? kind : '';
+  }
+  return kinds.size === 2 && kinds.has('integer') && kinds.has('number') ? 'number' : '';
+}
+
+/** One enum value as the REST converter names its row: the value's text
+ * (`basic`, `2`, `true`, `null`), an object or array value as JSON. Unquoted —
+ * the type column quotes a string value from the `enum-type` meta. */
+function enumValueName(value: unknown): string {
+  if (value === null || value === undefined) return 'null';
+  if (typeof value === 'object') return JSON.stringify(value);
+  return String(value);
+}
+
+/** The `const` meta's value: a scalar as it is, an object or array as JSON. */
+function literalMetaValue(value: unknown): unknown {
+  return value !== null && typeof value === 'object' ? JSON.stringify(value) : value;
+}
+
+/**
+ * Shape a row by the type it names, from the nested table: a struct's fields
+ * become its rows (each shaped in turn); an enum's values and a union's
+ * variants become its possible types, in the shape the REST converter gives
+ * such rows, so the SDK and the REST view of one field read alike; an alias
+ * takes its target's shape. `stack` is the chain of types above the row — a
+ * type already on it stops (a self- or mutually-referencing type renders once
+ * per chain), as does the depth cap. A scalar, a type outside the table, or
+ * no type at all leaves the row as it is: the language's type text.
+ */
+function shapeRow(row: DefinitionProperty, refTypeName: string | undefined, ctx: RowContext, stack: readonly string[]): void {
+  if (!refTypeName || stack.includes(refTypeName) || stack.length >= NESTED_ROW_DEPTH) return;
+  const type = ctx.nested[refTypeName];
+  if (!type) return;
+  const chain = [...stack, refTypeName];
+  switch (type.kind) {
+    case 'struct': {
+      const rows = (type.fields ?? []).map((field) => toDefinitionProperty(field, ctx, chain));
+      if (rows.length) row.properties = rows;
+      return;
+    }
+    case 'enum':
+      shapeEnumRow(row, type.values ?? []);
+      return;
+    case 'union':
+      shapeUnionRow(row, type.variants ?? [], ctx, chain);
+      return;
+    case 'alias':
+      if (type.of) shapeRow(row, type.of.refTypeName, ctx, chain);
+      return;
+    default:
+      return;
+  }
+}
+
+/** An enum row as the REST converter shapes one: `$$enum`, the `enum-type`
+ * meta (and the `const` meta of a single value), one row per value — named by
+ * the value, typed by the base type — and the base type as the `ofProperty`.
+ * The type column then prints the values in place of the language's type
+ * name, as it does for the REST rows. */
+function shapeEnumRow(row: DefinitionProperty, values: readonly unknown[]): void {
+  if (!values.length) return;
+  const base = enumBaseType(values);
+  const meta = [...(row.meta ?? [])];
+  if (base) meta.push({ name: 'enum-type', value: base });
+  if (values.length === 1) meta.push({ name: 'const', value: literalMetaValue(values[0]) });
+  row.type = ENUM_TYPE;
+  row.meta = meta;
+  row.properties = values.map((value) => ({ name: enumValueName(value), type: base, description: '' }));
+  row.ofProperty = { name: '', type: base, description: '' };
+}
+
+/** A union row as the REST converter shapes a `oneOf`: `$$xor` — the type
+ * column spells the variants out, `Assembly or Part` — with one row per
+ * variant, named after the row like the REST variants, typed and linked by
+ * the variant and shaped by its type in turn. */
+function shapeUnionRow(row: DefinitionProperty, variants: readonly RenderedTypeExpr[], ctx: RowContext, chain: readonly string[]): void {
+  if (!variants.length) return;
+  row.type = XOR_TYPE;
+  row.properties = variants.map((variant) => {
+    const option: DefinitionProperty = { name: row.name, type: variant.langType, description: '', symbolDef: typeLink(variant, ctx) };
+    shapeRow(option, variant.refTypeName, ctx, chain);
+    return option;
+  });
+}
+
+/** One rendered SDK field → a Uniform property row: the language's name and
+ * type text, the required/deprecated badges, the link to the type's schema
+ * page when it has one, and — for a field typed by another type, through
+ * arrays and maps — that type's shape: a struct's rows beneath (the same
+ * expand/collapse the REST rows use), an enum's values or a union's variants
+ * as its possible types. The type column keeps the language's spelling
+ * (`[]Widget`, `Widget[]`, `List[Widget]`) except where the REST rows print
+ * the choices too. */
+function toDefinitionProperty(field: RenderedTypeField, ctx: RowContext, stack: readonly string[] = []): DefinitionProperty {
   const meta: DefinitionProperty['meta'] = [];
   if (field.required) meta.push({ name: 'required' });
   if (field.deprecated) meta.push({ name: 'deprecated' });
-  return {
+  const row: DefinitionProperty = {
     name: field.name,
     type: field.langType,
     description: field.description ?? '',
     meta: meta.length ? meta : undefined,
-    // Link a nested type to its component-schema Reference (objects/<Schema>).
-    symbolDef: field.refTypeName ? { canonical: `objects/${field.refTypeName}` } : undefined,
+    symbolDef: typeLink(field, ctx),
   };
+  shapeRow(row, field.refTypeName, ctx, stack);
+  return row;
 }
 
 /** The property rows of a response type: struct → field rows; else a single row
- * naming the type (+ a note like "binary download"). */
-function responseProperties(response: RenderedTypeReference['response']): DefinitionProperty[] {
-  if (response.fields?.length) return response.fields.map(toDefinitionProperty);
-  return [
-    {
-      name: response.typeName ?? 'result',
-      type: response.langType ?? response.typeName ?? '',
-      description: response.note ?? '',
-    },
-  ];
+ * naming the type (+ a note like "binary download"), linked to its schema page
+ * and shaped by the nested table when the type names one (`[]Widget`
+ * → the widget's fields). */
+function responseProperties(response: RenderedTypeResponse, ctx: RowContext): DefinitionProperty[] {
+  if (response.fields?.length) return response.fields.map((field) => toDefinitionProperty(field, ctx));
+  const row: DefinitionProperty = {
+    name: response.typeName ?? 'result',
+    type: response.langType ?? response.typeName ?? '',
+    description: response.note ?? '',
+    symbolDef: typeLink(response, ctx),
+  };
+  shapeRow(row, response.refTypeName, ctx, []);
+  return [row];
 }
 
 /** The identity a variant/tab builder needs — a full {@link SdkLang} for the
@@ -456,8 +698,8 @@ function sdkLangMeta(lang: SdkLangLike): DefinitionVariant['meta'] {
  * mirroring the call `client.Sessions.List(ctx, query)`. Languages that flatten
  * params into the call (Python/Ruby/.NET) show the fields directly.
  */
-function sdkRequestVariant(lang: SdkLangLike, request: RenderedTypeReference['request']): DefinitionVariant {
-  const fields = request.fields.map(toDefinitionProperty);
+function sdkRequestVariant(lang: SdkLangLike, request: RenderedTypeReference['request'], ctx: RowContext): DefinitionVariant {
+  const fields = request.fields.map((field) => toDefinitionProperty(field, ctx));
   if (request.typeName && request.argName) {
     return {
       title: lang.title,
@@ -471,7 +713,7 @@ function sdkRequestVariant(lang: SdkLangLike, request: RenderedTypeReference['re
 
 /** A Returns variant: the response TYPE as a root with its struct fields, else a
  * single type row (binary/scalar/open-union). */
-function sdkResponseVariant(lang: SdkLangLike, response: RenderedTypeReference['response']): DefinitionVariant {
+function sdkResponseVariant(lang: SdkLangLike, response: RenderedTypeReference['response'], ctx: RowContext): DefinitionVariant {
   if (response.fields?.length && response.typeName) {
     return {
       title: lang.title,
@@ -481,11 +723,11 @@ function sdkResponseVariant(lang: SdkLangLike, response: RenderedTypeReference['
         name: response.typeName,
         type: '',
         description: response.note ?? '',
-        properties: response.fields.map(toDefinitionProperty),
+        properties: response.fields.map((field) => toDefinitionProperty(field, ctx)),
       },
     };
   }
-  return { title: lang.title, meta: sdkLangMeta(lang), properties: responseProperties(response) };
+  return { title: lang.title, meta: sdkLangMeta(lang), properties: responseProperties(response, ctx) };
 }
 
 export interface AttachSdkTypesOptions {
@@ -528,6 +770,7 @@ function attachTypesPass(
 ): void {
   if (!langs.length) return;
   const { ctx, byKey } = prepared;
+  const pages = componentPages(references);
 
   for (const ref of references) {
     const rctx = ref.context as OpenAPIReferenceContext | undefined;
@@ -546,22 +789,28 @@ function attachTypesPass(
       }
     }
     if (!perLang.length) continue; // leave the REST definitions intact
-    applySdkTypes(ref, rctx, perLang, keepRest);
+    applySdkTypes(ref, rctx, perLang, keepRest, pages);
   }
 }
 
 /** Write the per-language type references onto ONE reference: the Parameters/
  * Returns definitions (sdkLang variants), REST keep/replace handling, and the
  * header signatures. Shared by the generate + x-sdk paths — the two modes MUST
- * produce identical uniform output. */
+ * produce identical uniform output. `pages` is the references list's component
+ * pages ({@link componentPages}), the link evidence beside this reference's
+ * own REST rows. */
 function applySdkTypes(
   ref: Reference,
   rctx: OpenAPIReferenceContext,
   perLang: { lang: SdkLangLike; tref: RenderedTypeReference }[],
   keepRest: boolean,
+  pages: SchemaPageIndex | null,
 ): void {
-  const paramVariants = perLang.map(({ lang, tref }) => sdkRequestVariant(lang, tref.request));
-  const returnVariants = perLang.map(({ lang, tref }) => sdkResponseVariant(lang, tref.response));
+  // The REST rows' links, read before anything below rewrites the definitions.
+  const restPages = restRowPages(ref);
+  const rowContext = (tref: RenderedTypeReference): RowContext => ({ nested: tref.nested ?? {}, pages, restPages });
+  const paramVariants = perLang.map(({ lang, tref }) => sdkRequestVariant(lang, tref.request, rowContext(tref)));
+  const returnVariants = perLang.map(({ lang, tref }) => sdkResponseVariant(lang, tref.response, rowContext(tref)));
 
   const sdkDefs: Definition[] = [];
   // OpenAI-style: a "Parameters" section whose per-language root reads
@@ -659,10 +908,14 @@ export interface XSdkOperationLang {
   signature?: string;
   /** The rendered usage sample (the request-pane code tab). */
   usage?: string;
-  /** The request/response type reference (the Parameters/Returns sections). */
+  /** The request/response type reference (the Parameters/Returns sections),
+   * with the nested lookup table behind them when anything is referenced
+   * (`opensdk xsdk` 0.2.2+; absent on an older embed — the rows then render
+   * one level deep). */
   types?: {
     request: RenderedTypeReference['request'];
     response: RenderedTypeReference['response'];
+    nested?: RenderedTypeReference['nested'];
   };
 }
 
@@ -762,6 +1015,9 @@ export function embedXSdk(rawDoc: OpenAPIV3.Document, opts: EmbedXSdkOptions = {
           if (tref) {
             entry.signature = tref.signature;
             entry.types = { request: tref.request, response: tref.response };
+            // The lookup table behind the two one-level groups — left out when
+            // nothing is referenced, as `opensdk xsdk` does.
+            if (tref.nested && Object.keys(tref.nested).length) entry.types.nested = tref.nested;
           }
         } catch {
           // ditto
@@ -816,6 +1072,7 @@ export function attachSdkFromSpec(
     title: SDK_LANGS.find((l) => l.language === id)?.title ?? id,
   }));
   if (!displayLangs.length) return false;
+  const pages = componentPages(references);
 
   for (const ref of references) {
     const rctx = ref.context as OpenAPIReferenceContext | undefined;
@@ -845,11 +1102,16 @@ export function attachSdkFromSpec(
         if (entry?.types?.request && entry.types.response) {
           perLang.push({
             lang,
-            tref: { signature: entry.signature ?? '', request: entry.types.request, response: entry.types.response },
+            tref: {
+              signature: entry.signature ?? '',
+              request: entry.types.request,
+              response: entry.types.response,
+              nested: entry.types.nested,
+            },
           });
         }
       }
-      if (perLang.length) applySdkTypes(ref, rctx, perLang, !!opts.keepRest);
+      if (perLang.length) applySdkTypes(ref, rctx, perLang, !!opts.keepRest, pages);
     }
   }
   return true;
