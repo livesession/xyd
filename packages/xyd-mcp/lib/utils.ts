@@ -1,6 +1,7 @@
-import { deferencedOpenAPI, oapSchemaToReferences } from "@xyd-js/openapi";
-import { gqlSchemaToReferences } from "@xyd-js/gql";
-import { Reference } from "@xyd-js/uniform";
+import type { Reference } from "@xyd-js/uniform";
+
+// The converters load on first use: a server that registers tools it generated
+// ahead of time never needs them.
 
 export async function uniformFromSource(
   uniformSource: string
@@ -10,6 +11,7 @@ export async function uniformFromSource(
   const sourceType = uniformSourceDetector(uniformSource);
   switch (sourceType) {
     case "openapi": {
+      const { deferencedOpenAPI, oapSchemaToReferences } = await import("@xyd-js/openapi");
       const openApiSpec = await deferencedOpenAPI(uniformSource);
       if (!openApiSpec) {
         console.warn(`Failed to read OpenAPI spec from ${uniformSource}`);
@@ -20,18 +22,17 @@ export async function uniformFromSource(
     }
 
     case "graphql": {
+      const { gqlSchemaToReferences } = await import("@xyd-js/gql");
       references = await gqlSchemaToReferences(uniformSource);
       break;
     }
 
     case "typescript": {
       throw new Error("Typescript is not supported yet");
-      break;
     }
 
     case "react": {
       throw new Error("React is not supported yet");
-      break;
     }
   }
 
@@ -80,4 +81,9 @@ export function getToolName(canonical: string) {
     .replace(/^_+|_+$/g, '') // Remove leading/trailing underscores
     .toLowerCase()
     .substring(0, 128); // Ensure max length of 128
+}
+
+/** The URI `mcpUniformResources` gives the reference page of `canonical`. */
+export function mcpUniformResourceUri(canonical: string) {
+  return `api-reference://${getToolName(canonical)}`;
 }
