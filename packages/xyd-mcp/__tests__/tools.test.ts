@@ -318,6 +318,48 @@ describe("the input layout", () => {
         expect(JSON.parse(request.body!)).toEqual({ headers: { a: "b" }, cookies: "c=d" });
     });
 
+    it("reads a legacy tool's layout from its shape, not from group-like names", () => {
+        const annotations = { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false };
+        const binding = {
+            method: "GET",
+            path: "/search",
+            fullPath: "https://api.example.com/v1/search",
+            pathParams: [],
+            queryParams: ["queryParams"],
+            body: null,
+            group: [],
+            canonical: "search",
+        };
+        // A grouped tool whose query parameter is called queryParams, with a header group.
+        const grouped = {
+            name: "search",
+            title: "Search",
+            description: "",
+            annotations,
+            binding,
+            inputSchema: {
+                type: "object",
+                properties: {
+                    queryParams: { type: "object", properties: { queryParams: { type: "string" } }, additionalProperties: false },
+                    headers: { type: "object", properties: { "X-Trace": { type: "string" } }, additionalProperties: false },
+                },
+                additionalProperties: false,
+            },
+        } as unknown as McpTool;
+        expect(layoutOf(grouped)).toBe("grouped");
+        const request = buildMcpToolRequest(grouped, { queryParams: { queryParams: "x" }, headers: { "X-Trace": "t" } });
+        expect(request.url).toBe("https://api.example.com/v1/search?queryParams=x");
+        expect(request.headers).toEqual({ "X-Trace": "t" });
+
+        // The same parameter in a flat tool.
+        const flat = {
+            ...grouped,
+            inputSchema: { type: "object", properties: { queryParams: { type: "string" } }, additionalProperties: false },
+        } as unknown as McpTool;
+        expect(layoutOf(flat)).toBe("flat");
+        expect(buildMcpToolRequest(flat, { queryParams: "x" }).url).toBe("https://api.example.com/v1/search?queryParams=x");
+    });
+
     it("clamps limit in the grouped layout too", async () => {
         const grouped = await mcpUniformToolDefinitions(SPEC, { flatten: false, limitCap: 50 });
         const list = grouped.find((t) => t.name === "listPets")!;

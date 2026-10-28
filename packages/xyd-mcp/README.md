@@ -91,6 +91,10 @@ not its message.
 A source of no supported kind, or a document that cannot be read, throws (`loadUniformSource`); a
 source without REST operations is warned about, naming it.
 
+When no bearer is resolved at all (no `token`, no `authInfo` on the request), an `Authorization`
+header given in `headers` — or a declared `Authorization` header parameter in the grouped layout's
+`headers` — is sent as given; a resolved bearer replaces it.
+
 `callMcpUniformTool(tool, args, options)` and `buildMcpToolRequest(tool, args)` are exported for
 servers that register tools their own way.
 

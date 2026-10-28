@@ -288,25 +288,32 @@ export function buildMcpToolRequest(
 
 /**
  * The tool's input layout: `binding.layout` when the tool carries it. A tool
- * generated without it is read by the one rule that cannot mistake a body for
- * parameters: a grouped tool with a body always sends it from `requestBody`
- * and has none of its path or query inputs at the top level; one without a
- * body has nothing but the parameter groups there.
+ * generated without it is grouped only when its input has that shape: every
+ * top-level property a group (`pathParams`, `queryParams`, `headers`,
+ * `cookies`, `requestBody`), the body (if any) under `requestBody`, and every
+ * path and query input inside its group's object. Property names alone do not
+ * decide it — a flat body may have a field called `headers`, a flat or grouped
+ * tool a parameter called `queryParams`.
  */
 export function layoutOf(tool: McpTool): "flat" | "grouped" {
     const declared = (tool.binding as { layout?: unknown }).layout;
     if (declared === "flat" || declared === "grouped") {
         return declared;
     }
-    const names = Object.keys(tool.inputSchema.properties || {});
     const { binding } = tool;
-    if ([...binding.pathParams, ...binding.queryParams].some((name) => names.includes(name))) {
+    const properties = (tool.inputSchema.properties || {}) as Record<string, { properties?: Record<string, unknown> }>;
+    const names = Object.keys(properties);
+    if (!names.length || !names.every((name) => GROUPS.has(name))) {
         return "flat";
     }
-    if (binding.body === "json") {
-        return binding.bodyProperty === "requestBody" ? "grouped" : "flat";
+    if (binding.body === "json" && binding.bodyProperty !== "requestBody") {
+        return "flat";
     }
-    return names.length > 0 && names.every((name) => GROUPS.has(name) && name !== "requestBody") ? "grouped" : "flat";
+    const inGroup = (group: string, inputs: string[]) => {
+        const members = properties[group]?.properties;
+        return inputs.every((input) => !!members && Object.prototype.hasOwnProperty.call(members, input));
+    };
+    return inGroup("pathParams", binding.pathParams) && inGroup("queryParams", binding.queryParams) ? "grouped" : "flat";
 }
 
 /**
