@@ -7,18 +7,41 @@ import path from "node:path";
 import { getRandomPort } from "./resolve-xyd";
 
 /**
- * The monorepo's `xyd-mcp-server` bin, when its dist is built
- * (`pnpm --filter @xyd-js/mcp-server... build`); null otherwise — the tests
- * that spawn it skip then.
+ * The `xyd-mcp-server` bin the server suites run: `$XYD_E2E_MCP_SERVER_BIN` (a
+ * published server, as the CI job installs it), else the monorepo's when its dist
+ * is built (`pnpm --filter "@xyd-js/mcp-server..." build`); null otherwise.
  */
 export function mcpServerBin(): string | null {
+    const given = process.env.XYD_E2E_MCP_SERVER_BIN;
+    if (given) {
+        return existsSync(given) ? given : null;
+    }
     const root = path.resolve(__dirname, "../../..");
     const bin = path.join(root, "packages/xyd-mcp-server/bin/xyd-mcp-server.mjs");
     const cli = path.join(root, "packages/xyd-mcp-server/dist/cli.js");
     return existsSync(bin) && existsSync(cli) ? bin : null;
 }
 
-export const MCP_SERVER_MISSING = "@xyd-js/mcp-server is not built: pnpm --filter \"@xyd-js/mcp-server...\" build";
+/**
+ * Whether the server suites skip: only when no server is at hand AND none is
+ * required. `XYD_E2E_REQUIRE_MCP_SERVER=1` (set by the CI job that installs one)
+ * turns a missing server into a failure, so a broken install cannot pass as a skip.
+ */
+export function mcpServerSuitesSkip(): boolean {
+    return !mcpServerBin() && process.env.XYD_E2E_REQUIRE_MCP_SERVER !== "1";
+}
+
+/** The bin, or an error saying how to get one. */
+export function requireMcpServerBin(): string {
+    const bin = mcpServerBin();
+    if (!bin) {
+        throw new Error(MCP_SERVER_MISSING);
+    }
+    return bin;
+}
+
+export const MCP_SERVER_MISSING =
+    "no xyd-mcp-server: set XYD_E2E_MCP_SERVER_BIN to an installed one, or build the monorepo's: pnpm --filter \"@xyd-js/mcp-server...\" build";
 
 /** The API document the server tests serve. */
 export const PETS_OPENAPI = path.resolve(__dirname, "../9.mcp/pets.openapi.yaml");
@@ -35,10 +58,7 @@ export interface RunningMcpServer {
  * Starts `xyd-mcp-server http <args…> --port <free>` and waits for it to listen.
  */
 export async function startMcpServer(args: string[], env: Record<string, string> = {}): Promise<RunningMcpServer> {
-    const bin = mcpServerBin();
-    if (!bin) {
-        throw new Error(MCP_SERVER_MISSING);
-    }
+    const bin = requireMcpServerBin();
     const port = await getRandomPort();
     const child = spawn(process.execPath, [bin, "http", ...args, "--host", "127.0.0.1", "--port", String(port)], {
         env: { ...process.env, ...env },

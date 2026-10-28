@@ -5,7 +5,7 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import {
     MCP_SERVER_MISSING,
     PETS_OPENAPI,
-    mcpServerBin,
+    mcpServerSuitesSkip,
     startApiStub,
     startMcpServer,
     type ApiStub,
@@ -17,7 +17,7 @@ import {
  * session, and every request's own bearer reaches the API.
  */
 test.describe("mcp-server — stateless streamable HTTP", () => {
-    test.skip(!mcpServerBin(), MCP_SERVER_MISSING);
+    test.skip(mcpServerSuitesSkip(), MCP_SERVER_MISSING);
 
     let api: ApiStub;
     let mcp: RunningMcpServer;

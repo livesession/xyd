@@ -21,7 +21,9 @@ jobs:
   test:
     name: 🧪 E2E Tests
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    # The whole suite builds a docs site per case; it ran past 30 minutes when it
+    # got to run at all.
+    timeout-minutes: 90
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
 
     strategy:
@@ -81,6 +83,7 @@ jobs:
         if [ -n "$CUSTOM_VERSION" ]; then
           echo "📦 Installing xyd-js@${CUSTOM_VERSION} (manual)"
           npm i -g xyd-js@${CUSTOM_VERSION}
+          # No @xyd-js/mcp-server of that version to pair with: the server suites skip.
         else
           # Auto-detect from workflow_run (snapshot build)
           BUILD_VERSION="${{ github.event.workflow_run.outputs.BUILD_VERSION }}"
@@ -92,20 +95,14 @@ jobs:
 
           SHORT_SHA=${BUILD_VERSION#build-}
 
-          # WAIT for the version to appear. Build Release reports success when
-          # `npm publish` returns, but npm does not make the version queryable
-          # until noticeably later — measured on run 35512872074:
-          #   13:13:28  Build Release finishes, green
-          #   13:13:30  this job starts
-          #   13:15:06  @xyd-js/cli 0.0.0-build-2d8edf9-* becomes visible
-          # i.e. the package landed 96s AFTER we looked for it. Retrying the
-          # install alone cannot help, because discovery exits first.
+          # Find the snapshot's full version (0.0.0-build-<sha>-<timestamp>). Build
+          # Release reports success when `npm publish` returns; the version shows up
+          # in the registry a little later, so look for it a few times.
           for attempt in 1 2 3 4 5 6; do
             LATEST_BUILD_VERSION=$(npm view @xyd-js/cli versions --json --prefer-online 2>/dev/null \
               | jq -r '.[] | select(test("^0\\.0\\.0-build-'${SHORT_SHA}'-[0-9]+$")) | .' | sort -V | tail -n1)
             [ -n "$LATEST_BUILD_VERSION" ] && break
             if [ "$attempt" -eq 6 ]; then
-              echo "❌ No build version found for SHA: ${SHORT_SHA} after 6 attempts"
               echo "::error::@xyd-js/cli has no 0.0.0-build-${SHORT_SHA}-* version after ~3.75min."
               echo "::error::If Build Release was green, the publish never reached the registry; check its publish step."
               exit 1
@@ -116,39 +113,37 @@ jobs:
           done
           echo "✅ Resolved ${LATEST_BUILD_VERSION}"
 
-          echo "📦 Installing @xyd-js/cli@${LATEST_BUILD_VERSION}"
-          # This job starts seconds after Build Release finishes publishing ~53
-          # packages, and npm can serve a stale packument for a while afterwards.
-          # The observed failure is asymmetric and confusing: @xyd-js/cli resolves
-          # at the new version while its SAME-VERSION dependency @xyd-js/host
-          # still appears absent —
-          #   ERR_PNPM_NO_MATCHING_VERSION  No matching version found for
-          #   @xyd-js/host@0.0.0-build-<sha>-<ts>
-          # with npm reporting a "latest" from weeks earlier. Both were in fact
-          # published. Retry with --prefer-online so each attempt re-fetches the
-          # packument instead of replaying the cached miss.
-          for attempt in 1 2 3 4 5; do
-            # No --prefer-online here: `npm` accepts that flag but `pnpm add`
-            # does not ("Unknown option: 'prefer-online'. Did you mean
-            # 'prefer-offline'?"), so every attempt failed instantly on argument
-            # parsing rather than on the registry — five retries in a couple of
-            # seconds, reported as if the package were unresolvable. It is not
-            # needed anyway: the discovery step above already confirmed the
-            # version is visible, and a version published minutes ago cannot be
-            # in this runner's cold pnpm cache.
-            if pnpm add -g "@xyd-js/cli@${LATEST_BUILD_VERSION}" \
+          # Wait until the registry can INSTALL it. `npm view` reads the full package
+          # document; pnpm resolves from the abbreviated install document, which the
+          # registry's CDN refreshes on its own schedule — for minutes after a publish
+          # of ~50 packages, a different sibling (@xyd-js/host, /documan, /framework…)
+          # is missing on each try, and every blind retry of the install failed with
+          # ERR_PNPM_NO_MATCHING_VERSION. The script polls that install document for
+          # the CLI, the MCP server and every @xyd-js dependency they pin to this
+          # version, and only then lets the install run.
+          node scripts/wait-for-npm-release.mjs --timeout 1200 \
+            "@xyd-js/cli@${LATEST_BUILD_VERSION}" \
+            "@xyd-js/mcp-server@${LATEST_BUILD_VERSION}"
+
+          for attempt in 1 2 3; do
+            if pnpm add -g "@xyd-js/cli@${LATEST_BUILD_VERSION}" "@xyd-js/mcp-server@${LATEST_BUILD_VERSION}" \
                  --registry=https://registry.npmjs.org; then
               break
             fi
-            if [ "$attempt" -eq 5 ]; then
-              echo "::error::@xyd-js/cli@${LATEST_BUILD_VERSION} still unresolvable after 5 attempts."
-              echo "::error::If its dependencies are genuinely missing, the publish was partial — check Build Release."
+            if [ "$attempt" -eq 3 ]; then
+              echo "::error::@xyd-js/cli@${LATEST_BUILD_VERSION} did not install although the registry lists every package it pins."
               exit 1
             fi
-            delay=$((attempt * 15))
-            echo "attempt ${attempt} failed; registry likely still stale, retrying in ${delay}s"
-            sleep "${delay}"
+            # Drop pnpm's cached package documents so the next try reads the registry again.
+            rm -rf "${XDG_CACHE_HOME:-$HOME/.cache}/pnpm/metadata"* 2>/dev/null || true
+            echo "attempt ${attempt} failed; retrying in 30s"
+            sleep 30
           done
+
+          # The server suites (9.mcp/7-9) run against this published @xyd-js/mcp-server,
+          # and must: a missing server fails them instead of skipping them.
+          echo "XYD_E2E_MCP_SERVER_BIN=$(pnpm root -g)/@xyd-js/mcp-server/bin/xyd-mcp-server.mjs" >> "$GITHUB_ENV"
+          echo "XYD_E2E_REQUIRE_MCP_SERVER=1" >> "$GITHUB_ENV"
         fi
 
         echo "✅ Installed version:"

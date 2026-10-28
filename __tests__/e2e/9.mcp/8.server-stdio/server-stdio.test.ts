@@ -4,14 +4,21 @@ import { test, expect } from "@playwright/test";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
-import { MCP_SERVER_MISSING, PETS_OPENAPI, mcpServerBin, startApiStub, type ApiStub } from "../../utils/mcp-server";
+import {
+    MCP_SERVER_MISSING,
+    PETS_OPENAPI,
+    mcpServerSuitesSkip,
+    requireMcpServerBin,
+    startApiStub,
+    type ApiStub,
+} from "../../utils/mcp-server";
 
 /**
  * `xyd-mcp-server stdio`: JSON-RPC on stdin/stdout, the bearer from an
  * environment variable, nothing else on stdout.
  */
 test.describe("mcp-server — stdio", () => {
-    test.skip(!mcpServerBin(), MCP_SERVER_MISSING);
+    test.skip(mcpServerSuitesSkip(), MCP_SERVER_MISSING);
 
     let api: ApiStub;
 
@@ -26,7 +33,7 @@ test.describe("mcp-server — stdio", () => {
     test("an SDK client lists and calls the tools; the token comes from the environment", async () => {
         const transport = new StdioClientTransport({
             command: process.execPath,
-            args: [mcpServerBin()!, "stdio", PETS_OPENAPI, "--base-url", api.url, "--read-only", "--token-env", "PETS_TOKEN"],
+            args: [requireMcpServerBin(), "stdio", PETS_OPENAPI, "--base-url", api.url, "--read-only", "--token-env", "PETS_TOKEN"],
             env: { ...(process.env as Record<string, string>), PETS_TOKEN: "stdio-token" },
             stderr: "pipe",
         });
@@ -43,7 +50,7 @@ test.describe("mcp-server — stdio", () => {
     });
 
     test("stdout carries JSON-RPC only", async () => {
-        const child = spawn(process.execPath, [mcpServerBin()!, "stdio", PETS_OPENAPI, "--base-url", api.url], {
+        const child = spawn(process.execPath, [requireMcpServerBin(), "stdio", PETS_OPENAPI, "--base-url", api.url], {
             stdio: ["pipe", "pipe", "pipe"],
         });
         let stdout = "";
