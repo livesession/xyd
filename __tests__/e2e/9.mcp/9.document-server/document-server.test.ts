@@ -4,7 +4,7 @@ import { createXydBuildServer, type XydServer } from "../../utils/xyd-server";
 import {
     MCP_SERVER_MISSING,
     PETS_OPENAPI,
-    mcpServerBin,
+    mcpServerSuitesSkip,
     startApiStub,
     startMcpServer,
     type ApiStub,
@@ -16,7 +16,7 @@ import {
  * answers streamed as server-sent events, read through the handshake.
  */
 test.describe("mcp — documenting a running xyd-mcp-server", () => {
-    test.skip(!mcpServerBin(), MCP_SERVER_MISSING);
+    test.skip(mcpServerSuitesSkip(), MCP_SERVER_MISSING);
 
     let api: ApiStub;
     let mcp: RunningMcpServer;
