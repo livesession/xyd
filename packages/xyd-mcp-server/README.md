@@ -24,8 +24,8 @@ npx @xyd-js/mcp-server ./openapi.yaml
 # stateless HTTP: a server per request, JSON answers, no Mcp-Session-Id; two mount paths
 npx @xyd-js/mcp-server http ./openapi.yaml --stateless --path /mcp --path /v1/mcp
 
-# stdio for a local client; the API bearer from $API_TOKEN
-API_TOKEN=... npx @xyd-js/mcp-server stdio ./openapi.yaml --read-only
+# stdio for a local client; the API bearer from $XYD_API_TOKEN
+XYD_API_TOKEN=... npx @xyd-js/mcp-server stdio ./openapi.yaml --read-only
 ```
 
 ### HTTP
@@ -34,9 +34,11 @@ API_TOKEN=... npx @xyd-js/mcp-server stdio ./openapi.yaml --read-only
 |---|---|
 | `--port <n>` | the port (default `$PORT`, else `3000`) |
 | `--host <host>` | the interface to listen on (default: all) |
-| `--path <path>` | a mount path, repeatable or comma-separated (default `/mcp`) |
+| `--path <path>` | a mount path, repeatable or comma-separated (default `/mcp`); `/` and letters, digits, `.`, `_`, `~`, `-` only |
 | `--stateless` | no sessions: every `POST` gets a fresh server and transport, answers are JSON (no SSE), no `Mcp-Session-Id` is issued or expected; `GET` / `DELETE` answer `405` |
-| `--allowed-hosts <names>` | `Host` names accepted besides `localhost`, `127.0.0.1`, `[::1]` |
+| `--session-idle-timeout <seconds>` | sessions mode: a session without a request for this long is closed (default `1800`; `0` keeps them) |
+| `--max-sessions <n>` | sessions mode: the most sessions open at once (default `1000`); an `initialize` beyond it answers `503` |
+| `--allowed-hosts <names>` | `Host` names accepted besides `localhost`, `127.0.0.1`, `[::1]` (a port given with a name is ignored) |
 | `--disable-host-check` | accept any `Host` (when a proxy in front checks it) |
 
 **The bearer is per request.** Every request's `Authorization: Bearer <token>` is handed to the tool
@@ -44,14 +46,21 @@ calls of that request (as the SDK's `authInfo`) and sent on to the API; it is re
 not only on `initialize`, and kept nowhere — the server does not check it, the API does. That holds
 in both HTTP modes.
 
+**Deploy remotely with `--stateless`.** The sessions mode keeps a server per session in memory
+(closed after `--session-idle-timeout`, at most `--max-sessions`) and needs every request of a session
+to reach the same instance; the stateless mode holds nothing between requests.
+
+A body that is not JSON answers JSON-RPC `-32700` (`400`), one over the limit `413`.
+
 **DNS-rebinding protection is on.** Only the `Host` names above are accepted (`403` otherwise); add
 the names the server is reached by with `--allowed-hosts`, or turn the check off with
 `--disable-host-check` behind a proxy that checks the host.
 
 ### stdio
 
-JSON-RPC on stdin/stdout and nothing else on stdout (console output goes to stderr). The API bearer
-comes from `$API_TOKEN`, or the variable `--token-env <NAME>` names.
+JSON-RPC on stdin/stdout and nothing else on stdout: from the start, anything else the process
+writes there (logs, a progress bar) goes to stderr. The API bearer comes from `$XYD_API_TOKEN`, or the
+variable `--token-env <NAME>` names; stderr says which, or warns when it is not set.
 
 ### Tools
 
@@ -98,7 +107,8 @@ await serveMcpStdio(prepared);
 - the `get_token_info` tool is gone;
 - the `Host` check is on by default;
 - tool names keep the `operationId`'s case, inputs are flat by default, annotations are set;
-- `stdio`, `--stateless` and multiple `--path`s are new;
+- `stdio` (the bearer from `$XYD_API_TOKEN`), `--stateless` and multiple `--path`s are new;
+- sessions close after an idle timeout and are capped;
 - built with tsup for Node; the package entry (`.`) is the library, the CLI is the `xyd-mcp-server` bin.
 
 ## Development

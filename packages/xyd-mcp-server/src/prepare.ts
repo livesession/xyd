@@ -5,7 +5,7 @@ import {
     mcpUniformResourceUri,
     mcpUniformToolDefinitions,
     registerMcpUniformTools,
-    uniformFromSource,
+    loadUniformSource,
     type McpTool,
     type McpUniformToolsOptions,
 } from "@xyd-js/mcp";
@@ -53,7 +53,7 @@ export async function prepareMcpServer(options: McpServerOptions = {}): Promise<
 
     const references: Reference[] = [];
     for (const source of sources) {
-        references.push(...((await uniformFromSource(source)) || []));
+        references.push(...(await loadUniformSource(source)));
     }
     const tools = await mcpUniformToolDefinitions(references, toolOptions);
 

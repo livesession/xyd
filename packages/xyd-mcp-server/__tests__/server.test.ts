@@ -8,7 +8,17 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
-import { createMcpHttpApp, parseCli, prepareMcpServer, serveMcpStdio, type PreparedMcpServer } from "../src";
+import express from "express";
+
+import {
+    createMcpHttpApp,
+    hostName,
+    parseCli,
+    prepareMcpServer,
+    serveMcpStdio,
+    SessionEndpoint,
+    type PreparedMcpServer,
+} from "../src";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SPEC = path.join(__dirname, "__fixtures__", "pets.openapi.yaml");
@@ -194,7 +204,71 @@ describe("stateful mode (the default)", () => {
     });
 });
 
+describe("sessions", () => {
+    it("caps open sessions and closes idle ones", async () => {
+        const endpoint = new SessionEndpoint(prepared, { sessionIdleMs: 60_000, maxSessions: 1 });
+        const app = express();
+        app.use(express.json());
+        app.post("/mcp", endpoint.post);
+        app.delete("/mcp", endpoint.session);
+        const http = await listen(app as ReturnType<typeof createMcpHttpApp>);
+
+        const first = await client(`${http.origin}/mcp`, {});
+        expect(endpoint.size).toBe(1);
+
+        const init = rpc("initialize", 1, { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "t", version: "0" } });
+        const full = await fetch(`${http.origin}/mcp`, { method: "POST", headers: JSON_HEADERS, body: init });
+        expect(full.status).toBe(503);
+        expect((await full.json()).error.code).toBe(-32000);
+        expect(full.headers.get("retry-after")).toBe("60");
+
+        endpoint.sweep(Date.now() + 61_000); // the first session has gone idle
+        expect(endpoint.size).toBe(0);
+        const again = await client(`${http.origin}/mcp`, {});
+        expect(again.transport.sessionId).toBeTruthy();
+        expect(endpoint.size).toBe(1);
+
+        await first.client.close().catch(() => undefined);
+        await again.client.close();
+        await endpoint.close();
+        expect(endpoint.size).toBe(0);
+        await http.close();
+    });
+});
+
+describe("request errors", () => {
+    it("answers a malformed or oversized body with JSON-RPC", async () => {
+        const http = await listen(createMcpHttpApp(prepared, { stateless: true, bodyLimit: "1kb" }));
+        const malformed = await fetch(`${http.origin}/mcp`, { method: "POST", headers: JSON_HEADERS, body: "{not json" });
+        expect(malformed.status).toBe(400);
+        expect(await malformed.json()).toEqual({ jsonrpc: "2.0", error: { code: -32700, message: expect.any(String) }, id: null });
+        const large = await fetch(`${http.origin}/mcp`, {
+            method: "POST",
+            headers: JSON_HEADERS,
+            body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list", params: { pad: "x".repeat(4096) } }),
+        });
+        expect(large.status).toBe(413);
+        expect((await large.json()).error.code).toBe(-32000);
+        await http.close();
+    });
+
+    it("refuses a mount path that is a route pattern", () => {
+        expect(() => createMcpHttpApp(prepared, { paths: ["/mcp/:tenant"] })).toThrow(/invalid mount path/);
+        expect(() => createMcpHttpApp(prepared, { paths: ["/mcp*"] })).toThrow(/invalid mount path/);
+    });
+});
+
 describe("DNS-rebinding protection", () => {
+    it("reads an allowed host given with a port, a scheme or as bare IPv6", async () => {
+        expect(hostName("mcp.example.com:8443")).toBe("mcp.example.com");
+        expect(hostName("https://MCP.example.com/path")).toBe("mcp.example.com");
+        expect(hostName("[::1]:3000")).toBe("[::1]");
+        expect(hostName("::1")).toBe("[::1]");
+        const http = await listen(createMcpHttpApp(prepared, { stateless: true, allowedHosts: ["mcp.example.com:8443"] }));
+        expect(await post(http.origin, "mcp.example.com:8443")).toBe(200);
+        await http.close();
+    });
+
     it("accepts local Host names by default and refuses others", async () => {
         const http = await listen(createMcpHttpApp(prepared, { stateless: true }));
         const ok = await fetch(`${http.origin}/mcp`, { method: "POST", headers: JSON_HEADERS, body: rpc("tools/list") });
@@ -314,6 +388,16 @@ describe("parseCli", () => {
 
     it("reads stdio and refuses options of the other mode", () => {
         expect(parseCli(["stdio", "a.yaml", "--token-env", "MY_TOKEN"], {})).toMatchObject({ mode: "stdio", tokenEnv: "MY_TOKEN" });
+        expect(parseCli(["stdio", "a.yaml"], {})).toMatchObject({ tokenEnv: "XYD_API_TOKEN" });
+        expect(() => parseCli(["a.yaml", "--path", "/mcp/:id"], {})).toThrow(/--path/);
+        expect(() => parseCli(["a.yaml", "--stateless", "--max-sessions", "5"], {})).toThrow(/sessions mode/);
+        expect(parseCli(["a.yaml", "--session-idle-timeout", "90", "--max-sessions", "5"], {})).toMatchObject({
+            sessionIdleMs: 90_000,
+            maxSessions: 5,
+        });
+        expect(parseCli(["a.yaml", "--allowed-hosts", "mcp.example.com:443"], {})).toMatchObject({
+            allowedHosts: ["localhost", "127.0.0.1", "[::1]", "mcp.example.com"],
+        });
         expect(() => parseCli(["stdio", "a.yaml", "--stateless"], {})).toThrow(/http mode/);
         expect(() => parseCli(["a.yaml", "--token-env", "X"], {})).toThrow(/stdio mode/);
         expect(() => parseCli([], {})).toThrow(/missing <source>/);
