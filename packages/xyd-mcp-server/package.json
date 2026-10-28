@@ -2,42 +2,72 @@
   "name": "@xyd-js/mcp-server",
   "version": "0.1.0-build.1",
   "type": "module",
-  "description": "MCP server for xyd",
+  "description": "MCP server for an API definition: streamable HTTP (stateful or stateless) and stdio",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     },
     "./mcp": {
-      "import": "./dist/mcp.js",
-      "types": "./dist/mcp.d.ts"
+      "types": "./dist/mcp.d.ts",
+      "import": "./dist/mcp.js"
     }
   },
   "bin": {
     "xyd-mcp-server": "./bin/xyd-mcp-server.mjs"
   },
+  "files": [
+    "package.json",
+    "bin",
+    "dist",
+    "README.md"
+  ],
   "scripts": {
-    "build": "bun run build:server && bun run build:mcp && bun run build:types",
-    "build:server": "bun build src/index.ts --outdir dist --target node --format esm",
-    "build:mcp": "bun build src/mcp.ts --outfile dist/mcp.js --target node --format esm",
+    "build": "tsup && pnpm build:types",
     "build:types": "tsc --project tsconfig.json",
-    "dev": "bun --watch src/index.ts",
-    "start": "bun dist/index.js",
+    "dev": "tsup --watch",
+    "clean": "rimraf dist",
+    "start": "node bin/xyd-mcp-server.mjs",
+    "test": "vitest run __tests__",
     "demo:simple": "bun --watch demo/simple/server.ts",
     "mcp:inspector": "npx @modelcontextprotocol/inspector http://localhost:3000/mcp"
   },
   "dependencies": {
-    "@xyd-js/mcp": "workspace:*",
+    "@langchain/classic": "^1.0.0",
+    "@langchain/core": "^1.0.0",
+    "@langchain/openai": "^1.0.0",
+    "@langchain/textsplitters": "^1.0.0",
     "@modelcontextprotocol/sdk": "^1.25.2",
-    "express": "^5.1.0"
+    "@xyd-js/atlas": "workspace:*",
+    "@xyd-js/components": "workspace:*",
+    "@xyd-js/mcp": "workspace:*",
+    "@xyd-js/uniform": "workspace:*",
+    "codehike": "^1.0.3",
+    "express": "^5.1.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "remark": "^15.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
+    "turndown": "^7.2.1",
+    "turndown-plugin-gfm": "^1.0.2",
+    "unified": "^11.0.5",
+    "unist-builder": "^4.0.0",
+    "zod": "^3.25.76"
+  },
+  "optionalDependencies": {
+    "@xyd-js/native": "^0.1.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^20.9.0",
-    "openapi-typescript": "^7.4.2",
+    "rimraf": "^3.0.2",
+    "tsup": "^8.3.0",
     "typescript": "^5.6.2",
-    "@types/bun": "latest"
+    "vitest": "^2.1.8"
   }
 }
