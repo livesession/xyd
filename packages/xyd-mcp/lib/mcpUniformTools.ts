@@ -1,231 +1,108 @@
-import { JSONSchema7 } from "json-schema";
+import type { McpServer, RegisteredTool } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { uniformToMcpTools, type McpTool, type McpToolsOptions, type Reference } from "@xyd-js/uniform";
 
-import { jsonSchemaToZod } from "json-schema-to-zod";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import {
-  uniformToInputJsonSchema,
-  type DefinitionTypeREST,
-  type Reference,
-} from "@xyd-js/uniform";
-import * as z from "zod";
+import { callMcpUniformTool, type McpToolCallOptions } from "./call";
+import { jsonSchemaInput } from "./schema";
+import { loadUniformSource } from "./utils";
 
-import { uniformFromSource } from "./utils";
-import { getToolName } from "./utils";
-  
-// TODO: share uniform with tools and resources
-// TODO: support for graphql and react better
-export async function mcpUniformTools(
-  server: McpServer,
-  uniformSource: string,
-  token: string
-) {
-  const references = await uniformFromSource(uniformSource);
+export type { McpTool } from "@xyd-js/uniform";
 
-  if (!references?.length) {
-    return;
-  }
-
-  for (const reference of references) {
-    if (reference?.context && "componentSchema" in reference.context) {
-      continue;
-    }
-
-    const inputSchemaJson = inputSchemaFromReference(reference);
-
-    let inputSchema: z.ZodRawShape | null = null;
-    if (inputSchemaJson) {
-      const zodSchemaString = jsonSchemaToZod(inputSchemaJson, {
-        module: "none",
-      });
-
-      const zodObject = await stringToZodSchema(zodSchemaString);
-
-      if (zodObject && typeof zodObject === "object" && "shape" in zodObject) {
-        const sourceShape = zodObject.shape as Readonly<
-          Record<string, unknown>
-        >;
-        const mutableShape: Record<string, z.ZodTypeAny> = {};
-        for (const key of Object.keys(sourceShape)) {
-          mutableShape[key] = sourceShape[key] as unknown as z.ZodTypeAny;
-        }
-        inputSchema = mutableShape as z.ZodRawShape;
-      }
-    }
-
-    const toolName = getToolName(reference.canonical);
-
-    server.registerTool(
-      toolName,
-      {
-        description: reference.description as string,
-        //@ts-ignore TODO: fix
-        inputSchema: inputSchema || undefined,
-      },
-      async (extra) => {
-        try {
-          const [url, fetchOptions] = buildFetchRequest(
-            extra,
-            reference.context,
-            token
-          );
-
-          const response = await fetch(url, fetchOptions);
-          if (response.status === 401) {
-            return {
-              content: [
-                {
-                  type: "text",
-                  text: `Error executing ${toolName}: Unauthorized`,
-                },
-              ],
-            };
-          }
-          const data = await response.json(); // TODO: support other formats
-
-          return {
-            content: [
-              {
-                type: "resource_link",
-                uri: `api-reference://${reference.canonical}`,
-                name: reference.canonical,
-                description: reference.description as string,
-                mimeType: "text/markdown",
-              },
-              {
-                type: "text",
-                text: JSON.stringify(data, null, 2),
-              },
-            ],
-          };
-        } catch (error) {
-          return {
-            content: [
-              {
-                type: "text",
-                text: `Error executing ${reference.canonical}: ${error instanceof Error ? error.message : String(error)}`,
-              },
-            ],
-          };
-        }
-      }
-    );
-  }
-}
-
-const TYPE_MAP: Record<DefinitionTypeREST, string> = {
-  "$rest.param.path": "pathParams",
-  "$rest.param.query": "queryParams",
-  "$rest.param.header": "headers",
-  "$rest.param.cookie": "cookies",
-  "$rest.request.body": "requestBody",
-};
-
-// TODO: it should be in uniform via plugin?
-function inputSchemaFromReference(ref: Reference): JSONSchema7 | undefined {
-  const schema = uniformToInputJsonSchema(ref);
-
-  if (!schema) {
-    return undefined;
-  }
-
-  const schemasByType: Record<string, any> = {};
-
-  if (!schema.allOf && !schema.oneOf) {
-    schemasByType[schema?.$id || ""] = schema;
-  } else {
-    for (const subSchema of schema.allOf || schema.oneOf || []) {
-      let id = "";
-      if (typeof subSchema === "object" && "$id" in subSchema) {
-        id = subSchema.$id as string;
-      }
-      if (!id || typeof subSchema !== "object") {
-        continue;
-      }
-
-      schemasByType[id] = subSchema;
-    }
-  }
-
-  const structuredProperties: Record<string, any> = {};
-
-  // Create structured properties for each parameter type
-  for (const [id, subSchema] of Object.entries(schemasByType)) {
-    const friendlyType = TYPE_MAP[id as DefinitionTypeREST];
-    if (friendlyType && subSchema && typeof subSchema === "object") {
-      structuredProperties[friendlyType] = subSchema;
-    }
-  }
-
-  if (Object.keys(structuredProperties).length === 0) {
-    console.error("No structured properties found for:", ref.canonical);
-  }
-
-  return {
-    type: "object" as const,
-    properties: structuredProperties,
-  };
+/** Which of the generated tools a server registers. */
+export interface McpToolSelection {
+    /** Register only the tools whose `readOnlyHint` is true (a read-only server). */
+    readOnlyMode?: boolean;
+    /** The last say over each generated tool, e.g. by `name` or `binding.group`. */
+    filter?: (tool: McpTool) => boolean;
 }
 
 /**
- * Builds a fetch request based on MCP tool parameters and context
+ * `uniformToMcpTools`' options (names, the flat or grouped layout, `include`,
+ * the annotation predicates, `limitCap`, …), which tools to register, and how a
+ * call reaches the API.
  */
-function buildFetchRequest(
-  parameters: any,
-  context: any,
-  token: string
-): [string, RequestInit] {
-  const { method, fullPath, path } = context;
+export interface McpUniformToolsOptions extends McpToolsOptions, McpToolSelection, McpToolCallOptions {}
 
-  // Extract different parameter types
-  const { queryParams, pathParams, headers, requestBody } = parameters || {};
-
-  // Build the URL by replacing path parameters
-  let url = fullPath || path;
-  if (pathParams) {
-    for (const [key, value] of Object.entries(pathParams)) {
-      url = url.replace(`{${key}}`, encodeURIComponent(String(value)));
+/**
+ * The MCP tools of a uniform source (a path or URL of an OpenAPI or GraphQL
+ * document, or references already converted): one tool per REST operation,
+ * built by `uniformToMcpTools` and narrowed by `readOnlyMode` / `filter`.
+ *
+ * Pure data: compute it once, then register it on as many servers as needed
+ * with {@link registerMcpUniformTools} (one per request in a stateless server).
+ *
+ * A source of no supported kind, or a document that cannot be read, throws; a
+ * source that yields no tool is warned about, naming the source.
+ */
+export async function mcpUniformToolDefinitions(
+    source: string | Reference[],
+    options: McpToolsOptions & McpToolSelection = {}
+): Promise<McpTool[]> {
+    const references = typeof source === "string" ? await loadUniformSource(source) : source;
+    const named = typeof source === "string" ? JSON.stringify(source) : "the given references";
+    const generated = uniformToMcpTools(references || [], options);
+    if (!generated.length) {
+        console.warn(`@xyd-js/mcp: ${named} has no REST operation to make a tool of`);
+        return [];
     }
-  }
-
-  // Add query parameters
-  if (queryParams && Object.keys(queryParams).length > 0) {
-    const searchParams = new URLSearchParams();
-    for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined && value !== null) {
-        searchParams.append(key, String(value));
-      }
+    const selected = selectMcpTools(generated, options);
+    if (!selected.length) {
+        console.warn(`@xyd-js/mcp: readOnlyMode / filter left none of the ${generated.length} tools of ${named}`);
     }
-    const queryString = searchParams.toString();
-    if (queryString) {
-      url += (url.includes("?") ? "&" : "?") + queryString;
-    }
-  }
-
-  // Build fetch options
-  const fetchOptions: RequestInit = {
-    method: method.toUpperCase(),
-    headers: {
-      Authorization: `Bearer ${token}`,
-      //   "Content-Type": "application/json",
-      //   Accept: "application/json",
-      ...headers,
-    },
-  };
-
-  // Add request body for POST/PUT/PATCH methods
-  if (requestBody && ["POST", "PUT", "PATCH"].includes(method.toUpperCase())) {
-    fetchOptions.body = JSON.stringify(requestBody);
-  }
-
-  return [url, fetchOptions];
+    return selected;
 }
 
-async function stringToZodSchema(
-  zodSchemaString: string
-): Promise<z.ZodSchema | null> {
-  const schemaFactory = new Function("z", `return (${zodSchemaString});`);
+/** `tools` narrowed by `readOnlyMode` and `filter`. */
+export function selectMcpTools(tools: McpTool[], selection: McpToolSelection = {}): McpTool[] {
+    return tools.filter(
+        (tool) =>
+            (!selection.readOnlyMode || tool.annotations.readOnlyHint) &&
+            (!selection.filter || selection.filter(tool))
+    );
+}
 
-  const schema = schemaFactory(z);
+/**
+ * Registers `tools` on `server`. A call validates its arguments against the
+ * tool's input schema, sends the HTTP request the tool's binding describes and
+ * answers the response body (see {@link callMcpUniformTool}). The bearer is
+ * resolved per call — by default from the request that carried the call
+ * (`extra.authInfo.token`), never stored on the server.
+ *
+ * The input schema is listed exactly as generated: it rides on a permissive
+ * zod object as that object's JSON Schema, so no zod source is generated or
+ * evaluated, and the generated schema is what validates the arguments.
+ */
+export function registerMcpUniformTools(
+    server: McpServer,
+    tools: McpTool[],
+    options: McpToolCallOptions & McpToolSelection = {}
+): RegisteredTool[] {
+    return selectMcpTools(tools, options).map((tool) =>
+        server.registerTool(
+            tool.name,
+            {
+                title: tool.title,
+                description: tool.description,
+                inputSchema: jsonSchemaInput(tool.inputSchema),
+                annotations: { ...tool.annotations },
+            },
+            (args: Record<string, unknown>, extra) => callMcpUniformTool(tool, args, { ...options, extra })
+        )
+    );
+}
 
-  return schema;
+/**
+ * Registers one tool per REST operation of a uniform source on `server` — the
+ * two steps above in one call.
+ *
+ * `options` may still be a token string (the earlier signature): a static
+ * bearer for every call. Leave it out to forward each request's own bearer.
+ */
+export async function mcpUniformTools(
+    server: McpServer,
+    source: string | Reference[],
+    options: McpUniformToolsOptions | string = {}
+): Promise<RegisteredTool[]> {
+    const resolved: McpUniformToolsOptions = typeof options === "string" ? { token: options } : options;
+    const tools = await mcpUniformToolDefinitions(source, resolved);
+    return registerMcpUniformTools(server, tools, resolved);
 }
