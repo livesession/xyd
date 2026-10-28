@@ -36,10 +36,14 @@ export interface McpToolCallOptions {
      * document's first server (the tool's `binding.fullPath`).
      */
     baseUrl?: string;
-    /** Extra request headers (e.g. an API version header), fixed or per call. */
-    headers?:
-        | Record<string, string>
-        | ((tool: McpTool, extra: McpToolExtra | undefined) => Record<string, string> | undefined);
+    /**
+     * Extra request headers (e.g. an API version header), fixed or per call.
+     * They are set over the defaults (`Accept: application/json`, and
+     * `Content-Type: application/json` with a body), case-insensitively, so
+     * an `Accept` or `Content-Type` given here wins; an undefined or null
+     * value is left out. The resolved bearer is set last.
+     */
+    headers?: McpToolHeaders | ((tool: McpTool, extra: McpToolExtra | undefined) => McpToolHeaders | undefined);
     /** The answer is cut after this many bytes, with a marker saying so (default 262144). */
     maxBytes?: number;
     /** Bytes of an error response's body quoted in the error (default 8192). */
@@ -55,6 +59,9 @@ export interface McpToolCallOptions {
     /** The fetch implementation (default the global `fetch`). */
     fetch?: typeof fetch;
 }
+
+/** Header values; an undefined or null one is not sent. */
+export type McpToolHeaders = Record<string, string | undefined | null>;
 
 export const DEFAULT_MAX_BYTES = 262144;
 export const DEFAULT_ERROR_BYTES = 8192;
@@ -84,7 +91,7 @@ export async function callMcpUniformTool(
     options: McpToolCallOptions & { extra?: McpToolExtra } = {}
 ): Promise<CallToolResult> {
     const input: Record<string, unknown> = { ...(args || {}) };
-    clampLimit(tool, input);
+    clampLimits(tool, input);
 
     if (options.validate !== false) {
         const checked = jsonSchemaValidator(tool.inputSchema)(input);
@@ -100,25 +107,41 @@ export async function callMcpUniformTool(
         return toolError(`${tool.name}: ${errorMessage(error)}`);
     }
 
-    const headers: Record<string, string> = { ...request.headers };
-    const extraHeaders =
-        typeof options.headers === "function" ? options.headers(tool, options.extra) : options.headers;
-    Object.assign(headers, extraHeaders || {});
-    headers.Accept = "application/json";
+    // Defaults first, then the arguments' header parameters, then the caller's
+    // headers (case-insensitive, so they win), then the bearer.
+    const headers = new Headers({ Accept: "application/json" });
     if (request.body !== undefined) {
-        headers["Content-Type"] = "application/json";
+        headers.set("Content-Type", "application/json");
     }
-    const token = await resolveToken(options.token, options.extra);
+    try {
+        for (const [name, value] of Object.entries(request.headers)) {
+            headers.set(name, value);
+        }
+        const extraHeaders =
+            typeof options.headers === "function" ? options.headers(tool, options.extra) : options.headers;
+        for (const [name, value] of Object.entries(extraHeaders || {})) {
+            if (value !== undefined && value !== null) {
+                headers.set(name, String(value));
+            }
+        }
+    } catch {
+        return toolError(`${tool.name}: the request headers could not be built`);
+    }
+    let token: string | undefined;
+    try {
+        token = await resolveToken(options.token, options.extra);
+    } catch {
+        // The resolver's message may carry what it was resolving from; it stays out of the answer.
+        return toolError(`${tool.name}: the credentials for the call could not be resolved`);
+    }
     if (token) {
-        headers.Authorization = `Bearer ${token}`;
+        headers.set("Authorization", `Bearer ${token}`);
     }
 
     const timeoutMs = positive(options.timeoutMs, DEFAULT_TIMEOUT_MS);
-    const signals = [AbortSignal.timeout(timeoutMs)];
-    if (options.extra?.signal) {
-        signals.push(options.extra.signal);
-    }
-    const signal = typeof AbortSignal.any === "function" ? AbortSignal.any(signals) : signals[0];
+    const timeout = AbortSignal.timeout(timeoutMs);
+    const cancel = options.extra?.signal;
+    const signal = cancel && typeof AbortSignal.any === "function" ? AbortSignal.any([timeout, cancel]) : timeout;
 
     let response: Response;
     try {
@@ -129,11 +152,7 @@ export async function callMcpUniformTool(
             signal,
         });
     } catch (error) {
-        const reason =
-            error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError")
-                ? `no answer within ${timeoutMs} ms`
-                : errorMessage(error);
-        return toolError(`${tool.name}: the request failed: ${reason}`);
+        return toolError(`${tool.name}: the request failed: ${failure(error, cancel, timeout, timeoutMs)}`);
     }
 
     const status = `HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ""}`;
@@ -144,7 +163,9 @@ export async function callMcpUniformTool(
             response.ok ? positive(options.maxBytes, DEFAULT_MAX_BYTES) : positive(options.errorBytes, DEFAULT_ERROR_BYTES)
         );
     } catch (error) {
-        return toolError(`${tool.name}: ${status}, but the body could not be read: ${errorMessage(error)}`);
+        return toolError(
+            `${tool.name}: ${status}, but the body could not be read: ${failure(error, cancel, timeout, timeoutMs)}`
+        );
     }
 
     if (!response.ok) {
@@ -180,7 +201,7 @@ export function buildMcpToolRequest(
     options: Pick<McpToolCallOptions, "baseUrl" | "queryArrays"> = {}
 ): McpToolRequest {
     const { binding } = tool;
-    const grouped = isGrouped(tool);
+    const grouped = layoutOf(tool) === "grouped";
     const wire = (input: string) => binding.inputs?.[input]?.name ?? input;
     const argument = (name: string, group: "pathParams" | "queryParams") => {
         if (!grouped) {
@@ -216,10 +237,13 @@ export function buildMcpToolRequest(
         }
         const name = wire(input);
         if (Array.isArray(value)) {
+            const items = value.filter((item) => item !== undefined && item !== null);
             if (options.queryArrays === "comma") {
-                url.searchParams.append(name, value.map(queryValue).join(","));
+                if (items.length) {
+                    url.searchParams.append(name, items.map(queryValue).join(","));
+                }
             } else {
-                for (const item of value) {
+                for (const item of items) {
                     url.searchParams.append(name, queryValue(item));
                 }
             }
@@ -263,21 +287,52 @@ export function buildMcpToolRequest(
 }
 
 /**
- * The grouped layout (`flatten: false`) keeps the parameters under
- * `pathParams` / `queryParams` / `headers` / `cookies` and the body under
- * `requestBody`; the flat one has the parameters themselves at the top level.
+ * The tool's input layout: `binding.layout` when the tool carries it. A tool
+ * generated without it is read by the one rule that cannot mistake a body for
+ * parameters: a grouped tool with a body always sends it from `requestBody`
+ * and has none of its path or query inputs at the top level; one without a
+ * body has nothing but the parameter groups there.
  */
-function isGrouped(tool: McpTool): boolean {
-    const names = Object.keys(tool.inputSchema.properties || {});
-    if ([...tool.binding.pathParams, ...tool.binding.queryParams].some((name) => names.includes(name))) {
-        return false;
+export function layoutOf(tool: McpTool): "flat" | "grouped" {
+    const declared = (tool.binding as { layout?: unknown }).layout;
+    if (declared === "flat" || declared === "grouped") {
+        return declared;
     }
-    return names.length > 0 && names.every((name) => GROUPS.has(name));
+    const names = Object.keys(tool.inputSchema.properties || {});
+    const { binding } = tool;
+    if ([...binding.pathParams, ...binding.queryParams].some((name) => names.includes(name))) {
+        return "flat";
+    }
+    if (binding.body === "json") {
+        return binding.bodyProperty === "requestBody" ? "grouped" : "flat";
+    }
+    return names.length > 0 && names.every((name) => GROUPS.has(name) && name !== "requestBody") ? "grouped" : "flat";
 }
 
-/** Clamps an integer `limit` argument into the bounds its schema declares (a server's cap). */
-function clampLimit(tool: McpTool, args: Record<string, unknown>) {
-    const schema = tool.inputSchema.properties?.limit as { maximum?: unknown; minimum?: unknown } | undefined;
+/**
+ * Clamps an integer `limit` argument into the bounds its schema declares (a
+ * server's cap): at the top level in the flat layout, inside `queryParams`,
+ * `pathParams` and `requestBody` in the grouped one.
+ */
+function clampLimits(tool: McpTool, args: Record<string, unknown>) {
+    const properties = (tool.inputSchema.properties || {}) as Record<string, { properties?: Record<string, unknown> }>;
+    if (layoutOf(tool) === "flat") {
+        clampLimit(properties, args);
+        return;
+    }
+    for (const group of ["queryParams", "pathParams", "requestBody"]) {
+        const values = args[group];
+        const schema = properties[group]?.properties;
+        if (schema && values && typeof values === "object" && !Array.isArray(values)) {
+            const copy = { ...(values as Record<string, unknown>) };
+            clampLimit(schema, copy);
+            args[group] = copy;
+        }
+    }
+}
+
+function clampLimit(properties: Record<string, unknown>, args: Record<string, unknown>) {
+    const schema = properties.limit as { maximum?: unknown; minimum?: unknown } | undefined;
     const value = args.limit;
     if (!schema || typeof value !== "number" || !Number.isFinite(value)) {
         return;
@@ -385,6 +440,17 @@ function utf8Boundary(bytes: Uint8Array): number {
     const lead = bytes[start];
     const needed = lead >= 0xf0 ? 4 : lead >= 0xe0 ? 3 : lead >= 0xc0 ? 2 : 1;
     return start + needed > bytes.length ? start : bytes.length;
+}
+
+/** Why a request failed: cancelled by the client, out of time, or the error itself. */
+function failure(error: unknown, cancel: AbortSignal | undefined, timeout: AbortSignal, timeoutMs: number): string {
+    if (cancel?.aborted) {
+        return "cancelled by the client";
+    }
+    if (timeout.aborted || (error instanceof Error && error.name === "TimeoutError")) {
+        return `no answer within ${timeoutMs} ms`;
+    }
+    return errorMessage(error);
 }
 
 function toolError(text: string): CallToolResult {

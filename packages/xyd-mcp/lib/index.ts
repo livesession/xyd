@@ -21,6 +21,8 @@ export {
     DEFAULT_ERROR_BYTES,
     DEFAULT_MAX_BYTES,
     DEFAULT_TIMEOUT_MS,
+    layoutOf,
+    type McpToolHeaders,
     type McpTokenResolver,
     type McpToolCallOptions,
     type McpToolExtra,
@@ -28,7 +30,7 @@ export {
     type McpToolResourceLink,
 } from "./call";
 export { jsonSchemaInput } from "./schema";
-export { mcpUniformResourceUri, uniformFromSource } from "./utils";
+export { loadUniformSource, mcpUniformResourceUri, uniformFromSource } from "./utils";
 export type { LLMsContent } from "./llms-parser";
 
 const RESOURCE_PEERS = [

@@ -39,6 +39,34 @@ export async function uniformFromSource(
   return references;
 }
 
+/**
+ * The references of a uniform source, strictly: a source of no supported kind
+ * or a document that cannot be read is an error, never an empty list.
+ */
+export async function loadUniformSource(uniformSource: string): Promise<Reference[]> {
+  const kind = uniformSourceDetector(stripQuery(uniformSource));
+  if (kind !== "openapi" && kind !== "graphql") {
+    throw new Error(
+      `unsupported source ${JSON.stringify(uniformSource)}: expected an OpenAPI (.json, .yaml, .yml) or GraphQL (.graphql, .graphqls) document`
+    );
+  }
+  if (kind === "openapi") {
+    const { deferencedOpenAPI, oapSchemaToReferences } = await import("@xyd-js/openapi");
+    const document = await deferencedOpenAPI(uniformSource);
+    if (!document) {
+      throw new Error(`could not read the OpenAPI document ${JSON.stringify(uniformSource)}`);
+    }
+    return oapSchemaToReferences(document);
+  }
+  const { gqlSchemaToReferences } = await import("@xyd-js/gql");
+  return gqlSchemaToReferences(uniformSource);
+}
+
+/** A URL's path without its query string or fragment, for the extension check. */
+function stripQuery(source: string): string {
+  return /^https?:\/\//i.test(source) ? source.replace(/[?#].*$/, "") : source;
+}
+
 // TODO: in the future from shared xyd package
 function uniformSourceDetector(
   sourcePath: string

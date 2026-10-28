@@ -57,7 +57,7 @@ export async function parseLLMsContent(
       const validLinks = links.filter((link) => isUrl(link));
 
       if (validLinks.length > 0) {
-        console.log("🔍 Starting to scrape linked content...");
+        console.error("🔍 Starting to scrape linked content...");
 
         // Process links in chunks
         const chunkSize = 50;
@@ -111,8 +111,8 @@ export async function parseLLMsContent(
           }
         }
 
-        console.log(
-          `\n✅ Scraping complete! Fetched ${Object.keys(linkedContent).length} pages`
+        console.error(
+          `${process.stderr.isTTY ? "\n" : ""}✅ Scraping complete! Fetched ${Object.keys(linkedContent).length} pages`
         );
       }
 
@@ -162,12 +162,16 @@ function extractLinks(node: any, links: string[]): void {
 }
 
 // TODO: move to cli-spinner
-// ASCII loader function
+// ASCII loader function. Progress goes to stderr, and only to a terminal: stdout
+// may be a protocol stream (an MCP server over stdio).
 function showLoader(llmsPath: string, current: number, total: number) {
+  if (!process.stderr.isTTY) {
+    return;
+  }
   const progress = Math.round((current / total) * 20);
   const bar = "█".repeat(progress) + "░".repeat(20 - progress);
   const percent = Math.round((current / total) * 100);
-  process.stdout.write(
+  process.stderr.write(
     `\r🔄 Scraping ${llmsPath}: [${bar}] ${percent}% (${current}/${total})`
   );
 }

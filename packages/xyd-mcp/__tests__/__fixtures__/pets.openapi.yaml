@@ -155,6 +155,30 @@ paths:
       responses:
         "204":
           description: Uploaded.
+  /webhook-defaults:
+    put:
+      operationId: setWebhookDefaults
+      summary: Set webhook defaults
+      description: Sets the headers and cookies every webhook sends.
+      tags: [webhooks]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                headers:
+                  type: object
+                  description: Headers every webhook sends.
+                  additionalProperties:
+                    type: string
+                cookies:
+                  type: string
+                  description: A cookie string every webhook sends.
+      responses:
+        "200":
+          description: The defaults.
 components:
   schemas:
     Pet:

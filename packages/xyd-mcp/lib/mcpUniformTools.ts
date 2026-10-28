@@ -3,7 +3,7 @@ import { uniformToMcpTools, type McpTool, type McpToolsOptions, type Reference }
 
 import { callMcpUniformTool, type McpToolCallOptions } from "./call";
 import { jsonSchemaInput } from "./schema";
-import { uniformFromSource } from "./utils";
+import { loadUniformSource } from "./utils";
 
 export type { McpTool } from "@xyd-js/uniform";
 
@@ -29,16 +29,26 @@ export interface McpUniformToolsOptions extends McpToolsOptions, McpToolSelectio
  *
  * Pure data: compute it once, then register it on as many servers as needed
  * with {@link registerMcpUniformTools} (one per request in a stateless server).
+ *
+ * A source of no supported kind, or a document that cannot be read, throws; a
+ * source that yields no tool is warned about, naming the source.
  */
 export async function mcpUniformToolDefinitions(
     source: string | Reference[],
     options: McpToolsOptions & McpToolSelection = {}
 ): Promise<McpTool[]> {
-    const references = typeof source === "string" ? await uniformFromSource(source) : source;
-    if (!references?.length) {
+    const references = typeof source === "string" ? await loadUniformSource(source) : source;
+    const named = typeof source === "string" ? JSON.stringify(source) : "the given references";
+    const generated = uniformToMcpTools(references || [], options);
+    if (!generated.length) {
+        console.warn(`@xyd-js/mcp: ${named} has no REST operation to make a tool of`);
         return [];
     }
-    return selectMcpTools(uniformToMcpTools(references, options), options);
+    const selected = selectMcpTools(generated, options);
+    if (!selected.length) {
+        console.warn(`@xyd-js/mcp: readOnlyMode / filter left none of the ${generated.length} tools of ${named}`);
+    }
+    return selected;
 }
 
 /** `tools` narrowed by `readOnlyMode` and `filter`. */

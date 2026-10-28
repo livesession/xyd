@@ -69,7 +69,7 @@ Calls:
 |---|---|---|
 | `token` | the request's bearer | a string (one bearer for every call) or `(extra) => token`; by default `extra.authInfo.token`, i.e. the `Authorization` bearer of the HTTP request that carried the call |
 | `baseUrl` | the document's first server | the API base URL, joined with each operation's path |
-| `headers` | — | extra request headers, fixed or `(tool, extra) => headers` |
+| `headers` | — | extra request headers, fixed or `(tool, extra) => headers`; set over the defaults case-insensitively, so an `Accept` or `Content-Type` here wins; an undefined or null value is not sent |
 | `maxBytes` | 262144 | the answer is cut after this many bytes, with a `[truncated: …]` marker |
 | `errorBytes` | 8192 | bytes of an error body quoted in the tool error |
 | `timeoutMs` | 30000 | the request is abandoned after this long |
@@ -78,11 +78,18 @@ Calls:
 | `resourceLink` | — | `(tool) => link`: a `resource_link` answered beside each result |
 | `fetch` | global `fetch` | the fetch implementation |
 
-A call sends `Accept: application/json` (and `Content-Type: application/json` with a body), fills the
-path from the path parameters (each one plain segment, percent-encoded), clamps an integer `limit` to
+A call reads its arguments by the tool's `binding.layout` (flat or grouped; never guessed from
+property names, so a flat body field called `headers` stays in the body), sends `Accept:
+application/json` (and `Content-Type: application/json` with a body) unless `headers` says
+otherwise, the resolved bearer last, fills the path from the path parameters (each one plain segment, percent-encoded), clamps an integer `limit` to
 the bounds its schema declares, and answers the response body as one text block. A non-2xx answer is
 `isError: true` with the status and the first `errorBytes` of the body; invalid arguments, an
-unreachable API and a timeout are tool errors too, and none of them names the token.
+unreachable API, a timeout and a cancellation by the client (each said as such) are tool errors too,
+and none of them names the token — a `token` or `headers` function that throws gives a generic error,
+not its message.
+
+A source of no supported kind, or a document that cannot be read, throws (`loadUniformSource`); a
+source without REST operations is warned about, naming it.
 
 `callMcpUniformTool(tool, args, options)` and `buildMcpToolRequest(tool, args)` are exported for
 servers that register tools their own way.
