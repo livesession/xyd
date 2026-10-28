@@ -24,6 +24,14 @@ To describe your MCP server, point xyd at a remote MCP endpoint or commit a loca
 Source can be an `http://`, `https://`, or `sse://` URL — or a path to a local JSON file.
 :::
 
+A URL is read over streamable HTTP, the way MCP clients connect: xyd sends `initialize`, keeps the
+session the server issues (`Mcp-Session-Id`) and the protocol version it answers
+(`Mcp-Protocol-Version`), reads answers sent as JSON or as an event stream, follows `nextCursor`
+across pages, and ends the session afterwards. A server that does not implement `initialize` is read
+with plain `tools/list` and `resources/list` requests.
+
+To serve an API as an MCP server in the first place, see [MCP Server](/guides/mcp-server).
+
 ## Configuration Quickstart
 The fastest way to get started with MCP is to add an `mcp` field to `api` in the [`settings`](/guides/settings) file.
 This field can contain either a path to a local manifest in your docs, or the URL of a live MCP server:
