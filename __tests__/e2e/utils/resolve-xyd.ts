@@ -15,6 +15,13 @@ export interface ResolvedCommand {
     cmd: string;
     args: string[];
     env: Record<string, string>;
+    /**
+     * Where the CLI comes from. Only the monorepo's own build may run a project
+     * in place: any other CLI, run inside this repository, would resolve the
+     * repository's linked (and possibly unbuilt) @xyd-js packages from the root
+     * node_modules instead of its own.
+     */
+    source: 'version' | 'monorepo' | 'global';
 }
 
 export function getRandomPort(): Promise<number> {
@@ -75,7 +82,7 @@ export async function resolveXydCommand(): Promise<ResolvedCommand> {
             }
         }
         const xydEntry = path.join(installDir, 'node_modules', 'xyd-js', 'index.js');
-        return { cmd: 'node', args: [xydEntry], env: {} };
+        return { cmd: 'node', args: [xydEntry], env: {}, source: 'version' };
     }
 
     // Priority 2: monorepo local CLI
@@ -87,20 +94,38 @@ export async function resolveXydCommand(): Promise<ResolvedCommand> {
             cmd: 'node',
             args: [cliPath],
             env: { XYD_DEV_MODE: '1', XYD_NODE_PM: 'pnpm' },
+            source: 'monorepo',
         };
     }
 
     // Priority 3: global xyd
-    return { cmd: 'xyd', args: [], env: {} };
+    return { cmd: 'xyd', args: [], env: {}, source: 'global' };
 }
 
-/** Poll http://localhost:<port> until it answers 200/302 (2 min budget). */
-export async function waitForServer(port: number): Promise<void> {
+/**
+ * Poll http://localhost:<port> until it answers 200/302 (2 min budget). With
+ * `exited` — a promise that rejects when the server's process ends — a server
+ * that dies before serving fails at once with that error instead of after the
+ * whole budget.
+ */
+export async function waitForServer(port: number, exited?: Promise<never>): Promise<void> {
+    if (!exited) {
+        return pollServer(port, () => false);
+    }
+    let settled = false;
+    try {
+        return await Promise.race([pollServer(port, () => settled), exited]);
+    } finally {
+        settled = true;
+    }
+}
+
+async function pollServer(port: number, stop: () => boolean): Promise<void> {
     const maxWaitTime = 2 * 60 * 1000; // 2 minutes
-    const checkInterval = 5 * 1000; // 5 seconds
+    const checkInterval = 1000;
     const startTime = Date.now();
 
-    while (Date.now() - startTime < maxWaitTime) {
+    while (!stop() && Date.now() - startTime < maxWaitTime) {
         try {
             const response = await fetch(`http://localhost:${port}`);
             if (response.ok || response.status === 302) {

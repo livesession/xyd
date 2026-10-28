@@ -1750,7 +1750,10 @@ export async function postWorkspaceSetup(settings: Settings) {
 
         const hostPath = getHostPath();
         const packageJsonPath = path.join(hostPath, "package.json");
-        const packageJson = await hostPackageJson();
+        // An engine that never copied the host template (the bun dev engine on a
+        // fresh project) has no host package.json yet: start one, so the theme
+        // and plugin dependencies below have somewhere to be installed.
+        const packageJson = (await hostPackageJson()) ?? newHostPackageJson(hostPath);
 
         const integrationDeps = await setupIntegationDependencies(settings);
         const pluginDeps = await setupPluginDependencies(settings);
@@ -1791,6 +1794,11 @@ export async function postWorkspaceSetup(settings: Settings) {
         spinner.error("❌ Failed to install xyd framework");
         throw error;
     }
+}
+
+function newHostPackageJson(hostPath: string) {
+    fs.mkdirSync(hostPath, { recursive: true });
+    return { name: "xyd-host", private: true, type: "module", dependencies: {} as Record<string, string> };
 }
 
 async function hostPackageJson() {
