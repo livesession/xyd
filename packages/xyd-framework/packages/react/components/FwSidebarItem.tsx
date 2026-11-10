@@ -217,6 +217,10 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
     const asTocSidebar = useSidebarAsToc()
     const { query } = useSidebarFilter()
     const [isActive, setActive] = active(props)
+    // The subtree's id for the toggle's aria-controls: useId, so the desktop
+    // and the mobile host (two sidebars in one document) never share one.
+    // Called before the filter's early return below, like every hook here.
+    const subtreeId = useId()
 
     const q = query.trim().toLowerCase()
 
@@ -282,6 +286,13 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
 
     const icon = props.icon ? <Icon name={props.icon} size={16} /> : null
 
+    // A nested group folds its rows into a subtree under its button: the
+    // button states whether that subtree is open (`aria-expanded`) and which
+    // one it is (`aria-controls`). A `group: false` item lists its rows inline
+    // — it folds nothing, so its button states neither.
+    const foldsSubtree = nested && props.group !== false
+    const expanded = isActive || forceExpand
+
     return <UISidebar.Item
         button={nested}
         href={props.url || props.href}
@@ -290,6 +301,8 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
         onClick={handleClick}
         icon={icon}
         group={props.group}
+        expanded={foldsSubtree ? expanded : undefined}
+        controls={foldsSubtree ? subtreeId : undefined}
     >
         <div part="item-title-container">
             <Surface
@@ -338,7 +351,7 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
             </>
         }
         {
-            props.group !== false && props.items?.length && <UISidebar.SubTree isOpen={isActive || forceExpand}>
+            props.group !== false && props.items?.length && <UISidebar.SubTree id={subtreeId} isOpen={expanded}>
                 {(renderChildren || forceExpand) && <>
                     {
                         props.items?.map((item, index) => <FwSidebarItem

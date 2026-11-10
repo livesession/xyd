@@ -38,6 +38,11 @@ export {
 export type { FilterableSidebarItem } from "./sidebarFilter"
 
 export {
+    sidebarActivePath,
+} from "./sidebarActivePath"
+export type { SidebarPathItem } from "./sidebarActivePath"
+
+export {
     segmentAppearanceKind,
     segmentAppearanceOptions,
 } from "./segmentAppearance"

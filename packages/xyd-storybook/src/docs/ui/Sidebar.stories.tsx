@@ -105,6 +105,65 @@ function DemoCollapsibleGroupSidebar() {
     </UISidebar>
 }
 
+/**
+ * Nested groups under a section header, each one a toggle (`Item button` with
+ * `expanded` + `controls`, over a `SubTree` with the matching `id`): the button
+ * states whether its subtree is open (`aria-expanded`) and which subtree it
+ * folds (`aria-controls`). Several can be open at once.
+ */
+export const NestedToggle = () => {
+    return <div style={{
+        padding: "100px",
+        paddingTop: "0px",
+        margin: "0 auto",
+    }}>
+        <LayoutPrimary
+            header={<></>}
+            aside={<DemoNestedToggleSidebar/>}
+            content={<></>}
+            contentNav={<></>}
+        />
+    </div>
+}
+
+function DemoNestedToggleSidebar() {
+    const [open, setOpen] = useState<Record<string, boolean>>({pets: true})
+
+    const toggle = (key: string) => setOpen((prev) => ({...prev, [key]: !prev[key]}))
+
+    const group = (key: string, title: string, pages: string[]) => {
+        const subtreeId = `demo-subtree-${key}`
+        return <UISidebar.Item
+            button
+            active={!!open[key]}
+            activeTheme="secondary"
+            expanded={!!open[key]}
+            controls={subtreeId}
+            onClick={() => toggle(key)}
+        >
+            {title}
+            <UISidebar.SubTree id={subtreeId} isOpen={!!open[key]}>
+                {pages.map((page) => <UISidebar.Item key={page} href="#">
+                    {page}
+                </UISidebar.Item>)}
+            </UISidebar.SubTree>
+        </UISidebar.Item>
+    }
+
+    return <UISidebar>
+        <UISidebar.ItemHeader>
+            Core
+        </UISidebar.ItemHeader>
+        {group("pets", "Pets", ["List pets", "Create pet", "Retrieve pet"])}
+        {group("store", "Store", ["Place order", "Retrieve inventory"])}
+
+        <UISidebar.ItemHeader>
+            Admin
+        </UISidebar.ItemHeader>
+        {group("users", "Users", ["List users", "Delete user"])}
+    </UISidebar>
+}
+
 function DemoSidebar() {
     const [isOpen, setIsOpen] = useState(false)
 
