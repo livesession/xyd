@@ -1,0 +1,116 @@
+openapi: 3.0.3
+info:
+  title: Pets API
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/v1
+paths:
+  /pets:
+    get:
+      operationId: listPets
+      summary: List pets
+      description: Returns a page of pets, newest first.
+      tags: [pets]
+      parameters:
+        - name: limit
+          in: query
+          description: How many pets to return, at most 200.
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 20
+        - name: tag
+          in: query
+          description: Only pets with all of these tags.
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        "200":
+          description: A page of pets.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PetList"
+    post:
+      operationId: createPet
+      summary: Create pet
+      description: Creates a pet.
+      tags: [pets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  description: The pet's name.
+                tag:
+                  type: string
+                  description: A free-form tag.
+      responses:
+        "201":
+          description: The created pet.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+  /pets/{petId}:
+    get:
+      operationId: getPet
+      summary: Retrieve pet
+      description: Retrieves the pet with the given id.
+      tags: [pets]
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: The pet's id.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The pet.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Pet"
+    delete:
+      operationId: deletePet
+      summary: Delete pet
+      description: Deletes the pet with the given id.
+      tags: [pets]
+      parameters:
+        - name: petId
+          in: path
+          required: true
+          description: The pet's id.
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted.
+components:
+  schemas:
+    Pet:
+      type: object
+      required: [id, name]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        tag:
+          type: string
+    PetList:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Pet"

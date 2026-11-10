@@ -5,9 +5,9 @@ import {UISidebar} from "@xyd-js/ui";
 
 import {useSidebarGroups} from "../contexts";
 import {useSidebarActive} from "../lib";
-import {trailingSlash} from "../utils";
+import {sidebarActivePath, trailingSlash} from "../utils";
 
-import {FwSidebarItem, FwSidebarItemElementProps, FwSidebarItemProps} from "./FwSidebarItem";
+import {FwSidebarItem, FwSidebarItemElementProps, FwSidebarItemProps, groupToggleItem} from "./FwSidebarItem";
 
 export function useSidebarTree(): [React.ReactElement[], { initialActiveItems: any[] }] {
     const location = useLocation()
@@ -78,7 +78,14 @@ export function useSidebarTree(): [React.ReactElement[], { initialActiveItems: a
     const routeActiveItems = React.useMemo(() => {
         const items: any[] = []
         groups.forEach((group, groupIndex) => {
-            const activeLevels = recursiveSearch(group.items, effectiveHref) || []
+            const activeLevels = sidebarActivePath(group.items, effectiveHref) || []
+
+            // A collapsible top-level group opens when it holds the active page:
+            // its toggle shares the item key space (groupToggleItem), so it is
+            // seeded here along with the branch itself.
+            if (group.collapsed && activeLevels.length) {
+                items.push(groupToggleItem(groupIndex))
+            }
 
             activeLevels.reduce((acc, index, level) => {
                 items.push({
@@ -139,22 +146,4 @@ export function useSidebarTree(): [React.ReactElement[], { initialActiveItems: a
 function asTocIndicatorOf(group: FwSidebarItemProps): boolean {
     return !!group.asToc
         && (typeof group.asToc !== "object" || group.asToc.indicator !== false)
-}
-
-function recursiveSearch(items: FwSidebarItemElementProps[], href: string, levels: any[] = []) {
-    for (let i = 0; i < items.length; i++) {
-        const item = items[i]
-
-        if (item.href === href) {
-            return [...levels, i]
-        }
-
-        if (item.items) {
-            const result = recursiveSearch(item.items, href, [...levels, i])
-            if (result) {
-                return result
-            }
-        }
-    }
-    return null
 }

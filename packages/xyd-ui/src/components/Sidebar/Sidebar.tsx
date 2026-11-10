@@ -65,6 +65,15 @@ export interface UISidebarItemProps {
     icon?: React.ReactNode;
     group?: false;
     onClick?: (v: any) => void
+    /**
+     * A `button` item that folds a `UISidebar.SubTree` (a nested group): whether
+     * that subtree is open, rendered as `aria-expanded`. Left out, the button
+     * carries no `aria-expanded` (it folds nothing).
+     */
+    expanded?: boolean;
+    /** A `button` item: the id of the `UISidebar.SubTree` it folds, rendered
+     *  as `aria-controls`. */
+    controls?: string;
 }
 
 UISidebar.ItemGroup = function SidebarItemGroup({ children, asToc }: { children: React.ReactNode, asToc?: boolean }) {
@@ -84,6 +93,8 @@ UISidebar.Item = function SidebarItem({
     icon,
     group,
     onClick,
+    expanded,
+    controls,
 }: UISidebarItemProps) {
     const [firstChild, ...restChilds] = React.Children.toArray(children)
 
@@ -96,6 +107,25 @@ UISidebar.Item = function SidebarItem({
         target = "_blank"
     }
 
+    // Per element: the link's props (`prefetch` is the router link's own — on
+    // any other element it would leak into the DOM as an attribute), the
+    // nested-group toggle's (a plain button that never submits, with its
+    // open state and the subtree it folds), nothing on a ghost row.
+    const elementProps = ghost
+        ? {}
+        : button
+            ? {
+                type: "button" as const,
+                "aria-expanded": expanded,
+                "aria-controls": controls,
+            }
+            : {
+                href: h,
+                ...(h ? { to: h } : {}),
+                ...(target ? { target } : {}),
+                prefetch: "intent" as const,
+            }
+
     return <li
         part="item"
         className={cn.ItemHost}
@@ -105,13 +135,8 @@ UISidebar.Item = function SidebarItem({
         {
             group !== false && <ButtonOrAnchor
                 part={`item-${button ? "button" : "link"}`}
-                {...(ghost ? {} : {
-                    ...(button ? {} : { href: h }),
-                    ...(h ? { to: h } : {}),
-                    ...(target ? { target } : {})
-                })}
+                {...(elementProps as any)}
                 onClick={onClick}
-                prefetch="intent"
             >
                 <div
                     part="primary-item"
@@ -135,6 +160,17 @@ UISidebar.Item = function SidebarItem({
 export interface UISidebarItemHeaderProps {
     children: React.ReactNode;
     icon?: React.ReactNode;
+    /**
+     * Makes the header the toggle of a collapsible top-level group: a button
+     * carrying the group's name and a chevron, `aria-expanded` from `open`,
+     * `aria-controls` the id of the `UISidebar.GroupTree` it folds. Without it
+     * the header is static, as a top-level group's always was.
+     */
+    toggle?: {
+        open: boolean;
+        onToggle: () => void;
+        controls?: string;
+    };
 }
 
 /**
@@ -149,7 +185,27 @@ UISidebar.ItemSeparator = function SidebarItemSeparator() {
     return <li part="item-separator" role="presentation" />
 }
 
-UISidebar.ItemHeader = function SidebarItemHeader({ children, icon }: UISidebarItemHeaderProps) {
+UISidebar.ItemHeader = function SidebarItemHeader({ children, icon, toggle }: UISidebarItemHeaderProps) {
+    if (toggle) {
+        return <li
+            part="item-header"
+            className={cn.ItemHeaderHost}
+            data-collapsible="true"
+            data-open={String(toggle.open)}
+        >
+            <button
+                type="button"
+                part="item-header-toggle"
+                aria-expanded={toggle.open}
+                aria-controls={toggle.controls}
+                onClick={toggle.onToggle}
+            >
+                {icon}
+                <span part="item-header-title">{children}</span>
+            </button>
+        </li>
+    }
+
     return <li part="item-header" className={cn.ItemHeaderHost}>
         {icon}
         {children}
@@ -177,14 +233,39 @@ UISidebar.ItemBody = function SidebarItemBody({ title, right }: UISidebarItemBod
 export interface UISidebarSubTreeProps {
     children: React.ReactNode;
     isOpen?: boolean;
+    /** the id the folding `Item` points at with `controls` (`aria-controls`) */
+    id?: string;
 }
 
-UISidebar.SubTree = function SidebarSubItem({ children, isOpen }: UISidebarSubTreeProps) {
-    return <ul part="subtree" className={cn.TreeHost}>
+UISidebar.SubTree = function SidebarSubItem({ children, isOpen, id }: UISidebarSubTreeProps) {
+    return <ul part="subtree" id={id} className={cn.TreeHost}>
         <UICollapse isOpen={isOpen || false}>
             {children}
         </UICollapse>
     </ul>
+}
+
+export interface UISidebarGroupTreeProps {
+    children: React.ReactNode;
+    isOpen?: boolean;
+    /** the id a toggling `ItemHeader` points at with `aria-controls` */
+    id?: string;
+}
+
+/**
+ * The rows of a collapsible top-level group, folded under its header's toggle.
+ * A row of the list itself — so the themes' spacing rules still see an
+ * `[part="item"]` before the next header — holding one ROOT-level subtree: the
+ * same `xyd-collapse` mechanism as a nested group's, without its indent.
+ */
+UISidebar.GroupTree = function SidebarGroupTree({ children, isOpen, id }: UISidebarGroupTreeProps) {
+    return <li part="item" data-group-tree="true">
+        <ul part="subtree" data-root="true" id={id} className={cn.TreeHost}>
+            <UICollapse isOpen={isOpen || false}>
+                {children}
+            </UICollapse>
+        </ul>
+    </li>
 }
 
 // TODO: move to shared code

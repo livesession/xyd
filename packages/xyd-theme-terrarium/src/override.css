@@ -231,11 +231,14 @@
     /* Terrarium chevron + FAST expand/collapse:
        — custom chevron glyph (the base draws it as a mask-image on ::after, so
          swapping the mask URL is the whole override; open=rotate(0)/down,
-         closed=rotate(-90)/right states come from the base);
+         closed=rotate(-90)/right states come from the base) — on the nested
+         groups' buttons and on the toggle of a collapsible top-level group
+         (`[part="item-header-toggle"]`, the same chevron in the base);
        — snappier chevron rotation (0.1s vs base 0.2s);
        — expanding/collapsing is INSTANT: no height slide, no fade-in (base
          animates 300ms via the xyd-collapse CSS transitions). */
-    xyd-sidebar [part="item-button"]:has(+ [part="subtree"] xyd-collapse)::after {
+    xyd-sidebar [part="item-button"]:has(+ [part="subtree"] xyd-collapse)::after,
+    xyd-sidebar [part="item-header-toggle"]::after {
         -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'16'%20height%3D'16'%20fill%3D'none'%20viewBox%3D'0%200%2016%2016'%20aria-hidden%3D'true'%3E%3Cpath%20fill%3D'currentColor'%20fill-rule%3D'evenodd'%20d%3D'M3.235%205.205a.75.75%200%20011.06.03L8%209.158l3.705-3.923a.75.75%200%20011.09%201.03l-4.25%204.5a.75.75%200%2001-1.09%200l-4.25-4.5a.75.75%200%2001.03-1.06z'%20clip-rule%3D'evenodd'%3E%3C%2Fpath%3E%3C%2Fsvg%3E");
         mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20width%3D'16'%20height%3D'16'%20fill%3D'none'%20viewBox%3D'0%200%2016%2016'%20aria-hidden%3D'true'%3E%3Cpath%20fill%3D'currentColor'%20fill-rule%3D'evenodd'%20d%3D'M3.235%205.205a.75.75%200%20011.06.03L8%209.158l3.705-3.923a.75.75%200%20011.09%201.03l-4.25%204.5a.75.75%200%2001-1.09%200l-4.25-4.5a.75.75%200%2001.03-1.06z'%20clip-rule%3D'evenodd'%3E%3C%2Fpath%3E%3C%2Fsvg%3E");
         transition: transform 0.1s ease, background-color 0.1s ease;

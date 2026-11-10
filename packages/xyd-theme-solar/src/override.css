@@ -48,7 +48,8 @@
         }
 
         xyd-sidebar {
-            [part=item-button]::after {
+            [part=item-button]::after,
+            [part=item-header-toggle]::after {
                 width: 10px;
             }
         }

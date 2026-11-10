@@ -361,7 +361,12 @@ export function ShellProviders() {
               {
                 Link: FwLink,
                 syntaxHighlight: settings.theme?.coder?.syntaxHighlight || null,
-                baseMatch: "",
+                // The base of the page's schema links: the preset-stamped prefix
+                // of its API reference ("" at the root), see Metadata.baseMatch.
+                baseMatch:
+                  typeof (loaderData.metadata as any)?.baseMatch === "string"
+                    ? (loaderData.metadata as any).baseMatch
+                    : "",
                 variantToggles,
                 ...(sdkCfg
                   ? {

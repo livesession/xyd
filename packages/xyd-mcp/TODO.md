@@ -1,2 +1,1 @@
-1. !!! support other bundlers than bun !!!
-2. oAuth 
+1. oAuth

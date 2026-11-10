@@ -7,6 +7,7 @@ import {
   embedXSdk,
   getXSdk,
   loadSpecSource,
+  orderSdkLanguageIds,
   prepareSdk,
   type XSdkOperation,
 } from '../src/index';
@@ -176,5 +177,141 @@ describe('loadSpecSource', () => {
     expect(Object.keys(loaded!.paths ?? {}).length).toBeGreaterThan(0);
 
     expect(await loadSpecSource('/definitely/missing.yaml')).toBeNull();
+  });
+});
+
+// The switcher ORDER. The raw-HTTP (curl) entry is always first; the SDK
+// languages follow the configured order — a `langs` request when given (the
+// docs config's `sdk.languages`), else a spec's own root `x-sdk.languages`
+// (the order `embedXSdk` / `opensdk xsdk` was asked for), else SDK_LANGS.
+describe('the switcher order', () => {
+  const tabLangs = (ref: Reference) => ref.examples!.groups[0].examples[0].codeblock.tabs.map((t) => t.language);
+  const returnVariants = (ref: Reference) =>
+    ref.definitions!.find((d) => d.title === 'Returns')!.variants!.map((v) => v.meta![0].value);
+
+  it('orderSdkLanguageIds: the request narrows + orders; unknown ids drop; repeats collapse; no request → as available', () => {
+    const available = ['go', 'python', 'typescript'];
+    expect(orderSdkLanguageIds(available)).toEqual(['go', 'python', 'typescript']);
+    expect(orderSdkLanguageIds(available, null)).toEqual(['go', 'python', 'typescript']);
+    expect(orderSdkLanguageIds(available, ['typescript', 'go'])).toEqual(['typescript', 'go']);
+    expect(orderSdkLanguageIds(available, ['ruby', 'typescript', 'cobol', 'python', 'typescript'])).toEqual(['typescript', 'python']);
+    expect(orderSdkLanguageIds(available, ['cobol'])).toEqual([]);
+  });
+
+  it('embedXSdk writes the REQUESTED order to the root list and to every operation', () => {
+    const { doc: embedded, languages } = embedXSdk(doc, { langs: ['python', 'typescript', 'go', 'python'] });
+    expect(languages).toEqual(['python', 'typescript', 'go']);
+    expect(getXSdk(embedded)).toEqual({ languages: ['python', 'typescript', 'go'] });
+    expect(Object.keys(opXSdk(embedded, 'post'))).toEqual(['python', 'typescript', 'go']);
+  });
+
+  it("attachSdkFromSpec keeps the spec's order without a request — curl first", () => {
+    const embedded = embedXSdk(doc, { langs: ['python', 'typescript', 'go'] }).doc;
+    const ref = makeRef('post', '/widgets');
+    attachSdkFromSpec([ref], embedded, { keepRest: true });
+    expect(tabLangs(ref)).toEqual(['shell', 'python', 'typescript', 'go']);
+    expect(returnVariants(ref)).toEqual(['python', 'typescript', 'go']);
+  });
+
+  it('attachSdkFromSpec follows a requested order (the docs config) over the spec order — curl still first', () => {
+    const embedded = embedXSdk(doc, { langs: ['python', 'typescript', 'go'] }).doc;
+    const ref = makeRef('post', '/widgets');
+    attachSdkFromSpec([ref], embedded, { keepRest: true, langs: ['go', 'cobol', 'python', 'go'] });
+    expect(tabLangs(ref)).toEqual(['shell', 'go', 'python']);
+    expect(returnVariants(ref)).toEqual(['go', 'python']);
+  });
+
+  it('attachSdk (generate mode) follows the requested order too — and matches the spec path byte for byte', () => {
+    const generated = makeRef('post', '/widgets');
+    attachSdk([generated], prepareSdk(doc)!, { keepRest: true, langs: ['typescript', 'go', 'python'] });
+    expect(tabLangs(generated)).toEqual(['shell', 'typescript', 'go', 'python']);
+
+    const fromSpec = makeRef('post', '/widgets');
+    attachSdkFromSpec([fromSpec], embedXSdk(doc, { langs: ['typescript', 'go', 'python'] }).doc, { keepRest: true });
+    expect(JSON.parse(JSON.stringify(fromSpec))).toEqual(JSON.parse(JSON.stringify(generated)));
+  });
+});
+
+// The nested table travels with the x-sdk: `types.nested` behind the two
+// one-level groups, left out when nothing is referenced — the shape
+// `opensdk xsdk` writes. An x-sdk written before it existed (no `nested`, no
+// `schemaRef`) still renders: one level deep, linked only to the pages the
+// reference's own evidence knows, never a guessed `objects/<Type>`.
+describe('x-sdk nested types', () => {
+  it('embedXSdk carries the nested table behind request/response', () => {
+    const { doc: enriched } = embedXSdk(doc, { langs: ['go', 'typescript'] });
+    const post = opXSdk(enriched, 'post');
+    expect(post.go.types!.nested?.WidgetCreate?.schemaRef).toBe('#/components/schemas/WidgetCreate');
+    expect(post.go.types!.nested?.Widget?.fields?.map((f) => f.name)).toEqual(['ID', 'Name']);
+    expect(post.typescript.types!.nested?.Widget?.fields?.map((f) => f.name)).toEqual(['id', 'name']);
+    expect(post.go.types!.response.schemaRef).toBe('#/components/schemas/Widget');
+  });
+
+  it('a hand-authored x-sdk without schemaRef links only to what the REST rows know', () => {
+    const custom = JSON.parse(JSON.stringify(doc)) as OpenAPIV3.Document;
+    (custom as any)['x-sdk'] = { languages: ['go'] };
+    (custom.paths!['/widgets']!.get as any)['x-sdk'] = {
+      go: {
+        signature: 'client.Widgets.List(ctx) ([]Widget, error)',
+        types: {
+          request: { fields: [] },
+          response: { typeName: '[]Widget', langType: '[]Widget', refTypeName: 'Widget' },
+        },
+      },
+    } satisfies XSdkOperation;
+
+    // no evidence: the type text alone — never a guessed `objects/Widget`
+    const bare = makeRef('get', '/widgets');
+    attachSdkFromSpec([bare], custom, { keepRest: true });
+    const returns = (ref: Reference) => ref.definitions!.find((d) => d.title === 'Returns')!.variants![0].properties!;
+    expect(returns(bare)[0].type).toBe('[]Widget');
+    expect(returns(bare)[0].symbolDef).toBeUndefined();
+    expect(returns(bare)[0].properties).toBeUndefined();
+
+    // the REST response row links the schema: the SDK row follows it
+    const evidenced = makeRef('get', '/widgets');
+    evidenced.definitions![1].properties = [
+      { name: '', type: 'object', description: '', symbolDef: { id: '#/components/schemas/Widget', canonical: 'objects/Widget', label: 'widget' } },
+    ];
+    attachSdkFromSpec([evidenced], custom, { keepRest: true });
+    expect(returns(evidenced)[0].symbolDef).toEqual({ id: '#/components/schemas/Widget', canonical: 'objects/Widget' });
+  });
+
+  it('a hand-authored x-sdk without schemaRef, on a list with component pages, links only to the schemas the list knows', () => {
+    const custom = JSON.parse(JSON.stringify(doc)) as OpenAPIV3.Document;
+    (custom as any)['x-sdk'] = { languages: ['go'] };
+    (custom.paths!['/widgets']!.get as any)['x-sdk'] = {
+      go: {
+        signature: 'client.Widgets.List(ctx) (*WidgetPage, error)',
+        types: {
+          request: { fields: [] },
+          // a synthesized envelope: an array of a component beside an inline block the generator named
+          response: {
+            typeName: 'WidgetPage',
+            refTypeName: 'WidgetPage',
+            fields: [
+              { name: 'Data', langType: '[]Widget', required: true, refTypeName: 'Widget' },
+              { name: 'Stats', langType: 'WidgetPageStats', required: false, refTypeName: 'WidgetPageStats' },
+            ],
+          },
+        },
+      },
+    } satisfies XSdkOperation;
+    const list = makeRef('get', '/widgets');
+    const widgetPage = {
+      title: 'Widget',
+      canonical: 'objects/Widget',
+      description: '',
+      definitions: [],
+      examples: { groups: [] },
+      context: { componentSchema: 'Widget' },
+    } as unknown as Reference;
+    attachSdkFromSpec([list, widgetPage], custom, { keepRest: true });
+
+    const rows = list.definitions!.find((d) => d.title === 'Returns')!.variants![0].rootProperty!.properties!;
+    // the component the list has a page for: that page
+    expect(rows[0].symbolDef).toEqual({ id: '#/components/schemas/Widget', canonical: 'objects/Widget' });
+    // a name the list does not know: no schema id at all — not even an unlinked one
+    expect(rows[1].symbolDef).toBeUndefined();
   });
 });

@@ -99,14 +99,37 @@ The function generates a structured JSON output containing:
 
 ## Plugins
 
-You can configure the uniform plugins in your `docs.json`:
+Uniform plugins post-process the references before they render. They are not configured under a
+`uniform` key in `docs.json` (there is none): a uniform plugin ships inside an
+[xyd plugin](/guides/plugins), in the `uniform` array the plugin returns, and the xyd plugin is listed
+in `docs.json`'s `plugins`:
 
-```json
-{
-  "uniform": {
-    "plugins": [
-      // Custom plugins for processing uniform output
-    ]
-  }
+:::code-group
+```ts my-plugin.ts
+import type { Plugin } from "@xyd-js/plugins"
+import type { UniformPlugin } from "@xyd-js/uniform"
+
+// Marks every deprecated operation in its title.
+const deprecatedTitles: UniformPlugin<{}> = () => (ref) => {
+    if (ref.description?.toString().startsWith("Deprecated")) {
+        ref.title = `${ref.title} (deprecated)`
+    }
+}
+
+export default function myPlugin(): Plugin {
+    return () => ({
+        name: "my-plugin",
+        uniform: [deprecatedTitles],
+    })
 }
 ```
+
+```json docs.json
+{
+  "plugins": ["./my-plugin.ts"]
+}
+```
+:::
+
+The one uniform setting in `docs.json` is `engine.uniform.store`, which writes the generated API pages
+into your content folder instead of a virtual one.

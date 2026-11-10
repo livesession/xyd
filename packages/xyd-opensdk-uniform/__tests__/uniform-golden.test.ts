@@ -68,6 +68,22 @@ const rawDoc: OpenAPIV3.Document = {
         },
       },
     },
+    // a NESTED ENVELOPE kept as the declared type (a POST is never auto-paginated):
+    // `data[]` of a component beside an inline `summary` block the converter
+    // hoists as a synthesized type — rows expand through both, the component
+    // links to its page, the synthesized block does not
+    '/widgets/search': {
+      post: {
+        operationId: 'searchWidgets',
+        requestBody: {
+          required: true,
+          content: { 'application/json': { schema: { type: 'object', properties: { q: { type: 'string' } } } } },
+        },
+        responses: {
+          '200': { description: 'ok', content: { 'application/json': { schema: { $ref: '#/components/schemas/WidgetSearchResult' } } } },
+        },
+      },
+    },
     // CURSOR-paginated list (data[] + has_more + `after` cursor)
     '/widgets/paged': {
       get: {
@@ -101,6 +117,18 @@ const rawDoc: OpenAPIV3.Document = {
         required: ['data', 'has_more'],
         properties: { data: { type: 'array', items: { $ref: '#/components/schemas/Widget' } }, has_more: { type: 'boolean' } },
       },
+      WidgetSearchResult: {
+        type: 'object',
+        required: ['data', 'summary'],
+        properties: {
+          data: { type: 'array', items: { $ref: '#/components/schemas/Widget' } },
+          summary: {
+            type: 'object',
+            required: ['total'],
+            properties: { total: { type: 'integer' }, has_more: { type: 'boolean' }, owner: { $ref: '#/components/schemas/Owner' } },
+          },
+        },
+      },
     },
   },
 };
@@ -111,6 +139,7 @@ const OPERATIONS: { method: string; path: string }[] = [
   { method: 'post', path: '/widgets' },
   { method: 'get', path: '/widgets' },
   { method: 'get', path: '/widgets/{widgetId}' },
+  { method: 'post', path: '/widgets/search' },
   { method: 'get', path: '/widgets/paged' },
 ];
 

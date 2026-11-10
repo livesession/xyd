@@ -1,0 +1,27 @@
+{
+    "navigation": {
+        "sidebar": [
+            {
+                "group": "Get Started",
+                "pages": [
+                    "docs/introduction",
+                    "docs/changelog"
+                ]
+            },
+            {
+                "group": "Reference",
+                "collapsed": true,
+                "pages": [
+                    "docs/reference/widget",
+                    "docs/reference/part",
+                    {
+                        "group": "Nested",
+                        "pages": [
+                            "docs/reference/nested/assembly"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

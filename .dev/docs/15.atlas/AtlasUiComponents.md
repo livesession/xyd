@@ -38,9 +38,9 @@ The header renders the title, HTTP method badge, and path for REST endpoints.
 | `$$array` | `"array of {itemType}"` |
 | `$$union` | `"typeA or typeB or typeC"` |
 | `$$xor` | `"typeA or typeB"` (exclusive) |
-| `$$enum` | `"enum"` with nested enum values |
+| `$$enum` | the values inline — `"a" \| "b"`, the first six then `…` — with the values as nested rows; a constant (the `const` meta) prints its literal alone, no toggle |
 | Primitive | Direct type name |
-| Nullable | Append `" or null"` |
+| Nullable | Append `" | null"` |
 
 ### Nested Property Expansion
 
@@ -48,7 +48,7 @@ The `SubProperties` component handles recursive rendering with expand/collapse f
 
 ### Property Linking
 
-When a property has a `symbolDef.canonical` value, `PropType` renders it as a link using `useSymbolLink`.
+When a property has a `symbolDef.canonical` value, `PropType` renders it as a link using `useSymbolLink`. The link text is the type column's symbol (`symbols.ts`): a row typed by a component schema prints `symbolDef.label` — the schema's constant `object` value, else its name — in place of `object` (`widget`, `array of widget`, `widget | null`); a label without a `canonical` renders as plain text.
 
 ## Variant Selection System
 
@@ -73,7 +73,7 @@ Manages user selections across multiple variant dimensions through React Context
 | `defaults` | Badge: "Defaults: {value}" |
 | `minimum` / `maximum` | Range display |
 | `example` / `examples` | Badge list with example values |
-| `nullable` | Appended to type: " or null" |
+| `nullable` | Appended to type: " \| null" |
 | `internal` | Filtered when `HIDE_INTERNAL = true` |
 
 ## Styling and Theming

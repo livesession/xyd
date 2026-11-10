@@ -1,0 +1,23 @@
+{
+  "theme": {
+    "name": "gusto",
+    "appearance": {
+      "search": false,
+      "colorScheme": false
+    }
+  },
+  "navigation": {
+    "sidebar": [
+      {
+        "route": "docs/api",
+        "pages": []
+      }
+    ]
+  },
+  "api": {
+    "openapi": {
+      "source": "./openapi.yaml",
+      "route": "docs/api"
+    }
+  }
+}

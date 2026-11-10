@@ -247,6 +247,8 @@ export async function mapSettingsToProps(
             group: nav.group,
             icon: nav?.icon,
             asToc: asTocOptions(nav.asToc) || undefined,
+            // a top-level group folded behind a toggle on its header
+            collapsed: nav.collapsed || undefined,
             items
         } as FwSidebarItemProps
     }

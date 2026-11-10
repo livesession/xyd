@@ -275,7 +275,7 @@
           },
           {
             "group": "AI",
-            "pages": ["guides/llms-txt"]
+            "pages": ["guides/llms-txt", "guides/mcp-server"]
           },
           {
             "group": "Integrations",

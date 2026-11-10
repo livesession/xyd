@@ -19,6 +19,7 @@ import {
     SidebarRoute,
     Metadata,
 } from "@xyd-js/core";
+import { resolveApiFileOptions } from "@xyd-js/content";
 import uniform, {
     pluginNavigation,
     Reference,
@@ -67,6 +68,19 @@ export interface uniformPresetOptions {
     disableFSWrite?: boolean
     fileRouting?: { [key: string]: string }
 }
+
+/**
+ * The generated navigation's finishing pass on the JS path, run right after
+ * pluginNavigation: `sidebar` is its output for `references` under
+ * `urlPrefix`, `filePath` the source they came from (the string the ref
+ * resolver got). The fused native path runs the converter's own pass instead.
+ */
+export type UniformNavigationFinish = (
+    sidebar: Sidebar[],
+    references: Reference[],
+    urlPrefix: string,
+    filePath: string,
+) => Sidebar[]
 
 function flatPages(
     sidebar: (SidebarRoute | Sidebar)[],
@@ -189,7 +203,8 @@ async function uniformResolver(
     sidebar?: (SidebarRoute | Sidebar)[],
     options?: uniformPresetOptions,
     uniformType?: UniformType,
-    disableFSWrite?: boolean
+    disableFSWrite?: boolean,
+    navigationFinish?: UniformNavigationFinish,
 ) {
     let urlPrefix = ""
 
@@ -259,12 +274,27 @@ async function uniformResolver(
         if (process.env.XYD_VERBOSE) {
             console.log("[uniform] fused native path:", resolvedApiFile)
         }
+        // `api.openapi[..].options.objectsGroup` names the object pages' group,
+        // `.objectsLayout` places them, `.operationPaths` picks how a page
+        // without an `x-docs.path` gets its path and `.objectsCollapsed` folds
+        // their top-level group (the converter's options of the same names); the
+        // fused call builds the sidebar and the page map, so it needs the same
+        // values as the per-page conversion.
+        const apiOptions = resolveApiFileOptions(settings.api?.openapi, apiFile)
+        const objectsGroup = apiOptions?.objectsGroup
+        const objectsLayout = apiOptions?.objectsLayout
+        const operationPaths = apiOptions?.operationPaths
+        const objectsCollapsed = apiOptions?.objectsCollapsed
         const fused = JSON.parse(fusedNative.uniformOasPages(JSON.stringify({
             source: resolvedApiFile,
             urlPrefix,
             matchRoute,
             optionsUrlPrefix: options?.urlPrefix || "",
             store: !!settings.engine?.uniform?.store,
+            ...(objectsGroup ? { objectsGroup } : {}),
+            ...(objectsLayout ? { objectsLayout } : {}),
+            ...(operationPaths ? { operationPaths } : {}),
+            ...(typeof objectsCollapsed === "boolean" ? { objectsCollapsed } : {}),
         })))
 
         if (fused.newRoutePushed) {
@@ -326,6 +356,18 @@ async function uniformResolver(
             pageFrontMatter: Record<string, any>;
         };
     };
+
+    // The navigation's finishing passes (the fused path above runs the
+    // converter's own): the openapi preset folds its top-level objects group
+    // and applies the document's tag groups and display names.
+    if (navigationFinish && uniformWithNavigation.out?.sidebar) {
+        uniformWithNavigation.out.sidebar = navigationFinish(
+            uniformWithNavigation.out.sidebar,
+            uniformWithNavigation.references || [],
+            urlPrefix,
+            resolvedApiFile,
+        )
+    }
 
     // SDK-native docs: enrich the boot references too, so anything consuming
     // them here (user uniform plugins, future search/llms passes) sees the
@@ -534,6 +576,12 @@ async function uniformResolver(
                 meta.sdkLanguages = sdkLanguages
             }
 
+            // The base of the page's schema links: the converter writes them
+            // relative to the reference (`objects/Widget`), and the layouts
+            // cannot tell the reference's prefix from the route they render —
+            // `/docs/api` under `route: docs/api`, "" at the root.
+            meta.baseMatch = pageBaseMatch(urlPrefix)
+
             let composedContent = ""
             if (region && composedFileMap[region]) {
                 const content = await fs.readFile(composedFileMap[region], 'utf-8');
@@ -631,6 +679,13 @@ function composyingMetaProps(meta: Metadata, ...props: (keyof AllowedMetaProps)[
 // Never user compose pages — and a route-less project (the fast-serve mode,
 // `xyd build ./openapi.yaml`) scans from the project root, where a previous
 // build's generated pages (.xyd/build/client/*.md, the llms twins) carry the
+/** The `baseMatch` frontmatter of a generated page: the reference's URL prefix
+ *  as a path (`/docs/api`), "" at the root. */
+export function pageBaseMatch(urlPrefix: string | undefined): string {
+    const trimmed = (urlPrefix || "").replace(/^\/+|\/+$/g, "")
+    return trimmed ? `/${trimmed}` : ""
+}
+
 // very `openapi: <source>#<region>` frontmatter this walk looks for. Mapping
 // those made every second build in the same project fail on a missing file.
 const COMPOSE_SKIP_DIRS = new Set([".xyd", "node_modules", ".git"]);
@@ -744,6 +799,7 @@ function preinstall(
     uniformType: UniformType,
     disableFSWrite?: boolean,
     options?: uniformPresetOptions,
+    navigationFinish?: UniformNavigationFinish,
 ) {
     return function preinstallInner(innerOptions: any) {
         return async function uniformPluginInner(settings: Settings, data: PresetData) {
@@ -772,7 +828,8 @@ function preinstall(
                         ...innerOptions,
                     },
                     uniformType,
-                    disableFSWrite
+                    disableFSWrite,
+                    navigationFinish,
                 )
 
                 if (resolved.sidebar) {
@@ -808,7 +865,8 @@ function preinstall(
                             ...innerOptions,
                         },
                         uniformType,
-                        disableFSWrite
+                        disableFSWrite,
+                        navigationFinish,
                     )
 
                     if (resolved.sidebar) {
@@ -884,7 +942,8 @@ function uniformPreset(
     sidebar: (SidebarRoute | Sidebar)[],
     options: uniformPresetOptions,
     uniformApiResolver: (filePath: string) => Promise<Reference[]>,
-    disableFSWrite?: boolean
+    disableFSWrite?: boolean,
+    navigationFinish?: UniformNavigationFinish,
 ) {
     return function (settings: Settings, uniformType: UniformType) {
         const routeMatches: string[] = []
@@ -935,7 +994,8 @@ function uniformPreset(
                     apiFile,
                     uniformType,
                     disableFSWrite,
-                    options
+                    options,
+                    navigationFinish,
                 )
             ],
             routes: routeMatches.map((routeMatch, i) => route(
@@ -975,6 +1035,19 @@ export abstract class UniformPreset {
 
     protected abstract uniformRefResolver(filePath: string): Promise<Reference[]>
 
+    /**
+     * The generated navigation's finishing pass on the JS path (see
+     * `UniformNavigationFinish`). A preset defines it when its converter has
+     * one — the openapi preset folds the top-level objects group; the fused
+     * native path runs the converter's own pass, so this is never called there.
+     */
+    protected navigationFinish?(
+        sidebar: Sidebar[],
+        references: Reference[],
+        urlPrefix: string,
+        filePath: string,
+    ): Sidebar[]
+
     protected urlPrefix(urlPrefix: string): this {
         this._urlPrefix = urlPrefix
 
@@ -1004,7 +1077,8 @@ export abstract class UniformPreset {
                 fileRouting: this._fileRouting,
             },
             this.uniformRefResolver,
-            this.disableFSWrite
+            this.disableFSWrite,
+            this.navigationFinish?.bind(this),
         )
     }
 }

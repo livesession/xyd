@@ -1,6 +1,7 @@
-import { createContext, createElement, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, createElement, useCallback, useContext, useState, type ReactNode } from "react";
 
 import { type Theme } from "@code-hike/lighter";
+import { SDK_LANGUAGE_STORAGE_KEY, useSdkLanguageStore } from "@xyd-js/components/coder";
 
 export interface VariantToggleConfig {
     key: string;
@@ -64,31 +65,32 @@ const SdkLanguageContext = createContext<{
 
 export function SdkLanguageProvider({ defaultLanguage, storageKey, languages, children }: {
     defaultLanguage?: string,
-    /** When set, the chosen language is persisted (client-side) under this
-     * localStorage key, so it sticks across reloads / operations. */
+    /** When set, the choice lives in the page-wide language store under this
+     * localStorage key (`xyd:sdk-language` is the site-wide one): it sticks
+     * across reloads / operations, `?lang=<id>` in the URL seeds it, every
+     * change is mirrored back to the URL, and the markdown code groups of
+     * different languages follow it. Omit for a local, unpersisted choice
+     * (a standalone Atlas). */
     storageKey?: string,
-    /** Allow-list for the RESTORED value: a persisted language no longer in
-     * this list (config changed / another site's key) is ignored and the
-     * default stays. Omit to accept any saved value. */
+    /** Allow-list for the STORED value: a persisted language not in this list
+     * (config changed / another page's pick / an unknown `?lang=`) is ignored
+     * and the default shows. Omit to accept any stored value. */
     languages?: string[],
     children: ReactNode
 }) {
-    const [language, setLanguageState] = useState(defaultLanguage || "go")
-
-    // Restore the persisted choice AFTER hydration — SSR renders the default, the
-    // client swaps in the saved language on mount (no hydration mismatch).
-    useEffect(() => {
-        if (!storageKey || typeof localStorage === "undefined") return
-        const saved = localStorage.getItem(storageKey)
-        if (saved && (!languages || languages.includes(saved))) setLanguageState(saved)
-    }, [storageKey])
+    const fallback = defaultLanguage || "go"
+    const persisted = !!storageKey
+    const [local, setLocal] = useState(fallback)
+    // The server reads null → the default renders; the client swaps in the
+    // stored language after hydration (an external store, no mismatch).
+    const [stored, setStored] = useSdkLanguageStore(storageKey ?? SDK_LANGUAGE_STORAGE_KEY)
+    const allowed = !!stored && (!languages || languages.includes(stored))
+    const language = persisted ? (allowed ? (stored as string) : fallback) : local
 
     const setLanguage = useCallback((lang: string) => {
-        setLanguageState(lang)
-        if (storageKey && typeof localStorage !== "undefined") {
-            try { localStorage.setItem(storageKey, lang) } catch { /* private mode / quota */ }
-        }
-    }, [storageKey])
+        if (persisted) setStored(lang)
+        else setLocal(lang)
+    }, [persisted, setStored])
 
     return createElement(SdkLanguageContext.Provider, { value: { language, setLanguage } }, children)
 }

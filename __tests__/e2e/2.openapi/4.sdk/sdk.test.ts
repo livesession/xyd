@@ -13,7 +13,9 @@ const ENGINES: { name: string; make: (dir: string) => Promise<XydServer> }[] = [
     { name: 'vite', make: (dir) => createXydServer(dir) },
 ];
 
-const SDK_TITLES = ['Go', 'Python', 'TypeScript', 'Ruby', 'Java', 'C#'];
+// docs.json lists the generate-mode languages in this (non-default) order —
+// the switcher follows it, Shell first.
+const SDK_TITLES = ['TypeScript', 'Python', 'Go', 'Ruby', 'Java', 'C#'];
 
 for (const engine of ENGINES) {
     test.describe(`openapi — sdk docs (${engine.name} engine)`, () => {
@@ -50,13 +52,71 @@ for (const engine of ENGINES) {
 
             await expect(trigger(page)).toBeVisible();
             await trigger(page).click();
+            // the list opens only once the page is hydrated (a cold vite boot
+            // serves the SSR markup first) — wait for it before reading
+            await expect(items(page).first()).toBeVisible();
             const texts = await items(page).allInnerTexts();
             for (const t of [...SDK_TITLES, 'Shell']) {
                 expect(texts.join(' ')).toContain(t);
             }
-            // Shell (the raw-HTTP default view) is the FIRST entry
+            // Shell (the raw-HTTP default view) is the FIRST entry, then the
+            // SDK languages in the CONFIGURED order (`sdk.languages`)
             expect(texts[0]).toContain('Shell');
+            expect(texts.slice(1).map((t) => t.trim())).toEqual(SDK_TITLES);
             await page.keyboard.press('Escape');
+        });
+
+        test('`?lang=<id>` in the URL seeds the language and persists it', async ({ page }) => {
+            await goto(page, '/docs/api/get-all-todos?lang=python');
+
+            await expect(page.locator('[part="sdk-header"]')).toHaveCount(1);
+            await expect(signature(page)).toContainText('client.todos.list');
+            await expect(trigger(page)).toContainText('Python');
+            expect(await page.evaluate(() => localStorage.getItem('xyd:sdk-language'))).toBe('python');
+
+            // an alias seeds too, and it wins over the stored language
+            await goto(page, '/docs/api/get-all-todos?lang=ts');
+            await expect(trigger(page)).toContainText('TypeScript');
+            expect(await page.evaluate(() => localStorage.getItem('xyd:sdk-language'))).toBe('typescript');
+
+            // an unknown id is ignored — the stored language shows
+            await goto(page, '/docs/api/get-all-todos?lang=cobol');
+            await expect(trigger(page)).toContainText('TypeScript');
+        });
+
+        test('the switcher writes the chosen language back to the URL', async ({ page }) => {
+            await goto(page, '/docs/api/get-all-todos?tab=2');
+            await pick(page, 'Ruby');
+            await expect(signature(page)).toContainText('Array<Models::Todo>');
+
+            const url = new URL(page.url());
+            expect(url.searchParams.get('lang')).toBe('ruby');
+            expect(url.searchParams.get('tab')).toBe('2'); // the other params are kept
+
+            await pick(page, 'Shell');
+            expect(new URL(page.url()).searchParams.get('lang')).toBe('shell');
+        });
+
+        test("a guide's code group of different languages shares the reference's language", async ({ page }) => {
+            // pick in the reference → the guide's Python / Go group opens on it
+            await goto(page, '/docs/api/get-all-todos');
+            await pick(page, 'Go');
+
+            await goto(page, '/guide');
+            const group = page.locator('xyd-codetabs').first();
+            await expect(group.locator('[part="language-trigger"][data-state="active"]')).toHaveText(/go/i);
+            // the npm | pnpm group (one language) keeps its own first tab
+            const installGroup = page.locator('xyd-codetabs').nth(1);
+            await expect(installGroup.locator('[part="language-trigger"][data-state="active"]')).toHaveText(/npm/i);
+
+            // pick in the guide → the reference follows (and the key is updated)
+            await group.locator('[part="language-trigger"]').filter({ hasText: /python/i }).click();
+            await expect(group.locator('[part="language-trigger"][data-state="active"]')).toHaveText(/python/i);
+            expect(await page.evaluate(() => localStorage.getItem('xyd:sdk-language'))).toBe('python');
+
+            await goto(page, '/docs/api/get-all-todos');
+            await expect(trigger(page)).toContainText('Python');
+            await expect(signature(page)).toContainText('client.todos.list');
         });
 
         test('the DEFAULT view is raw-HTTP: REST definitions, plain header — SDK one pick away', async ({ page }) => {
@@ -152,6 +212,52 @@ for (const engine of ENGINES) {
             await expect(page.locator('[part="sdk-header"]')).toHaveCount(1);
             await expect(signature(page)).toContainText('client.');
             expect(await page.locator('h3').allInnerTexts()).toContain('Returns');
+        });
+
+        // The SDK rows follow the SDK's types: a field typed by another type
+        // expands into that type's rows (arrays through their item type), a
+        // type that comes from a component schema links to the schema's page,
+        // and a synthesized inline type (no schema, no page) is plain text.
+        test('SDK rows expand nested types and link only to pages that exist', async ({ page }) => {
+            await goto(page, '/docs/xsdk/get-the-todo-summary?lang=go');
+            await expect(page.locator('[part="sdk-header"]')).toHaveCount(1);
+            await expect(signature(page)).toContainText('client.Todos.Summary.Get');
+
+            // the row OWNING the name: its name cell's nearest row ancestor (a
+            // `has:` filter would also match every row that contains it)
+            const rowNamed = (name: string) =>
+                page.locator('atlas-apiref-propname', { hasText: new RegExp(`^${name}$`) }).first().locator('xpath=ancestor::atlas-apiref-prop[1]');
+            const typeOf = (row: ReturnType<typeof rowNamed>) => row.locator('atlas-apiref-proptype').first();
+            const toggleOf = (row: ReturnType<typeof rowNamed>) => row.locator('button[aria-expanded]').first();
+
+            // a component type: the language's type text, linked to the schema's page
+            const owner = rowNamed('Owner');
+            await expect(typeOf(owner)).toHaveText('Owner');
+            await expect(typeOf(owner).locator('a')).toHaveAttribute('href', '/docs/xsdk/objects/Owner');
+            await expect(toggleOf(owner)).toHaveText('Show properties');
+            await toggleOf(owner).click();
+            await expect(toggleOf(owner)).toHaveText('Hide properties');
+            await expect(rowNamed('ID')).toBeVisible();
+
+            // an array of a component type: the item type's page and rows
+            const recent = rowNamed('Recent');
+            await expect(typeOf(recent)).toHaveText('[]Todo');
+            await expect(typeOf(recent).locator('a')).toHaveAttribute('href', '/docs/xsdk/objects/Todo');
+            await expect(toggleOf(recent)).toHaveText('Show properties');
+
+            // a synthesized inline type: plain text — no link — with its rows beneath
+            const stats = rowNamed('Stats');
+            await expect(typeOf(stats)).toHaveText('TodoSummaryStats');
+            await expect(typeOf(stats).locator('a')).toHaveCount(0);
+            await toggleOf(stats).click();
+            await expect(rowNamed('Total')).toBeVisible();
+            await expect(typeOf(rowNamed('Total'))).toHaveText('int64');
+
+            // the other language renders the same shape in its own spelling
+            await pick(page, 'Python');
+            await expect(typeOf(rowNamed('recent'))).toHaveText('List[Todo]');
+            await expect(typeOf(rowNamed('recent')).locator('a')).toHaveAttribute('href', '/docs/xsdk/objects/Todo');
+            await expect(typeOf(rowNamed('stats')).locator('a')).toHaveCount(0);
         });
 
         test('a source WITHOUT sdk renders the classic REST-only view (regression)', async ({ page }) => {

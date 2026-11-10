@@ -27,5 +27,4 @@ packages:
   - '!packages/apitoolchain-registry-api-node'
   - '!packages/apitoolchain-api-node'
   # - 'cli'
-  # - '!packages/xyd-mcp-server' # temporary? cuz it's bun
   - '.xyd/host'

@@ -18,6 +18,9 @@ importers:
       '@changesets/cli':
         specifier: ^2.28.1
         version: 2.31.0(@types/node@20.9.0)
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.25.2
+        version: 1.29.0(@cfworker/json-schema@4.1.1)(zod@3.25.76)
       '@playwright/test':
         specifier: ^1.53.1
         version: 1.59.1
@@ -1575,12 +1578,103 @@ importers:
 
   packages/xyd-mcp:
     dependencies:
+      '@xyd-js/gql':
+        specifier: workspace:*
+        version: link:../../apitoolchain/packages/apitoolchain-gql
+      '@xyd-js/openapi':
+        specifier: workspace:*
+        version: link:../../apitoolchain/packages/apitoolchain-openapi
+      '@xyd-js/uniform':
+        specifier: workspace:*
+        version: link:../../apitoolchain/packages/apitoolchain-uniform
+    devDependencies:
       '@langchain/classic':
         specifier: ^1.0.0
         version: 1.0.32(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))(@opentelemetry/api@1.9.0)(cheerio@1.2.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)
-      '@langchain/community':
+      '@langchain/core':
         specifier: ^1.0.0
-        version: 1.1.28(@browserbasehq/sdk@2.10.0(encoding@0.1.13))(@browserbasehq/stagehand@1.14.0(@playwright/test@1.59.1)(deepmerge@4.3.1)(dotenv@16.6.1)(encoding@0.1.13)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(zod@3.25.76))(@ibm-cloud/watsonx-ai@1.7.11(@swc/core@1.15.33)(typescript@5.8.3))(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))(@opentelemetry/api@1.9.0)(cheerio@1.2.0)(fast-xml-parser@5.7.3)(ibm-cloud-sdk-core@5.4.14)(ignore@7.0.5)(jsonwebtoken@9.0.3)(lodash@4.18.1)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(playwright@1.59.1)(ws@8.20.0)
+        version: 1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)
+      '@langchain/openai':
+        specifier: ^1.0.0
+        version: 1.4.5(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))(ws@8.20.0)
+      '@langchain/textsplitters':
+        specifier: ^1.0.0
+        version: 1.0.1(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.25.2
+        version: 1.29.0(@cfworker/json-schema@4.1.1)(zod@3.25.76)
+      '@types/node':
+        specifier: ^20.9.0
+        version: 20.9.0
+      '@types/turndown':
+        specifier: ^5.0.5
+        version: 5.0.6
+      '@xyd-js/atlas':
+        specifier: workspace:*
+        version: link:../xyd-atlas
+      '@xyd-js/components':
+        specifier: workspace:*
+        version: link:../xyd-components
+      '@xyd-js/native':
+        specifier: workspace:*
+        version: link:../xyd-native
+      codehike:
+        specifier: ^1.0.3
+        version: 1.1.0
+      react:
+        specifier: ^19.1.0
+        version: 19.2.6
+      react-dom:
+        specifier: ^19.1.0
+        version: 19.2.6(react@19.2.6)
+      remark:
+        specifier: ^15.0.1
+        version: 15.0.1
+      remark-gfm:
+        specifier: ^4.0.1
+        version: 4.0.1
+      remark-parse:
+        specifier: ^11.0.0
+        version: 11.0.0
+      remark-stringify:
+        specifier: ^11.0.0
+        version: 11.0.0
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      tsup:
+        specifier: ^8.3.0
+        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@5.8.3)(yaml@2.8.4)
+      turndown:
+        specifier: ^7.2.1
+        version: 7.2.4
+      turndown-plugin-gfm:
+        specifier: ^1.0.2
+        version: 1.0.2
+      typescript:
+        specifier: ^5.6.2
+        version: 5.8.3
+      unified:
+        specifier: ^11.0.5
+        version: 11.0.5
+      unist-builder:
+        specifier: ^4.0.0
+        version: 4.0.0
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@20.9.0)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+
+  packages/xyd-mcp-server:
+    dependencies:
+      '@langchain/classic':
+        specifier: ^1.0.0
+        version: 1.0.32(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))(@opentelemetry/api@1.9.0)(cheerio@1.2.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)
+      '@langchain/core':
+        specifier: ^1.0.0
+        version: 1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)
       '@langchain/openai':
         specifier: ^1.0.0
         version: 1.4.5(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))(ws@8.20.0)
@@ -1596,42 +1690,33 @@ importers:
       '@xyd-js/components':
         specifier: workspace:*
         version: link:../xyd-components
-      '@xyd-js/core':
+      '@xyd-js/mcp':
         specifier: workspace:*
-        version: link:../xyd-core
-      '@xyd-js/framework':
-        specifier: workspace:*
-        version: link:../xyd-framework
-      '@xyd-js/gql':
-        specifier: workspace:*
-        version: link:../../apitoolchain/packages/apitoolchain-gql
-      '@xyd-js/native':
-        specifier: workspace:*
-        version: link:../xyd-native
-      '@xyd-js/openapi':
-        specifier: workspace:*
-        version: link:../../apitoolchain/packages/apitoolchain-openapi
-      '@xyd-js/plugins':
-        specifier: workspace:*
-        version: link:../xyd-plugins
+        version: link:../xyd-mcp
       '@xyd-js/uniform':
         specifier: workspace:*
         version: link:../../apitoolchain/packages/apitoolchain-uniform
-      json-schema-to-zod:
-        specifier: ^2.6.1
-        version: 2.8.1
-      langchain:
-        specifier: ^1.2.3
-        version: 1.4.0(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vue@3.5.34(typescript@5.8.3))(ws@8.20.0)(zod-to-json-schema@3.25.2(zod@3.25.76))
-      openux-js:
-        specifier: ^0.0.0-pre.0
-        version: 0.0.0-pre.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      codehike:
+        specifier: ^1.0.3
+        version: 1.1.0
+      express:
+        specifier: ^5.1.0
+        version: 5.2.1
+      react:
+        specifier: ^19.1.0
+        version: 19.2.6
+      react-dom:
+        specifier: ^19.1.0
+        version: 19.2.6(react@19.2.6)
       remark:
         specifier: ^15.0.1
         version: 15.0.1
       remark-gfm:
         specifier: ^4.0.1
         version: 4.0.1
+      remark-parse:
+        specifier: ^11.0.0
+        version: 11.0.0
       remark-stringify:
         specifier: ^11.0.0
         version: 11.0.0
@@ -1641,53 +1726,38 @@ importers:
       turndown-plugin-gfm:
         specifier: ^1.0.2
         version: 1.0.2
+      unified:
+        specifier: ^11.0.5
+        version: 11.0.5
       unist-builder:
         specifier: ^4.0.0
         version: 4.0.0
       zod:
         specifier: ^3.25.76
         version: 3.25.76
-    devDependencies:
-      '@types/node':
-        specifier: ^20.9.0
-        version: 20.9.0
-      '@types/turndown':
-        specifier: ^5.0.5
-        version: 5.0.6
-      rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
-      typescript:
-        specifier: ^5.6.2
-        version: 5.8.3
-
-  packages/xyd-mcp-server:
-    dependencies:
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.25.2
-        version: 1.29.0(@cfworker/json-schema@4.1.1)(zod@3.25.76)
-      '@xyd-js/mcp':
+    optionalDependencies:
+      '@xyd-js/native':
         specifier: workspace:*
-        version: link:../xyd-mcp
-      express:
-        specifier: ^5.1.0
-        version: 5.2.1
+        version: link:../xyd-native
     devDependencies:
-      '@types/bun':
-        specifier: latest
-        version: 1.4.2
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.25
       '@types/node':
         specifier: ^20.9.0
         version: 20.9.0
-      openapi-typescript:
-        specifier: ^7.4.2
-        version: 7.13.0(typescript@5.8.3)
+      rimraf:
+        specifier: ^3.0.2
+        version: 3.0.2
+      tsup:
+        specifier: ^8.3.0
+        version: 8.5.1(@swc/core@1.15.33)(jiti@2.7.0)(postcss@8.5.14)(typescript@5.8.3)(yaml@2.8.4)
       typescript:
         specifier: ^5.6.2
         version: 5.8.3
+      vitest:
+        specifier: ^2.1.8
+        version: 2.1.9(@types/node@20.9.0)(happy-dom@15.11.7)(lightningcss@1.32.0)(sugarss@5.0.1(postcss@8.5.14))(terser@5.47.1)
 
   packages/xyd-native:
     devDependencies:
@@ -5863,48 +5933,11 @@ packages:
     resolution: {integrity: sha512-Y/wvuglLTMKJahkl4QD9dBIdF/z/CxZJWdTfHJF/q2jtlJtoFf6Mb5JpGxZfsi3mBY6NSG941FSLTcqhCKrhBA==}
     engines: {node: '>=20'}
 
-  '@langchain/langgraph-checkpoint@1.0.2':
-    resolution: {integrity: sha512-F4E5Tr0nt8FGghgdscJtHw+ABzChOHeI80R7Y1pjIHdiJom6c2ieo76vL+FWiny80JmoGqhrVAEIWrw0cXKPxg==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@langchain/core': ^1.1.44
-
-  '@langchain/langgraph-sdk@1.9.1':
-    resolution: {integrity: sha512-pHojybde9HoMz7ZDtyW3pgDdomAN4C0pbdgXASjccFS+S2Cqx75iZBtBUUg1A/CSer5xh9GakdIqyihxZOf7VA==}
-    peerDependencies:
-      react: ^18 || ^19
-      react-dom: ^18 || ^19
-      svelte: ^4.0.0 || ^5.0.0
-      vue: ^3.0.0
-    peerDependenciesMeta:
-      react:
-        optional: true
-      react-dom:
-        optional: true
-      svelte:
-        optional: true
-      vue:
-        optional: true
-
-  '@langchain/langgraph@1.3.0':
-    resolution: {integrity: sha512-QvhTjiyqFPz81A+y6LHs223w6DTjv5+882DT4mup72bd72rRhNjTYo5fhes5um0swnKArvY/arc7KeFInfHHWw==}
-    engines: {node: '>=18'}
-    peerDependencies:
-      '@langchain/core': ^1.1.44
-      zod: ^3.25.32 || ^4.2.0
-      zod-to-json-schema: ^3.x
-    peerDependenciesMeta:
-      zod-to-json-schema:
-        optional: true
-
   '@langchain/openai@1.4.5':
     resolution: {integrity: sha512-bQ2WMIZfSh02trJLYSAtiIcD3j6EBCiAm9nw0dZWQsVaUxmWc3JJqs8uUte6AkMazmLHzcUIw+14UkXO5fRJvQ==}
     engines: {node: '>=20'}
     peerDependencies:
       '@langchain/core': ^1.1.42
-
-  '@langchain/protocol@0.0.15':
-    resolution: {integrity: sha512-MllvbpMjqHevUm+v94M422mH7XKN+wGCvJRBVROTWBotEDOATYB4Ktk2UheYP859y9o2LlhtPek5t1T9eyfAbQ==}
 
   '@langchain/textsplitters@1.0.1':
     resolution: {integrity: sha512-rheJlB01iVtrOUzttscutRgLybPH9qR79EyzBEbf1u97ljWyuxQfCwIWK+SjoQTM9O8M7GGLLRBSYE26Jmcoww==}
@@ -8818,9 +8851,6 @@ packages:
   '@types/body-parser@1.19.6':
     resolution: {integrity: sha512-HLFeCYgz89uk22N5Qg3dvGvsv46B8GLvKKo1zKG4NybA8U2DiEO3w9lqGg29t/tfLRJpJ6iQxnVw4OnB7MoM9g==}
 
-  '@types/bun@1.4.2':
-    resolution: {integrity: sha512-GimotNn7+ZV0uVArItBbriZsR1oNf0+WTzPkdcFrzShI7k2norL0uzEaJT8T33dWr7O/c9ZDuAFQrctKCi72oQ==}
-
   '@types/clean-css@4.2.11':
     resolution: {integrity: sha512-Y8n81lQVTAfP2TOdtJJEsCoYl1AnOkqDqMvXb9/7pfgZZ7r8YrEyurrAvAoAjHOGXKRybay+5CsExqIH6liccw==}
 
@@ -9934,9 +9964,6 @@ packages:
 
   builtins@5.1.0:
     resolution: {integrity: sha512-SW9lzGTLvWTP1AY8xeAMZimqDrIaSdLQUcVr9DMef51niJ022Ri87SwRRKYm4A6iHfkPaiVUu/Duw2Wc4J7kKg==}
-
-  bun-types@1.4.2:
-    resolution: {integrity: sha512-bxV1FgK7yBIzjRe5zBozIM4Bem11ZJcCXSrjWRG3YWLt8yFDePu4cLjpebO8OvPeIE9trbyPF4fuj3Cia4Fj3w==}
 
   bundle-require@5.1.0:
     resolution: {integrity: sha512-3WrrOuZiyaaZPWiEt4G3+IffISVC9HYlWueJEBWED4ZH4aIAC2PnkdnuRrR94M+w6yGWn4AglWtJtBI8YqvgoA==}
@@ -13081,10 +13108,6 @@ packages:
     engines: {node: '>=16.0.0'}
     hasBin: true
 
-  json-schema-to-zod@2.8.1:
-    resolution: {integrity: sha512-fRr1mHgZ7hboLKBUdR428gd9dIHUFGivUqOeiDcSmyXkNZCtB1uGaZLvsjZ4GaN5pwBIs+TGIOf6s+Rp5/R/zA==}
-    hasBin: true
-
   json-schema-traverse@0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
 
@@ -13208,12 +13231,6 @@ packages:
     resolution: {integrity: sha512-bPcgpIXbHnVGfI/omZIlgucDqlf4LrsunwoKue5JdZeGybt8L6KyJz2Zu19ffuZwIwLj2NAI2ZyaqNT6/cetcg==}
     engines: {node: '>=8'}
     hasBin: true
-
-  langchain@1.4.0:
-    resolution: {integrity: sha512-p3H5U1vfO0T4ri/xxqI6jccRP3LYmOW6KGxaJcwI5mIGVR/G6eNhZyjSZB9d7me6J7an4Pc6zA8tH8Qa6/7xwA==}
-    engines: {node: '>=20'}
-    peerDependencies:
-      '@langchain/core': ^1.1.44
 
   langsmith@0.6.3:
     resolution: {integrity: sha512-pXrQ4/4myQvjFFOAUmt5pWRrLEZR20gzIJD7MNdUH+5/S5nLI4ZRBo/SYKC6coaYj9pYTfQdBIzcs+3kfJ5uDA==}
@@ -14656,10 +14673,6 @@ packages:
     resolution: {integrity: sha512-RwFpb72c/BhQLEXIZ5K2e+AhgNVmIejGlTgiB9MzZ0e93GRvqZ7uSi0dvRF7/XIXDeNkra2fNHBxTyPDGySpjQ==}
     engines: {node: '>=8'}
 
-  p-queue@9.2.0:
-    resolution: {integrity: sha512-dWgLE8AH0HjQ9fe74pUkKkvzzYT18Inp4zra3lKHnnwqGvcfcUBrvF2EAVX+envufDNBOzpPq/IBUONDbI7+3g==}
-    engines: {node: '>=20'}
-
   p-reduce@2.1.0:
     resolution: {integrity: sha512-2USApvnsutq8uoxZBGbbWM0JIYLiEMJ9RlaN7fAzVNb9OZN0SHjjTTfIcb667XynS5Y1VhwDJVDa72TnPzAYWw==}
     engines: {node: '>=8'}
@@ -14676,10 +14689,6 @@ packages:
     resolution: {integrity: sha512-hEt02O4hUct5wtwg4H4KcWgDdm+l1bOaEy/hWzd8xtXB9BqxTWBBhb+2ImAtH4Cv4rPjV76xN3Zumqk3k3AhhQ==}
     engines: {node: '>=16.17'}
 
-  p-retry@7.1.1:
-    resolution: {integrity: sha512-J5ApzjyRkkf601HpEeykoiCvzHQjWxPAHhyjFcEUP2SWq0+35NKh8TLhpLw+Dkq5TZBFvUM6UigdE9hIVYTl5w==}
-    engines: {node: '>=20'}
-
   p-timeout@3.2.0:
     resolution: {integrity: sha512-rhIwUycgwwKcP9yTOOFK/AKsAopjjCakVqLHePO3CC6Mir1Z99xT+R63jZxAT5lFZLa2inS5h+ZS2GvR99/FBg==}
     engines: {node: '>=8'}
@@ -14691,10 +14700,6 @@ packages:
   p-timeout@6.1.4:
     resolution: {integrity: sha512-MyIV3ZA/PmyBN/ud8vV9XzwTrNtR4jFrObymZYnZqMmW0zA8Z17vnT0rBgFE/TlohB+YCHqXMgZzb3Csp49vqg==}
     engines: {node: '>=14.16'}
-
-  p-timeout@7.0.1:
-    resolution: {integrity: sha512-AxTM2wDGORHGEkPCt8yqxOTMgpfbEHqF51f/5fJCmwFC3C/zNcGT63SymH2ttOAaiIws2zVg4+izQCjrakcwHg==}
-    engines: {node: '>=20'}
 
   p-try@1.0.0:
     resolution: {integrity: sha512-U1etNYuMJoIz3ZXSrrySFjsXQTWOx2/jdi86L+2pRvph/qMKL6sbcCYdH23fqsbm8TH2Gn0OybpT4eSFlCVHww==}
@@ -17424,10 +17429,6 @@ packages:
 
   uuid@11.1.1:
     resolution: {integrity: sha512-vIYxrBCC/N/K+Js3qSN88go7kIfNPssr/hHCesKCQNAjmgvYS2oqr69kIufEG+O4+PfezOH4EbIeHCfFov8ZgQ==}
-    hasBin: true
-
-  uuid@13.0.2:
-    resolution: {integrity: sha512-vzi9uRZ926x4XV73S/4qQaTwPXM2JBj6/6lI/byHH1jOpCzb0zDbfytgA9LcN/hzb2l7WQSQnxITOVx5un/wGw==}
     hasBin: true
 
   uuid@14.0.0:
@@ -20413,37 +20414,6 @@ snapshots:
       - '@opentelemetry/sdk-trace-base'
       - peggy
 
-  '@langchain/community@1.1.28(@browserbasehq/sdk@2.10.0(encoding@0.1.13))(@browserbasehq/stagehand@1.14.0(@playwright/test@1.59.1)(deepmerge@4.3.1)(dotenv@16.6.1)(encoding@0.1.13)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(zod@3.25.76))(@ibm-cloud/watsonx-ai@1.7.11(@swc/core@1.15.33)(typescript@5.8.3))(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))(@opentelemetry/api@1.9.0)(cheerio@1.2.0)(fast-xml-parser@5.7.3)(ibm-cloud-sdk-core@5.4.14)(ignore@7.0.5)(jsonwebtoken@9.0.3)(lodash@4.18.1)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(playwright@1.59.1)(ws@8.20.0)':
-    dependencies:
-      '@browserbasehq/stagehand': 1.14.0(@playwright/test@1.59.1)(deepmerge@4.3.1)(dotenv@16.6.1)(encoding@0.1.13)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(zod@3.25.76)
-      '@ibm-cloud/watsonx-ai': 1.7.11(@swc/core@1.15.33)(typescript@5.8.3)
-      '@langchain/classic': 1.0.32(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))(@opentelemetry/api@1.9.0)(cheerio@1.2.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)
-      '@langchain/core': 1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)
-      '@langchain/openai': 1.4.5(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))(ws@8.20.0)
-      binary-extensions: 2.3.0
-      flat: 5.0.2
-      ibm-cloud-sdk-core: 5.4.14
-      js-yaml: 4.3.1
-      langsmith: 0.6.3(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)
-      math-expression-evaluator: 2.0.7
-      openai: 6.37.0(ws@8.20.0)(zod@3.25.76)
-      uuid: 14.0.0
-      zod: 3.25.76
-    optionalDependencies:
-      '@browserbasehq/sdk': 2.10.0(encoding@0.1.13)
-      cheerio: 1.2.0
-      fast-xml-parser: 5.7.3
-      ignore: 7.0.5
-      jsonwebtoken: 9.0.3
-      lodash: 4.18.1
-      playwright: 1.59.1
-      ws: 8.20.0
-    transitivePeerDependencies:
-      - '@opentelemetry/api'
-      - '@opentelemetry/exporter-trace-otlp-proto'
-      - '@opentelemetry/sdk-trace-base'
-      - peggy
-
   '@langchain/core@1.1.45(@opentelemetry/api@1.8.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)':
     dependencies:
       '@cfworker/json-schema': 4.1.1
@@ -20482,52 +20452,6 @@ snapshots:
       - openai
       - ws
 
-  '@langchain/langgraph-checkpoint@1.0.2(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))':
-    dependencies:
-      '@langchain/core': 1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)
-      uuid: 10.0.0
-
-  '@langchain/langgraph-sdk@1.9.1(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vue@3.5.34(typescript@5.8.3))(ws@8.20.0)':
-    dependencies:
-      '@langchain/core': 1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)
-      '@langchain/protocol': 0.0.15
-      '@types/json-schema': 7.0.15
-      p-queue: 9.2.0
-      p-retry: 7.1.1
-      uuid: 13.0.2
-    optionalDependencies:
-      react: 19.2.6
-      react-dom: 19.2.6(react@19.2.6)
-      vue: 3.5.34(typescript@5.8.3)
-    transitivePeerDependencies:
-      - '@opentelemetry/api'
-      - '@opentelemetry/exporter-trace-otlp-proto'
-      - '@opentelemetry/sdk-trace-base'
-      - openai
-      - ws
-
-  '@langchain/langgraph@1.3.0(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vue@3.5.34(typescript@5.8.3))(ws@8.20.0)(zod-to-json-schema@3.25.2(zod@3.25.76))(zod@3.25.76)':
-    dependencies:
-      '@langchain/core': 1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)
-      '@langchain/langgraph-checkpoint': 1.0.2(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))
-      '@langchain/langgraph-sdk': 1.9.1(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vue@3.5.34(typescript@5.8.3))(ws@8.20.0)
-      '@langchain/protocol': 0.0.15
-      '@standard-schema/spec': 1.1.0
-      uuid: 10.0.0
-      zod: 3.25.76
-    optionalDependencies:
-      zod-to-json-schema: 3.25.2(zod@3.25.76)
-    transitivePeerDependencies:
-      - '@opentelemetry/api'
-      - '@opentelemetry/exporter-trace-otlp-proto'
-      - '@opentelemetry/sdk-trace-base'
-      - openai
-      - react
-      - react-dom
-      - svelte
-      - vue
-      - ws
-
   '@langchain/openai@1.4.5(@langchain/core@1.1.45(@opentelemetry/api@1.8.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))(ws@8.20.0)':
     dependencies:
       '@langchain/core': 1.1.45(@opentelemetry/api@1.8.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)
@@ -20545,8 +20469,6 @@ snapshots:
       zod: 3.25.76
     transitivePeerDependencies:
       - ws
-
-  '@langchain/protocol@0.0.15': {}
 
   '@langchain/textsplitters@1.0.1(@langchain/core@1.1.45(@opentelemetry/api@1.8.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))':
     dependencies:
@@ -24497,10 +24419,6 @@ snapshots:
       '@types/connect': 3.4.38
       '@types/node': 20.9.0
 
-  '@types/bun@1.4.2':
-    dependencies:
-      bun-types: 1.4.2
-
   '@types/clean-css@4.2.11':
     dependencies:
       '@types/node': 20.9.0
@@ -25167,13 +25085,6 @@ snapshots:
       '@vue/runtime-core': 3.5.34
       '@vue/shared': 3.5.34
       csstype: 3.2.3
-
-  '@vue/server-renderer@3.5.34(vue@3.5.34(typescript@5.8.3))':
-    dependencies:
-      '@vue/compiler-ssr': 3.5.34
-      '@vue/shared': 3.5.34
-      vue: 3.5.34(typescript@5.8.3)
-    optional: true
 
   '@vue/server-renderer@3.5.34(vue@3.5.34(typescript@5.9.3))':
     dependencies:
@@ -26097,10 +26008,6 @@ snapshots:
   builtins@5.1.0:
     dependencies:
       semver: 7.8.5
-
-  bun-types@1.4.2:
-    dependencies:
-      '@types/node': 20.9.0
 
   bundle-require@5.1.0(esbuild@0.27.7):
     dependencies:
@@ -29938,8 +29845,6 @@ snapshots:
       node-fetch: 3.3.2
       prettier: 3.9.6
 
-  json-schema-to-zod@2.8.1: {}
-
   json-schema-traverse@0.4.1: {}
 
   json-schema-traverse@1.0.0: {}
@@ -30067,25 +29972,6 @@ snapshots:
       commander: 10.0.1
       dotenv: 16.4.7
       winston: 3.19.0
-
-  langchain@1.4.0(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vue@3.5.34(typescript@5.8.3))(ws@8.20.0)(zod-to-json-schema@3.25.2(zod@3.25.76)):
-    dependencies:
-      '@langchain/core': 1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)
-      '@langchain/langgraph': 1.3.0(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vue@3.5.34(typescript@5.8.3))(ws@8.20.0)(zod-to-json-schema@3.25.2(zod@3.25.76))(zod@3.25.76)
-      '@langchain/langgraph-checkpoint': 1.0.2(@langchain/core@1.1.45(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0))
-      langsmith: 0.6.3(@opentelemetry/api@1.9.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0)
-      zod: 3.25.76
-    transitivePeerDependencies:
-      - '@opentelemetry/api'
-      - '@opentelemetry/exporter-trace-otlp-proto'
-      - '@opentelemetry/sdk-trace-base'
-      - openai
-      - react
-      - react-dom
-      - svelte
-      - vue
-      - ws
-      - zod-to-json-schema
 
   langsmith@0.6.3(@opentelemetry/api@1.8.0)(openai@6.37.0(ws@8.20.0)(zod@3.25.76))(ws@8.20.0):
     dependencies:
@@ -32009,16 +31895,6 @@ snapshots:
 
   openapi-types@12.1.3: {}
 
-  openapi-typescript@7.13.0(typescript@5.8.3):
-    dependencies:
-      '@redocly/openapi-core': 1.34.14(supports-color@10.2.2)
-      ansi-colors: 4.1.3
-      change-case: 5.4.4
-      parse-json: 8.3.0
-      supports-color: 10.2.2
-      typescript: 5.8.3
-      yargs-parser: 21.1.1
-
   openapi-typescript@7.13.0(typescript@6.0.3):
     dependencies:
       '@redocly/openapi-core': 1.34.14(supports-color@10.2.2)
@@ -32182,11 +32058,6 @@ snapshots:
       eventemitter3: 4.0.7
       p-timeout: 3.2.0
 
-  p-queue@9.2.0:
-    dependencies:
-      eventemitter3: 5.0.4
-      p-timeout: 7.0.1
-
   p-reduce@2.1.0: {}
 
   p-reduce@3.0.0: {}
@@ -32202,10 +32073,6 @@ snapshots:
       is-network-error: 1.3.2
       retry: 0.13.1
 
-  p-retry@7.1.1:
-    dependencies:
-      is-network-error: 1.3.2
-
   p-timeout@3.2.0:
     dependencies:
       p-finally: 1.0.0
@@ -32213,8 +32080,6 @@ snapshots:
   p-timeout@5.1.0: {}
 
   p-timeout@6.1.4: {}
-
-  p-timeout@7.0.1: {}
 
   p-try@1.0.0: {}
 
@@ -35540,8 +35405,6 @@ snapshots:
 
   uuid@11.1.1: {}
 
-  uuid@13.0.2: {}
-
   uuid@14.0.0: {}
 
   uuid@9.0.1: {}
@@ -36094,17 +35957,6 @@ snapshots:
   vscode-languageserver@10.1.0:
     dependencies:
       vscode-languageserver-protocol: 3.18.2
-
-  vue@3.5.34(typescript@5.8.3):
-    dependencies:
-      '@vue/compiler-dom': 3.5.34
-      '@vue/compiler-sfc': 3.5.34
-      '@vue/runtime-dom': 3.5.34
-      '@vue/server-renderer': 3.5.34(vue@3.5.34(typescript@5.8.3))
-      '@vue/shared': 3.5.34
-    optionalDependencies:
-      typescript: 5.8.3
-    optional: true
 
   vue@3.5.34(typescript@5.9.3):
     dependencies:

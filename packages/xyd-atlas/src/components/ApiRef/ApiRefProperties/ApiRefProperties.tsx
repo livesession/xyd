@@ -6,6 +6,8 @@ import {
 } from "@xyd-js/uniform";
 
 import * as cn from "./ApiRefProperties.styles";
+import { isConstant } from "./literals";
+import { resolvePropertySymbol } from "./symbols";
 import { AtlasContext, useBaseMatch } from "@/components/Atlas/AtlasContext";
 import { Badge } from "@xyd-js/components/writer";
 
@@ -170,6 +172,9 @@ function PropMeta(props: PropMetaProps) {
     case "nullable":
       return null;
     case "enum-type":
+      return null;
+    case "const":
+      // the type column prints the literal
       return null;
     case "minimum":
       return null;
@@ -371,6 +376,11 @@ function PropToggle(props: PropsToggleProps) {
 }
 
 function isChoiceType(property: DefinitionProperty) {
+  // An enum row is a choice of values whatever its base type (`ofProperty`).
+  if (property.type === DEFINED_DEFINITION_PROPERTY_TYPE.ENUM) {
+    return true;
+  }
+
   if (
     property.type === DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY &&
     property.ofProperty?.type === DEFINED_DEFINITION_PROPERTY_TYPE.ENUM
@@ -417,6 +427,11 @@ function useSymbolLink(property: DefinitionProperty) {
 }
 
 function propProperties(prop: DefinitionProperty): DefinitionProperty[] {
+  // A constant's only child is the value the type column already prints.
+  if (isConstant(prop)) {
+    return [];
+  }
+
   if (prop.properties?.length) {
     return prop.properties;
   }
@@ -442,211 +457,6 @@ function filterProperties(
 
     return true;
   });
-}
-
-function resolvePropertySymbol(property: DefinitionProperty): string {
-  function resolvePropertySymbolInner(property: DefinitionProperty) {
-    if (property?.ofProperty) {
-      switch (property.ofProperty.type) {
-        case DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY: {
-          let ofOfSymbols: string[] = [];
-
-          if (property.type) {
-            ofOfSymbols.push(property.type);
-          }
-
-          if (property.ofProperty.ofProperty) {
-            const symbol = groupSymbol(property.ofProperty.ofProperty);
-
-            if (symbol) {
-              ofOfSymbols.push(symbol);
-            }
-          }
-
-          const atomicDefinedSymbol = atomicDefinedPropertySymbol(
-            property.ofProperty
-          );
-          const ofPrefix = [atomicDefinedSymbol, "of"];
-
-          return [[...ofPrefix, ...ofOfSymbols].join(" ")];
-        }
-        case DEFINED_DEFINITION_PROPERTY_TYPE.UNION:
-        case DEFINED_DEFINITION_PROPERTY_TYPE.ENUM:
-        case DEFINED_DEFINITION_PROPERTY_TYPE.XOR: {
-          if (property.ofProperty.properties?.length) {
-            const atomicDefinedSymbol = atomicDefinedPropertySymbol(property);
-
-            if (atomicDefinedSymbol) {
-              let unionSymbol = "";
-              if (
-                property.ofProperty.type ===
-                  DEFINED_DEFINITION_PROPERTY_TYPE.ENUM &&
-                property.ofProperty.ofProperty?.type
-              ) {
-                unionSymbol = groupSymbol({
-                  name: "",
-                  description: "",
-                  type: property.ofProperty.ofProperty?.type,
-                  properties: property.ofProperty.properties || [],
-                });
-              }
-
-              if (!unionSymbol) {
-                unionSymbol = groupSymbol({
-                  name: "",
-                  description: "",
-                  type: DEFINED_DEFINITION_PROPERTY_TYPE.UNION,
-                  properties: property.ofProperty.properties || [],
-                });
-              }
-
-              if (unionSymbol?.length && unionSymbol.includes("$$")) {
-                return [atomicDefinedSymbol];
-              }
-
-              return [[atomicDefinedSymbol, "of", unionSymbol].join(" ")];
-            }
-
-            return [property.type, groupSymbol(property.ofProperty)];
-          }
-
-          if (property.ofProperty?.ofProperty) {
-            return [property.ofProperty?.ofProperty?.type];
-          }
-
-          return [];
-        }
-        default: {
-          if (!property.ofProperty.name) {
-            const defined = atomicDefinedPropertySymbol(property);
-            const symbol = atomicPropertySymbol(property);
-
-            if (symbol?.startsWith?.("$$")) {
-              return [property.ofProperty.type];
-            }
-
-            const chains = [symbol];
-
-            if (defined) {
-              chains.push("of");
-            }
-
-            chains.push(groupSymbol(property.ofProperty));
-
-            return chains;
-          }
-
-          return [property.ofProperty.type];
-        }
-      }
-    }
-
-    switch (property.type) {
-      case (DEFINED_DEFINITION_PROPERTY_TYPE.UNION,
-      DEFINED_DEFINITION_PROPERTY_TYPE.XOR): {
-        if (property.properties?.length) {
-          const respMap = {};
-          let resp: string[] = [];
-          for (const prop of property.properties) {
-            let symbols = resolvePropertySymbolInner(prop);
-
-            if (prop.ofProperty && symbols.length > 1) {
-              symbols = [
-                [symbols[0], ...symbols.slice(1, symbols.length)].join(""),
-              ];
-            }
-
-            resp.push(...symbols);
-          }
-
-          let hasOr = false; // TODO: in the future better
-          for (const symbol of resp) {
-            if (symbol.trim() === "or") {
-              hasOr = true;
-              break;
-            }
-            respMap[symbol] = true;
-          }
-
-          if (!hasOr) {
-            resp = Object.keys(respMap);
-          }
-
-          return [resp.join(" or ")];
-        }
-
-        break;
-      }
-
-      case DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY: {
-        return ["array"];
-      }
-
-      case DEFINED_DEFINITION_PROPERTY_TYPE.ENUM: {
-        return ["enum"];
-      }
-    }
-
-    if (property.type?.startsWith?.("$$")) {
-      return [];
-    }
-
-    return [property.type];
-  }
-
-  const symbolsParts = resolvePropertySymbolInner(property);
-  if (nullableProperty(property)) {
-    if (symbolsParts.length) {
-      symbolsParts.push("or", "null");
-    } else {
-      symbolsParts.push("null");
-    }
-  }
-
-  return symbolsParts.join(" ");
-}
-
-function atomicDefinedPropertySymbol(property: DefinitionProperty): string {
-  switch (property.type) {
-    case DEFINED_DEFINITION_PROPERTY_TYPE.ARRAY: {
-      return "array";
-    }
-    case DEFINED_DEFINITION_PROPERTY_TYPE.UNION:
-    case DEFINED_DEFINITION_PROPERTY_TYPE.ENUM:
-    case DEFINED_DEFINITION_PROPERTY_TYPE.XOR: {
-      return "";
-    }
-
-    default: {
-      return "";
-    }
-  }
-}
-
-function groupSymbol(property: DefinitionProperty) {
-  const symbol = resolvePropertySymbol(property);
-  if (symbol?.startsWith?.("$$")) {
-    return "";
-  }
-
-  return symbol;
-}
-
-function atomicPropertySymbol(property: DefinitionProperty): string {
-  const defined = atomicDefinedPropertySymbol(property);
-
-  if (!defined) {
-    return property.type;
-  }
-
-  return defined;
-}
-
-function nullableProperty(property: DefinitionProperty): boolean {
-  return (
-    property.meta?.some((m) => m.name === "nullable" && m.value === "true") ||
-    false
-  );
 }
 
 function renderMetaInfo(meta: DefinitionPropertyMeta[] | undefined) {

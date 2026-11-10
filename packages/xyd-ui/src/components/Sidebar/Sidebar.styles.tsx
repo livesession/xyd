@@ -377,6 +377,12 @@ export const ItemHost = css`
 export const TreeHost = css`
     @layer defaults {
         margin-left: 12px;
+
+        /* the tree of a collapsible top-level group: its rows are the group's
+           own, not nested ones, so they sit where a static group's rows do */
+        &[data-root="true"] {
+            margin-left: 0;
+        }
     }
 `;
 
@@ -394,6 +400,66 @@ export const ItemHeaderHost = css`
         display: flex;
         align-items: center;
         gap: 8px;
+
+        /* A collapsible top-level group: the header IS the toggle. The button
+           inherits the header's type (the size, the weight, the group case, the
+           color) and carries the chevron the nested groups' buttons do — turned
+           down when the group is open, pointing right when it is folded. */
+        [part="item-header-toggle"] {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 0 28px 0 0;
+            margin: 0;
+            border: 0;
+            background: none;
+            font: inherit;
+            letter-spacing: inherit;
+            text-transform: inherit;
+            text-align: left;
+            color: inherit;
+            cursor: pointer;
+            position: relative;
+
+            &::after {
+                content: "";
+                position: absolute;
+                right: 8px;
+                top: 0;
+                bottom: 0;
+                width: 16px;
+                background-color: currentColor;
+                -webkit-mask-image: url(${ChevronIcon});
+                mask-image: url(${ChevronIcon});
+                -webkit-mask-size: contain;
+                mask-size: contain;
+                -webkit-mask-repeat: no-repeat;
+                mask-repeat: no-repeat;
+                -webkit-mask-position: center;
+                mask-position: center;
+                transition: transform 0.2s ease;
+                transform: rotate(-90deg);
+
+                @media (prefers-reduced-motion: reduce) {
+                    transition: none;
+                }
+            }
+
+            &[aria-expanded="true"]::after {
+                transform: rotate(0deg);
+            }
+
+            &:hover {
+                color: var(--xyd-sidebar-item-color--active);
+            }
+
+            &:focus-visible {
+                outline: 2px solid var(--xyd-sidebar-item-color--active);
+                outline-offset: 2px;
+                border-radius: 4px;
+            }
+        }
     }
 `;
 

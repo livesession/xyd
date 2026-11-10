@@ -9,6 +9,7 @@ import { pathToFileURL } from "node:url";
 import { appInit, getHostPath, pluginIconSet, postWorkspaceSetup } from "../../dist/index.js";
 import { startWatcher, type WatchHandle } from "./watcher";
 import { themePackage, themeShortName } from "./themePkg";
+import { pkgInstalled } from "./pkgInstalled";
 import { pluginPagesEntrySrc } from "./pluginPages";
 import { sidebarComponentsEntrySrc } from "./sidebarComponents";
 
@@ -55,23 +56,7 @@ export function setBuildContext(host: string, rawName: string) {
  *  an EXTERNAL `npm:` theme (or a plugin/integration dep) may be missing on the
  *  first build — run the shared postWorkspaceSetup (writes host package.json +
  *  installs) exactly like the Vite build/dev path does. Gated on resolvability so
- *  the common (built-in) case skips the install entirely. */
-/** Node-style resolution by filesystem walk: is `pkg` reachable in a node_modules
- *  from `fromDir` upward? Pure `fs` (handles pnpm symlinks + workspace hoisting) so
- *  it does NOT touch Bun's resolver cache — a failed `Bun.resolveSync` here would
- *  poison the negative cache and make the later Bun.build (makeShims) fail to
- *  resolve the package even AFTER postWorkspaceSetup installs it. */
-function pkgInstalled(fromDir: string, pkg: string): boolean {
-  const segs = pkg.split("/");
-  let dir = fromDir;
-  for (;;) {
-    if (fs.existsSync(path.join(dir, "node_modules", ...segs, "package.json"))) return true;
-    const parent = path.dirname(dir);
-    if (parent === dir) return false;
-    dir = parent;
-  }
-}
-
+ *  the common (built-in) case skips the install entirely — see pkgInstalled. */
 export async function ensureThemeInstalled(host: string, themePkg: string, settings: any): Promise<void> {
   if ((globalThis as any).__xydCompiledBinary) return; // binary: themes are embedded, no install
   if (pkgInstalled(host, themePkg)) return; // built-in (workspace-hoisted) or already installed

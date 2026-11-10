@@ -58,18 +58,34 @@ describe("resolveApiSdkConfig", () => {
         expect(resolveApiSdkConfig(cfg, "/x/v2.yaml")).not.toBeNull();
     });
 
-    it("languages filter + reorder to canonical order; unknown ids drop; empty result → all", () => {
+    it("languages keep the CONFIGURED order (the switcher order); unknown ids drop; repeats collapse; empty result → all", () => {
         const cfg: APIFile = {
             source: "./a.yaml",
             sdk: { languages: ["python", "go"] },
         };
         expect(resolveApiSdkConfig(cfg, "./a.yaml")).toEqual({
-            languages: ["go", "python"],
+            languages: ["python", "go"],
+            configuredLanguages: ["python", "go"],
             defaultLanguage: "shell",
         });
 
+        const mixed: APIFile = {
+            source: "./a.yaml",
+            sdk: { languages: ["typescript", "cobol", "python", "typescript", "go"] as any },
+        };
+        expect(resolveApiSdkConfig(mixed, "./a.yaml")?.languages).toEqual(["typescript", "python", "go"]);
+        expect(resolveApiSdkConfig(mixed, "./a.yaml")?.configuredLanguages).toEqual(["typescript", "python", "go"]);
+
         const junk: APIFile = { source: "./a.yaml", sdk: { languages: ["rust", "cobol"] as any } };
         expect(resolveApiSdkConfig(junk, "./a.yaml")?.languages).toEqual(ALL);
+        expect(resolveApiSdkConfig(junk, "./a.yaml")?.configuredLanguages).toBeUndefined();
+    });
+
+    it("configuredLanguages is absent for `sdk: true` — a spec's own x-sdk order then stands", () => {
+        const all = resolveApiSdkConfig({ source: "./a.yaml", sdk: true }, "./a.yaml");
+        expect(all?.languages).toEqual(ALL);
+        expect(all?.configuredLanguages).toBeUndefined();
+        expect(resolveApiSdkConfig({ source: "./a.yaml", sdk: {} }, "./a.yaml")?.configuredLanguages).toBeUndefined();
     });
 
     it("remote URLs match by exact equality only", () => {

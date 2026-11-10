@@ -1,12 +1,14 @@
 {
   "name": "@xyd-js/mcp",
   "version": "0.1.0-build.1",
-  "description": "Model Context Protocol (MCP) utilities for xyd (library mode)",
-  "main": "dist/index.js",
+  "description": "Model Context Protocol (MCP) tools and resources from an API definition (library)",
   "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     }
   },
@@ -15,41 +17,117 @@
     "dist"
   ],
   "scripts": {
-    "build": "bun build index.ts --outdir dist --target node --format esm && bun build:types",
+    "build": "tsup && pnpm build:types",
     "build:types": "tsc --project tsconfig.json",
-    "dev": "bun --watch index.ts",
-    "clean": "rimraf build"
+    "dev": "tsup --watch",
+    "clean": "rimraf dist",
+    "test": "vitest run __tests__"
   },
   "dependencies": {
+    "@xyd-js/gql": "workspace:*",
+    "@xyd-js/openapi": "workspace:*",
+    "@xyd-js/uniform": "workspace:*"
+  },
+  "peerDependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.2",
+    "zod": "^3.25.0 || ^4.0.0",
     "@langchain/classic": "^1.0.0",
-    "@langchain/community": "^1.0.0",
+    "@langchain/core": "^1.0.0",
     "@langchain/openai": "^1.0.0",
     "@langchain/textsplitters": "^1.0.0",
-    "@modelcontextprotocol/sdk": "^1.25.2",
     "@xyd-js/atlas": "workspace:*",
     "@xyd-js/components": "workspace:*",
-    "@xyd-js/core": "workspace:*",
-    "@xyd-js/framework": "workspace:*",
-    "@xyd-js/gql": "workspace:*",
-    "@xyd-js/native": "workspace:*",
-    "@xyd-js/openapi": "workspace:*",
-    "@xyd-js/plugins": "workspace:*",
-    "@xyd-js/uniform": "workspace:*",
-    "json-schema-to-zod": "^2.6.1",
-    "langchain": "^1.2.3",
-    "openux-js": "^0.0.0-pre.0",
+    "codehike": "^1.0.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "remark": "^15.0.1",
     "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
     "turndown": "^7.2.1",
     "turndown-plugin-gfm": "^1.0.2",
-    "unist-builder": "^4.0.0",
-    "zod": "^3.25.76"
+    "unified": "^11.0.5",
+    "unist-builder": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@langchain/classic": {
+      "optional": true
+    },
+    "@langchain/core": {
+      "optional": true
+    },
+    "@langchain/openai": {
+      "optional": true
+    },
+    "@langchain/textsplitters": {
+      "optional": true
+    },
+    "@xyd-js/atlas": {
+      "optional": true
+    },
+    "@xyd-js/components": {
+      "optional": true
+    },
+    "codehike": {
+      "optional": true
+    },
+    "react": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "remark": {
+      "optional": true
+    },
+    "remark-gfm": {
+      "optional": true
+    },
+    "remark-parse": {
+      "optional": true
+    },
+    "remark-stringify": {
+      "optional": true
+    },
+    "turndown": {
+      "optional": true
+    },
+    "turndown-plugin-gfm": {
+      "optional": true
+    },
+    "unified": {
+      "optional": true
+    },
+    "unist-builder": {
+      "optional": true
+    }
   },
   "devDependencies": {
+    "@langchain/classic": "^1.0.0",
+    "@langchain/core": "^1.0.0",
+    "@langchain/openai": "^1.0.0",
+    "@langchain/textsplitters": "^1.0.0",
+    "@modelcontextprotocol/sdk": "^1.25.2",
     "@types/node": "^20.9.0",
     "@types/turndown": "^5.0.5",
+    "@xyd-js/atlas": "workspace:*",
+    "@xyd-js/components": "workspace:*",
+    "@xyd-js/native": "workspace:*",
+    "codehike": "^1.0.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "remark": "^15.0.1",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-stringify": "^11.0.0",
     "rimraf": "^3.0.2",
-    "typescript": "^5.6.2"
+    "tsup": "^8.3.0",
+    "turndown": "^7.2.1",
+    "turndown-plugin-gfm": "^1.0.2",
+    "typescript": "^5.6.2",
+    "unified": "^11.0.5",
+    "unist-builder": "^4.0.0",
+    "vitest": "^2.1.8",
+    "zod": "^3.25.76"
   }
 }

@@ -1,4 +1,4 @@
-import {spawn} from 'child_process';
+import {spawn, type ChildProcess} from 'node:child_process';
 import path from 'path';
 import {existsSync, mkdtempSync, rmSync, cpSync} from 'node:fs';
 import {tmpdir} from 'node:os';
@@ -59,6 +59,34 @@ export class XydServer {
         this.args = options.args || [];
     }
 
+    /**
+     * A copy of `projectDir` outside the repository, at the same path relative
+     * to a fresh root, with the shared `__tests__/__fixtures__` beside it — so
+     * the project's relative references (`../../../__fixtures__/openapi/…`) still
+     * resolve. A project outside the repository is used where it is.
+     */
+    private createOutOfRepoWorkspace(projectDir: string): string {
+        const repoRoot = path.resolve(__dirname, '../../..');
+        const relative = path.relative(repoRoot, projectDir);
+        if (relative.startsWith('..') || path.isAbsolute(relative)) {
+            return projectDir;
+        }
+        const root = mkdtempSync(path.join(tmpdir(), 'xyd-e2e-'));
+        const target = path.join(root, relative);
+        const skip = (src: string) => {
+            const name = path.basename(src);
+            return name === '.xyd' || name === 'node_modules';
+        };
+        cpSync(projectDir, target, { recursive: true, filter: (src) => !skip(src) });
+        const fixtures = path.join(repoRoot, '__tests__', '__fixtures__');
+        if (existsSync(fixtures)) {
+            cpSync(fixtures, path.join(root, '__tests__', '__fixtures__'), { recursive: true });
+        }
+        this.tempDir = root;
+        console.log(`📁 Running ${relative} from ${target} (outside the repository)`);
+        return target;
+    }
+
     private createTempWorkspace(): string {
         const tempDir = mkdtempSync(path.join(tmpdir(), `xyd-server-test-`));
         console.log(`📁 Created temporary workspace: ${tempDir}`);
@@ -98,6 +126,19 @@ export class XydServer {
             this.port = await getRandomPort();
         }
 
+        this.resolved = await resolveXydCommand();
+
+        // A CLI other than the monorepo's own build (an installed release, a
+        // pinned version) must not run a project in place: inside this
+        // repository, module resolution walks up to the root node_modules, where
+        // `pnpm i` links every workspace @xyd-js package — unbuilt ones included —
+        // ahead of the CLI's own, and a theme found there "is installed" but has
+        // no entry to bundle. Run a copy outside the repository instead, the way a
+        // user's project runs.
+        if (!this.templateDir && this.resolved.source !== 'monorepo') {
+            this.testDir = this.createOutOfRepoWorkspace(this.testDir);
+        }
+
         // Create temporary workspace if template directory is provided
         if (this.templateDir) {
             this.tempDir = this.createTempWorkspace();
@@ -113,31 +154,26 @@ export class XydServer {
         }
     }
 
-    private async resolveXydCommand(): Promise<ResolvedCommand> {
-        // 3-tier resolution shared with the other e2e harnesses — see resolve-xyd.ts
-        return resolveXydCommand();
-    }
+    private resolved?: ResolvedCommand;
 
     private async startDev(env: Record<string, string>): Promise<void> {
-        const resolved = await this.resolveXydCommand();
-        this.process = spawn(resolved.cmd, [...resolved.args, ...devArgs(this.args, this.port)], {
+        const resolved = this.resolved ?? (await resolveXydCommand());
+        this.process = this.spawnLogged('xyd dev', resolved.cmd, [...resolved.args, ...devArgs(this.args, this.port)], {
             env: { ...env, ...resolved.env },
             cwd: this.testDir,
-            stdio: 'inherit'
         });
 
         await this.waitForServer();
     }
 
     private async buildAndServe(env: Record<string, string>): Promise<void> {
-        const resolved = await this.resolveXydCommand();
+        const resolved = this.resolved ?? (await resolveXydCommand());
 
         // Step 1: run xyd build
         console.log(`Running xyd build in ${this.testDir}...`);
-        const buildProcess = spawn(resolved.cmd, [...resolved.args, 'build', ...this.args], {
+        const buildProcess = this.spawnLogged('xyd build', resolved.cmd, [...resolved.args, 'build', ...this.args], {
             env: { ...env, ...resolved.env },
             cwd: this.testDir,
-            stdio: 'inherit'
         });
 
         const buildExitCode = await new Promise<number>((resolve) => {
@@ -145,7 +181,7 @@ export class XydServer {
         });
 
         if (buildExitCode !== 0) {
-            throw new Error(`xyd build failed with exit code ${buildExitCode}`);
+            throw new Error(`xyd build failed with exit code ${buildExitCode}:\n${this.outputTail()}`);
         }
         console.log(`xyd build completed`);
 
@@ -154,29 +190,60 @@ export class XydServer {
         const buildClientDir = path.join(this.testDir, '.xyd', 'build', 'client');
         if (existsSync(serverMjs)) {
             console.log(`Starting edge server (server.mjs) on port ${this.port}`);
-            this.process = spawn('node', [serverMjs], {
+            this.process = this.spawnLogged('server.mjs', 'node', [serverMjs], {
                 env: { ...env, ...resolved.env, PORT: this.port.toString() },
                 cwd: this.testDir,
-                stdio: 'inherit'
             });
         } else {
             console.log(`Serving static build on port ${this.port}`);
-            this.process = spawn('npx', ['serve', '-l', this.port.toString(), buildClientDir], {
+            this.process = this.spawnLogged('serve', 'npx', ['serve', '-l', this.port.toString(), buildClientDir], {
                 env: { ...env, ...resolved.env },
                 cwd: this.testDir,
-                stdio: 'inherit'
             });
         }
 
         await this.waitForServer();
     }
 
+    /** The last output of the spawned processes, for an error message. */
+    private output = '';
+    private exited?: Promise<never>;
+
+    /**
+     * Spawns a process whose output still reaches the console, keeps its tail,
+     * and — for the process that serves — remembers its exit, so a server that
+     * dies before answering (a bundle that fails, a missing package) fails the
+     * start at once, with its own error, instead of after the readiness budget.
+     */
+    private spawnLogged(label: string, cmd: string, args: string[], options: { env: NodeJS.ProcessEnv; cwd: string }): ChildProcess {
+        const child = spawn(cmd, args, { ...options, stdio: ['ignore', 'pipe', 'pipe'] });
+        const keep = (chunk: Buffer, to: NodeJS.WriteStream) => {
+            to.write(chunk);
+            this.output = (this.output + chunk.toString()).slice(-8000);
+        };
+        child.stdout?.on('data', (chunk: Buffer) => keep(chunk, process.stdout));
+        child.stderr?.on('data', (chunk: Buffer) => keep(chunk, process.stderr));
+        this.exited = new Promise<never>((_, reject) => {
+            child.on('close', (code, signal) => {
+                reject(new Error(`${label} exited (${signal ?? code}) before serving on port ${this.port}:\n${this.outputTail()}`));
+            });
+        });
+        // Only a rejection that nobody awaits would be unhandled: the start awaits it.
+        this.exited.catch(() => undefined);
+        return child;
+    }
+
+    private outputTail(): string {
+        // biome-ignore lint/suspicious/noControlCharactersInRegex: strips terminal colour codes
+        return this.output.replace(/\x1b\[[0-9;]*[A-Za-z]/g, '').split('\n').slice(-40).join('\n');
+    }
+
     private async waitForServer(): Promise<void> {
-        return waitForServer(this.port);
+        return waitForServer(this.port, this.exited);
     }
 
     async stop(): Promise<void> {
-        if (this.process) {
+        if (this.process && this.process.exitCode === null && this.process.signalCode === null) {
             this.process.kill('SIGTERM');
             await new Promise(resolve => this.process.on('close', resolve));
         }

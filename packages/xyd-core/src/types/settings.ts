@@ -764,6 +764,16 @@ export interface Sidebar {
   expanded?: boolean;
 
   /**
+   * Fold this group behind a toggle on its header: it starts collapsed and
+   * opens on a click, or when it holds the active page (like the rest of the
+   * sidebar's open state, it starts over on the next page). Only meaningful
+   * for a TOP-LEVEL group — a nested group starts collapsed anyway (see
+   * `expanded`). The generated API reference sets it on its objects group
+   * (`api.openapi[..].options.objectsCollapsed`).
+   */
+  collapsed?: boolean;
+
+  /**
    * The order of the group.
    */
   order?: Order;
@@ -1411,9 +1421,13 @@ export type APISdkLanguage =
 /** Object form of {@link APIFileAdvanced.sdk}. */
 export interface APISdkConfig {
   /**
-   * Restrict the SDK languages shown in the switcher. Unknown ids are
-   * ignored; the rendered order always follows the canonical SDK order
-   * (go, python, typescript, ruby, java, csharp). Empty/omitted → all.
+   * The SDK languages shown in the switcher, in this order — the raw-HTTP
+   * `Shell` entry always comes first. Unknown ids are ignored. Empty/omitted →
+   * all six, in the default order (go, python, typescript, ruby, java, csharp).
+   * For a spec that carries `x-sdk`, the list narrows the spec's own
+   * `x-sdk.languages` and sets their order; without a list the spec's order is
+   * kept. The reader's choice is one per site (`?lang=<id>` in the URL seeds
+   * it) and the markdown code groups of different languages follow it.
    */
   languages?: APISdkLanguage[];
 }
@@ -1428,6 +1442,50 @@ export interface APIFileOptions {
    * "Global options" page in the sidebar instead of repeated on each command.
    */
   globalOptionsPerCommand?: boolean;
+
+  /**
+   * (OpenAPI) The name of the group that lists the component-schema ("object")
+   * pages: the top-level objects group and, under the `per-area` layout, the
+   * sub-group an object page with an `x-docs.group` is nested under inside
+   * that resource group, after its endpoints. Default `"Objects"`.
+   */
+  objectsGroup?: string;
+
+  /**
+   * (OpenAPI) Where the object pages sit in the generated navigation (no
+   * `x-docs.sidebar`). `"grouped"` (the default): one top-level objects group,
+   * the last group of the navigation — the pages without a resource group
+   * first, then one collapsed sub-group per resource group (`x-docs.group`)
+   * in the order the groups appear above it. `"per-area"`: an object page with
+   * a resource group is nested under that group's own objects sub-group, after
+   * its endpoints; the pages without one keep the top-level objects group.
+   */
+  objectsLayout?: "grouped" | "per-area";
+
+  /**
+   * (OpenAPI) How a page without an `x-docs.path` gets its path under the
+   * route. `"operation-id"` (the default): the `operationId` of an operation
+   * (else a slug of its summary), `objects/<Name>` for a component schema.
+   * `"title"`: an operation derives `<group>/[<sub-resource>/]<verb>` from its
+   * group and a verb-first summary ("Create widget" in `widgets` →
+   * `widgets/create`, "List widget parts" → `widgets/parts/list`), keeping the
+   * default when the summary is not verb-first or the operation has no group;
+   * a component schema derives `<group>/<label>` (`objects/<label>` without a
+   * group), the label its constant `object` value verbatim, else its name in
+   * kebab-case. An `x-docs.path` on the operation or the schema wins in both
+   * modes; the sidebar labels and groups are unchanged either way.
+   */
+  operationPaths?: "operation-id" | "title";
+
+  /**
+   * (OpenAPI) Whether the generated navigation's top-level objects group (the
+   * `grouped` layout's last group) starts collapsed behind a toggle on its
+   * header — it opens on a click, or when the current page is one of its
+   * pages. Default `true`; `false` keeps the group open like the resource
+   * groups above it. Nothing to fold under `per-area` or with an
+   * `x-docs.sidebar`.
+   */
+  objectsCollapsed?: boolean;
 }
 
 /**

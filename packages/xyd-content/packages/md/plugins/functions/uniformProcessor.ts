@@ -12,6 +12,7 @@ import { loadOpencliSpec, opencliToReferences } from "@xyd-js/opencli"
 
 import { downloadContent, LineRange, parseImportPath, Region, resolvePathAlias } from './utils';
 import { tsxToReactUniform } from './tsxExtractor';
+import { resolveApiFileOptions } from '../../../../src/apiFileOptions';
 import uniform, { Reference, ReferenceContext } from '@xyd-js/uniform';
 // TODO: rewrite to async
 
@@ -99,9 +100,10 @@ export async function processUniformFunctionCall(
     // Previously `plugins.push(...)` grew globalThis.__xydUserUniformVitePlugins by
     // one on every OpenAPI page, so page K applied the sidebar plugin ~K times
     // (O(N²) over the build, unbounded array growth). The sidebar plugin is
-    // idempotent and its `defer` no-ops when regions are present, so applying it
-    // once is byte-identical to applying it K times — and this keeps the global
-    // clean for parallel worker heaps.
+    // idempotent (with regions present its `defer` only relinks the page's
+    // schema links from the document), so applying it once is byte-identical
+    // to applying it K times — and this keeps the global clean for parallel
+    // worker heaps.
     const userPlugins = globalThis.__xydUserUniformVitePlugins || []
     const matter = file.data?.matter as Metadata
     const plugins = matter?.openapi
@@ -257,8 +259,19 @@ async function processUniformFile(
                         ? pristineServers.slice()
                         : pristineServers;
                 }
+                // `api.openapi[..].options.objectsGroup` / `.objectsLayout` /
+                // `.operationPaths` — the object pages' group name and layout and
+                // the page-path mode, the same values the preset gave the sidebar
+                // build: the links of this page's schemas follow the final paths.
+                const apiOptions = resolveApiFileOptions(settings?.api?.openapi, resolvedFilePath);
+                const objectsGroup = apiOptions?.objectsGroup;
+                const objectsLayout = apiOptions?.objectsLayout;
+                const operationPaths = apiOptions?.operationPaths;
                 const references = oapSchemaToReferences(schema, {
-                    regions: regions.map(region => region.name)
+                    regions: regions.map(region => region.name),
+                    ...(objectsGroup ? { objectsGroup } : {}),
+                    ...(objectsLayout ? { objectsLayout } : {}),
+                    ...(operationPaths ? { operationPaths } : {}),
                 });
 
                 // SDK-native docs: the enrichment hook (installed by documan's

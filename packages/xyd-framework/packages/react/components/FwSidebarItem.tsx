@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useId, useState } from "react"
 
 import { Metadata } from "@xyd-js/core";
 import { Icon } from "@xyd-js/components/writer";
@@ -31,6 +31,20 @@ export interface FwSidebarItemProps {
 
     /** sidebar-as-TOC group — its items scroll to sections of the host page */
     asToc?: boolean | FwSidebarAsTocProps
+
+    /** top-level group configured `collapsed: true` — a toggle on its header,
+     *  folded on first load unless it holds the active page (see useSidebarTree) */
+    collapsed?: boolean
+}
+
+/**
+ * The FooSidebar key of a collapsible top-level group's toggle. The group is
+ * not an item, so it borrows the item key space with indices no item has (`-1`
+ * everywhere but the group's own index). Shared with useSidebarTree, which
+ * seeds the key when the group holds the active page.
+ */
+export function groupToggleItem(groupIndex: number): FooSidebarItemProps {
+    return { uniqIndex: -1, groupIndex, level: -1, itemIndex: -1 }
 }
 
 export function FwSidebarItem(props: FwSidebarItemProps) {
@@ -45,6 +59,53 @@ export function FwSidebarItem(props: FwSidebarItemProps) {
 
     const icon = props.icon ? <Icon name={props.icon || ""} size={16} /> : null
 
+    const rows = props.items.map((item, index) => {
+        // A custom-component sidebar item (`{ component: "./path" }`). `fixed`
+        // ones are pinned in the fixed region (rendered by FwSidebar), so skip
+        // them here; non-fixed ones render inline in tree order.
+        if (item.component) {
+            if (item.fixed) return null
+            return <FwSidebarComponent
+                key={`component-${index}-${item.component}`}
+                component={item.component}
+                props={item.componentProps}
+            />
+        }
+
+        return <FwSidebarItem.Item
+            uniqIndex={item.uniqIndex}
+            group={item.group}
+            groupIndex={props.groupIndex}
+            level={0}
+            itemIndex={index}
+            key={index + item.href}
+            title={item.title}
+            sidebarTitle={item.sidebarTitle}
+            url={item.url}
+            pageMeta={item.pageMeta}
+            href={item.href}
+            items={item.items}
+            active={item.active}
+            icon={item.icon}
+            asToc={item.asToc}
+        />
+    })
+
+    // A top-level group configured `collapsed: true` folds its rows behind a
+    // toggle on its header (the objects group of a generated API reference).
+    // The filter force-opens it, as it does a nested group, so a hit inside is
+    // visible.
+    if (props.collapsed && props.group) {
+        return <FwSidebarCollapsibleGroup
+            group={props.group}
+            groupIndex={props.groupIndex}
+            icon={icon}
+            forceOpen={!!q}
+        >
+            {rows}
+        </FwSidebarCollapsibleGroup>
+    }
+
     // NOTE: sidebar-as-TOC groups are NOT wrapped here — CONSECUTIVE asToc
     // groups must share ONE TOC track line, so the [data-astoc] wrapper is
     // applied a level up, in useSidebarTree (which chunks adjacent groups).
@@ -55,37 +116,52 @@ export function FwSidebarItem(props: FwSidebarItemProps) {
             </UISidebar.ItemHeader>
         }
 
-        {props.items.map((item, index) => {
-            // A custom-component sidebar item (`{ component: "./path" }`). `fixed`
-            // ones are pinned in the fixed region (rendered by FwSidebar), so skip
-            // them here; non-fixed ones render inline in tree order.
-            if (item.component) {
-                if (item.fixed) return null
-                return <FwSidebarComponent
-                    key={`component-${index}-${item.component}`}
-                    component={item.component}
-                    props={item.componentProps}
-                />
-            }
+        {rows}
+    </>
+}
 
-            return <FwSidebarItem.Item
-                uniqIndex={item.uniqIndex}
-                group={item.group}
-                groupIndex={props.groupIndex}
-                level={0}
-                itemIndex={index}
-                key={index + item.href}
-                title={item.title}
-                sidebarTitle={item.sidebarTitle}
-                url={item.url}
-                pageMeta={item.pageMeta}
-                href={item.href}
-                items={item.items}
-                active={item.active}
-                icon={item.icon}
-                asToc={item.asToc}
-            />
-        })}
+/**
+ * A top-level group folded behind a toggle on its header. Its open state is a
+ * FooSidebar entry like a nested group's (`groupToggleItem`): seeded by
+ * useSidebarTree when the group holds the active page, toggled by the header,
+ * reset on the next page. The rows mount while the group is open — plus the
+ * 320ms the collapse animates — exactly as a nested group's do.
+ */
+function FwSidebarCollapsibleGroup(props: {
+    group: string
+    groupIndex: number
+    icon: React.ReactNode
+    forceOpen: boolean
+    children: React.ReactNode
+}) {
+    const { active } = useFooSidebar()
+    const [isOpen, toggle] = active(groupToggleItem(props.groupIndex))
+    const open = isOpen || props.forceOpen
+    // The tree's id for the header's aria-controls: useId, so the desktop and
+    // the mobile host (two sidebars in one document) never share one.
+    const treeId = useId()
+
+    const [renderChildren, setRenderChildren] = useState(open)
+    useEffect(() => {
+        if (open) {
+            setRenderChildren(true)
+            return
+        }
+        const timeout = setTimeout(() => setRenderChildren(false), 320)
+        return () => clearTimeout(timeout)
+    }, [open])
+
+    return <>
+        <UISidebar.ItemHeader
+            icon={props.icon}
+            toggle={{ open, onToggle: toggle, controls: treeId }}
+        >
+            {props.group}
+        </UISidebar.ItemHeader>
+
+        <UISidebar.GroupTree id={treeId} isOpen={open}>
+            {renderChildren && props.children}
+        </UISidebar.GroupTree>
     </>
 }
 
@@ -141,6 +217,10 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
     const asTocSidebar = useSidebarAsToc()
     const { query } = useSidebarFilter()
     const [isActive, setActive] = active(props)
+    // The subtree's id for the toggle's aria-controls: useId, so the desktop
+    // and the mobile host (two sidebars in one document) never share one.
+    // Called before the filter's early return below, like every hook here.
+    const subtreeId = useId()
 
     const q = query.trim().toLowerCase()
 
@@ -206,6 +286,13 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
 
     const icon = props.icon ? <Icon name={props.icon} size={16} /> : null
 
+    // A nested group folds its rows into a subtree under its button: the
+    // button states whether that subtree is open (`aria-expanded`) and which
+    // one it is (`aria-controls`). A `group: false` item lists its rows inline
+    // — it folds nothing, so its button states neither.
+    const foldsSubtree = nested && props.group !== false
+    const expanded = isActive || forceExpand
+
     return <UISidebar.Item
         button={nested}
         href={props.url || props.href}
@@ -214,6 +301,8 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
         onClick={handleClick}
         icon={icon}
         group={props.group}
+        expanded={foldsSubtree ? expanded : undefined}
+        controls={foldsSubtree ? subtreeId : undefined}
     >
         <div part="item-title-container">
             <Surface
@@ -262,7 +351,7 @@ FwSidebarItem.Item = function FwSidebarItem(props: FwSidebarItemElementProps) {
             </>
         }
         {
-            props.group !== false && props.items?.length && <UISidebar.SubTree isOpen={isActive || forceExpand}>
+            props.group !== false && props.items?.length && <UISidebar.SubTree id={subtreeId} isOpen={expanded}>
                 {(renderChildren || forceExpand) && <>
                     {
                         props.items?.map((item, index) => <FwSidebarItem

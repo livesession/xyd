@@ -101,6 +101,17 @@ export interface Metadata<P = void> {
     /**
      * @internal
      *
+     * The URL prefix the page's API reference is mounted at (`/docs/api` for
+     * `api.openapi.route: docs/api`, `""` at the root) — stamped by the
+     * uniform preset on every page it generates. The layouts read it as the
+     * base of the page's schema links, which the converter writes relative to
+     * the reference (`objects/Widget`).
+     */
+    baseMatch?: string
+
+    /**
+     * @internal
+     *
      * used for mcp references
      */
     mcp?: string

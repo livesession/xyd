@@ -1,0 +1,164 @@
+# Tag groups (`x-tagGroups`) and tag display names (`x-displayName`): the
+# generated sidebar groups the top-level groups into sections and labels every
+# group of a tag with its display name.
+# - "Core" lists `store`, then `pets`: the section takes the place of `pets`
+#   (the first tag) and lists Store before Pets (the tag group's order)
+# - `audit` is in no tag group: it keeps its place, a top-level group between
+#   the two sections, labelled with its display name
+# - "Admin" lists `users`, which has no display name: the row keeps the name
+# - the object pages: one without a group, then one sub-group per group with
+#   objects, under the "Objects" group — collapsed and last
+openapi: 3.0.3
+info:
+  title: Petstore API
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/v1
+tags:
+  - name: pets
+    description: Everything about the pets.
+    x-displayName: Pets
+  - name: store
+    description: Orders and inventory.
+    x-displayName: Store
+  - name: audit
+    description: The audit trail.
+    x-displayName: Audit log
+  - name: users
+    description: Customer accounts.
+x-tagGroups:
+  - name: Core
+    tags: [store, pets]
+  - name: Admin
+    tags: [users]
+paths:
+  /pets:
+    get:
+      operationId: listPets
+      summary: List pets
+      tags: [pets]
+      responses:
+        '200':
+          description: The pets.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pet'
+    post:
+      operationId: createPet
+      summary: Create pet
+      tags: [pets]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pet'
+      responses:
+        '201':
+          description: The pet that was created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pet'
+  /store/orders:
+    post:
+      operationId: placeOrder
+      summary: Place order
+      tags: [store]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '201':
+          description: The order that was placed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+  /store/inventory:
+    get:
+      operationId: getInventory
+      summary: Get inventory
+      tags: [store]
+      responses:
+        '200':
+          description: The stock per pet status.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
+  /audit/events:
+    get:
+      operationId: listAuditEvents
+      summary: List audit events
+      tags: [audit]
+      responses:
+        '200':
+          description: The events.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+  /users:
+    get:
+      operationId: listUsers
+      summary: List users
+      tags: [users]
+      responses:
+        '200':
+          description: The users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    balance:
+                      $ref: '#/components/schemas/Money'
+components:
+  schemas:
+    Pet:
+      x-docs:
+        name: The pet object
+        group: pets
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+    Order:
+      x-docs:
+        name: The order object
+        group: store
+      type: object
+      properties:
+        id:
+          type: string
+        petId:
+          type: string
+        total:
+          $ref: '#/components/schemas/Money'
+    Money:
+      type: object
+      properties:
+        amount:
+          type: integer
+        currency:
+          type: string

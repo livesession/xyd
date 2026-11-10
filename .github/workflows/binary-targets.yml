@@ -82,6 +82,8 @@ jobs:
               # binary. The gitlink paths, not `<name>/**`.
               - 'xwrite'
               - 'opensdk'
+              # the OpenAPI → uniform core compiled into the native binary
+              - 'apitoolchain'
               - '.gitmodules'
               - '.github/workflows/build-native-binaries.yml'
               - '.github/workflows/binary-targets.yml'

@@ -1,0 +1,592 @@
+[
+  {
+    "title": "The widget object",
+    "description": "A widget, as the API returns it: the constant `object`, a linked definition, enums and a nested assembly.",
+    "canonical": "objects/Widget",
+    "definitions": [
+      {
+        "title": "Widget",
+        "properties": [
+          {
+            "name": "object",
+            "type": "$$enum",
+            "description": "The object type, always `widget`.",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "enum-type",
+                "value": "string"
+              },
+              {
+                "name": "const",
+                "value": "widget"
+              }
+            ],
+            "properties": [
+              {
+                "name": "widget",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "description": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "type": "string",
+            "description": "Unique identifier for the widget.",
+            "properties": [],
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              },
+              {
+                "name": "example",
+                "value": "0d4f1e2a-6b2c-4f33-9d7e-1a2b3c4d5e6f"
+              }
+            ],
+            "symbolDef": {
+              "id": "#/components/schemas/WidgetId",
+              "canonical": "objects/WidgetId"
+            }
+          },
+          {
+            "name": "kind",
+            "type": "$$enum",
+            "description": "The kind of widget, always `standard`.",
+            "meta": [
+              {
+                "name": "enum-type",
+                "value": "string"
+              },
+              {
+                "name": "const",
+                "value": "standard"
+              }
+            ],
+            "properties": [
+              {
+                "name": "standard",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "description": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "color",
+            "type": "$$enum",
+            "description": "The colour of the widget.",
+            "properties": [
+              {
+                "name": "red",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "green",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "blue",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "enum-type",
+                "value": "string"
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "description": "",
+              "type": "string"
+            },
+            "symbolDef": {
+              "id": "#/components/schemas/Color",
+              "canonical": "objects/Color"
+            }
+          },
+          {
+            "name": "definition",
+            "type": "object",
+            "description": "What a widget does — its steps and how they are evaluated.",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ],
+            "symbolDef": {
+              "id": "#/components/schemas/WidgetDefinition",
+              "canonical": "objects/WidgetDefinition"
+            },
+            "properties": [
+              {
+                "name": "steps",
+                "type": "$$array",
+                "description": "The steps, in order.",
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ],
+                "properties": [],
+                "ofProperty": {
+                  "name": "",
+                  "type": "object",
+                  "properties": [
+                    {
+                      "name": "name",
+                      "type": "string",
+                      "description": "The step's name.",
+                      "meta": [
+                        {
+                          "name": "required",
+                          "value": "true"
+                        }
+                      ]
+                    },
+                    {
+                      "name": "count",
+                      "type": "integer",
+                      "description": "How many times the step must happen.",
+                      "meta": [
+                        {
+                          "name": "minimum",
+                          "value": 1
+                        }
+                      ]
+                    }
+                  ],
+                  "description": "",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ],
+                  "symbolDef": {
+                    "id": "#/components/schemas/Step",
+                    "canonical": "objects/Step"
+                  }
+                },
+                "symbolDef": {
+                  "id": "#/components/schemas/Step",
+                  "canonical": "objects/Step"
+                }
+              },
+              {
+                "name": "mode",
+                "type": "$$enum",
+                "description": "How the steps are matched.",
+                "meta": [
+                  {
+                    "name": "defaults",
+                    "value": "strict"
+                  },
+                  {
+                    "name": "enum-type",
+                    "value": "string"
+                  }
+                ],
+                "properties": [
+                  {
+                    "name": "strict",
+                    "type": "string",
+                    "description": "",
+                    "meta": []
+                  },
+                  {
+                    "name": "loose",
+                    "type": "string",
+                    "description": "",
+                    "meta": []
+                  }
+                ],
+                "ofProperty": {
+                  "name": "",
+                  "description": "",
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          {
+            "name": "parts",
+            "type": "$$array",
+            "description": "The parts the widget is made of.",
+            "meta": [],
+            "properties": [],
+            "ofProperty": {
+              "name": "",
+              "type": "object",
+              "properties": [
+                {
+                  "name": "object",
+                  "type": "$$enum",
+                  "description": "The object type, always `part`.",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    },
+                    {
+                      "name": "enum-type",
+                      "value": "string"
+                    },
+                    {
+                      "name": "const",
+                      "value": "part"
+                    }
+                  ],
+                  "properties": [
+                    {
+                      "name": "part",
+                      "type": "string",
+                      "description": "",
+                      "meta": []
+                    }
+                  ],
+                  "ofProperty": {
+                    "name": "",
+                    "description": "",
+                    "type": "string"
+                  }
+                },
+                {
+                  "name": "sku",
+                  "type": "string",
+                  "description": "The part's stock-keeping unit.",
+                  "meta": [
+                    {
+                      "name": "required",
+                      "value": "true"
+                    }
+                  ]
+                }
+              ],
+              "description": "",
+              "meta": [],
+              "symbolDef": {
+                "id": "#/components/schemas/Part",
+                "canonical": "objects/Part"
+              }
+            },
+            "symbolDef": {
+              "id": "#/components/schemas/Part",
+              "canonical": "objects/Part"
+            }
+          },
+          {
+            "name": "created_at",
+            "type": "string",
+            "description": "When the widget was created, RFC 3339.",
+            "meta": [
+              {
+                "name": "required",
+                "value": "true"
+              }
+            ]
+          },
+          {
+            "name": "status",
+            "type": "$$enum",
+            "description": "Whether the widget is in use.",
+            "meta": [
+              {
+                "name": "enum-type",
+                "value": "string"
+              }
+            ],
+            "properties": [
+              {
+                "name": "active",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "archived",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "description": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "shade",
+            "type": "$$enum",
+            "description": "The shade of the widget.",
+            "properties": [
+              {
+                "name": "red",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "green",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "blue",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ],
+            "meta": [
+              {
+                "name": "enum-type",
+                "value": "string"
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "description": "",
+              "type": "string"
+            },
+            "symbolDef": {
+              "id": "#/components/schemas/Color",
+              "canonical": "objects/Color"
+            }
+          },
+          {
+            "name": "assembly",
+            "type": "object",
+            "description": "How the widget is assembled.",
+            "properties": [
+              {
+                "name": "label",
+                "type": "string",
+                "description": "A label for the assembly.",
+                "meta": []
+              },
+              {
+                "name": "id",
+                "type": "string",
+                "description": "Unique identifier for the assembly.",
+                "meta": [
+                  {
+                    "name": "required",
+                    "value": "true"
+                  }
+                ]
+              },
+              {
+                "name": "sku",
+                "type": "string",
+                "description": "The assembly's stock-keeping unit.",
+                "meta": []
+              }
+            ],
+            "meta": [],
+            "symbolDef": {
+              "id": "#/components/schemas/Assembly",
+              "canonical": "objects/Assembly"
+            }
+          },
+          {
+            "name": "weekday",
+            "type": "$$enum",
+            "description": "The weekday the widget ships on — an enum long enough to collapse in the type column.",
+            "meta": [
+              {
+                "name": "enum-type",
+                "value": "string"
+              }
+            ],
+            "properties": [
+              {
+                "name": "monday",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "tuesday",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "wednesday",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "thursday",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "friday",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "saturday",
+                "type": "string",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "sunday",
+                "type": "string",
+                "description": "",
+                "meta": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "description": "",
+              "type": "string"
+            }
+          },
+          {
+            "name": "priority",
+            "type": "$$enum",
+            "description": "A numeric enum, nullable.",
+            "meta": [
+              {
+                "name": "enum-type",
+                "value": "integer"
+              },
+              {
+                "name": "nullable",
+                "value": "true"
+              }
+            ],
+            "properties": [
+              {
+                "name": "1",
+                "type": "integer",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "2",
+                "type": "integer",
+                "description": "",
+                "meta": []
+              },
+              {
+                "name": "3",
+                "type": "integer",
+                "description": "",
+                "meta": []
+              }
+            ],
+            "ofProperty": {
+              "name": "",
+              "description": "",
+              "type": "integer"
+            }
+          },
+          {
+            "name": "sizes",
+            "type": "$$array",
+            "description": "An array of an enum, nullable.",
+            "meta": [
+              {
+                "name": "nullable",
+                "value": "true"
+              }
+            ],
+            "properties": [],
+            "ofProperty": {
+              "name": "",
+              "type": "$$enum",
+              "description": "",
+              "meta": [
+                {
+                  "name": "enum-type",
+                  "value": "string"
+                }
+              ],
+              "properties": [
+                {
+                  "name": "small",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                },
+                {
+                  "name": "large",
+                  "type": "string",
+                  "description": "",
+                  "meta": []
+                }
+              ],
+              "ofProperty": {
+                "name": "",
+                "description": "",
+                "type": "string"
+              }
+            }
+          }
+        ],
+        "meta": []
+      }
+    ],
+    "examples": {
+      "groups": [
+        {
+          "description": "Example",
+          "examples": [
+            {
+              "codeblock": {
+                "tabs": [
+                  {
+                    "title": "json",
+                    "language": "json",
+                    "code": "{\n  \"object\": \"\",\n  \"id\": null,\n  \"kind\": \"\",\n  \"color\": null,\n  \"definition\": {\n    \"steps\": [\n      {\n        \"name\": \"\",\n        \"count\": 0\n      }\n    ],\n    \"mode\": \"\"\n  },\n  \"parts\": [\n    {\n      \"object\": \"\",\n      \"sku\": \"\"\n    }\n  ],\n  \"created_at\": \"\",\n  \"status\": \"\",\n  \"shade\": \"\",\n  \"assembly\": null,\n  \"__UNSAFE_refPath\": null\n}"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "type": "rest_component_schema",
+    "context": {
+      "componentSchema": "Widget",
+      "group": [
+        "Objects"
+      ]
+    }
+  }
+]

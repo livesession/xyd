@@ -415,7 +415,13 @@ export default function Layout() {
                             value={{
                                 Link: FwLink,
                                 syntaxHighlight: settings?.theme?.coder?.syntaxHighlight || null,
-                                baseMatch: lastMatchId || "",
+                                // The base of the page's schema links: the
+                                // preset-stamped prefix of its API reference (""
+                                // at the root); the route match id only for a
+                                // page without one.
+                                baseMatch: typeof loaderData.metadata?.baseMatch === "string"
+                                    ? loaderData.metadata.baseMatch
+                                    : (lastMatchId || ""),
                                 variantToggles: atlasVariantToggles,
                                 ...(sdkCfg ? {
                                     // 7 switcher entries (6 SDKs + cURL) don't fit a tab
