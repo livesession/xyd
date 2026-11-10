@@ -56,7 +56,7 @@ jobs:
             engine: xyd-linux-arm64
             artifact: xyd-native-linux-arm64
             opensdk: opensdk-linux-arm64
-          - os: macos-14
+          - os: macos-15
             bun-target: bun-darwin-arm64
             engine: xyd-darwin-arm64
             artifact: xyd-native-darwin-arm64
@@ -142,7 +142,7 @@ jobs:
       # the freshly-compiled engine BEFORE embedding. (The plan's two-layer risk:
       # inner allow-jit must survive the byte-copy into the outer binary.)
       - name: 'Codesign check: inner engine has allow-jit (darwin)'
-        if: matrix.os == 'macos-14'
+        if: runner.os == 'macOS'
         run: |
           codesign -d --entitlements - "packages/xyd-cli/dist/${{ matrix.engine }}" | grep -q "allow-jit"
           echo "inner engine allow-jit ok"
@@ -170,7 +170,7 @@ jobs:
       # won't run AT ALL. Ad-hoc sign the outer binary — it needs NO `allow-jit`
       # (it only exec's the child engine) — and verify the signature is valid.
       - name: 'Codesign + verify outer Rust binary (darwin)'
-        if: matrix.os == 'macos-14'
+        if: runner.os == 'macOS'
         run: |
           codesign -s - --force "crates/target/release/${{ matrix.artifact }}"
           codesign -dv "crates/target/release/${{ matrix.artifact }}"
@@ -226,7 +226,7 @@ jobs:
       # Same darwin constraint as the outer xyd binary: an unsigned arm64 Mach-O won't
       # run at all. No `allow-jit` needed — it's a pure codegen CLI.
       - name: 'Codesign + verify opensdk (darwin)'
-        if: matrix.os == 'macos-14'
+        if: runner.os == 'macOS'
         run: |
           codesign -s - --force "opensdk/target/release/${{ matrix.opensdk }}"
           codesign --verify --strict --verbose=2 "opensdk/target/release/${{ matrix.opensdk }}"

@@ -33,7 +33,7 @@ jobs:
           - os: ubuntu-24.04-arm
             bun-target: bun-linux-arm64
             artifact: xyd-linux-arm64
-          - os: macos-14
+          - os: macos-15
             bun-target: bun-darwin-arm64
             artifact: xyd-darwin-arm64
     steps:
@@ -130,7 +130,7 @@ jobs:
           echo "smoke ok: $(wc -c < .xyd/build/client/index.html) bytes index.html"
 
       - name: 'Smoke: darwin binary is codesigned with allow-jit'
-        if: matrix.os == 'macos-14'
+        if: runner.os == 'macOS'
         run: |
           codesign -d --entitlements - packages/xyd-cli/dist/${{ matrix.artifact }} | grep -q "allow-jit"
           echo "codesign entitlements ok"
