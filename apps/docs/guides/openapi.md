@@ -225,6 +225,49 @@ A complete project is in the [atlas-only example](https://github.com/xyd-js/exam
 All defaults can be overridden using the [`x-docs`](/guides/openapi#x-docs-extension) extension
 :::
 
+### Tag Groups And Display Names
+
+Two extensions other OpenAPI renderers already read shape the generated sidebar, with no option to turn on: the document's `x-tagGroups` groups the tags' groups into sections, and a tag's `x-displayName` is the label of its groups:
+
+```yaml
+tags:
+  - name: pets
+    x-displayName: Pets
+  - name: store
+    x-displayName: Store
+  - name: audit
+    x-displayName: Audit log
+  - name: users
+x-tagGroups:
+  - name: Core
+    tags: [store, pets]
+  - name: Admin
+    tags: [users]
+```
+
+```
+Core               ← a section: a static header
+  Store ▸          ← its groups, in the tag group's order, each one folded
+  Pets ▸             until opened, or until one of its pages is the current one
+Audit log          ← a tag in no tag group keeps its place
+  List audit events
+Admin
+  users ▸          ← a tag without a display name keeps its name
+Objects ▸
+  Money
+  Pets ▸           ← the object pages' sub-groups take the display names too
+  Store ▸
+```
+
+- **Sections.** A section takes the place of the first of its groups and lists them in the order of its `tags`. A group can sit in one section only: the first tag group that lists it wins. A tag in no tag group keeps its place, so no page is ever hidden, and the `Objects` group is not a tag: it stays last. A tag group that lists no existing group adds no section. A tag group named like a group that keeps its place (its name or its display name) is skipped, so no two top-level groups share a name, and a tag group that repeats an earlier one's name is skipped too.
+- **The groups inside a section are nested groups.** Each one is a toggle: it starts folded, opens on a click, or when one of its pages is the current one, and several can be open at once. The section header itself is static, like any top-level group.
+- **Display names.** Every generated group named after a tag takes the tag's `x-displayName`, at any depth: the groups inside a section, a group left in place and the sub-groups of `Objects`. A section's own name is used as written.
+- **What stays the same.** Page paths, links and the tags themselves do not change; only the sidebar does. A document with an [`x-docs.sidebar`](/guides/openapi#navigation-customization) keeps its own navigation, and a document without either extension gets the sidebar it always had.
+
+:::callout
+Section headers follow the theme's group-header case: uppercase by default. `theme.appearance.sidebar.groupCase: "none"` shows them as written.
+:::
+
 ## X-Docs Extension[maxTocDepth=3]
 
 The `x-docs` extension provides additional configuration options to customize your API documentation beyond the standard OpenAPI specification. Use it to control sidebar structure, code snippets, and endpoint visibility.

@@ -357,9 +357,9 @@ async function uniformResolver(
         };
     };
 
-    // The navigation's finishing pass (the fused path above runs the
-    // converter's own): the openapi preset flags its top-level objects group
-    // `collapsed: true`.
+    // The navigation's finishing passes (the fused path above runs the
+    // converter's own): the openapi preset folds its top-level objects group
+    // and applies the document's tag groups and display names.
     if (navigationFinish && uniformWithNavigation.out?.sidebar) {
         uniformWithNavigation.out.sidebar = navigationFinish(
             uniformWithNavigation.out.sidebar,
