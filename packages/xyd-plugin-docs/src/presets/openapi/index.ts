@@ -26,7 +26,8 @@ class OpenAPIUniformPreset extends UniformPreset {
     private readonly openapiApi: APIFile | undefined
 
     /** The dereferenced document per source, for the navigation's finishing
-     *  pass (its `x-docs.sidebar` probe) — filled by the ref resolver. */
+     *  passes (the `x-docs.sidebar` probe, `x-tagGroups`, the tags'
+     *  `x-displayName`) — filled by the ref resolver. */
     private readonly schemas = new Map<string, Parameters<typeof collapseObjectsGroup>[1]>()
 
     private constructor(

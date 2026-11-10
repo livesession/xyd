@@ -259,7 +259,7 @@ Objects ▸
   Store ▸
 ```
 
-- **Sections.** A section takes the place of the first of its groups and lists them in the order of its `tags`. A group can sit in one section only: the first tag group that lists it wins. A tag in no tag group keeps its place, so no page is ever hidden, and the `Objects` group is not a tag: it stays last. A tag group that lists no existing group adds no section.
+- **Sections.** A section takes the place of the first of its groups and lists them in the order of its `tags`. A group can sit in one section only: the first tag group that lists it wins. A tag in no tag group keeps its place, so no page is ever hidden, and the `Objects` group is not a tag: it stays last. A tag group that lists no existing group adds no section. A tag group named like a group that keeps its place (its name or its display name) is skipped, so no two top-level groups share a name, and a tag group that repeats an earlier one's name is skipped too.
 - **The groups inside a section are nested groups.** Each one is a toggle: it starts folded, opens on a click, or when one of its pages is the current one, and several can be open at once. The section header itself is static, like any top-level group.
 - **Display names.** Every generated group named after a tag takes the tag's `x-displayName`, at any depth: the groups inside a section, a group left in place and the sub-groups of `Objects`. A section's own name is used as written.
 - **What stays the same.** Page paths, links and the tags themselves do not change; only the sidebar does. A document with an [`x-docs.sidebar`](/guides/openapi#navigation-customization) keeps its own navigation, and a document without either extension gets the sidebar it always had.

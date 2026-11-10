@@ -41,6 +41,17 @@ describe("sidebarActivePath", () => {
         expect(sidebarActivePath([{ href: "" }, { href: "/about" }], "")).toBeNull();
     });
 
+    it("matches the whole href, never a prefix shared with another group's pages", () => {
+        const groups: SidebarPathItem[][] = [
+            [{ href: "", items: [{ href: "/store" }, { href: "/store/orders" }] }],
+            [{ href: "", items: [{ href: "/store/orders/create" }] }],
+        ];
+        expect(sidebarActivePath(groups[0], "/store/orders/create")).toBeNull();
+        expect(sidebarActivePath(groups[1], "/store/orders/create")).toEqual([0, 0]);
+        expect(sidebarActivePath(groups[1], "/store/orders")).toBeNull();
+        expect(sidebarActivePath(groups[0], "/store/orders")).toEqual([0, 1]);
+    });
+
     it("handles a group without items", () => {
         expect(sidebarActivePath(undefined, "/pets/list")).toBeNull();
         expect(sidebarActivePath([], "/pets/list")).toBeNull();
