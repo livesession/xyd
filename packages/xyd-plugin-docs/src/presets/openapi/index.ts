@@ -1,6 +1,6 @@
 import {APIFile, Settings, Sidebar} from "@xyd-js/core";
 import {resolveApiFileOptions} from "@xyd-js/content";
-import {deferencedOpenAPI, oapSchemaToReferences, getXDocs, collapseObjectsGroup} from "@xyd-js/openapi";
+import {deferencedOpenAPI, oapSchemaToReferences, getXDocs, collapseObjectsGroup, groupByTagGroups} from "@xyd-js/openapi";
 import type {NavigationGroupEntry} from "@xyd-js/openapi";
 import type {Reference} from "@xyd-js/uniform";
 
@@ -86,9 +86,14 @@ class OpenAPIUniformPreset extends UniformPreset {
     }
 
     /**
-     * The JS path's twin of the fused native pass: the top-level objects group
-     * flagged `collapsed: true` (`api.openapi[..].options.objectsCollapsed`,
-     * default `true`), so the sidebar folds it behind a toggle on its header.
+     * The JS path's twin of the fused native passes, in the same order:
+     * 1. the top-level objects group flagged `collapsed: true`
+     *    (`api.openapi[..].options.objectsCollapsed`, default `true`), so the
+     *    sidebar folds it behind a toggle on its header — it finds that group
+     *    by its raw name, so it runs first;
+     * 2. the document's tag groups (`x-tagGroups`) as sections over the
+     *    top-level groups, and its tags' display names (`x-displayName`) as
+     *    the groups' labels — driven by the document alone, no option.
      */
     protected override navigationFinish(
         sidebar: Sidebar[],
@@ -97,11 +102,12 @@ class OpenAPIUniformPreset extends UniformPreset {
         filePath: string,
     ): Sidebar[] {
         const apiOptions = resolveApiFileOptions(this.openapiApi, filePath)
+        const schema = this.schemas.get(filePath)
         // Sidebar and NavigationGroupEntry are the same generated shape; the
         // entry type's index signature is what the interface cannot state.
-        return collapseObjectsGroup(
+        const collapsed = collapseObjectsGroup(
             sidebar as unknown as NavigationGroupEntry[],
-            this.schemas.get(filePath),
+            schema,
             references,
             urlPrefix,
             {
@@ -109,7 +115,8 @@ class OpenAPIUniformPreset extends UniformPreset {
                 ...(apiOptions?.objectsLayout ? { objectsLayout: apiOptions.objectsLayout } : {}),
                 ...(typeof apiOptions?.objectsCollapsed === "boolean" ? { objectsCollapsed: apiOptions.objectsCollapsed } : {}),
             },
-        ) as unknown as Sidebar[]
+        )
+        return groupByTagGroups(collapsed, schema) as unknown as Sidebar[]
     }
 }
 
