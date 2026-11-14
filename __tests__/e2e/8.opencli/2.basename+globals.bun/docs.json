@@ -1,0 +1,21 @@
+{
+  "theme": {
+    "name": "gusto",
+    "appearance": {
+      "search": false,
+      "colorScheme": false
+    }
+  },
+  "advanced": {
+    "basename": "/docs"
+  },
+  "api": {
+    "cli": [
+      {
+        "source": "./acme.opencli.json",
+        "route": "cli",
+        "options": { "globalOptionsPerCommand": true }
+      }
+    ]
+  }
+}
