@@ -69,6 +69,8 @@ To include full URLs in your `llms.txt` file, configure the `baseUrl` in your se
 }
 ```
 
+A site served under a path prefix (`advanced.basename`, see [hosting under a prefix](/guides/openapi#hosting-under-a-prefix)) gets the prefix in every link: with `"basename": "/docs"` the page `/getting-started` is listed as `/docs/getting-started`, or as `https://docs.example.com/docs/getting-started` with the `baseUrl` above. A `baseUrl` that already ends with the prefix is used as it is.
+
 
 ### Customization
 

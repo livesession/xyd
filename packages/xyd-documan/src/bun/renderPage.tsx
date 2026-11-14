@@ -738,10 +738,12 @@ export function start(ThemeCtor: any) {
         }
         return new Response("{}", { status: 404, headers: { "content-type": "application/json" } });
       }
-      if (url.pathname === "/_xyd/data") {
+      if (url.pathname === "/_xyd/data" || (basename && url.pathname === basename + "/_xyd/data")) {
         // Client-nav JSON: the SAME per-route payload renderPage builds, minus the
         // app-wide settings. buildPageData reads files fresh per request, so the
-        // watcher's reinit/reseed keeps it current with no extra wiring.
+        // watcher's reinit/reseed keeps it current with no extra wiring. The
+        // client asks under `advanced.basename` (the root path stays for a page
+        // loaded before an upgrade).
         const rawSlug = url.searchParams.get("slug") || "index";
         const dslug = deriveSlug("/" + rawSlug.replace(/^\/+/, "")) || "index";
         try {
