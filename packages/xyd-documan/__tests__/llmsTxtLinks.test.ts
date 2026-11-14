@@ -1,3 +1,6 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
+
 import { describe, expect, it } from "vitest";
 
 import { llmsTxtLinkUrl } from "../src/llmsTxtLinks";
@@ -31,5 +34,21 @@ describe("llmsTxtLinkUrl", () => {
 
     it("keeps an absolute page URL as is", () => {
         expect(llmsTxtLinkUrl("https://example.com/x.md", "/docs", "https://acme.dev")).toBe("https://example.com/x.md");
+    });
+
+    it("gives the links the llms.txt guide documents", () => {
+        const guide = fs.readFileSync(
+            path.join(__dirname, "../../../apps/docs/guides/llms-txt.md"),
+            "utf8",
+        );
+        // The build hands over the page path with its source file's extension
+        // (`keyWithExt` in src/utils.ts; the basename e2e reads `/docs/cli/init.md`
+        // back from a built llms.txt), so `getting-started.md` comes in as:
+        const page = "/getting-started.md";
+
+        expect(guide).toContain(`\`${llmsTxtLinkUrl(page, "/docs")}\``);
+        expect(guide).toContain(`\`${llmsTxtLinkUrl(page, "/docs", "https://docs.example.com")}\``);
+        // ... and no example drops the extension the links carry
+        expect(guide).not.toMatch(/(`|<code>)(https:\/\/docs\.example\.com)?\/docs\/getting-started(`|<\/code>)/);
     });
 });

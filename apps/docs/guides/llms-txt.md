@@ -31,7 +31,7 @@ An `llms.txt` file is a plain Markdown file that contains:
 - **Site title** as an H1 heading
 - **Structured content sections** with links and descriptions for each page
 
-Each page's description comes from the `description` field in its frontmatter. Pages without a `description` field appear in the `llms.txt` file with just their title.
+Each link points at the page's Markdown source: the page path plus the extension of its file (`/getting-started.md`, or `.mdx` for an MDX page). Each page's description comes from the `description` field in its frontmatter. Pages without a `description` field appear in the `llms.txt` file with just their title.
 
 Example llms.txt:
 
@@ -40,9 +40,9 @@ Example llms.txt:
 
 ## Documentation
 
-- [Getting Started](https://example.com/docs/getting-started): Quick start guide for new users
-- [API Reference](https://example.com/docs/api): Complete API endpoint documentation
-- [Configuration](https://example.com/docs/config): Configuration options and settings
+- [Getting Started](https://example.com/docs/getting-started.md): Quick start guide for new users
+- [API Reference](https://example.com/docs/api.md): Complete API endpoint documentation
+- [Configuration](https://example.com/docs/config.md): Configuration options and settings
 ```
 
 ## Reference
@@ -58,7 +58,7 @@ By default, `llms.txt` is automatically generated from your markdown files. No c
 
 To include full URLs in your `llms.txt` file, configure the `baseUrl` in your settings:
 
-```json [desc="This will generate URLs like <code>https://docs.example.com/docs/getting-started</code> instead of relative paths like <code>/docs/getting-started</code>."]
+```json [desc="This will generate URLs like <code>https://docs.example.com/docs/getting-started.md</code> instead of relative paths like <code>/docs/getting-started.md</code>."]
 {
   "ai": {
     "llmsTxt": {
@@ -69,7 +69,7 @@ To include full URLs in your `llms.txt` file, configure the `baseUrl` in your se
 }
 ```
 
-A site served under a path prefix (`advanced.basename`, see [hosting under a prefix](/guides/openapi#hosting-under-a-prefix)) gets the prefix in every link: with `"basename": "/docs"` the page `/getting-started` is listed as `/docs/getting-started`, or as `https://docs.example.com/docs/getting-started` with the `baseUrl` above. A `baseUrl` that already ends with the prefix is used as it is.
+A site served under a path prefix (`advanced.basename`, see [hosting under a prefix](/guides/openapi#hosting-under-a-prefix)) gets the prefix in every link: with `"basename": "/docs"` the page `/getting-started` is listed as `/docs/getting-started.md`, or as `https://docs.example.com/docs/getting-started.md` with the `baseUrl` above. A `baseUrl` that already ends with the prefix is used as it is.
 
 
 ### Customization
