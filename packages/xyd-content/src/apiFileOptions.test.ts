@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { resolveApiFileOptions } from './apiFileOptions';
+import { resolveApiFileOptions, resolveCliFileOptions } from './apiFileOptions';
 
 const ABS = '/site/specs/widgets.yaml';
 
@@ -60,5 +60,59 @@ describe('resolveApiFileOptions', () => {
         expect(resolveApiFileOptions(api, 'https://example.com/specs/widgets.yaml')?.objectsGroup).toBe('Remote');
         expect(resolveApiFileOptions(api, ABS)).toBeNull();
         expect(resolveApiFileOptions({ source: './specs/widgets.yaml', options: {} }, 'https://example.com/specs/widgets.yaml')).toBeNull();
+    });
+});
+
+describe('resolveCliFileOptions', () => {
+    const ROOT = '/site';
+    const PER_COMMAND = { globalOptionsPerCommand: true };
+
+    it('resolves the same entry from the config-relative source and from the absolute path', () => {
+        // The sidebar build passes the source relative to the docs root, the
+        // page step the absolute path of that file: both must see the entry.
+        const api = [{ source: './acme.opencli.json', route: 'cli', options: PER_COMMAND }];
+        expect(resolveCliFileOptions(api, 'acme.opencli.json', ROOT)).toEqual(PER_COMMAND);
+        expect(resolveCliFileOptions(api, './acme.opencli.json', ROOT)).toEqual(PER_COMMAND);
+        expect(resolveCliFileOptions(api, '/site/acme.opencli.json', ROOT)).toEqual(PER_COMMAND);
+    });
+
+    it('prefers the entry naming the same file over a shorter suffix twin', () => {
+        // The suffix rule alone would hand `/site/tools/acme.opencli.json` to the
+        // first entry (`acme.opencli.json` is a suffix of it).
+        const api = [
+            { source: './acme.opencli.json', options: { globalOptionsPerCommand: false } },
+            { source: './tools/acme.opencli.json', options: PER_COMMAND },
+        ];
+        expect(resolveCliFileOptions(api, '/site/tools/acme.opencli.json', ROOT)).toEqual(PER_COMMAND);
+        expect(resolveCliFileOptions(api, 'tools/acme.opencli.json', ROOT)).toEqual(PER_COMMAND);
+        expect(resolveCliFileOptions(api, '/site/acme.opencli.json', ROOT)).toEqual({ globalOptionsPerCommand: false });
+    });
+
+    it('resolves a source outside the docs root', () => {
+        const api = { source: '../shared/acme.opencli.json', options: PER_COMMAND };
+        expect(resolveCliFileOptions(api, '../shared/acme.opencli.json', ROOT)).toEqual(PER_COMMAND);
+        expect(resolveCliFileOptions(api, '/shared/acme.opencli.json', ROOT)).toEqual(PER_COMMAND);
+    });
+
+    it('matches a URL source by equality', () => {
+        const api = [
+            { source: 'https://example.com/acme.opencli.json', options: PER_COMMAND },
+            { source: './acme.opencli.json', options: { globalOptionsPerCommand: false } },
+        ];
+        expect(resolveCliFileOptions(api, 'https://example.com/acme.opencli.json', ROOT)).toEqual(PER_COMMAND);
+        expect(resolveCliFileOptions(api, '/site/acme.opencli.json', ROOT)).toEqual({ globalOptionsPerCommand: false });
+    });
+
+    it('a matching entry without options gets none, not another entry\'s', () => {
+        const api = [{ source: './acme.opencli.json' }, { source: './other.opencli.json', options: PER_COMMAND }];
+        expect(resolveCliFileOptions(api, '/site/acme.opencli.json', ROOT)).toBeNull();
+    });
+
+    it('falls back to the first entry with options when no entry names the source', () => {
+        const api = { a: './unrelated.json', b: { source: './elsewhere/acme.opencli.json', options: PER_COMMAND } };
+        expect(resolveCliFileOptions(api, '/site/acme.opencli.json', ROOT)).toEqual(PER_COMMAND);
+        expect(resolveCliFileOptions('./acme.opencli.json', '/site/acme.opencli.json', ROOT)).toBeNull();
+        expect(resolveCliFileOptions(undefined, '/site/acme.opencli.json', ROOT)).toBeNull();
+        expect(resolveCliFileOptions(api, '', ROOT)).toBeNull();
     });
 });

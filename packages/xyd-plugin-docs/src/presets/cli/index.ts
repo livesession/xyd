@@ -1,6 +1,5 @@
-import path from "node:path";
-
-import {Settings, APIFile, APIFileAdvanced} from "@xyd-js/core";
+import {Settings, APIFile} from "@xyd-js/core";
+import {resolveCliFileOptions} from "@xyd-js/content";
 import {loadOpencliSpec, opencliToReferences} from "@xyd-js/opencli";
 import type {Reference} from "@xyd-js/uniform";
 
@@ -61,26 +60,12 @@ class CLIUniformPreset extends UniformPreset {
 
         // OpencliReference is a structural subset of Reference (the OpenCLI core
         // stays free of the React-typed uniform package).
+        //
+        // `api.cli[..].options` is read through the SAME resolver the per-page
+        // conversion (the uniform processor) uses, so the navigation and the
+        // pages are built with the same options for a source.
         return opencliToReferences(spec, {
-            globalOptionsPerCommand: this.globalOptionsPerCommand(filePath),
+            globalOptionsPerCommand: resolveCliFileOptions(this.cliApi, filePath)?.globalOptionsPerCommand ?? false,
         }) as unknown as Reference[]
-    }
-
-    /** Read `api.cli[x].options.globalOptionsPerCommand` for the given source. */
-    private globalOptionsPerCommand(filePath: string): boolean {
-        const target = path.resolve(process.cwd(), filePath)
-        const entries = this.cliEntries()
-        const match = entries.find((e) => e.source && path.resolve(process.cwd(), e.source) === target)
-        return ((match ?? entries.find((e) => e.options))?.options?.globalOptionsPerCommand) ?? false
-    }
-
-    private cliEntries(): APIFileAdvanced[] {
-        const cli = this.cliApi
-        if (!cli || typeof cli === "string") return []
-        const isAdvanced = (e: unknown): e is APIFileAdvanced =>
-            typeof e === "object" && e != null && "source" in e
-        if (Array.isArray(cli)) return cli.filter(isAdvanced)
-        if (isAdvanced(cli)) return [cli]
-        return Object.values(cli).filter(isAdvanced)
     }
 }

@@ -12,7 +12,7 @@ import { loadOpencliSpec, opencliToReferences } from "@xyd-js/opencli"
 
 import { downloadContent, LineRange, parseImportPath, Region, resolvePathAlias } from './utils';
 import { tsxToReactUniform } from './tsxExtractor';
-import { resolveApiFileOptions } from '../../../../src/apiFileOptions';
+import { resolveApiFileOptions, resolveCliFileOptions } from '../../../../src/apiFileOptions';
 import uniform, { Reference, ReferenceContext } from '@xyd-js/uniform';
 // TODO: rewrite to async
 
@@ -320,8 +320,14 @@ async function processUniformFile(
 
             case 'cli': {
                 const spec = await loadOpencliSpec(resolvedFilePath);
+                // `api.cli[..].options.globalOptionsPerCommand`: the value the
+                // preset built the navigation with. With it set, the navigation
+                // has no "Global options" page, so a page converted without it
+                // would show the CLI's global options nowhere.
+                const cliOptions = resolveCliFileOptions(settings?.api?.cli, resolvedFilePath);
                 const references = opencliToReferences(spec, {
-                    regions: regions.map(region => region.name)
+                    regions: regions.map(region => region.name),
+                    globalOptionsPerCommand: cliOptions?.globalOptionsPerCommand ?? false,
                 });
 
                 return references;
