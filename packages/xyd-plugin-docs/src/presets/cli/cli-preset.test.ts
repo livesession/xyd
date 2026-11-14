@@ -91,5 +91,67 @@ describe.skipIf(nativeUnavailable)("cli preset → virtual pages + sidebar", () 
         expect(sidebarJson).toContain("docs/cli/install");
         expect(sidebarJson).toContain("docs/cli/remove");
         expect(sidebarJson).toContain("docs/cli/list");
+
+        // A page names its document relative to the docs root, never by the
+        // absolute path of the directory it was built in: the frontmatter is
+        // published with the page (its payload and its `.md` twin).
+        const install = fs.readFileSync(path.join(genDir, "install.md"), "utf8");
+        expect(install).toMatch(/^cli: ['"]?~\/spice\.opencli\.json#install['"]?$/m);
+        expect(install).not.toContain(dir);
+        expect(install).not.toContain(fs.realpathSync(dir));
+    });
+});
+
+// `api.cli[..].options.globalOptionsPerCommand` decides where the CLI's global
+// options go: one "Global options" page in the navigation (the default), or a
+// section on every command page and no page of their own. The page step reads
+// the same option (see the uniform processor's CLI test).
+describe.skipIf(nativeUnavailable)("cli preset → the global options page", () => {
+    let dir: string;
+    let prevCwd: string;
+
+    beforeAll(() => {
+        prevCwd = process.cwd();
+        dir = fs.mkdtempSync(path.join(os.tmpdir(), "cli-preset-globals-"));
+        fs.writeFileSync(
+            path.join(dir, "acme.opencli.json"),
+            JSON.stringify({
+                opencli: "1.0.0",
+                info: { title: "acme", version: "1.0.0" },
+                options: [{ name: "verbose", recursive: true, description: "Print more output." }],
+                commands: [
+                    { name: "init", description: "Create a new acme project." },
+                    { name: "deploy", description: "Deploy the current project." },
+                ],
+            }),
+        );
+        process.chdir(dir);
+    });
+
+    afterAll(() => {
+        process.chdir(prevCwd);
+        fs.rmSync(dir, { recursive: true, force: true });
+    });
+
+    async function generate(options?: { globalOptionsPerCommand?: boolean }) {
+        fs.rmSync(path.join(dir, ".xyd"), { recursive: true, force: true });
+        const settings: any = {
+            api: { cli: [{ source: "./acme.opencli.json", route: "cli", ...(options ? { options } : {}) }] },
+            navigation: { sidebar: [] },
+        };
+        const preset = cliPreset(settings, {});
+        for (const pre of preset.preinstall || []) {
+            await pre({})(settings, { routes: preset.routes });
+        }
+        return fs.readdirSync(path.join(dir, ".xyd/.cache/.content/cli")).sort();
+    }
+
+    it("gives them a page of their own by default", async () => {
+        expect(await generate()).toEqual(["deploy.md", "global-options.md", "init.md"]);
+        expect(await generate({ globalOptionsPerCommand: false })).toEqual(["deploy.md", "global-options.md", "init.md"]);
+    });
+
+    it("gives them no page with globalOptionsPerCommand", async () => {
+        expect(await generate({ globalOptionsPerCommand: true })).toEqual(["deploy.md", "init.md"]);
     });
 });
