@@ -77,6 +77,17 @@
 }
 
 @layer defaults {
+    /* A link inside running text is underlined, so it stands out from the text
+       around it by more than its colour (WCAG 1.4.1): in dark mode a theme's
+       link colour and its body text are often too close in lightness for
+       colour alone. Links that stand on their own (navigation, breadcrumbs,
+       the previous/next links) keep their look. */
+    [part="page-article-content"] :is(p, li, dd, td, th, blockquote, figcaption):not(nav *, xyd-breadcrumbs *, xyd-navlinks *) {
+        --xyd-anchor-text-decoration: underline;
+    }
+}
+
+@layer defaults {
     /* TODO: move to components */
     /*  github-button to apps? */
     xyd-page-footer {

@@ -337,7 +337,8 @@ xyd-layout-primary[style*="--theme-color-primary"] {
     --xyd-text-color--warn: var(--yellow80);
     --xyd-text-color--warn--active: var(--yellow100);
     --xyd-text-color--warn--muted: rgba(255, 193, 7, 0.3);
-    --xyd-text-color--error: var(--red80);
+    /* red100, not red80: #dc3545 is 4.4:1 on an off-white page, under AA. */
+    --xyd-text-color--error: var(--red100);
     --xyd-text-color--error--active: var(--red100);
     --xyd-text-color--error--muted: rgba(220, 53, 69, 0.3);
     --xyd-text-color--primary: var(--color-primary);
@@ -477,6 +478,8 @@ xyd-layout-primary[style*="--theme-color-primary"] {
     --xyd-text-color--default: var(--dark48);
     --xyd-heading-color--muted: var(--dark80);
     --xyd-button-primary-color: var(--black);
+    /* The light reds are under 4.5:1 on a dark page. */
+    --xyd-text-color--error: #f87171;
 }
 
 /* System dark mode support for sidebar - only when OS preference is enabled */
@@ -486,5 +489,6 @@ xyd-layout-primary[style*="--theme-color-primary"] {
         --xyd-text-color--default: var(--dark48);
         --xyd-heading-color--muted: var(--dark80);
         --xyd-button-primary-color: var(--black);
+        --xyd-text-color--error: #f87171;
     }
 }
