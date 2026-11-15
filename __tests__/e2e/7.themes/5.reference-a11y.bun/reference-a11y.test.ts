@@ -74,6 +74,12 @@ function auditPage(): Audit {
                 a: v.length > 3 ? v[3] : 1,
             };
         }
+        // color-mix(in srgb, …) computes to color(srgb r g b), channels 0–1.
+        const srgb = value.match(/color\(srgb ([^)]+)\)/);
+        if (srgb) {
+            const v = srgb[1].split(/[ /]+/).filter(Boolean).map(Number);
+            return { r: v[0] * 255, g: v[1] * 255, b: v[2] * 255, a: v.length > 3 ? v[3] : 1 };
+        }
         const m = value.match(/rgba?\(([^)]+)\)/);
         if (!m) return null;
         const p = m[1].split(/[ ,/]+/).filter(Boolean).map(Number);
@@ -199,6 +205,20 @@ function schemeTests(server: () => XydServer) {
     test('dark mode picked on the site colours links and the reference like dark mode from the OS', async ({ browser }) => {
         const colours = await linkColours(browser, server());
         expect(colours['dark (picked)']).toEqual(colours['dark (OS)']);
+    });
+
+    test('a hovered running-text link still clears WCAG AA', async ({ browser }) => {
+        for (const scheme of SCHEMES) {
+            const context = await schemeContext(browser, scheme);
+            const page = await context.newPage();
+            await page.goto(server().getUrl('/guides/quickstart'), { waitUntil: 'networkidle' });
+            await page.locator('[part="page-article-content"] p a', { hasText: 'command reference' }).hover();
+            const audit = await page.evaluate(auditPage);
+            const link = audit.texts.find((t) => t.text === 'command reference');
+            expect(link, scheme.name).toBeTruthy();
+            expect(link!.ratio, `${scheme.name}: ${link!.color} on ${link!.background}`).toBeGreaterThanOrEqual(4.5);
+            await context.close();
+        }
     });
 }
 

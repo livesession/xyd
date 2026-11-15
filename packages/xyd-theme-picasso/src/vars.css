@@ -60,9 +60,11 @@
 
 @define-mixin dark-theme {
     /* The primary is 4.0:1 on the dark page: links take a lighter shade,
-       unless the site sets its own primary (theme.appearance.colors). */
+       unless the site sets its own primary (theme.appearance.colors), and
+       hover lightens it further rather than going back to the primary. */
     --picasso-link: var(--xyd-appearance-color-primary, color(display-p3 0.3 0.7 0.62));
     --xyd-anchor-color: var(--picasso-link);
+    --xyd-anchor-color--hover: color-mix(in srgb, var(--picasso-link) 75%, white);
     --xyd-codetabs-color: var(--black);
     --color-text: var(--black);
     --xyd-codetabs-color--active: var(--black);
