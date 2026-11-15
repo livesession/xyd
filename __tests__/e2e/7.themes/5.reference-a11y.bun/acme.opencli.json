@@ -1,0 +1,59 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "acme",
+    "version": "1.2.0",
+    "description": "The acme command-line tool."
+  },
+  "options": [
+    {
+      "name": "profile",
+      "recursive": true,
+      "description": "The configuration profile to use.",
+      "arguments": [{ "name": "name", "required": true }]
+    },
+    {
+      "name": "verbose",
+      "aliases": ["v"],
+      "recursive": true,
+      "description": "Print more output."
+    }
+  ],
+  "commands": [
+    {
+      "name": "init",
+      "description": "Create a new acme project.",
+      "arguments": [{ "name": "dir", "description": "The project directory." }]
+    },
+    {
+      "name": "deploy",
+      "description": "Deploy the current project.",
+      "arguments": [{ "name": "target", "description": "The environment to deploy to." }],
+      "options": [
+        { "name": "dry-run", "description": "Show what would change without deploying." },
+        {
+          "name": "region",
+          "aliases": ["r"],
+          "description": "The region to deploy to.",
+          "arguments": [{ "name": "name", "required": true }]
+        }
+      ]
+    },
+    {
+      "name": "project",
+      "description": "Manage projects.",
+      "commands": [
+        {
+          "name": "list",
+          "description": "List the projects you can access.",
+          "options": [{ "name": "all", "description": "Include archived projects." }]
+        },
+        {
+          "name": "create",
+          "description": "Create a project.",
+          "arguments": [{ "name": "name", "required": true, "description": "The project name." }]
+        }
+      ]
+    }
+  ]
+}

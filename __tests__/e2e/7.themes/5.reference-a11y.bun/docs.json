@@ -1,0 +1,32 @@
+{
+  "theme": {
+    "name": "gusto",
+    "appearance": {
+      "search": false
+    }
+  },
+  "navigation": {
+    "sidebar": [
+      {
+        "route": "guides",
+        "pages": [{ "group": "Guides", "pages": ["guides/quickstart"] }]
+      }
+    ]
+  },
+  "api": {
+    "cli": [
+      {
+        "source": "./acme.opencli.json",
+        "route": "cli"
+      }
+    ],
+    "openapi": {
+      "source": "./openapi.yaml",
+      "route": "api"
+    },
+    "graphql": {
+      "source": "./schema.graphql",
+      "route": "graphql"
+    }
+  }
+}

@@ -1,0 +1,66 @@
+openapi: 3.0.3
+info:
+  title: Acme API
+  description: Manage acme projects over HTTP.
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/v1
+paths:
+  /projects:
+    get:
+      summary: List projects
+      description: List the projects you can access.
+      operationId: listProjects
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: How many projects to return.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: The projects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Project'
+    post:
+      summary: Create a project
+      description: Create a new project.
+      operationId: createProject
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  description: The project name.
+      responses:
+        '201':
+          description: The new project.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+components:
+  schemas:
+    Project:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          description: The project id.
+        name:
+          type: string
+          description: The project name.
