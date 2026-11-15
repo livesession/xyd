@@ -21,7 +21,7 @@ export interface ResolvedCommand {
      * repository's linked (and possibly unbuilt) @xyd-js packages from the root
      * node_modules instead of its own.
      */
-    source: 'version' | 'monorepo' | 'global';
+    source: 'version' | 'monorepo' | 'global' | 'binary';
 }
 
 export function getRandomPort(): Promise<number> {

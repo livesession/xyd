@@ -27,6 +27,12 @@ export interface XydServerOptions {
      * project is tested in build mode (the static server lists the root).
      */
     args?: string[];
+    /**
+     * A self-contained xyd binary to run instead of the CLI resolveXydCommand
+     * picks. Like any CLI other than the monorepo's own, it runs a copy of the
+     * project outside the repository.
+     */
+    binary?: string;
 }
 
 /**
@@ -49,6 +55,7 @@ export class XydServer {
     private mode: "dev" | "build";
     private extraEnv: Record<string, string>;
     private args: string[];
+    private binary?: string;
 
     constructor(options: XydServerOptions = {}) {
         this.port = options.port || 0; // 0 = auto-assign a free port
@@ -57,6 +64,7 @@ export class XydServer {
         this.mode = options.mode || "dev";
         this.extraEnv = options.env || {};
         this.args = options.args || [];
+        this.binary = options.binary;
     }
 
     /**
@@ -126,7 +134,9 @@ export class XydServer {
             this.port = await getRandomPort();
         }
 
-        this.resolved = await resolveXydCommand();
+        this.resolved = this.binary
+            ? { cmd: this.binary, args: [], env: {}, source: 'binary' }
+            : await resolveXydCommand();
 
         // A CLI other than the monorepo's own build (an installed release, a
         // pinned version) must not run a project in place: inside this
@@ -146,6 +156,11 @@ export class XydServer {
         }
 
         const env = { ...process.env, ...this.extraEnv };
+        if (this.resolved?.source === 'binary') {
+            // The binary embeds its engine: the monorepo's switches would point it
+            // at the repository's sources.
+            for (const name of ['XYD_DEV_MODE', 'XYD_ENGINE_PATH', 'XYD_BUN', 'XYD_NODE_PM']) delete env[name];
+        }
 
         if (this.mode === "build") {
             await this.buildAndServe(env);

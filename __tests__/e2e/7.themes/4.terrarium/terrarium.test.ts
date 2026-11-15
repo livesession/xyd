@@ -7,10 +7,16 @@ import { createXydServer, createXydBunServer, XydServer } from '../../utils/xyd-
 // group headers, blue links, a per-product brand accent (driven by a logoTrailing
 // product's `color`), HashiCorp-style sidebar chrome, a GLOBAL product switcher
 // (routeless segment), and per-product `appearance:"tabs"` tab bars. The render
-// path is shared, so we assert the same behavior on BOTH engines.
+// path is shared, so we assert the same behavior on BOTH engines. With
+// XYD_E2E_BINARY set to a self-contained xyd binary, the same checks run on
+// it too: it builds the project's components (the sidebar widget) into
+// separate chunks that hydrate against its prebuilt client.
 const ENGINES: { name: string; make: (dir: string) => Promise<XydServer> }[] = [
     { name: 'bun', make: (dir) => createXydBunServer(dir) },
     { name: 'vite', make: (dir) => createXydServer(dir) },
+    ...(process.env.XYD_E2E_BINARY
+        ? [{ name: 'native binary', make: (dir: string) => createXydServer(dir, { binary: process.env.XYD_E2E_BINARY }) }]
+        : []),
 ];
 
 for (const engine of ENGINES) {
@@ -281,6 +287,20 @@ for (const engine of ENGINES) {
             const widget = fixed.locator('[part="test-widget"]');
             await expect(widget).toHaveText('Pinned Widget');
             await expect(widget).toHaveAttribute('data-product', 'Nomad');
+        });
+
+        test('the page and its components survive hydration and client-side navigation', async ({ page }) => {
+            const errors: string[] = [];
+            page.on('pageerror', (e) => errors.push(e.message));
+            await goto(page, '/nomad/docs/what-is-nomad');
+            await expect(page.locator('h1')).toBeVisible();
+            await expect(page.locator('aside[part="sidebar"] [part="fixed"] [part="test-widget"]')).toHaveText('Pinned Widget');
+
+            await page.locator('aside[part="sidebar"] a[href="/nomad/docs/quickstart"]').first().click();
+            await expect(page).toHaveURL(/\/nomad\/docs\/quickstart$/);
+            await expect(page.locator('h1')).toBeVisible();
+            await expect(page.locator('aside[part="sidebar"] [part="fixed"] [part="test-widget"]')).toHaveText('Pinned Widget');
+            expect(errors).toEqual([]);
         });
 
         test('collapsible items: custom chevron, instant expand, no weight change', async ({ page }) => {
