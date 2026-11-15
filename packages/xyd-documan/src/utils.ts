@@ -60,6 +60,7 @@ import {
     XYD_FOLDER_PATH,
 } from "./const";
 import { CLI } from "./cli";
+import { llmsTxtLinkUrl } from "./llmsTxtLinks";
 import { componentDependencies, componentsInstall } from "./componentsInstall";
 
 // gray-matter imported via ESM to avoid dynamic require issues in ESM builds
@@ -91,12 +92,7 @@ async function parseFrontmatterAndCreateAST(
             typeof settings?.ai?.llmsTxt !== "string"
                 ? settings?.ai?.llmsTxt?.baseUrl
                 : "";
-        const isAbsolute = /^https?:\/\//i.test(rawPath);
-        const url = isAbsolute
-            ? rawPath
-            : aiBaseUrl
-                ? aiBaseUrl.replace(/\/$/, "") + rawPath
-                : rawPath;
+        const url = llmsTxtLinkUrl(rawPath, settings?.advanced?.basename, aiBaseUrl);
         // Create AST nodes using unist-builder
         const linkNode = u("link", { url }, [u("text", title)]);
 

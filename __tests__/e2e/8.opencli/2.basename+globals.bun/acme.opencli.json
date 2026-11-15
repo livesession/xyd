@@ -1,0 +1,41 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "acme",
+    "version": "1.2.0",
+    "description": "The acme command-line tool."
+  },
+  "options": [
+    {
+      "name": "profile",
+      "recursive": true,
+      "description": "The configuration profile to use.",
+      "arguments": [{ "name": "name", "required": true }]
+    },
+    {
+      "name": "verbose",
+      "aliases": ["v"],
+      "recursive": true,
+      "description": "Print more output."
+    }
+  ],
+  "commands": [
+    {
+      "name": "init",
+      "description": "Create a new acme project.",
+      "arguments": [{ "name": "dir", "description": "The project directory." }]
+    },
+    {
+      "name": "deploy",
+      "description": "Deploy the current project.",
+      "options": [{ "name": "dry-run", "description": "Show what would change without deploying." }]
+    },
+    {
+      "name": "project",
+      "description": "Manage projects.",
+      "commands": [
+        { "name": "list", "description": "List the projects you can access." }
+      ]
+    }
+  ]
+}

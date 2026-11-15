@@ -1,3 +1,5 @@
+import * as path from "node:path";
+
 import type { APIFile, APIFileAdvanced, APIFileOptions } from "@xyd-js/core";
 
 // ---------------------------------------------------------------------------
@@ -67,11 +69,51 @@ export function resolveApiFileOptions(
     api: APIFile | undefined,
     source: string,
 ): APIFileOptions | null {
+    return findApiFileEntry(api, source)?.options ?? null;
+}
+
+/** The first `api.<kind>` entry whose source matches `source` (see sourceMatches). */
+function findApiFileEntry(
+    api: APIFile | undefined,
+    source: string,
+): APIFileAdvanced | null {
     if (!source) return null;
     for (const entry of entriesOf(api)) {
         if (!isAdvanced(entry)) continue;
-        if (!sourceMatches(entry.source, source)) continue;
-        return entry.options ?? null;
+        if (sourceMatches(entry.source, source)) return entry;
     }
     return null;
+}
+
+/**
+ * The `options` of the `api.cli` entry that declares `source`. Both steps of a
+ * CLI reference call it: the preset's sidebar build (the source relative to the
+ * docs root) and the per-page conversion (an absolute path). They must resolve
+ * the same entry, or a page renders with options its navigation was not built
+ * with: with `globalOptionsPerCommand` the navigation has no "Global options"
+ * page, so a page converted without the flag shows the global options nowhere.
+ *
+ * Lookup order:
+ *   1. the entry whose source names the same file (both resolved against
+ *      `cwd`, the docs root) or, for a URL, the same URL;
+ *   2. the normalized suffix rule of resolveApiFileOptions;
+ *   3. the first entry that has options, the preset's long-standing fallback
+ *      for a single-CLI site whose source is written in a form neither rule
+ *      matches.
+ */
+export function resolveCliFileOptions(
+    api: APIFile | undefined,
+    source: string,
+    cwd: string = process.cwd(),
+): APIFileOptions | null {
+    if (!source) return null;
+    const entries = entriesOf(api).filter(isAdvanced);
+    const target = isRemote(source) ? source : path.resolve(cwd, source);
+    const sameFile = entries.find((entry) => isRemote(entry.source) || isRemote(source)
+        ? entry.source === source
+        : path.resolve(cwd, entry.source) === target);
+    const entry = sameFile
+        ?? findApiFileEntry(api, source)
+        ?? entries.find((candidate) => candidate.options);
+    return entry?.options ?? null;
 }

@@ -568,7 +568,7 @@ async function uniformResolver(
                     meta.mcp = `${resolvedApiFile}#${region}`
                     break
                 case "cli":
-                    meta.cli = `${resolvedApiFile}#${region}`
+                    meta.cli = `${docsRootSource(apiFile)}#${region}`
                     break
             }
 
@@ -674,6 +674,20 @@ function composyingMetaProps(meta: Metadata, ...props: (keyof AllowedMetaProps)[
     });
 
     return newProps;
+}
+
+/**
+ * The source a generated page names in its frontmatter (`cli: <source>#<region>`):
+ * a local file relative to the docs root (`cwd`), written in the `~/` notation the
+ * page step expands against that root; a URL as is. The frontmatter is published
+ * with the page (its HTML payload and its `.md` twin), so an absolute path would
+ * publish the build machine's directory layout and tie the output to the
+ * directory it was built in. Forward slashes on every platform.
+ */
+export function docsRootSource(apiFile: string, cwd: string = process.cwd()): string {
+    if (/^https?:\/\//i.test(apiFile)) return apiFile
+    const relative = path.relative(cwd, path.resolve(cwd, apiFile)).split(path.sep).join("/")
+    return `~/${relative}`
 }
 
 // Never user compose pages — and a route-less project (the fast-serve mode,

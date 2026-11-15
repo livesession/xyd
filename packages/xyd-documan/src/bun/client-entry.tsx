@@ -64,20 +64,28 @@ export async function bootClient(ThemeCtor: any) {
     const slug = pathnameToSlug(url.pathname);
     let loaderData: any;
     let routeId: string;
-    // The dev server exposes /_xyd/data; a STATIC host does not. Fall back to
-    // fetching the target page's own HTML (at the basename-prefixed URL the host
-    // serves) and reading its embedded <script id="__xyd_data"> — so client-side
-    // SPA navigation works on static deploys too (no full reload, base preserved).
-    let r: Response | null = null;
+    // The dev server exposes <basename>/_xyd/data; a STATIC host does not. Fall
+    // back to fetching the target page's own HTML (at the basename-prefixed URL
+    // the host serves) and reading its embedded <script id="__xyd_data"> — so
+    // client-side SPA navigation works on static deploys too (no full reload,
+    // base preserved). The probe carries the basename like every other URL of
+    // the site: a site mounted under a prefix must never reach the host root,
+    // which belongs to whatever else that host serves.
+    let payload: { loaderData: any; routeId: string } | null = null;
     try {
       // `search` rides along for same-URL content-version swaps — the dev
       // server compiles the selected variant's source per request.
-      r = await fetch(`/_xyd/data?slug=${encodeURIComponent(slug)}&search=${encodeURIComponent(url.search)}`, { signal });
+      const r = await fetch(`${basename}/_xyd/data?slug=${encodeURIComponent(slug)}&search=${encodeURIComponent(url.search)}`, { signal });
+      // Only the dev server's JSON counts: a static host that answers every
+      // path with a page (an SPA fallback) gets the page fetch below instead.
+      if (r.ok && (r.headers.get("content-type") || "").includes("application/json")) {
+        payload = await r.json();
+      }
     } catch {
-      r = null;
+      payload = null;
     }
-    if (r && r.ok) {
-      ({ loaderData, routeId } = await r.json());
+    if (payload) {
+      ({ loaderData, routeId } = payload);
     } else {
       const pageHref = (basename || "") + url.pathname + url.search;
       const pr = await fetch(pageHref, { signal });
