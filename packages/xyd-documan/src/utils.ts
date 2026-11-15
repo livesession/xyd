@@ -985,6 +985,9 @@ export async function pluginLLMMarkdown(respPluginDocs: PluginOutput) {
     // Access control: get access map to filter protected pages from llms.txt
     const accessMap: Record<string, string> = (globalThis as any).__xydAccessMap || {};
 
+    // The CLI documents the generated command pages name, loaded once per pass.
+    const cliSpecs = new Map<string, Promise<unknown>>();
+
     for (const key of paths) {
         // Skip protected pages - they must not appear in llms.txt
         const normalizedKey = key.startsWith("/") ? key : `/${key}`;
@@ -1010,7 +1013,11 @@ export async function pluginLLMMarkdown(respPluginDocs: PluginOutput) {
             const keyWithExt = formattedKey.endsWith(savePathExt)
                 ? formattedKey
                 : `${formattedKey}${savePathExt}`;
-            rawRouteFiles[keyWithExt] = content;
+            rawRouteFiles[keyWithExt] = await withGeneratedBody(
+                content,
+                respPluginDocs.settings,
+                cliSpecs,
+            );
 
             // Parse frontmatter and create AST node
             const listItem = await parseFrontmatterAndCreateAST(
@@ -1057,6 +1064,41 @@ export async function pluginLLMMarkdown(respPluginDocs: PluginOutput) {
         ...globalThis.__xydRawRouteFiles,
         ...rawRouteFiles,
     };
+}
+
+/**
+ * A page's raw markdown with the body a generated page renders from its
+ * frontmatter. A generated CLI command page holds only its frontmatter
+ * (`cli: <source>#<command path>`); its `.md` twin gets the command itself,
+ * as markdown, after it. Any other page is returned as it is.
+ */
+async function withGeneratedBody(
+    content: string,
+    settings: Settings,
+    cliSpecs: Map<string, Promise<unknown>>,
+): Promise<string> {
+    let cli: unknown;
+    try {
+        cli = matter(content)?.data?.cli;
+    } catch {
+        return content;
+    }
+    if (typeof cli !== "string" || !cli) {
+        return content;
+    }
+
+    try {
+        const { cliPageMarkdown } = await import("@xyd-js/content");
+        const body = await cliPageMarkdown(cli, settings, { cache: cliSpecs });
+        if (!body) {
+            return content;
+        }
+
+        return `${content.replace(/\s*$/, "")}\n\n${body}`;
+    } catch (error) {
+        console.warn(`Failed to render the markdown of ${cli}:`, error);
+        return content;
+    }
 }
 
 function normalizePath(p: string) {
