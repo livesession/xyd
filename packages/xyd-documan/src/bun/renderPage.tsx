@@ -1,7 +1,7 @@
 import { renderToString } from "react-dom/server";
 import React from "react";
 import * as path from "node:path";
-import { contentVersionValue, isContentVersionSwap, resolveContentVersionSwap, resolveContextControls } from "@xyd-js/core";
+import { contentVersionValue, isContentVersionSwap, resolveContentVersionSwap, resolveContextControls, trailingSlashTarget } from "@xyd-js/core";
 import * as fs from "node:fs";
 
 import { mapSettingsToProps } from "@xyd-js/framework/hydration";
@@ -17,7 +17,6 @@ import { themePackage, themeShortName } from "./themePkg";
 import { stripReactElements, settingsBundleJs } from "./serialize";
 import { userAppearanceStyle } from "./userCss";
 import { devCssLinksHtml, resolveCssGroups } from "./cssGroups";
-import { trailingSlashTarget } from "./trailingSlash";
 import { resolveShellOnly, authFromCookie, accessAllowed, pageAccess } from "./accessControl";
 import { matchPluginPage, pluginPageMeta } from "./pluginPages";
 export { stripReactElements }; // re-exported for existing consumers

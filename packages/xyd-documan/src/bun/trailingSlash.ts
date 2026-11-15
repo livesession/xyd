@@ -1,26 +1,16 @@
 /** A page's trailing-slash form (`/cli/deploy/`) and the page it stands for
- *  (`/cli/deploy`). Pages are served without the slash; the slashed form is a
- *  common way to type or link one, so the dev server redirects it and the static
- *  build's not-found page sends the browser on. */
+ *  (`/cli/deploy`), for the static build. The rule itself is core's
+ *  `trailingSlashTarget`, which the dev servers redirect with; the build's
+ *  not-found page carries the same rule as a script. */
 
 function normalizeBasename(basename: string): string {
   const trimmed = basename.replace(/^\/+|\/+$/g, "");
   return trimmed ? "/" + trimmed : "/";
 }
 
-/** The page a trailing-slash path stands for, or null when the path stays: it
- *  has no trailing slash, or it is the site's root (`/`, or the basename's root
- *  `/docs/`, which is a page of its own). Leading slashes collapse to one, so the
- *  target can never become a protocol-relative URL (`//host`). */
-export function trailingSlashTarget(pathname: string, basename = ""): string | null {
-  if (!pathname.endsWith("/")) return null;
-  const target = "/" + pathname.replace(/^\/+/, "").replace(/\/+$/, "");
-  if (target === "/" || target === normalizeBasename(basename)) return null;
-  return target;
-}
-
-/** The same rule as an inline script for a static page: when the address ends
- *  with a slash, replace it with the page (query and fragment kept). */
+/** core's `trailingSlashTarget` as an inline script for a static page: when
+ *  the address ends with a slash, replace it with the page (query and fragment
+ *  kept). */
 export function trailingSlashScript(basename = ""): string {
   const base = JSON.stringify(normalizeBasename(basename));
   return (

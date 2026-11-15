@@ -5,7 +5,7 @@ import { jsx, jsxs } from "react/jsx-runtime";
 import { useMemo, useContext, useState, ReactElement, SVGProps, useEffect } from "react";
 import { redirect, ScrollRestoration, useLocation, useNavigation } from "react-router";
 
-import { MetadataMap, Metadata, Settings, resolveContentVersionSwap } from "@xyd-js/core"
+import { MetadataMap, Metadata, Settings, resolveContentVersionSwap, trailingSlashTarget } from "@xyd-js/core"
 import fsSync from "node:fs";
 import { ContentFS, composeAsTocRaw, isAsTocSectionPage } from "@xyd-js/content"
 import { markdownPlugins } from "@xyd-js/content/md"
@@ -144,6 +144,14 @@ export function shouldRevalidate({ currentUrl, nextUrl, defaultShouldRevalidate 
 export async function loader({ request }: { request: any }) {
     if (!globalThis.__xydPagePathMapping) {
         throw new Error("PagePathMapping not found")
+    }
+
+    // A page's trailing-slash form (/cli/deploy/) redirects to the page; without
+    // this its slug matched no page and the fallback sent it to the first page.
+    const requestUrl = new URL(request.url)
+    const slashTarget = trailingSlashTarget(requestUrl.pathname, settings?.advanced?.basename)
+    if (slashTarget) {
+        return redirect(slashTarget + requestUrl.search, 308)
     }
 
     const timedebug = timedebugLoader

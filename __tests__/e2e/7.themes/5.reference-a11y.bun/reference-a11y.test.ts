@@ -333,27 +333,35 @@ test.describe('reference pages — contrast, links, phone drawer, trailing slash
     });
 });
 
-test.describe('dev server — trailing slash (bun engine)', () => {
-    let server: XydServer;
+// The dev servers of both engines answer a page's trailing-slash form with a
+// redirect to the page (the Vite engine used to send it to the first page).
+for (const engine of [
+    { name: 'bun engine', env: { XYD_BUN: '1' } as Record<string, string> },
+    { name: 'vite engine', env: {} as Record<string, string> },
+]) {
+    test.describe(`dev server — trailing slash (${engine.name})`, () => {
+        let server: XydServer;
 
-    test.beforeAll(async () => {
-        server = await createXydServerWithTemplate(__dirname, { mode: 'dev', env: { XYD_BUN: '1' } });
+        test.beforeAll(async () => {
+            server = await createXydServerWithTemplate(__dirname, { mode: 'dev', env: engine.env });
+        });
+
+        test.afterAll(async () => {
+            await server?.stop();
+        });
+
+        test('a page\'s trailing-slash form redirects to the page', async ({ page }) => {
+            const res = await fetch(server.getUrl('/cli/deploy/?tab=1'), { redirect: 'manual' });
+            expect(res.status).toBe(308);
+            const location = new URL(res.headers.get('location')!, server.getUrl());
+            expect(location.pathname + location.search).toBe('/cli/deploy?tab=1');
+
+            await page.goto(server.getUrl('/cli/project/list/'));
+            await expect(page).toHaveURL(/\/cli\/project\/list$/);
+            await expect(page.locator('h1')).toHaveText('project list');
+        });
     });
-
-    test.afterAll(async () => {
-        await server?.stop();
-    });
-
-    test('a page\'s trailing-slash form redirects to the page', async ({ page }) => {
-        const res = await fetch(server.getUrl('/cli/deploy/?tab=1'), { redirect: 'manual' });
-        expect(res.status).toBe(308);
-        expect(res.headers.get('location')).toBe('/cli/deploy?tab=1');
-
-        await page.goto(server.getUrl('/cli/project/list/'));
-        await expect(page).toHaveURL(/\/cli\/project\/list$/);
-        await expect(page.locator('h1')).toHaveText('project list');
-    });
-});
+}
 
 // The other themes render the same reference components with their own
 // colours: each one's reference pages clear AA in every scheme too.
