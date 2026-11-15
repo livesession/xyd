@@ -14,6 +14,13 @@ import { createXydServerWithTemplate, type XydServer } from '../../utils/xyd-ser
 //   acme-agent.opencli.json  the agent CLI on its own: its root documents
 //                            arguments, examples, a session and environment
 //                            variables, so it gets a page of its own
+//   acme-tool.opencli.json   a CLI titled `Acme Tool` whose root documents an
+//                            argument, with a command named `acme-tool`: its
+//                            root page answers a path segment of the title
+//                            that no command has (`acme-tool-1`)
+//
+// Two hand-written pages under guides/ name commands in a `cli` frontmatter:
+// the object form through an `engine.paths` alias, and a list of two.
 //
 // `acme agent` is a runnable group (arguments and options of its own, plus
 // subcommands): its usage reads `[command]`, where `acme remote` reads
@@ -33,6 +40,8 @@ const BASES = ['', '/docs'];
 const HOST_LINKS = ['login', 'remote', 'remote/add', 'remote/list', 'agent', 'agent/resume', 'agent/history', 'agent/history/list', 'agent/history/show'];
 const AGENT_LINKS = ['acme-agent', 'resume', 'history', 'history/list', 'history/show', 'global-options'];
 const SESSION_COMMANDS = ['new', 'model', 'export', 'memory', 'exit', 'inspect'];
+const TOOL_LINKS = ['acme-tool-1', 'acme-tool', 'status'];
+const GUIDE_LINKS = ['guides/sign-in', 'guides/login-and-remotes'];
 
 /** A copy of the fixture whose docs.json mounts the site under `base`. */
 function templateFor(base: string): { dir: string; cleanup: () => void } {
@@ -40,11 +49,7 @@ function templateFor(base: string): { dir: string; cleanup: () => void } {
         return { dir: FIXTURE, cleanup: () => undefined };
     }
     const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'xyd-cli-sections-'));
-    for (const name of fs.readdirSync(FIXTURE)) {
-        if (name.endsWith('.json')) {
-            fs.copyFileSync(path.join(FIXTURE, name), path.join(dir, name));
-        }
-    }
+    fs.cpSync(FIXTURE, dir, { recursive: true, filter: (src) => !src.endsWith('.test.ts') && !src.includes('.xyd') });
     const docs = JSON.parse(fs.readFileSync(path.join(dir, 'docs.json'), 'utf8'));
     docs.advanced = { ...(docs.advanced || {}), basename: base };
     fs.writeFileSync(path.join(dir, 'docs.json'), JSON.stringify(docs, null, 2));
@@ -221,13 +226,61 @@ for (const engine of ENGINES) {
                 );
             });
 
+            test('a CLI titled with a space: its root page answers a path segment of the title, apart from its command of that name', async ({ page }) => {
+                await open(page, '/tool-cli/acme-tool-1');
+
+                await expect(page.locator('h1')).toHaveCount(1);
+                await expect(page.locator('h1')).toHaveText('Acme Tool [command]');
+                await expect(page.locator('body')).toContainText('Acme Tool [command] [task]');
+                await expect(sectionTitles(page)).toHaveText(['Arguments', 'Commands']);
+
+                const hrefs = await sidebarLinks(page).evaluateAll((links) => links.map((a) => a.getAttribute('href')));
+                const toolLinks = hrefs.filter((href) => href?.startsWith(`${BASE}/tool-cli/`));
+                expect(toolLinks).toEqual(TOOL_LINKS.map((p) => `${BASE}/tool-cli/${p}`));
+
+                // the command named like the CLI keeps its own page
+                await open(page, '/tool-cli/acme-tool');
+                await expect(page.locator('h1')).toHaveCount(1);
+                await expect(page.locator('h1')).toHaveText('acme-tool');
+                await expect(page.locator('body')).toContainText('Acme Tool acme-tool <format>');
+                await expect(sectionTitles(page)).toHaveText(['Arguments']);
+
+                const root = await get(`${BASE}/tool-cli/acme-tool-1.md`);
+                expect(root.status).toBe(200);
+                expect(root.body.match(/^# .*$/gm)).toEqual(['# Acme Tool \\[command\\]']);
+                const command = await get(`${BASE}/tool-cli/acme-tool.md`);
+                expect(command.body.match(/^# .*$/gm)).toEqual(['# acme-tool']);
+            });
+
+            test('a hand-written page with a cli frontmatter: its .md twin carries the commands it names', async ({ page }) => {
+                // the object form, through an engine.paths alias
+                await open(page, '/guides/sign-in');
+                await expect(page.locator('body')).toContainText('acme login [options]');
+                const signIn = await get(`${BASE}/guides/sign-in.md`);
+                expect(signIn.status).toBe(200);
+                expect(signIn.body.match(/^# .*$/gm)).toEqual(['# login']);
+                for (const heading of ['Options', 'Global options', 'Environment', 'Exit codes']) {
+                    expect(signIn.body, heading).toContain(`\n## ${heading}\n`);
+                }
+
+                // a comma-separated list
+                const both = await get(`${BASE}/guides/login-and-remotes.md`);
+                expect(both.body.match(/^# .*$/gm)).toEqual(['# login', '# remote \\<command\\>']);
+            });
+
             test('llms.txt links every command page and the root page, none of the session commands', async () => {
                 const llms = await get(`${BASE}/llms.txt`);
                 expect(llms.status).toBe(200);
                 const links = [...llms.body.matchAll(/\]\(([^)]+)\)/g)].map((m) => m[1]);
                 expect(links.sort()).toEqual(
-                    [...HOST_LINKS.map((p) => `${BASE}/cli/${p}.md`), ...AGENT_LINKS.map((p) => `${BASE}/agent-cli/${p}.md`)].sort(),
+                    [
+                        ...HOST_LINKS.map((p) => `${BASE}/cli/${p}.md`),
+                        ...AGENT_LINKS.map((p) => `${BASE}/agent-cli/${p}.md`),
+                        ...TOOL_LINKS.map((p) => `${BASE}/tool-cli/${p}.md`),
+                        ...GUIDE_LINKS.map((p) => `${BASE}/${p}.md`),
+                    ].sort(),
                 );
+                expect(links.some((link) => /\s|%20/.test(link))).toBe(false);
                 expect(llms.body).toContain('[agent \\[command\\]]');
                 expect(llms.body).toContain('[remote \\<command>]');
             });

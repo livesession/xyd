@@ -6,6 +6,17 @@
       "colorScheme": false
     }
   },
+  "engine": {
+    "paths": { "@acme/*": ["./*"] }
+  },
+  "navigation": {
+    "sidebar": [
+      {
+        "route": "guides",
+        "pages": [{ "group": "Guides", "pages": ["guides/sign-in", "guides/login-and-remotes"] }]
+      }
+    ]
+  },
   "api": {
     "cli": [
       {
@@ -16,6 +27,10 @@
       {
         "source": "./acme-agent.opencli.json",
         "route": "agent-cli"
+      },
+      {
+        "source": "./acme-tool.opencli.json",
+        "route": "tool-cli"
       }
     ]
   }
