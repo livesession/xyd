@@ -1,3 +1,5 @@
+/* Every token colour clears WCAG AA (4.5:1) on the code background in both
+   colour schemes (light: #f7f7f8, dark: #000 to #2d2d2d). */
 :root {
     --syntax-primary: #7051d4;
     --syntax-secondary: #D12F1B;
@@ -11,7 +13,7 @@
     --syntax6: #282828;
     --syntax7: #565456;
     --syntax8: #C7C6C5;
-    --syntax9: #A6A6A6;
+    --syntax9: #6e6e6e;
     --syntax10: #242424;
     --syntax11: #EEF5FE;
     --syntax12: #82ADF3;
@@ -33,32 +35,50 @@
 }
 
 [data-color-scheme="dark"] {
-    --syntax-secondary: #df3079;
-}
-@media (prefers-color-scheme: dark) {
-    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
-        --syntax-secondary: #df3079;
-    }
-}
+    --syntax-primary: #a897f0;
+    --syntax-secondary: #ff7a90;
+    --syntax-tertiary: #b38be6;
 
-[data-color-scheme="dark"] {
     --syntax1: #000;
     --syntax2: #000;
+    --syntax6: #e6e6e6;
+    --syntax9: #9e9e9e;
     --syntax15: #fff;
     --syntax16: #0e0e10;
-    --syntax19: #2e95d3;
+    --syntax18: #e0a27a;
+    --syntax19: #6cb6eb;
+    --syntax20: #e98ad8;
+    --syntax21: #8fc3c9;
+    --syntax22: var(--syntax-tertiary);
+    --syntax23: #9aa7b6;
+    --syntax24: var(--syntax-primary);
+    --syntax25: #e48ae0;
+    --syntax26: #d6b866;
     --syntax27: var(--syntax-secondary);
 }
 
 /* System Dark Mode Support */
 @media (prefers-color-scheme: dark) {
     :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+        --syntax-primary: #a897f0;
+        --syntax-secondary: #ff7a90;
+        --syntax-tertiary: #b38be6;
+
         --syntax1: #000;
         --syntax2: #000;
+        --syntax6: #e6e6e6;
+        --syntax9: #9e9e9e;
         --syntax15: #fff;
         --syntax16: #0e0e10;
-        --syntax19: #2e95d3;
+        --syntax18: #e0a27a;
+        --syntax19: #6cb6eb;
+        --syntax20: #e98ad8;
+        --syntax21: #8fc3c9;
+        --syntax22: var(--syntax-tertiary);
+        --syntax23: #9aa7b6;
+        --syntax24: var(--syntax-primary);
+        --syntax25: #e48ae0;
+        --syntax26: #d6b866;
         --syntax27: var(--syntax-secondary);
     }
 }
-

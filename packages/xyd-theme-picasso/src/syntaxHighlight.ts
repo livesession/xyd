@@ -1,3 +1,6 @@
+// Three token colours are lighter than the original palette's so that every
+// token clears WCAG AA (4.5:1) on the editor background: comments (#5b858b),
+// one purple (#7060eb) and invalid code (#e3541c).
 export default {
   name: 'Noctis',
   type: 'dark',
@@ -293,7 +296,7 @@ export default {
         'markup.fenced_code punctuation.definition'
       ],
       settings: {
-        foreground: '#5b858b'
+        foreground: '#7fa8ae'
       }
     },
     {
@@ -684,7 +687,7 @@ export default {
         'source.toml constant'
       ],
       settings: {
-        foreground: '#7060eb'
+        foreground: '#998ef3'
       }
     },
     {
@@ -814,7 +817,7 @@ export default {
         'invalid.illegal'
       ],
       settings: {
-        foreground: '#e3541c'
+        foreground: '#f06a35'
       }
     },
     {
