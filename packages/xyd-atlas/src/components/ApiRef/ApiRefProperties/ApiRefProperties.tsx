@@ -8,6 +8,7 @@ import {
 import * as cn from "./ApiRefProperties.styles";
 import { isConstant } from "./literals";
 import { resolvePropertySymbol } from "./symbols";
+import { commandToggleNoun } from "./toggle";
 import { AtlasContext, useBaseMatch } from "@/components/Atlas/AtlasContext";
 import { Badge } from "@xyd-js/components/writer";
 
@@ -269,6 +270,7 @@ function SubProperties({ parent, properties, defaultExpanded }: SubPropertiesPro
         <PropToggle
           choiceType={choiceType}
           isArgument={hasArguments}
+          noun={commandToggleNoun(parent, foundProperties)}
           onClick={() => setExpanded(!expanded)}
           isExpanded={expanded}
         />
@@ -332,6 +334,9 @@ interface PropsToggleProps {
   isExpanded: boolean;
   choiceType: boolean;
   isArgument?: boolean;
+  /** What the rows are, when "properties" is the wrong word: a CLI command
+   * row holds `arguments and options` (see `commandToggleNoun`). */
+  noun?: string;
   onClick: () => void;
 }
 
@@ -344,6 +349,8 @@ function PropToggle(props: PropsToggleProps) {
     text = props.isExpanded
       ? "Hide possible arguments"
       : "Show possible arguments";
+  } else if (props.noun) {
+    text = `${props.isExpanded ? "Hide" : "Show"} ${props.noun}`;
   }
 
   return (
