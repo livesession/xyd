@@ -12,6 +12,7 @@ import { sidebarComponentsEntrySrc } from "./sidebarComponents";
 import { collectFederatedComponents, buildUserComponentsServer, buildUserComponentsClient } from "./userComponentsFederation";
 import { prerenderPages } from "./prerenderPool";
 import { writeHtml } from "./htmlOut";
+import { resolveCssGroups } from "./cssGroups";
 
 /**
  * S3 static build (SSG). `XYD_BUN=1 xyd build` runs this instead of the two Vite
@@ -437,9 +438,9 @@ function emitRawRouteFiles(clientDir: string) {
   console.error(`[build] raw files → ${n} (incl. llms.txt)`);
 }
 
-/** Resolve the 4 package-dist CSS groups (same order the dev server serves),
- *  concat, content-hash, write to <assetsDir>/assets/, return the hrefs (order
- *  preserved) — each through `href`, which adds the asset base. */
+/** Resolve the 4 package-dist CSS groups (cssGroups.ts: the dev server's order,
+ *  theme last), concat, content-hash, write to <assetsDir>/assets/, return the
+ *  hrefs (order preserved) — each through `href`, which adds the asset base. */
 async function emitCss(
   HOST: string,
   themePkg: string,
@@ -460,19 +461,7 @@ async function emitCss(
       return null;
     }
   };
-  const groups: [string, (string | null)[]][] = [
-    ["theme", [rs(`${themePkg}/index.css`) || pkgDist(themePkg, "dist/index.css")]],
-    ["components", [rs("@xyd-js/components/index.css") || pkgDist("@xyd-js/components", "dist/index.css")]],
-    [
-      "atlas",
-      [
-        rs("@xyd-js/atlas/index.css") || pkgDist("@xyd-js/atlas", "index.css"),
-        rs("@xyd-js/atlas/tokens.css") || pkgDist("@xyd-js/atlas", "tokens.css"),
-        rs("@xyd-js/atlas/styles.css") || pkgDist("@xyd-js/atlas", "styles.css"),
-      ],
-    ],
-    ["ui", [rs("@xyd-js/ui/index.css") || pkgDist("@xyd-js/ui", "dist/index.css")]],
-  ];
+  const groups = resolveCssGroups(themePkg, rs, pkgDist);
   const links: string[] = [];
   for (const [label, files] of groups) {
     let css = "";

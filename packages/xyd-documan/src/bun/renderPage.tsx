@@ -16,6 +16,7 @@ import { metaTagsHtml, robotsTxt, sitemapXml, sitemapRoutes } from "./seo";
 import { themePackage, themeShortName } from "./themePkg";
 import { stripReactElements, settingsBundleJs } from "./serialize";
 import { userAppearanceStyle } from "./userCss";
+import { devCssLinksHtml, resolveCssGroups } from "./cssGroups";
 import { resolveShellOnly, authFromCookie, accessAllowed, pageAccess } from "./accessControl";
 import { matchPluginPage, pluginPageMeta } from "./pluginPages";
 export { stripReactElements }; // re-exported for existing consumers
@@ -72,10 +73,7 @@ function renderShell({ settings, bodyHtml, data }: any): string {
     metaTagsHtml(metadata, settings) +
     (favicon ? `<link rel="icon" href="${esc(favicon)}">` : "") +
     `<style>${layer}</style>` +
-    `<link rel="stylesheet" href="/_xyd/theme.css">` +
-    `<link rel="stylesheet" href="/_xyd/components.css">` +
-    `<link rel="stylesheet" href="/_xyd/atlas.css">` +
-    `<link rel="stylesheet" href="/_xyd/ui.css">` +
+    devCssLinksHtml() +
     // theme.appearance overrides (colors + cssTokens) — parity with the Vite path.
     userAppearanceStyle(settings) +
     themeHeadHtml(settings) +
@@ -379,16 +377,9 @@ export function cssResolver(HOST: string, themePkg: string) {
       return null;
     }
   };
-  return {
-    "/_xyd/theme.css": [tryResolve(`${themePkg}/index.css`) || pkgDist(themePkg, "dist/index.css")],
-    "/_xyd/components.css": [tryResolve("@xyd-js/components/index.css") || pkgDist("@xyd-js/components", "dist/index.css")],
-    "/_xyd/atlas.css": [
-      tryResolve("@xyd-js/atlas/index.css") || pkgDist("@xyd-js/atlas", "index.css"),
-      tryResolve("@xyd-js/atlas/tokens.css") || pkgDist("@xyd-js/atlas", "tokens.css"),
-      tryResolve("@xyd-js/atlas/styles.css") || pkgDist("@xyd-js/atlas", "styles.css"),
-    ],
-    "/_xyd/ui.css": [tryResolve("@xyd-js/ui/index.css") || pkgDist("@xyd-js/ui", "dist/index.css")],
-  } as Record<string, (string | null)[]>;
+  return Object.fromEntries(
+    resolveCssGroups(themePkg, (spec) => tryResolve(spec), pkgDist).map(([label, files]) => [`/_xyd/${label}.css`, files])
+  ) as Record<string, (string | null)[]>;
 }
 
 // ---- S3: static build (SSG) render ----
