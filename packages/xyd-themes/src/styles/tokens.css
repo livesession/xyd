@@ -91,9 +91,10 @@ xyd-layout-primary[style*="--theme-color-primary"] {
     --text-secondary: var(--dark80);
     --text-tertiary: var(--dark60);
 
-    --color-primary: var(--theme-color-primary, var(--purple80));
-    --color-primary--active: var(--theme-color-primary-active, var(--purple100));
-    
+    /* No --color-primary here: the light declaration above is the same
+       expression, and re-declaring it for dark mode beat a theme's own
+       `:root` primary in OS dark mode (see the media block below). */
+
     body {
         color: var(--xyd-text-color--default);
     }
@@ -134,8 +135,12 @@ xyd-layout-primary[style*="--theme-color-primary"] {
         --text-secondary: var(--dark80);
         --text-tertiary: var(--dark60);
 
-        --color-primary: var(--theme-color-primary, var(--purple80));
-        --color-primary--active: var(--theme-color-primary-active, var(--purple100));
+        /* No --color-primary here. This selector outranks a theme's `:root`,
+           so re-declaring `var(--theme-color-primary, …)` replaced the theme's
+           primary in OS dark mode, and with a theme that derives
+           `--theme-color-primary` from `--color-primary` the two formed a
+           cycle: both became invalid and every link fell back to the body
+           text colour. */
 
         --color-header-border: unset;
     }
