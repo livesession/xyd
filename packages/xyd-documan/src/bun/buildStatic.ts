@@ -121,6 +121,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
         minify: true,
         sourcemap: "none",
         returnResult: true,
+        nodeEnv: "production",
       }
     );
     const clientEntry = clientRes.outputs.find((o: any) => o.kind === "entry-point").path;

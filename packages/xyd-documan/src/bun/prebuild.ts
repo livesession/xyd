@@ -128,6 +128,7 @@ export async function prebuildThemes(host: string, themes: string[], prebuiltDir
         minify: true,
         sourcemap: "none",
         returnResult: true,
+        nodeEnv: "production",
       }
     );
     const clientEntry = clientRes.outputs.find((o: any) => o.kind === "entry-point").path;
