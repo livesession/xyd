@@ -24,3 +24,21 @@ export function stripBasename(pathname: string, basename?: string | null): strin
   }
   return pathname;
 }
+
+/**
+ * The key of a request's raw route file in `__xydRawRouteFiles`.
+ *
+ * The map is keyed by the basename-relative file path as written
+ * (`/guides/my page.md`), but a request pathname arrives percent-encoded
+ * (`/guides/my%20page.md`), so it is decoded before the basename comes off.
+ * A malformed escape leaves the pathname as it came.
+ */
+export function rawRouteKey(pathname: string, basename?: string | null): string {
+  let decoded = pathname;
+  try {
+    decoded = decodeURIComponent(pathname);
+  } catch {
+    // a lone `%` or a broken UTF-8 sequence: look the pathname up as it is
+  }
+  return stripBasename(decoded, basename);
+}
