@@ -13,6 +13,7 @@ import { collectFederatedComponents, buildUserComponentsServer, buildUserCompone
 import { prerenderPages } from "./prerenderPool";
 import { writeHtml } from "./htmlOut";
 import { resolveCssGroups } from "./cssGroups";
+import { notFoundPageHtml } from "./trailingSlash";
 
 /**
  * S3 static build (SSG). `XYD_BUN=1 xyd build` runs this instead of the two Vite
@@ -392,6 +393,17 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   // prerendered one, hashed assets/ are untouched).
   copyDirIfAbsent(publicSrc, clientDir);
   if (baseDir) copyDirIfAbsent(publicSrc, siteDir);
+
+  // 7c) A not-found page beside the pages, unless the project ships its own (a
+  // 404 page or public/404.html, both written above). Static hosts answer a
+  // miss with it, and its script sends a page's trailing-slash form
+  // (/cli/deploy/, which the flattened <slug>.html output has no file for) on
+  // to the page.
+  const notFound = path.join(siteDir, "404.html");
+  if (!fs.existsSync(notFound)) {
+    fs.writeFileSync(notFound, notFoundPageHtml(basename));
+    console.error(`[build] 404.html → ${path.relative(clientDir, notFound)}`);
+  }
 
   // FAIL LOUD on any page that failed to render — otherwise a broken page ships
   // as a 404 while the build reports success (silent broken deploy).

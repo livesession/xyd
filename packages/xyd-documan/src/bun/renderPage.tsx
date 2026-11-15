@@ -17,6 +17,7 @@ import { themePackage, themeShortName } from "./themePkg";
 import { stripReactElements, settingsBundleJs } from "./serialize";
 import { userAppearanceStyle } from "./userCss";
 import { devCssLinksHtml, resolveCssGroups } from "./cssGroups";
+import { trailingSlashTarget } from "./trailingSlash";
 import { resolveShellOnly, authFromCookie, accessAllowed, pageAccess } from "./accessControl";
 import { matchPluginPage, pluginPageMeta } from "./pluginPages";
 export { stripReactElements }; // re-exported for existing consumers
@@ -790,6 +791,13 @@ export function start(ThemeCtor: any) {
         return raw
           ? new Response(raw, { headers: { "content-type": "text/plain; charset=utf-8" } })
           : new Response("", { status: 404, headers: { "content-type": "text/plain" } });
+      }
+
+      // A page's trailing-slash form (/cli/deploy/) redirects to the page; 308
+      // keeps the method. The root and the basename's root are pages themselves.
+      const slashTarget = trailingSlashTarget(url.pathname, basename);
+      if (slashTarget) {
+        return new Response(null, { status: 308, headers: { location: slashTarget + url.search } });
       }
 
       // Plugin pages (access-control /login, /auth/jwt-callback, …) — render the
