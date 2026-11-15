@@ -43,6 +43,8 @@ interface TextContrast {
     selector: string;
     color: string;
     background: string;
+    // The pointer is on it (or on a descendant of it).
+    hovered: boolean;
 }
 
 interface Audit {
@@ -147,6 +149,7 @@ function auditPage(): Audit {
             selector: selectorOf(el),
             color: style.color,
             background: `rgb(${Math.round(bg.r)}, ${Math.round(bg.g)}, ${Math.round(bg.b)})`,
+            hovered: el.matches(':hover'),
         });
     }
 
@@ -200,6 +203,37 @@ async function linkColours(browser: Browser, server: XydServer) {
     return out;
 }
 
+// The links a hover test puts the pointer on: one in running text, and a
+// reference link (a GraphQL field's type, drawn in the reference's accent).
+const HOVER_LINKS = {
+    text: { pathname: '/guides/quickstart', selector: '[part="page-article-content"] p a', text: 'command reference' },
+    reference: { pathname: '/graphql/queries/todo', selector: '[class*="ApiRefPropertiesPropTypeCodeLink"]', text: 'Todo' },
+};
+
+// Each link's contrast while the pointer is on it, in every scheme: the
+// failures, empty when every hovered link clears WCAG AA.
+async function hoveredLinkFailures(browser: Browser, server: XydServer, links: (keyof typeof HOVER_LINKS)[]) {
+    const failures: string[] = [];
+    for (const scheme of SCHEMES) {
+        const context = await schemeContext(browser, scheme);
+        const page = await context.newPage();
+        for (const name of links) {
+            const link = HOVER_LINKS[name];
+            await page.goto(server.getUrl(link.pathname), { waitUntil: 'networkidle' });
+            await page.locator(link.selector, { hasText: link.text }).first().hover();
+            const audit = await page.evaluate(auditPage);
+            const hovered = audit.texts.find((t) => t.hovered && t.text === link.text);
+            if (!hovered) {
+                failures.push(`${scheme.name}: the ${name} link "${link.text}" is not under the pointer`);
+            } else if (hovered.ratio < 4.5) {
+                failures.push(`${scheme.name}: the hovered ${name} link "${link.text}" ${hovered.color} on ${hovered.background} = ${hovered.ratio}:1`);
+            }
+        }
+        await context.close();
+    }
+    return failures;
+}
+
 // What every theme's build is checked for besides the contrast audit.
 function schemeTests(server: () => XydServer) {
     test('dark mode picked on the site colours links and the reference like dark mode from the OS', async ({ browser }) => {
@@ -207,18 +241,8 @@ function schemeTests(server: () => XydServer) {
         expect(colours['dark (picked)']).toEqual(colours['dark (OS)']);
     });
 
-    test('a hovered running-text link still clears WCAG AA', async ({ browser }) => {
-        for (const scheme of SCHEMES) {
-            const context = await schemeContext(browser, scheme);
-            const page = await context.newPage();
-            await page.goto(server().getUrl('/guides/quickstart'), { waitUntil: 'networkidle' });
-            await page.locator('[part="page-article-content"] p a', { hasText: 'command reference' }).hover();
-            const audit = await page.evaluate(auditPage);
-            const link = audit.texts.find((t) => t.text === 'command reference');
-            expect(link, scheme.name).toBeTruthy();
-            expect(link!.ratio, `${scheme.name}: ${link!.color} on ${link!.background}`).toBeGreaterThanOrEqual(4.5);
-            await context.close();
-        }
+    test('a hovered link, in running text and in the reference, still clears WCAG AA', async ({ browser }) => {
+        expect(await hoveredLinkFailures(browser, server(), ['text', 'reference'])).toEqual([]);
     });
 }
 
@@ -509,6 +533,10 @@ for (const { theme, engine } of [
                 // No dark colour set: the primary applies in dark mode too.
                 for (const scheme of SCHEMES) expect(colours[scheme.name].link, scheme.name).toBe(SITE_PRIMARY.rgb);
             }
+        });
+
+        test('a hovered reference link in the site\'s colour still clears WCAG AA', async ({ browser }) => {
+            expect(await hoveredLinkFailures(browser, server, ['reference'])).toEqual([]);
         });
     });
 }
