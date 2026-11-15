@@ -159,18 +159,46 @@ function auditPage(): Audit {
     return { texts, colourOnlyLinks };
 }
 
+// A browser context in the scheme: from the OS, or dark picked on the site.
+async function schemeContext(browser: Browser, scheme: (typeof SCHEMES)[number]) {
+    const context = await browser.newContext({ colorScheme: scheme.colorScheme, viewport: { width: 1280, height: 900 } });
+    if (scheme.picked) {
+        await context.addInitScript(() => {
+            try {
+                localStorage.setItem('xyd-color-scheme', 'dark');
+            } catch {}
+        });
+    }
+    return context;
+}
+
+// The colour of a running-text link and of a reference link (a GraphQL field's
+// type, drawn in the reference's accent) in each scheme.
+async function linkColours(browser: Browser, server: XydServer) {
+    const out: Record<string, { link: string; reference: string }> = {};
+    for (const scheme of SCHEMES) {
+        const context = await schemeContext(browser, scheme);
+        const page = await context.newPage();
+        await page.goto(server.getUrl('/guides/quickstart'), { waitUntil: 'networkidle' });
+        const link = await page
+            .locator('[part="page-article-content"] p a', { hasText: 'command reference' })
+            .evaluate((a) => getComputedStyle(a).color);
+        await page.goto(server.getUrl('/graphql/queries/todo'), { waitUntil: 'networkidle' });
+        const reference = await page
+            .locator('[class*="ApiRefPropertiesPropTypeCodeLink"]', { hasText: 'Todo' })
+            .first()
+            .evaluate((a) => getComputedStyle(a).color);
+        out[scheme.name] = { link, reference };
+        await context.close();
+    }
+    return out;
+}
+
 async function auditAll(browser: Browser, server: XydServer) {
     const failures: string[] = [];
     const checked: Record<string, number> = {};
     for (const scheme of SCHEMES) {
-        const context = await browser.newContext({ colorScheme: scheme.colorScheme, viewport: { width: 1280, height: 900 } });
-        if (scheme.picked) {
-            await context.addInitScript(() => {
-                try {
-                    localStorage.setItem('xyd-color-scheme', 'dark');
-                } catch {}
-            });
-        }
+        const context = await schemeContext(browser, scheme);
         const page = await context.newPage();
         for (const pathname of PAGES) {
             await page.goto(server.getUrl(pathname), { waitUntil: 'networkidle' });
@@ -405,6 +433,50 @@ for (const theme of THEMES.filter((t) => t !== 'gusto')) {
         test('every reference text clears WCAG AA, and running-text links stand out', async ({ browser }) => {
             const { failures } = await auditAll(browser, server);
             expect(failures).toEqual([]);
+        });
+    });
+}
+
+// A site that sets its own primary (theme.appearance.colors.primary) gets it
+// on its links and on the reference's accent, as on the rest of its accent.
+// The themes' deeper (or lighter) link shades stand in for the theme's own
+// primary only. Terrarium keeps its blue text links whatever the accent.
+const SITE_PRIMARY = { hex: '#d00000', rgb: 'rgb(208, 0, 0)' };
+for (const { theme, engine } of [
+    ...['gusto', 'poetry', 'cosmo', 'opener', 'picasso', 'terrarium'].map((theme) => ({ theme, engine: 'bun' })),
+    { theme: 'gusto', engine: 'vite' },
+]) {
+    test.describe(`a site's own primary colour — ${theme} theme (${engine} engine, build)`, () => {
+        test.describe.configure({ mode: 'serial' });
+
+        let server: XydServer;
+        let template: string;
+
+        test.beforeAll(async () => {
+            template = fs.mkdtempSync(path.join(os.tmpdir(), `xyd-reference-primary-${theme}-`));
+            fs.cpSync(__dirname, template, { recursive: true, filter: (src) => !src.endsWith('.test.ts') && !src.includes('.xyd') });
+            const docsPath = path.join(template, 'docs.json');
+            const docs = JSON.parse(fs.readFileSync(docsPath, 'utf8'));
+            docs.theme.name = theme;
+            docs.theme.appearance = { ...(docs.theme.appearance || {}), colors: { primary: SITE_PRIMARY.hex } };
+            fs.writeFileSync(docsPath, JSON.stringify(docs, null, 2));
+            server = await createXydServerWithTemplate(template, { mode: 'build', env: engine === 'bun' ? { XYD_BUN: '1' } : {} });
+        });
+
+        test.afterAll(async () => {
+            await server?.stop();
+            fs.rmSync(template, { recursive: true, force: true });
+        });
+
+        test('colours the links and the reference accent', async ({ browser }) => {
+            const colours = await linkColours(browser, server);
+            // The reference's accent is the site's colour in light mode; dark mode
+            // draws it in the text colour, as without a colour of the site's own.
+            expect(colours.light.reference).toBe(SITE_PRIMARY.rgb);
+            if (theme !== 'terrarium') {
+                // No dark colour set: the primary applies in dark mode too.
+                for (const scheme of SCHEMES) expect(colours[scheme.name].link, scheme.name).toBe(SITE_PRIMARY.rgb);
+            }
         });
     });
 }

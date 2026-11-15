@@ -15,9 +15,10 @@
 
 /* Links: the brand green is 3.2:1 on white, so text links (and the
    reference's links) take a deeper shade of it in light mode. On the dark
-   page the brand green itself clears 4.5:1. */
+   page the brand green itself clears 4.5:1. A site that sets its own primary
+   (theme.appearance.colors) gets that colour instead, as before. */
 :root {
-    --gusto-link: #0b7d61;
+    --gusto-link: var(--xyd-appearance-color-primary, #0b7d61);
     --xyd-anchor-color: var(--gusto-link);
     --xyd-anchor-color--hover: color-mix(in srgb, var(--gusto-link) 80%, black);
     --XydAtlas-Ref-Palette-Primary-60: var(--gusto-link);
@@ -60,7 +61,7 @@
     --xyd-codetabs-color: var(--black);
     --color-text: var(--black);
 
-    --gusto-link: #10a37f;
+    --gusto-link: var(--xyd-appearance-color-primary, #10a37f);
     --xyd-anchor-color--hover: color-mix(in srgb, var(--gusto-link) 80%, white);
 }
 [data-color-scheme="dark"] {

@@ -20,8 +20,10 @@
     --terrarium-link: #1060ff;
     --xyd-anchor-color: var(--terrarium-link);
     --xyd-anchor-color--hover: color-mix(in srgb, var(--terrarium-link) 72%, black);
-    /* The reference's links too: the green accent is 2.1:1 on white. */
-    --XydAtlas-Ref-Palette-Primary-60: var(--terrarium-link);
+    /* The reference's accent follows the primary: a site's or a product's own
+       colour, and the link blue in place of the green accent, which is 2.1:1
+       on white. */
+    --XydAtlas-Ref-Palette-Primary-60: var(--xyd-appearance-color-primary, var(--theme-color-primary, var(--terrarium-link)));
 }
 
 /* Core high-contrast text/bg */

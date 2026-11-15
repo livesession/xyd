@@ -358,6 +358,12 @@ function generateColorTokens(primary: string): Record<string, string> {
         "--theme-color-primary-active": 'var(--color-primary)',
         "--color-primary--active": 'color-mix(in srgb, var(--color-primary) 75%, transparent)',
         "--xyd-breadcrumbs-color": 'var(--color-primary)',
+        // The site's own primary, for the themes that give their links (and the
+        // reference's accent) a shade of their own primary for contrast: they
+        // read this first, so the site's colour reaches the links too. The
+        // colour itself, not var(--color-primary): a theme may re-declare
+        // --color-primary in dark mode.
+        "--xyd-appearance-color-primary": primary,
     };
 }
 

@@ -17,10 +17,12 @@
     --theme-nav-height-space: 8px;
 }
 /* Links: the base purple is 3.5:1 on the dark page, so links take a lighter
-   shade of it there. */
+   shade of it there. A site's or a product's own colour replaces the purple
+   here as it does in the primary. */
 @define-mixin dark-theme {
-    --xyd-anchor-color: #a897f0;
-    --xyd-anchor-color--hover: color-mix(in srgb, #a897f0 75%, white);
+    --cosmo-link: var(--xyd-appearance-color-primary, var(--theme-color-primary, #a897f0));
+    --xyd-anchor-color: var(--cosmo-link);
+    --xyd-anchor-color--hover: color-mix(in srgb, var(--cosmo-link) 75%, white);
 }
 
 [data-color-scheme="dark"] {
