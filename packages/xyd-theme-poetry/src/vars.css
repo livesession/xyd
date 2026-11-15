@@ -53,6 +53,13 @@
 
     --poetry-link: var(--xyd-appearance-color-primary, var(--theme-color-primary, var(--poetry-blue80)));
     --xyd-anchor-color--hover: color-mix(in srgb, var(--poetry-link) 75%, white);
+
+    /* The reference keeps atlas-vars' dark accent, the text colour, whichever
+       way dark mode was chosen. Without this line the light mapping on :root
+       above, which comes after atlas-vars, would win over atlas-vars' rule for
+       a dark mode picked on the site (same specificity) but not over its
+       OS-dark rule. */
+    --XydAtlas-Ref-Palette-Primary-60: var(--color-text);
 }
 
 /* Override dark mode colors to maintain Poetry theme */

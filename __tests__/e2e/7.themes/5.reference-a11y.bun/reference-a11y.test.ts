@@ -194,6 +194,14 @@ async function linkColours(browser: Browser, server: XydServer) {
     return out;
 }
 
+// What every theme's build is checked for besides the contrast audit.
+function schemeTests(server: () => XydServer) {
+    test('dark mode picked on the site colours links and the reference like dark mode from the OS', async ({ browser }) => {
+        const colours = await linkColours(browser, server());
+        expect(colours['dark (picked)']).toEqual(colours['dark (OS)']);
+    });
+}
+
 async function auditAll(browser: Browser, server: XydServer) {
     const failures: string[] = [];
     const checked: Record<string, number> = {};
@@ -256,6 +264,8 @@ test.describe('reference pages — contrast, links, phone drawer, trailing slash
         expect(style.color).not.toBe(style.text);
         await context.close();
     });
+
+    schemeTests(() => server);
 
     test('the client ships React\'s production build and logs no React warnings', async ({ page }) => {
         const messages: string[] = [];
@@ -434,6 +444,8 @@ for (const theme of THEMES.filter((t) => t !== 'gusto')) {
             const { failures } = await auditAll(browser, server);
             expect(failures).toEqual([]);
         });
+
+        schemeTests(() => server);
     });
 }
 
