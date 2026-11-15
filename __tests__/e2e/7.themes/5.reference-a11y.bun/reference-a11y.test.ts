@@ -493,28 +493,35 @@ for (const theme of THEMES.filter((t) => t !== 'gusto')) {
     });
 }
 
-// A site that sets its own primary (theme.appearance.colors.primary) gets it
-// on its links and on the reference's accent, as on the rest of its accent.
-// The themes' deeper (or lighter) link shades stand in for the theme's own
-// primary only. Terrarium keeps its blue text links whatever the accent.
+// A site that sets its own primary gets it on its links and on the reference's
+// accent, as on the rest of its accent, whether it sets
+// theme.appearance.colors.primary or the --color-primary token through
+// theme.appearance.cssTokens. The themes' deeper (or lighter) link shades stand
+// in for the theme's own primary only. Terrarium keeps its blue text links
+// whatever the accent.
 const SITE_PRIMARY = { hex: '#d00000', rgb: 'rgb(208, 0, 0)' };
-for (const { theme, engine } of [
-    ...['gusto', 'poetry', 'cosmo', 'opener', 'picasso', 'terrarium'].map((theme) => ({ theme, engine: 'bun' })),
-    { theme: 'gusto', engine: 'vite' },
+for (const { theme, engine, via } of [
+    ...['gusto', 'poetry', 'cosmo', 'opener', 'picasso', 'terrarium'].map((theme) => ({ theme, engine: 'bun', via: 'colors' })),
+    { theme: 'gusto', engine: 'vite', via: 'colors' },
+    ...['gusto', 'poetry', 'cosmo', 'opener', 'picasso'].map((theme) => ({ theme, engine: 'bun', via: 'cssTokens' })),
+    { theme: 'gusto', engine: 'vite', via: 'cssTokens' },
 ]) {
-    test.describe(`a site's own primary colour — ${theme} theme (${engine} engine, build)`, () => {
+    test.describe(`a site's own primary colour through ${via} — ${theme} theme (${engine} engine, build)`, () => {
         test.describe.configure({ mode: 'serial' });
 
         let server: XydServer;
         let template: string;
 
         test.beforeAll(async () => {
-            template = fs.mkdtempSync(path.join(os.tmpdir(), `xyd-reference-primary-${theme}-`));
+            template = fs.mkdtempSync(path.join(os.tmpdir(), `xyd-reference-primary-${via}-${theme}-`));
             fs.cpSync(__dirname, template, { recursive: true, filter: (src) => !src.endsWith('.test.ts') && !src.includes('.xyd') });
             const docsPath = path.join(template, 'docs.json');
             const docs = JSON.parse(fs.readFileSync(docsPath, 'utf8'));
             docs.theme.name = theme;
-            docs.theme.appearance = { ...(docs.theme.appearance || {}), colors: { primary: SITE_PRIMARY.hex } };
+            docs.theme.appearance = {
+                ...(docs.theme.appearance || {}),
+                ...(via === 'colors' ? { colors: { primary: SITE_PRIMARY.hex } } : { cssTokens: { '--color-primary': SITE_PRIMARY.hex } }),
+            };
             fs.writeFileSync(docsPath, JSON.stringify(docs, null, 2));
             server = await createXydServerWithTemplate(template, { mode: 'build', env: engine === 'bun' ? { XYD_BUN: '1' } : {} });
         });

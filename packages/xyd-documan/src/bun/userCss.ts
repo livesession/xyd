@@ -49,6 +49,22 @@ function generateDarkCss(tokens: Record<string, string>): string {
 }
 
 /**
+ * A primary set as a raw token (`cssTokens: { "--color-primary": … }`) also
+ * names `--xyd-appearance-color-primary`, as `colors.primary` does: the themes'
+ * link shades read that token first, and without it they hid the site's colour
+ * on its links. `cssTokens` wins over `colors`, so its primary wins here too.
+ * A `--xyd-appearance-color-primary` of its own in `cssTokens` is left alone.
+ */
+function cssTokensPrimary(cssTokens?: Record<string, unknown>): Record<string, string> {
+    const primary = cssTokens?.["--color-primary"];
+    if (typeof primary !== "string" || !primary.trim()) return {};
+    if (cssTokens && "--xyd-appearance-color-primary" in cssTokens) return {};
+    // A primary written in terms of this token would form a cycle.
+    if (primary.includes("--xyd-appearance-color-primary")) return {};
+    return { "--xyd-appearance-color-primary": primary };
+}
+
+/**
  * Map the typed `appearance.dropdown` flags to the technical `--xyd-nav-dropdown-*`
  * variables — so consumers set one informative flag instead of raw tokens.
  * (`cssTokens` still wins, since it is merged after this.)
@@ -81,11 +97,13 @@ export function generateUserCss(appearance?: Appearance): string {
         ...(colors?.primary ? generateColorTokens(colors.primary) : {}),
         ...dropdown,
         ...(cssTokens || {}),
+        ...cssTokensPrimary(cssTokens),
     };
     const darkTokens = {
         ...(colors?.light ? generateColorTokens(colors.light) : {}),
         ...dropdown,
         ...(cssTokens || {}),
+        ...cssTokensPrimary(cssTokens),
     };
 
     const lightCss = tokensToCss(lightTokens);
