@@ -1,60 +1,104 @@
-:root {
-  /* Ref tokens - Base values */
-  --XydAtlas-Ref-Palette-White: #FFFFFF;
+/* The reference's default tokens. They sit in the `defaults` layer so that a
+   theme's mapping of them (unlayered, or in a later layer) wins in whatever
+   order the stylesheets load. Unlayered, these defaults overrode the theme
+   whenever this file was linked after the theme's CSS, and a reference page
+   kept its light palette in dark mode. */
+@layer defaults {
+    :root {
+        /* Ref tokens - Base values */
+        --XydAtlas-Ref-Palette-White: #FFFFFF;
 
-  --XydAtlas-Ref-Palette-Primary-60: #7051d4;
-  --XydAtlas-Ref-Palette-Primary-70: #6045b9;
-  --XydAtlas-Ref-Palette-Primary-80: #4f399e;
+        --XydAtlas-Ref-Palette-Primary-60: #7051d4;
+        --XydAtlas-Ref-Palette-Primary-70: #6045b9;
+        --XydAtlas-Ref-Palette-Primary-80: #4f399e;
 
-  --XydAtlas-Ref-Palette-Neutral-10: #F8F9FA;
-  --XydAtlas-Ref-Palette-Neutral-20: #F1F3F5;
-  --XydAtlas-Ref-Palette-Neutral-30: #E9ECEF;
-  --XydAtlas-Ref-Palette-Neutral-40: #DEE2E6;
-  --XydAtlas-Ref-Palette-Neutral-70: #6C757D;
-  --XydAtlas-Ref-Palette-Neutral-80: #495057;
-  --XydAtlas-Ref-Palette-Neutral-100: #212529;
+        --XydAtlas-Ref-Palette-Neutral-10: #F8F9FA;
+        --XydAtlas-Ref-Palette-Neutral-20: #F1F3F5;
+        --XydAtlas-Ref-Palette-Neutral-30: #E9ECEF;
+        --XydAtlas-Ref-Palette-Neutral-40: #DEE2E6;
+        --XydAtlas-Ref-Palette-Neutral-70: #6C757D;
+        --XydAtlas-Ref-Palette-Neutral-80: #495057;
+        --XydAtlas-Ref-Palette-Neutral-100: #212529;
 
-  /* System tokens - Semantic values */
-  --XydAtlas-Sys-Color-Primary: var(--XydAtlas-Ref-Palette-Primary-60);
-  --XydAtlas-Sys-Color-Primary--hover: var(--XydAtlas-Ref-Palette-Primary-70);
-  --XydAtlas-Sys-Color-Primary--active: var(--XydAtlas-Ref-Palette-Primary-80);
-  
-  --XydAtlas-Sys-Color-Surface: var(--XydAtlas-Ref-Palette-Neutral-10);
-  --XydAtlas-Sys-Color-Surface--hover: var(--XydAtlas-Ref-Palette-Neutral-20);
-  --XydAtlas-Sys-Color-Surface--active: var(--XydAtlas-Ref-Palette-Neutral-30);
-  
-  --XydAtlas-Sys-Color-Text-Primary: var(--XydAtlas-Ref-Palette-Neutral-100);
-  --XydAtlas-Sys-Color-Text-Secondary: var(--XydAtlas-Ref-Palette-Neutral-80);
-  --XydAtlas-Sys-Color-Text-Tertiary: var(--XydAtlas-Ref-Palette-Neutral-70);
-  
-  --XydAtlas-Sys-Color-Border: var(--XydAtlas-Ref-Palette-Neutral-30);
-  --XydAtlas-Sys-Color-Border--hover: var(--XydAtlas-Ref-Palette-Neutral-40);
-  --XydAtlas-Sys-Color-Border--active: var(--XydAtlas-Ref-Palette-Primary-60);
+        /* System tokens - Semantic values */
+        --XydAtlas-Sys-Color-Primary: var(--XydAtlas-Ref-Palette-Primary-60);
+        --XydAtlas-Sys-Color-Primary--hover: var(--XydAtlas-Ref-Palette-Primary-70);
+        --XydAtlas-Sys-Color-Primary--active: var(--XydAtlas-Ref-Palette-Primary-80);
 
-  /* Component tokens - Specific component values */
-  /* ApiRef Properties */
-  --XydAtlas-Component-ApiRef-Properties__color-description: var(--XydAtlas-Sys-Color-Text-Secondary);
-  --XydAtlas-Component-ApiRef-Properties__color-propName: var(--XydAtlas-Sys-Color-Text-Primary);
-  --XydAtlas-Component-ApiRef-Properties__color-propType: var(--XydAtlas-Sys-Color-Text-Tertiary);
-  --XydAtlas-Component-ApiRef-Properties__color--active: var(--XydAtlas-Sys-Color-Primary);
-  --XydAtlas-Component-ApiRef-Properties__color-border: var(--XydAtlas-Sys-Color-Border);
+        --XydAtlas-Sys-Color-Surface: var(--XydAtlas-Ref-Palette-Neutral-10);
+        --XydAtlas-Sys-Color-Surface--hover: var(--XydAtlas-Ref-Palette-Neutral-20);
+        --XydAtlas-Sys-Color-Surface--active: var(--XydAtlas-Ref-Palette-Neutral-30);
 
-  /* ApiRef Item */
-  --XydAtlas-Component-ApiRef-Item__color-border: var(--XydAtlas-Sys-Color-Border);
-  --XydAtlas-Component-ApiRef-Item__color-navbar: var(--XydAtlas-Sys-Color-Text-Secondary);
-  --XydAtlas-Component-ApiRef-Item__background-navbar: var(--XydAtlas-Ref-Palette-Neutral-10);
+        --XydAtlas-Sys-Color-Text-Primary: var(--XydAtlas-Ref-Palette-Neutral-100);
+        --XydAtlas-Sys-Color-Text-Secondary: var(--XydAtlas-Ref-Palette-Neutral-80);
+        --XydAtlas-Sys-Color-Text-Tertiary: var(--XydAtlas-Ref-Palette-Neutral-70);
 
-  /* Code Sample */
-  --XydAtlas-Component-Code-Sample__color-border: var(--XydAtlas-Sys-Color-Border);
-  --XydAtlas-Component-Code-Sample__color: var(--XydAtlas-Sys-Color-Text-Secondary);
-  --XydAtlas-Component-Code-Sample__color--active: var(--XydAtlas-Sys-Color-Primary);
-  --XydAtlas-Component-Code-Sample__color-background: var(--XydAtlas-Sys-Color-Surface--hover);
-  --XydAtlas-Component-Code-Sample__color-markBorder--active: var(--XydAtlas-Sys-Color-Primary);
-  --XydAtlas-Component-Code-Sample__color-markBackground--active: var(--XydAtlas-Sys-Color-Surface--hover);
+        --XydAtlas-Sys-Color-Border: var(--XydAtlas-Ref-Palette-Neutral-30);
+        --XydAtlas-Sys-Color-Border--hover: var(--XydAtlas-Ref-Palette-Neutral-40);
+        --XydAtlas-Sys-Color-Border--active: var(--XydAtlas-Ref-Palette-Primary-60);
 
-  /* Code Sample Buttons */
-  --XydAtlas-Component-Code-SampleButtons__color-containerBackground: var(--XydAtlas-Sys-Color-Surface);
-  --XydAtlas-Component-Code-SampleButtons__color-background--active: var(--XydAtlas-Ref-Palette-White);
-  --XydAtlas-Component-Code-SampleButtons__color: var(--XydAtlas-Sys-Color-Text-Primary);
-  --XydAtlas-Component-Code-SampleButtons__color--active: var(--XydAtlas-Sys-Color-Text-Primary);
-} 
+        /* Component tokens - Specific component values */
+        /* ApiRef Properties */
+        --XydAtlas-Component-ApiRef-Properties__color-description: var(--XydAtlas-Sys-Color-Text-Secondary);
+        --XydAtlas-Component-ApiRef-Properties__color-propName: var(--XydAtlas-Sys-Color-Text-Primary);
+        --XydAtlas-Component-ApiRef-Properties__color-propType: var(--XydAtlas-Sys-Color-Text-Tertiary);
+        --XydAtlas-Component-ApiRef-Properties__color--active: var(--XydAtlas-Sys-Color-Primary);
+        --XydAtlas-Component-ApiRef-Properties__color-border: var(--XydAtlas-Sys-Color-Border);
+
+        /* ApiRef Item */
+        --XydAtlas-Component-ApiRef-Item__color-border: var(--XydAtlas-Sys-Color-Border);
+        --XydAtlas-Component-ApiRef-Item__color-navbar: var(--XydAtlas-Sys-Color-Text-Secondary);
+        --XydAtlas-Component-ApiRef-Item__background-navbar: var(--XydAtlas-Ref-Palette-Neutral-10);
+
+        /* Code Sample */
+        --XydAtlas-Component-Code-Sample__color-border: var(--XydAtlas-Sys-Color-Border);
+        --XydAtlas-Component-Code-Sample__color: var(--XydAtlas-Sys-Color-Text-Secondary);
+        --XydAtlas-Component-Code-Sample__color--active: var(--XydAtlas-Sys-Color-Primary);
+        --XydAtlas-Component-Code-Sample__color-background: var(--XydAtlas-Sys-Color-Surface--hover);
+        --XydAtlas-Component-Code-Sample__color-markBorder--active: var(--XydAtlas-Sys-Color-Primary);
+        --XydAtlas-Component-Code-Sample__color-markBackground--active: var(--XydAtlas-Sys-Color-Surface--hover);
+
+        /* Code Sample Buttons */
+        --XydAtlas-Component-Code-SampleButtons__color-containerBackground: var(--XydAtlas-Sys-Color-Surface);
+        --XydAtlas-Component-Code-SampleButtons__color-background--active: var(--XydAtlas-Ref-Palette-White);
+        --XydAtlas-Component-Code-SampleButtons__color: var(--XydAtlas-Sys-Color-Text-Primary);
+        --XydAtlas-Component-Code-SampleButtons__color--active: var(--XydAtlas-Sys-Color-Text-Primary);
+    }
+
+    /* Dark mode: only the base palette changes; the system and component
+       tokens follow it. A theme maps the palette onto its own colours (the
+       themes' atlas-vars decorator), which wins over these defaults. */
+    [data-color-scheme="dark"] {
+        --XydAtlas-Ref-Palette-White: #0E0E10;
+
+        --XydAtlas-Ref-Palette-Primary-60: #A897F0;
+        --XydAtlas-Ref-Palette-Primary-70: #BCAFF4;
+        --XydAtlas-Ref-Palette-Primary-80: #D0C7F8;
+
+        --XydAtlas-Ref-Palette-Neutral-10: #1A1B1E;
+        --XydAtlas-Ref-Palette-Neutral-20: #222326;
+        --XydAtlas-Ref-Palette-Neutral-30: #2E3034;
+        --XydAtlas-Ref-Palette-Neutral-40: #3C3F44;
+        --XydAtlas-Ref-Palette-Neutral-70: #A1A7AE;
+        --XydAtlas-Ref-Palette-Neutral-80: #C4C9CE;
+        --XydAtlas-Ref-Palette-Neutral-100: #F1F3F5;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+            --XydAtlas-Ref-Palette-White: #0E0E10;
+
+            --XydAtlas-Ref-Palette-Primary-60: #A897F0;
+            --XydAtlas-Ref-Palette-Primary-70: #BCAFF4;
+            --XydAtlas-Ref-Palette-Primary-80: #D0C7F8;
+
+            --XydAtlas-Ref-Palette-Neutral-10: #1A1B1E;
+            --XydAtlas-Ref-Palette-Neutral-20: #222326;
+            --XydAtlas-Ref-Palette-Neutral-30: #2E3034;
+            --XydAtlas-Ref-Palette-Neutral-40: #3C3F44;
+            --XydAtlas-Ref-Palette-Neutral-70: #A1A7AE;
+            --XydAtlas-Ref-Palette-Neutral-80: #C4C9CE;
+            --XydAtlas-Ref-Palette-Neutral-100: #F1F3F5;
+        }
+    }
+}
