@@ -35,6 +35,8 @@ Each link points at the page's Markdown source: the page path plus the extension
 
 A page generated from a CLI reference (`api.cli`) has no Markdown source of its own, so its `.md` file holds the command as Markdown: its usage, each section of the page (arguments, options, inherited and global options, commands, interactive commands, keys, environment variables, exit codes) and its examples.
 
+A page you write with a `cli` frontmatter gets the same after its own content, for the commands its `cli` value names.
+
 Example llms.txt:
 
 ```md [desc="This structured approach allows LLMs to efficiently process your documentation at a high level and locate relevant content for user queries."]

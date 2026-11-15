@@ -4,6 +4,8 @@ import type { Settings } from "@xyd-js/core";
 import { loadOpencliSpec, opencliToReferences } from "@xyd-js/opencli";
 import type { DefinitionProperty, Reference } from "@xyd-js/uniform";
 
+import { parseImportPath, resolvePathAlias } from "../packages/md/plugins/functions/utils";
+
 import { resolveCliFileOptions } from "./apiFileOptions";
 
 // ---------------------------------------------------------------------------
@@ -17,7 +19,8 @@ import { resolveCliFileOptions } from "./apiFileOptions";
 // the page does (the same document, region and options) and write it out as
 // markdown: the title, the description, the usage, every section (Arguments,
 // Options, Inherited options, Commands, Global options, Interactive commands,
-// Keys, Environment, Exit codes) and the code samples.
+// Keys, Environment, Exit codes) and the code samples. A hand-written page
+// with a `cli` frontmatter gets the same, read the way its page reads it.
 // ---------------------------------------------------------------------------
 
 /** One parsed OpenCLI document per source, shared by the pages of one pass. */
@@ -33,22 +36,30 @@ export interface CliPageMarkdownOptions {
 }
 
 /**
- * The markdown of the command a generated page names in its frontmatter
+ * The markdown of the commands a page names in its `cli` frontmatter
  * (`cli: ~/acme.opencli.json#remote add`): the references the page renders,
- * as markdown. Empty when the value names no command of the document.
+ * as markdown. The value is read the way the page reads it: the string or
+ * the object form's `path`; the regions after the first `#`, comma-separated
+ * (none: every command); the source through `engine.paths`, `~/` and the
+ * page's directory. Empty when the value names no command of the document.
  */
 export async function cliPageMarkdown(
-    cliValue: string,
+    cli: unknown,
     settings?: Settings,
     options: CliPageMarkdownOptions = {},
 ): Promise<string> {
     const cwd = options.cwd || process.cwd();
-    const { source, region } = splitCliValue(cliValue);
-    if (!source || !region) {
+    const value = cliFrontmatterPath(cli);
+    if (!value) {
         return "";
     }
 
-    const resolved = resolveCliSource(source, cwd, options.pageDir || cwd);
+    const { filePath, regions } = parseImportPath(value);
+    if (!filePath) {
+        return "";
+    }
+
+    const resolved = resolveCliSource(filePath, settings, cwd, options.pageDir || cwd);
 
     let load = options.cache?.get(resolved);
     if (!load) {
@@ -59,34 +70,42 @@ export async function cliPageMarkdown(
 
     const cliOptions = resolveCliFileOptions(settings?.api?.cli, resolved);
     const references = opencliToReferences(spec as any, {
-        regions: [region],
+        regions: regions.map((region) => region.name),
         globalOptionsPerCommand: cliOptions?.globalOptionsPerCommand ?? false,
     }) as unknown as Reference[];
 
     return cliReferencesMarkdown(references);
 }
 
-/** `<source>#<command path>` → its two parts; a URL keeps its own `#` only before the last one. */
-function splitCliValue(value: string): { source: string; region: string } {
-    const v = (value || "").trim();
-    const hash = v.lastIndexOf("#");
-    if (hash === -1) {
-        return { source: v, region: "" };
+/**
+ * The `<source>#<regions>` a `cli` frontmatter holds: the string itself, or
+ * the object form's `path` (`cli: {path: ...}`).
+ */
+function cliFrontmatterPath(cli: unknown): string {
+    if (typeof cli === "string") {
+        return cli.trim();
     }
+    const objectPath = cli && typeof cli === "object" ? (cli as { path?: unknown }).path : undefined;
 
-    return { source: v.slice(0, hash), region: v.slice(hash + 1).trim() };
+    return typeof objectPath === "string" ? objectPath.trim() : "";
 }
 
-/** A page's source as a path or URL: `~/` is the docs root, a relative path is the page's. */
-function resolveCliSource(source: string, cwd: string, pageDir: string): string {
+/**
+ * A page's source as a path or URL, the way the page's own conversion
+ * resolves it: an `engine.paths` alias first, then `~/` (the docs root), then
+ * a relative path from the page's directory.
+ */
+function resolveCliSource(source: string, settings: Settings | undefined, cwd: string, pageDir: string): string {
     if (source.startsWith("http://") || source.startsWith("https://")) {
         return source;
     }
-    if (source.startsWith("~/")) {
-        return path.join(cwd, source.slice(2));
+
+    let resolved = resolvePathAlias(source, settings, undefined, cwd);
+    if (resolved.startsWith("~/")) {
+        resolved = path.join(cwd, resolved.slice(2));
     }
 
-    return path.resolve(pageDir, source);
+    return path.resolve(pageDir, resolved);
 }
 
 /** Every reference as markdown, one after another. */

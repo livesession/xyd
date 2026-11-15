@@ -61,6 +61,7 @@ import {
 } from "./const";
 import { CLI } from "./cli";
 import { llmsTxtLinkUrl } from "./llmsTxtLinks";
+import { withGeneratedBody } from "./generatedBody";
 import { componentDependencies, componentsInstall } from "./componentsInstall";
 
 // gray-matter imported via ESM to avoid dynamic require issues in ESM builds
@@ -1065,45 +1066,6 @@ export async function pluginLLMMarkdown(respPluginDocs: PluginOutput) {
         ...globalThis.__xydRawRouteFiles,
         ...rawRouteFiles,
     };
-}
-
-/**
- * A page's raw markdown with the body a generated page renders from its
- * frontmatter. A generated CLI command page holds only its frontmatter
- * (`cli: <source>#<command path>`); its `.md` twin gets the command itself,
- * as markdown, after it. Any other page is returned as it is.
- */
-async function withGeneratedBody(
-    content: string,
-    filePath: string,
-    settings: Settings,
-    cliSpecs: Map<string, Promise<unknown>>,
-): Promise<string> {
-    let cli: unknown;
-    try {
-        cli = matter(content)?.data?.cli;
-    } catch {
-        return content;
-    }
-    if (typeof cli !== "string" || !cli) {
-        return content;
-    }
-
-    try {
-        const { cliPageMarkdown } = await import("@xyd-js/content");
-        const body = await cliPageMarkdown(cli, settings, {
-            pageDir: path.dirname(filePath),
-            cache: cliSpecs,
-        });
-        if (!body) {
-            return content;
-        }
-
-        return `${content.replace(/\s*$/, "")}\n\n${body}`;
-    } catch (error) {
-        console.warn(`Failed to render the markdown of ${cli}:`, error);
-        return content;
-    }
 }
 
 function normalizePath(p: string) {

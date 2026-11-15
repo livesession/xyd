@@ -156,8 +156,46 @@ describe('cliPageMarkdown', () => {
     });
 
     it('is empty for a value that names no command', async () => {
-        expect(await page('~/acme.opencli.json')).toBe('');
         expect(await page('~/acme.opencli.json#nope')).toBe('');
+        expect(await page('')).toBe('');
+        expect(await cliPageMarkdown(undefined, settings, { cwd: dir })).toBe('');
+        expect(await cliPageMarkdown({ title: 'no path' }, settings, { cwd: dir })).toBe('');
+    });
+
+    // A hand-written page reads its `cli` value through the page's own
+    // resolution; its twin has to read it the same way, or the page renders
+    // the command and its `.md` holds only the frontmatter.
+    it('resolves the source through an engine.paths alias, as the page does', async () => {
+        fs.mkdirSync(path.join(dir, 'specs'), { recursive: true });
+        fs.copyFileSync(path.join(dir, 'acme.opencli.json'), path.join(dir, 'specs', 'acme.opencli.json'));
+        const aliased: any = { ...settings, engine: { paths: { '@cli/*': ['specs/*'] } } };
+
+        const md = await cliPageMarkdown('@cli/acme.opencli.json#remote list', aliased, {
+            cwd: dir,
+            pageDir: path.join(dir, 'guides'),
+        });
+        expect(md.startsWith('# remote list\n\nList the remotes.\n')).toBe(true);
+
+        // `~/` still names the docs root with aliases configured
+        const home = await cliPageMarkdown('~/acme.opencli.json#remote list', aliased, { cwd: dir });
+        expect(home.startsWith('# remote list\n')).toBe(true);
+    });
+
+    it('reads the object form of the frontmatter', async () => {
+        const md = await cliPageMarkdown({ path: '~/acme.opencli.json#remote list' }, settings, { cwd: dir });
+        expect(md.startsWith('# remote list\n\nList the remotes.\n')).toBe(true);
+    });
+
+    it('writes every region of a comma-separated list, in document order', async () => {
+        const md = await page('~/acme.opencli.json#remote list, agent resume');
+
+        expect(md.match(/^# .*$/gm)).toEqual(['# remote list', '# agent resume']);
+    });
+
+    it('writes every command for a value without a region, as the page renders them', async () => {
+        const md = await page('~/acme-agent.opencli.json');
+
+        expect(md.match(/^# .*$/gm)).toEqual(['# acme-agent \\[command\\]', '# resume']);
     });
 });
 
