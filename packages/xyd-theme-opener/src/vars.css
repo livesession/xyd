@@ -66,6 +66,10 @@
     --color-primary: var(--opener-blue);
     --theme-color-primary: var(--color-primary);
 
+    /* The opener blue is 3.6:1 on the dark page: links take a lighter blue. */
+    --xyd-anchor-color: #6aa5ff;
+    --xyd-anchor-color--hover: color-mix(in srgb, #6aa5ff 75%, white);
+
     --xyd-codetabs-color: var(--black);
     --xyd-tabs-primary-border-color: unset;
     --xyd-codetabs-color--active: var(--black);

@@ -20,6 +20,8 @@
     --terrarium-link: #1060ff;
     --xyd-anchor-color: var(--terrarium-link);
     --xyd-anchor-color--hover: color-mix(in srgb, var(--terrarium-link) 72%, black);
+    /* The reference's links too: the green accent is 2.1:1 on white. */
+    --XydAtlas-Ref-Palette-Primary-60: var(--terrarium-link);
 }
 
 /* Core high-contrast text/bg */
@@ -100,7 +102,8 @@
     --color-text: #f5f5f5;
     --text-primary: #f5f5f5;
     --text-secondary: #c8ccd4;
-    --text-tertiary: var(--terrarium-gray);
+    /* #656a76 is 3.6:1 on the dark page (breadcrumbs, the TOC, sidebar items). */
+    --text-tertiary: #9499a3;
 
     --terrarium-border: #ffffff1a;
     --terrarium-active-bg: #1c1c1f;

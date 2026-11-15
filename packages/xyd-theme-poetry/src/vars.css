@@ -16,6 +16,15 @@
     --theme-color-primary-active: var(--poetry-blue100);
 }
 
+/* Links: blue80 is 3.7:1 on white, so text links (and the reference's links)
+   take a deeper blue in light mode; on the dark page blue80 clears 4.5:1. */
+:root {
+    --poetry-link: #2563eb;
+    --xyd-anchor-color: var(--poetry-link);
+    --xyd-anchor-color--hover: var(--poetry-blue100);
+    --XydAtlas-Ref-Palette-Primary-60: var(--poetry-link);
+}
+
 :root {
     --xyd-page-gutter: 0;
 }
@@ -37,6 +46,9 @@
 @define-mixin dark-theme {
     --xyd-codetabs-color: var(--black);
     --xyd-codetabs-color--active: var(--black);
+
+    --poetry-link: var(--poetry-blue80);
+    --xyd-anchor-color--hover: color-mix(in srgb, var(--poetry-link) 75%, white);
 }
 
 /* Override dark mode colors to maintain Poetry theme */

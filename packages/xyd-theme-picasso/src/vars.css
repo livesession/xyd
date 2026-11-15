@@ -59,6 +59,8 @@
 }
 
 @define-mixin dark-theme {
+    /* The primary is 4.0:1 on the dark page: links take a lighter shade. */
+    --xyd-anchor-color: color(display-p3 0.3 0.7 0.62);
     --xyd-codetabs-color: var(--black);
     --color-text: var(--black);
     --xyd-codetabs-color--active: var(--black);

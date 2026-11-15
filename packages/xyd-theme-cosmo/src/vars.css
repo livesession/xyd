@@ -16,3 +16,19 @@
 :root {
     --theme-nav-height-space: 8px;
 }
+/* Links: the base purple is 3.5:1 on the dark page, so links take a lighter
+   shade of it there. */
+@define-mixin dark-theme {
+    --xyd-anchor-color: #a897f0;
+    --xyd-anchor-color--hover: color-mix(in srgb, #a897f0 75%, white);
+}
+
+[data-color-scheme="dark"] {
+    @mixin dark-theme;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+        @mixin dark-theme;
+    }
+}
