@@ -252,7 +252,7 @@ for (const engine of ENGINES) {
                 expect(command.body.match(/^# .*$/gm)).toEqual(['# acme-tool']);
             });
 
-            test('a hand-written page with a cli frontmatter: its .md twin carries the commands it names', async ({ page }) => {
+            test('a hand-written page with a cli frontmatter: the page and its .md twin carry the commands it names', async ({ page }) => {
                 // the object form, through an engine.paths alias
                 await open(page, '/guides/sign-in');
                 await expect(page.locator('body')).toContainText('acme login [options]');
@@ -263,7 +263,13 @@ for (const engine of ENGINES) {
                     expect(signIn.body, heading).toContain(`\n## ${heading}\n`);
                 }
 
-                // a comma-separated list
+                // a comma-separated list: the page renders every command in it,
+                // and its twin carries the same ones
+                await open(page, '/guides/login-and-remotes');
+                await expect(page.locator('h1')).toHaveText(['login', 'remote <command>']);
+                await expect(page.locator('body')).toContainText('acme login [options]');
+                await expect(page.locator('body')).toContainText('acme remote <command>');
+                await expect(page.locator('body')).toContainText('Manage remotes.');
                 const both = await get(`${BASE}/guides/login-and-remotes.md`);
                 expect(both.body.match(/^# .*$/gm)).toEqual(['# login', '# remote \\<command\\>']);
             });

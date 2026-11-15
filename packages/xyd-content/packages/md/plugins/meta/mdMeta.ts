@@ -42,6 +42,13 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
       }
 
       let uniformMeta = false
+      // The frontmatter's own call, by prop: its value as written and its
+      // arguments. It reaches processUniformFunctionCall whole, which reads
+      // the regions after the first `#` (`#login,remote`: both commands), the
+      // way the page's `.md` twin reads them. The `@uniform('...')` string in
+      // componentProps would lose them: parsing it back splits the call's
+      // arguments on every comma, so only the first region would be left.
+      const uniformCalls: Record<string, [string, Record<string, any>]> = {}
       if (meta?.uniform || meta?.openapi || meta?.graphql || meta?.mcp || meta?.cli) {
         uniformMeta = true
         if (meta.graphql) {
@@ -56,6 +63,7 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
         meta.component = "atlas"
 
         if (typeof meta.uniform === "string") {
+          uniformCalls.references = [meta.uniform.trim(), {}]
           meta.componentProps = {
             references: `@uniform('${meta.uniform}')`
           }
@@ -77,6 +85,9 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
             meta.uniform.path = filePath
           }
 
+          if (typeof meta.uniform.path === "string") {
+            uniformCalls.references = [meta.uniform.path.trim(), uniformArgs]
+          }
           meta.componentProps = {
             references: `@uniform('${meta.uniform.path}', ${JSON.stringify(uniformArgs)})`
           }
@@ -108,7 +119,7 @@ export function mdMeta(settings?: Settings, options?: MdMetaOptions) {
         for (const key in meta.componentProps) { // TODO: support nested props
           const value = meta.componentProps[key]
 
-          const result = parseFunctionCall({
+          const result = uniformCalls[key] || parseFunctionCall({
             children: [
               {
                 type: "text",
