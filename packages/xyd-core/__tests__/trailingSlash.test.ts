@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { trailingSlashTarget } from "../src/trailingSlash";
+import { trailingSlashRouteTarget, trailingSlashTarget } from "../src/trailingSlash";
 
 describe("trailingSlashTarget", () => {
     it("names the page behind a trailing slash", () => {
@@ -26,5 +26,27 @@ describe("trailingSlashTarget", () => {
     it("never returns a protocol-relative URL", () => {
         expect(trailingSlashTarget("//example.com/")).toBe("/example.com");
         expect(trailingSlashTarget("///example.com/path/")).toBe("/example.com/path");
+    });
+});
+
+describe("trailingSlashRouteTarget", () => {
+    it("names the page inside the site, without the basename a router adds itself", () => {
+        for (const basename of ["/docs", "docs", "/docs/"]) {
+            expect(trailingSlashRouteTarget("/docs/cli/deploy/", basename), basename).toBe("/cli/deploy");
+            expect(trailingSlashRouteTarget("/docs/cli/project/list//", basename), basename).toBe("/cli/project/list");
+            expect(trailingSlashRouteTarget("/docs/", basename), basename).toBeNull();
+            expect(trailingSlashRouteTarget("/docs/cli/deploy", basename), basename).toBeNull();
+        }
+    });
+
+    it("is trailingSlashTarget without a basename", () => {
+        for (const pathname of ["/cli/deploy/", "/", "/cli/deploy", "//example.com/"]) {
+            expect(trailingSlashRouteTarget(pathname), pathname).toBe(trailingSlashTarget(pathname));
+            expect(trailingSlashRouteTarget(pathname, "/"), pathname).toBe(trailingSlashTarget(pathname, "/"));
+        }
+    });
+
+    it("keeps a path that only starts like the basename", () => {
+        expect(trailingSlashRouteTarget("/docsite/page/", "/docs")).toBe("/docsite/page");
     });
 });

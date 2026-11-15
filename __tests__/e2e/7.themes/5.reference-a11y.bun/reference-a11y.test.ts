@@ -334,33 +334,48 @@ test.describe('reference pages — contrast, links, phone drawer, trailing slash
 });
 
 // The dev servers of both engines answer a page's trailing-slash form with a
-// redirect to the page (the Vite engine used to send it to the first page).
+// redirect to the page (the Vite engine used to send it to the first page),
+// with the site at the root and under `advanced.basename`.
 for (const engine of [
     { name: 'bun engine', env: { XYD_BUN: '1' } as Record<string, string> },
     { name: 'vite engine', env: {} as Record<string, string> },
 ]) {
-    test.describe(`dev server — trailing slash (${engine.name})`, () => {
-        let server: XydServer;
+    for (const base of ['', '/docs']) {
+        test.describe(`dev server — trailing slash (${engine.name}${base ? `, basename ${base}` : ''})`, () => {
+            let server: XydServer;
+            let template: string | undefined;
 
-        test.beforeAll(async () => {
-            server = await createXydServerWithTemplate(__dirname, { mode: 'dev', env: engine.env });
+            test.beforeAll(async () => {
+                let dir = __dirname;
+                if (base) {
+                    template = fs.mkdtempSync(path.join(os.tmpdir(), 'xyd-reference-basename-'));
+                    fs.cpSync(__dirname, template, { recursive: true, filter: (src) => !src.endsWith('.test.ts') && !src.includes('.xyd') });
+                    const docsPath = path.join(template, 'docs.json');
+                    const docs = JSON.parse(fs.readFileSync(docsPath, 'utf8'));
+                    docs.advanced = { ...(docs.advanced || {}), basename: base };
+                    fs.writeFileSync(docsPath, JSON.stringify(docs, null, 2));
+                    dir = template;
+                }
+                server = await createXydServerWithTemplate(dir, { mode: 'dev', env: engine.env, readyPath: `${base}/cli/deploy` });
+            });
+
+            test.afterAll(async () => {
+                await server?.stop();
+                if (template) fs.rmSync(template, { recursive: true, force: true });
+            });
+
+            test('a page\'s trailing-slash form redirects to the page', async ({ page }) => {
+                const res = await fetch(server.getUrl(`${base}/cli/deploy/?tab=1`), { redirect: 'manual' });
+                expect(res.status).toBe(308);
+                const location = new URL(res.headers.get('location')!, server.getUrl());
+                expect(location.pathname + location.search).toBe(`${base}/cli/deploy?tab=1`);
+
+                await page.goto(server.getUrl(`${base}/cli/project/list/`));
+                await expect(page).toHaveURL(new RegExp(`${base}/cli/project/list$`));
+                await expect(page.locator('h1')).toHaveText('project list');
+            });
         });
-
-        test.afterAll(async () => {
-            await server?.stop();
-        });
-
-        test('a page\'s trailing-slash form redirects to the page', async ({ page }) => {
-            const res = await fetch(server.getUrl('/cli/deploy/?tab=1'), { redirect: 'manual' });
-            expect(res.status).toBe(308);
-            const location = new URL(res.headers.get('location')!, server.getUrl());
-            expect(location.pathname + location.search).toBe('/cli/deploy?tab=1');
-
-            await page.goto(server.getUrl('/cli/project/list/'));
-            await expect(page).toHaveURL(/\/cli\/project\/list$/);
-            await expect(page.locator('h1')).toHaveText('project list');
-        });
-    });
+    }
 }
 
 // The other themes render the same reference components with their own
