@@ -1015,6 +1015,7 @@ export async function pluginLLMMarkdown(respPluginDocs: PluginOutput) {
                 : `${formattedKey}${savePathExt}`;
             rawRouteFiles[keyWithExt] = await withGeneratedBody(
                 content,
+                savePath,
                 respPluginDocs.settings,
                 cliSpecs,
             );
@@ -1074,6 +1075,7 @@ export async function pluginLLMMarkdown(respPluginDocs: PluginOutput) {
  */
 async function withGeneratedBody(
     content: string,
+    filePath: string,
     settings: Settings,
     cliSpecs: Map<string, Promise<unknown>>,
 ): Promise<string> {
@@ -1089,7 +1091,10 @@ async function withGeneratedBody(
 
     try {
         const { cliPageMarkdown } = await import("@xyd-js/content");
-        const body = await cliPageMarkdown(cli, settings, { cache: cliSpecs });
+        const body = await cliPageMarkdown(cli, settings, {
+            pageDir: path.dirname(filePath),
+            cache: cliSpecs,
+        });
         if (!body) {
             return content;
         }

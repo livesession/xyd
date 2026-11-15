@@ -26,6 +26,8 @@ export type CliSpecCache = Map<string, Promise<unknown>>;
 export interface CliPageMarkdownOptions {
     /** The docs root that a `~/` source is relative to (the working directory by default). */
     cwd?: string;
+    /** The directory of the page, which a relative source is relative to (the docs root by default). */
+    pageDir?: string;
     /** Documents already loaded in this pass, by resolved source. */
     cache?: CliSpecCache;
 }
@@ -46,7 +48,7 @@ export async function cliPageMarkdown(
         return "";
     }
 
-    const resolved = resolveCliSource(source, cwd);
+    const resolved = resolveCliSource(source, cwd, options.pageDir || cwd);
 
     let load = options.cache?.get(resolved);
     if (!load) {
@@ -75,8 +77,8 @@ function splitCliValue(value: string): { source: string; region: string } {
     return { source: v.slice(0, hash), region: v.slice(hash + 1).trim() };
 }
 
-/** A page's source as a path or URL: `~/` is the docs root, a relative path too. */
-function resolveCliSource(source: string, cwd: string): string {
+/** A page's source as a path or URL: `~/` is the docs root, a relative path is the page's. */
+function resolveCliSource(source: string, cwd: string, pageDir: string): string {
     if (source.startsWith("http://") || source.startsWith("https://")) {
         return source;
     }
@@ -84,7 +86,7 @@ function resolveCliSource(source: string, cwd: string): string {
         return path.join(cwd, source.slice(2));
     }
 
-    return path.resolve(cwd, source);
+    return path.resolve(pageDir, source);
 }
 
 /** Every reference as markdown, one after another. */

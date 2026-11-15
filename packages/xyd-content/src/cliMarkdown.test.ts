@@ -146,6 +146,15 @@ describe('cliPageMarkdown', () => {
         expect(md).toContain('acme-agent "Which pages are the slowest?"');
     });
 
+    it('reads a relative source from the page\'s directory', async () => {
+        const md = await cliPageMarkdown('../acme.opencli.json#remote list', settings, {
+            cwd: dir,
+            pageDir: path.join(dir, 'guides'),
+        });
+
+        expect(md.startsWith('# remote list\n\nList the remotes.\n')).toBe(true);
+    });
+
     it('is empty for a value that names no command', async () => {
         expect(await page('~/acme.opencli.json')).toBe('');
         expect(await page('~/acme.opencli.json#nope')).toBe('');
