@@ -11,6 +11,7 @@ import * as fs from "node:fs";
 import type { BunPlugin } from "bun";
 
 import { buildBundle, setBuildContext } from "./startDevServer";
+import { resolveCssGroups } from "./cssGroups";
 
 export interface ThemeArtifacts {
   /** every client output file: {src=absolute on disk, out=rel path under build client/} */
@@ -60,8 +61,8 @@ function stubServerDeps(): BunPlugin {
  *  The `theme` group is per-theme (→ themeDir); components/atlas/ui are theme-
  *  INDEPENDENT so they're written ONCE to sharedDir (step 9 — identical content ⇒
  *  identical hash ⇒ same path, so the embed dedups them across all 6 themes
- *  instead of carrying 6 copies). Returns {links (theme,components,atlas,ui order),
- *  files}. */
+ *  instead of carrying 6 copies). Returns {links (cssGroups.ts order: components,
+ *  atlas, ui, theme), files}. */
 async function prebuildCss(host: string, themeName: string, themeDir: string, sharedDir: string): Promise<{ links: string[]; files: { src: string; out: string }[] }> {
   const rs = (spec: string) => {
     try { return Bun.resolveSync(spec, host); } catch { return null; }
@@ -69,16 +70,7 @@ async function prebuildCss(host: string, themeName: string, themeDir: string, sh
   const pkgDist = (pkg: string, file: string) => {
     try { return Bun.resolveSync(pkg + "/package.json", host).replace(/package\.json$/, "") + file; } catch { return null; }
   };
-  const groups: [string, (string | null)[]][] = [
-    ["theme", [rs(`@xyd-js/theme-${themeName}/index.css`) || pkgDist(`@xyd-js/theme-${themeName}`, "dist/index.css")]],
-    ["components", [rs("@xyd-js/components/index.css") || pkgDist("@xyd-js/components", "dist/index.css")]],
-    ["atlas", [
-      rs("@xyd-js/atlas/index.css") || pkgDist("@xyd-js/atlas", "index.css"),
-      rs("@xyd-js/atlas/tokens.css") || pkgDist("@xyd-js/atlas", "tokens.css"),
-      rs("@xyd-js/atlas/styles.css") || pkgDist("@xyd-js/atlas", "styles.css"),
-    ]],
-    ["ui", [rs("@xyd-js/ui/index.css") || pkgDist("@xyd-js/ui", "dist/index.css")]],
-  ];
+  const groups = resolveCssGroups(`@xyd-js/theme-${themeName}`, rs, pkgDist);
   const links: string[] = [];
   const files: { src: string; out: string }[] = [];
   for (const [label, groupFiles] of groups) {
@@ -136,6 +128,7 @@ export async function prebuildThemes(host: string, themes: string[], prebuiltDir
         minify: true,
         sourcemap: "none",
         returnResult: true,
+        nodeEnv: "production",
       }
     );
     const clientEntry = clientRes.outputs.find((o: any) => o.kind === "entry-point").path;

@@ -134,6 +134,11 @@ export interface BundleOverrides {
   // prebuild passes a stub plugin here to dead-stub server-only deps that CANNOT
   // stay external in a compiled binary (typedoc/@xyd-js/sources/shiki/vscode-*).
   extraPlugins?: BunPlugin[];
+  // Inline `process.env.NODE_ENV` as this value. Bun.build otherwise inlines the
+  // BUILDING process's NODE_ENV ("development" when unset), so a client bundled
+  // by a process that never set it ships React's development build. Production
+  // bundles (the static build, the binary's prebuilt clients) pass "production".
+  nodeEnv?: "production" | "development";
 }
 
 export async function buildBundle(
@@ -162,6 +167,7 @@ export async function buildBundle(
     minify: overrides?.minify ?? target === "browser",
     sourcemap: overrides?.sourcemap ?? (target === "browser" ? "linked" : "inline"),
     ...(overrides?.naming ? { naming: overrides.naming } : {}),
+    ...(overrides?.nodeEnv ? { define: { "process.env.NODE_ENV": JSON.stringify(overrides.nodeEnv) } } : {}),
     external,
   });
   if (!res.success) {

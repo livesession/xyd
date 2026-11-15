@@ -21,7 +21,7 @@ export interface ResolvedCommand {
      * repository's linked (and possibly unbuilt) @xyd-js packages from the root
      * node_modules instead of its own.
      */
-    source: 'version' | 'monorepo' | 'global';
+    source: 'version' | 'monorepo' | 'global' | 'binary';
 }
 
 export function getRandomPort(): Promise<number> {
@@ -103,31 +103,31 @@ export async function resolveXydCommand(): Promise<ResolvedCommand> {
 }
 
 /**
- * Poll http://localhost:<port> until it answers 200/302 (2 min budget). With
- * `exited` — a promise that rejects when the server's process ends — a server
- * that dies before serving fails at once with that error instead of after the
- * whole budget.
+ * Poll http://localhost:<port><readyPath> until it answers 200/302 (2 min
+ * budget). With `exited` — a promise that rejects when the server's process
+ * ends — a server that dies before serving fails at once with that error
+ * instead of after the whole budget.
  */
-export async function waitForServer(port: number, exited?: Promise<never>): Promise<void> {
+export async function waitForServer(port: number, exited?: Promise<never>, readyPath = ''): Promise<void> {
     if (!exited) {
-        return pollServer(port, () => false);
+        return pollServer(port, () => false, readyPath);
     }
     let settled = false;
     try {
-        return await Promise.race([pollServer(port, () => settled), exited]);
+        return await Promise.race([pollServer(port, () => settled, readyPath), exited]);
     } finally {
         settled = true;
     }
 }
 
-async function pollServer(port: number, stop: () => boolean): Promise<void> {
+async function pollServer(port: number, stop: () => boolean, readyPath = ''): Promise<void> {
     const maxWaitTime = 2 * 60 * 1000; // 2 minutes
     const checkInterval = 1000;
     const startTime = Date.now();
 
     while (!stop() && Date.now() - startTime < maxWaitTime) {
         try {
-            const response = await fetch(`http://localhost:${port}`);
+            const response = await fetch(`http://localhost:${port}${readyPath}`);
             if (response.ok || response.status === 302) {
                 console.log(`✅ Server started successfully on port ${port}`);
                 return;

@@ -138,13 +138,18 @@ export const LayoutPrimaryHost = css`
                 flex-direction: column;
                 z-index: 50;
                 transform: translateX(-100%);
-                transition: transform .3s var(--xyd-cubic-bezier);
-                box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
+                /* Closed: hidden once it has slid out, so no shadow shows at the
+                   screen's edge and nothing in it takes focus. */
+                visibility: hidden;
+                transition: transform .3s var(--xyd-cubic-bezier), visibility 0s linear .3s;
             }
 
             &[data-active="true"] {
                 @media (max-width: ${tabletBreakpoint}) {
                     transform: translateX(0);
+                    visibility: visible;
+                    transition: transform .3s var(--xyd-cubic-bezier), visibility 0s;
+                    box-shadow: 4px 0 8px rgba(0, 0, 0, 0.1);
                 }
             }
         }

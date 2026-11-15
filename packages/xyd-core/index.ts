@@ -15,3 +15,5 @@ export * from "./src/api-sdk";
 export * from "./src/types/context-controls";
 
 export * from "./src/context-controls";
+
+export * from "./src/trailingSlash";

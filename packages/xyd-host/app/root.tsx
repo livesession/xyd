@@ -332,11 +332,13 @@ function generateUserCss(appearance?: Appearance): string {
     const lightTokens = {
         ...(colors?.primary ? generateColorTokens(colors.primary) : {}),
         ...(cssTokens ? cssTokens : {}),
+        ...cssTokensPrimary(cssTokens),
         // ...(sidebar?.scrollbarColor ? { "--xyd-toc-scroll-bgcolor": sidebar.scrollbarColor } : {})
     };
     const darkTokens = {
         ...(colors?.light ? generateColorTokens(colors.light) : {}),
         ...(cssTokens ? cssTokens : {}),
+        ...cssTokensPrimary(cssTokens),
         // ...(sidebar?.scrollbarColor ? { "--xyd-toc-scroll-bgcolor": sidebar.scrollbarColor } : {})
     };
 
@@ -344,6 +346,20 @@ function generateUserCss(appearance?: Appearance): string {
     const darkCss = generateDarkCss(darkTokens);
 
     return [lightCss, darkCss].filter(Boolean).join('\n\n');
+}
+
+// A primary set as a raw token (`cssTokens: { "--color-primary": … }`) also
+// names --xyd-appearance-color-primary, as `colors.primary` does: the themes'
+// link shades read that token first, and without it they hid the site's colour
+// on its links. cssTokens wins over `colors`, so its primary wins here too. A
+// --xyd-appearance-color-primary of its own in cssTokens is left alone.
+function cssTokensPrimary(cssTokens?: Record<string, unknown>): Record<string, string> {
+    const primary = cssTokens?.["--color-primary"];
+    if (typeof primary !== "string" || !primary.trim()) return {};
+    if (cssTokens && "--xyd-appearance-color-primary" in cssTokens) return {};
+    // A primary written in terms of this token would form a cycle.
+    if (primary.includes("--xyd-appearance-color-primary")) return {};
+    return { "--xyd-appearance-color-primary": primary };
 }
 
 // TODO: typesafe css variables?
@@ -358,6 +374,12 @@ function generateColorTokens(primary: string): Record<string, string> {
         "--theme-color-primary-active": 'var(--color-primary)',
         "--color-primary--active": 'color-mix(in srgb, var(--color-primary) 75%, transparent)',
         "--xyd-breadcrumbs-color": 'var(--color-primary)',
+        // The site's own primary, for the themes that give their links (and the
+        // reference's accent) a shade of their own primary for contrast: they
+        // read this first, so the site's colour reaches the links too. The
+        // colour itself, not var(--color-primary): a theme may re-declare
+        // --color-primary in dark mode.
+        "--xyd-appearance-color-primary": primary,
     };
 }
 

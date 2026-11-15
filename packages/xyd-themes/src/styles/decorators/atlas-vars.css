@@ -2,8 +2,14 @@
 :root {
     --XydAtlas-Ref-Palette-White: var(--white);
     --XydAtlas-Ref-Palette-Primary-60: var(--color-primary);
-    --XydAtlas-Ref-Palette-Primary-70: var(--color-primary--active);
-    --XydAtlas-Ref-Palette-Primary-80: var(--color-primary--active);
+    /* Hover (and active): a darker shade of the reference's own accent, which a
+       theme or a site's primary may set. Not --color-primary--active: several
+       themes, and a site's appearance colours, make that a translucent shade,
+       and a hovered link turned lighter than the link at rest, down to 2.1:1 on
+       white. Darkening the accent keeps a hovered link at least as far from the
+       page as the link at rest. */
+    --XydAtlas-Ref-Palette-Primary-70: color-mix(in srgb, var(--XydAtlas-Ref-Palette-Primary-60) 80%, black);
+    --XydAtlas-Ref-Palette-Primary-80: var(--XydAtlas-Ref-Palette-Primary-70);
 
     --XydAtlas-Ref-Palette-Neutral-10: var(--dark8);
     --XydAtlas-Ref-Palette-Neutral-20: var(--dark16);
@@ -18,6 +24,11 @@
 
 @define-mixin dark-theme {
     --XydAtlas-Ref-Palette-Primary-60: var(--color-text);
+    /* The accent is the text colour on the dark page, and hover moves it toward
+       white, never toward the page (a theme's dark primary can be the page
+       colour itself). */
+    --XydAtlas-Ref-Palette-Primary-70: color-mix(in srgb, var(--color-text) 80%, white);
+    --XydAtlas-Ref-Palette-Primary-80: var(--XydAtlas-Ref-Palette-Primary-70);
 }
 
 [data-color-scheme="dark"] {

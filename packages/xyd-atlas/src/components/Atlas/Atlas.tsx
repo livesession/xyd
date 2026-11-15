@@ -39,19 +39,23 @@ export function Atlas<T>(props: AtlasProps<T>) {
     }
   }
 
-  // TODO: temporary, remove when we will have proper analytics
-  const Wrapper = props.analytics ? UXAnalytics : React.Fragment;
-  
-  return (
-    <Wrapper analytics={noopAnalytics}>
-      <AtlasDecorator>
-        <div className={cn.AtlasHost}>
-          <AtlasComponent
-            references={references}
-            apiRefItemKind={props.apiRefItemKind}
-          />
-        </div>
-      </AtlasDecorator>
-    </Wrapper>
+  const atlas = (
+    <AtlasDecorator>
+      <div className={cn.AtlasHost}>
+        <AtlasComponent
+          references={references}
+          apiRefItemKind={props.apiRefItemKind}
+        />
+      </div>
+    </AtlasDecorator>
   );
+
+  // TODO: temporary, remove when we will have proper analytics
+  // Only the analytics provider takes `analytics`: a Fragment accepts nothing
+  // but `key` and `children`, and React warns on every render otherwise.
+  if (props.analytics) {
+    return <UXAnalytics analytics={noopAnalytics}>{atlas}</UXAnalytics>;
+  }
+
+  return atlas;
 }

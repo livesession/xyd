@@ -1,0 +1,33 @@
+"""
+A task on a list.
+"""
+type Todo {
+  "The task's id."
+  id: ID!
+  "What the task is about."
+  title: String!
+  "Whether the task is done."
+  completed: Boolean!
+}
+
+"""
+The fields of a new task.
+"""
+input TodoInput {
+  "What the task is about."
+  title: String!
+  "Whether the task is done."
+  completed: Boolean
+}
+
+type Query {
+  "Every task."
+  todos: [Todo!]!
+  "One task by id."
+  todo("The task's id." id: ID!): Todo
+}
+
+type Mutation {
+  "Create a task."
+  createTodo("The new task." input: TodoInput!): Todo!
+}

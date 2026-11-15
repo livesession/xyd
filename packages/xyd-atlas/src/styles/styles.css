@@ -1,6 +1,7 @@
 @layer overrides {
     :root {
-        --oas-method-get-color: #15803d;
+        /* #15803d was 4.4:1 on a tinted navbar; this clears 4.5:1 on it. */
+        --oas-method-get-color: #137538;
         --oas-method-get-bg: rgba(74, 222, 128, .2);
         --oas-method-get-color--active: var(--white);
         --oas-method-get-bg--active: #2ab673;
@@ -26,6 +27,27 @@
         --oas-method-patch-bg: rgba(251, 146, 60, .2);
         --oas-method-patch-color--active: var(--white);
         --oas-method-patch-bg--active: #DA622B;
+    }
+
+    /* Dark mode: the light badge colours fall under 3.5:1 on a dark page. These
+       clear WCAG AA (4.5:1, the badge is 12px bold) on the page, the navbar and
+       an active sidebar item. */
+    [data-color-scheme="dark"] {
+        --oas-method-get-color: #4ade80;
+        --oas-method-post-color: #82b9fb;
+        --oas-method-put-color: #facc15;
+        --oas-method-delete-color: #fb9a9a;
+        --oas-method-patch-color: #fca35f;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root:not([data-color-scheme="light"]):not([data-color-scheme="dark"]) {
+            --oas-method-get-color: #4ade80;
+            --oas-method-post-color: #82b9fb;
+            --oas-method-put-color: #facc15;
+            --oas-method-delete-color: #fb9a9a;
+            --oas-method-patch-color: #fca35f;
+        }
     }
 
     /* HTTP Method Colors */

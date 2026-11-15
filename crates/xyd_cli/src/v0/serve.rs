@@ -2,8 +2,11 @@
 //!
 //! Ports the static-serve branch of the TS command
 //! (`packages/xyd-cli/src/commands/serve.ts`): serve the prebuilt site under
-//! `.xyd/build/client/` over HTTP with a small MIME map, `directory → index.html`,
-//! and an SPA fallback for extensionless routes. Unlike `dev`/`build`, this does NOT
+//! `.xyd/build/client/` over HTTP with a small MIME map, clean page URLs
+//! (`/guide` → `guide.html`, the flattened output both engines write),
+//! `directory → index.html`, a redirect from a page's trailing-slash form
+//! (`/guide/` → `/guide`) and an SPA fallback for extensionless routes. Unlike
+//! `dev`/`build`, this does NOT
 //! spawn the engine — it is a self-contained Rust server. Two cases still defer:
 //!
 //!   * **missing build dir** → the same "run `xyd build` first" error, and
@@ -120,24 +123,89 @@ async fn wait_for_shutdown() {
 }
 
 /// Route one request: strip the query/fragment (route on the path only, mirroring
-/// serve.ts's use of `URL.pathname`), resolve a file, and respond (or 404).
+/// serve.ts's use of `URL.pathname`), resolve a file, and respond (or redirect, or 404).
 fn handle_request(build_dir: &Path, request: tiny_http::Request) {
-    let raw = request.url();
+    let raw = request.url().to_string();
     let pathname = raw.split(['?', '#']).next().unwrap_or("/");
+    let query = raw.find('?').map(|i| &raw[i..]).unwrap_or("");
 
-    match resolve_target(build_dir, pathname) {
-        Some(file) => respond_file(request, &file),
-        None => respond_status(request, 404, "Not Found"),
+    match resolve(build_dir, pathname) {
+        Resolved::File(file) => respond_file(request, &file),
+        Resolved::Redirect(location) => respond_redirect(request, &format!("{location}{query}")),
+        Resolved::NotFound => respond_status(request, 404, "Not Found"),
     }
+}
+
+/// What a request path resolves to.
+#[derive(Debug, PartialEq)]
+enum Resolved {
+    File(PathBuf),
+    /// A permanent redirect to this path (the query is appended by the caller).
+    Redirect(String),
+    NotFound,
+}
+
+/// Map a request path to a response:
+///   * a page's trailing-slash form (`/guide/`, no `guide/index.html`) redirects
+///     to the page (`/guide`), so a link or a typed URL with the slash lands;
+///   * otherwise the file resolution below.
+fn resolve(build_dir: &Path, pathname: &str) -> Resolved {
+    if let Some(page) = trailing_slash_page(build_dir, pathname) {
+        return Resolved::Redirect(page);
+    }
+    match resolve_target(build_dir, pathname) {
+        Some(file) => Resolved::File(file),
+        None => Resolved::NotFound,
+    }
+}
+
+/// The page a trailing-slash path stands for: `/guide/` → `/guide` when the
+/// build has `guide.html` and no `guide/index.html` of its own (a directory
+/// index, like a basename's root `/docs/`, is served as it is). The leading
+/// slashes collapse to one, so the redirect never leaves the site.
+fn trailing_slash_page(build_dir: &Path, pathname: &str) -> Option<String> {
+    if !pathname.ends_with('/') {
+        return None;
+    }
+    // The same segments safe_join keeps, so the target names the file checked.
+    let segments: Vec<&str> = pathname
+        .split('/')
+        .filter(|seg| !matches!(*seg, "" | "." | ".."))
+        .collect();
+    if segments.is_empty() {
+        return None;
+    }
+    let path = segments.join("/");
+    if safe_join(build_dir, &path).join("index.html").is_file() {
+        return None;
+    }
+    safe_join(build_dir, &format!("{path}.html"))
+        .is_file()
+        .then(|| format!("/{path}"))
 }
 
 /// Map a request path to a file on disk, mirroring serve.ts's intent:
 ///   * an exact file hit is served as-is;
+///   * an extensionless path whose `<path>.html` exists is that page (clean URLs:
+///     both engines write every page as `<slug>.html`), even when a directory of
+///     the same name holds its subpages;
 ///   * a directory (including `/`) serves its `index.html`, else the SPA fallback;
 ///   * a missing path whose last segment has an extension is a genuine 404;
 ///   * a missing extensionless path is an SPA client route → the root `index.html`.
 fn resolve_target(build_dir: &Path, pathname: &str) -> Option<PathBuf> {
     let candidate = safe_join(build_dir, pathname);
+
+    if candidate.is_file() {
+        return Some(candidate);
+    }
+
+    let trimmed = pathname.trim_matches('/');
+    if !trimmed.is_empty() && !pathname.ends_with('/') && !last_segment_has_ext(pathname) {
+        let page = safe_join(build_dir, &format!("{trimmed}.html"));
+        if page.is_file() {
+            return Some(page);
+        }
+    }
 
     if candidate.is_dir() {
         let index = candidate.join("index.html");
@@ -145,10 +213,6 @@ fn resolve_target(build_dir: &Path, pathname: &str) -> Option<PathBuf> {
             return Some(index);
         }
         return spa_fallback(build_dir);
-    }
-
-    if candidate.is_file() {
-        return Some(candidate);
     }
 
     if last_segment_has_ext(pathname) {
@@ -205,6 +269,18 @@ fn respond_file(request: tiny_http::Request, file: &Path) {
             }
         }
         Err(_) => respond_status(request, 500, "Error"),
+    }
+}
+
+/// Respond with a permanent redirect (308 keeps the method) to `location`.
+fn respond_redirect(request: tiny_http::Request, location: &str) {
+    let response = tiny_http::Response::empty(308);
+    match tiny_http::Header::from_bytes(&b"Location"[..], location.as_bytes()) {
+        Ok(header) => {
+            let _ = request.respond(response.with_header(header));
+        }
+        // A location with bytes a header cannot carry: there is no page to send.
+        Err(()) => respond_status(request, 404, "Not Found"),
     }
 }
 
@@ -295,6 +371,86 @@ mod tests {
         assert_eq!(
             resolve_target(&root, "/overview"),
             Some(root.join("index.html"))
+        );
+        let _ = fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn clean_urls_serve_the_flattened_pages() {
+        let root = tmpdir("clean-urls");
+        fs::write(root.join("index.html"), b"<html>").unwrap();
+        fs::create_dir_all(root.join("cli").join("project")).unwrap();
+        fs::write(root.join("cli").join("deploy.html"), b"deploy").unwrap();
+        fs::write(root.join("cli").join("project.html"), b"project").unwrap();
+        fs::write(root.join("cli").join("project").join("list.html"), b"list").unwrap();
+
+        assert_eq!(
+            resolve_target(&root, "/cli/deploy"),
+            Some(root.join("cli").join("deploy.html"))
+        );
+        assert_eq!(
+            resolve_target(&root, "/cli/project/list"),
+            Some(root.join("cli").join("project").join("list.html"))
+        );
+        // A page whose subpages live in a directory of the same name.
+        assert_eq!(
+            resolve_target(&root, "/cli/project"),
+            Some(root.join("cli").join("project.html"))
+        );
+        let _ = fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn a_trailing_slash_redirects_to_the_page() {
+        let root = tmpdir("trailing-slash");
+        fs::write(root.join("index.html"), b"<html>").unwrap();
+        fs::create_dir_all(root.join("cli").join("project")).unwrap();
+        fs::write(root.join("cli").join("deploy.html"), b"deploy").unwrap();
+        fs::write(root.join("cli").join("project.html"), b"project").unwrap();
+        fs::write(root.join("cli").join("project").join("list.html"), b"list").unwrap();
+
+        assert_eq!(
+            resolve(&root, "/cli/deploy/"),
+            Resolved::Redirect("/cli/deploy".into())
+        );
+        assert_eq!(
+            resolve(&root, "/cli/project/"),
+            Resolved::Redirect("/cli/project".into())
+        );
+        assert_eq!(
+            resolve(&root, "/cli/project/list/"),
+            Resolved::Redirect("/cli/project/list".into())
+        );
+        // Repeated slashes collapse, so the target never becomes `//host`, and
+        // dot segments go, as they do for the file lookup.
+        assert_eq!(
+            resolve(&root, "//cli/deploy//"),
+            Resolved::Redirect("/cli/deploy".into())
+        );
+        assert_eq!(
+            resolve(&root, "/../cli/./deploy/"),
+            Resolved::Redirect("/cli/deploy".into())
+        );
+        // The site root is not redirected.
+        assert_eq!(resolve(&root, "/"), Resolved::File(root.join("index.html")));
+        // No page behind the slash: the usual resolution (here the SPA fallback).
+        assert_eq!(
+            resolve(&root, "/nope/"),
+            Resolved::File(root.join("index.html"))
+        );
+        let _ = fs::remove_dir_all(&root);
+    }
+
+    #[test]
+    fn a_directory_index_keeps_its_trailing_slash() {
+        let root = tmpdir("dir-index");
+        fs::create_dir_all(root.join("docs")).unwrap();
+        fs::write(root.join("docs").join("index.html"), b"docs home").unwrap();
+        fs::write(root.join("docs.html"), b"a page named docs").unwrap();
+
+        assert_eq!(
+            resolve(&root, "/docs/"),
+            Resolved::File(root.join("docs").join("index.html"))
         );
         let _ = fs::remove_dir_all(&root);
     }

@@ -11,9 +11,22 @@
     --poetry-gray80: #1e1e1e;
 }
 
+/* The primary is poetry's blue unless the site or the active product sets
+   --theme-color-primary (theme.appearance.colors, a product's `color`). The
+   theme no longer sets that variable itself, so the links below can tell. */
 :root {
-    --theme-color-primary: var(--poetry-blue80);
-    --theme-color-primary-active: var(--poetry-blue100);
+    --color-primary: var(--theme-color-primary, var(--poetry-blue80));
+    --color-primary--active: var(--theme-color-primary-active, var(--poetry-blue100));
+}
+
+/* Links: blue80 is 3.7:1 on white, so text links (and the reference's links)
+   take a deeper blue in light mode; on the dark page blue80 clears 4.5:1. A
+   site's or a product's own colour replaces the blue here as it does in the
+   primary. */
+:root {
+    --poetry-link: var(--xyd-appearance-color-primary, var(--theme-color-primary, #2563eb));
+    --xyd-anchor-color: var(--poetry-link);
+    --XydAtlas-Ref-Palette-Primary-60: var(--poetry-link);
 }
 
 :root {
@@ -37,6 +50,16 @@
 @define-mixin dark-theme {
     --xyd-codetabs-color: var(--black);
     --xyd-codetabs-color--active: var(--black);
+
+    --poetry-link: var(--xyd-appearance-color-primary, var(--theme-color-primary, var(--poetry-blue80)));
+    --xyd-anchor-color--hover: color-mix(in srgb, var(--poetry-link) 75%, white);
+
+    /* The reference keeps atlas-vars' dark accent, the text colour, whichever
+       way dark mode was chosen. Without this line the light mapping on :root
+       above, which comes after atlas-vars, would win over atlas-vars' rule for
+       a dark mode picked on the site (same specificity) but not over its
+       OS-dark rule. */
+    --XydAtlas-Ref-Palette-Primary-60: var(--color-text);
 }
 
 /* Override dark mode colors to maintain Poetry theme */

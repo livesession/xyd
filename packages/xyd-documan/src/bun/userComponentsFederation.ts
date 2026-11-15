@@ -66,6 +66,13 @@ function federationPlugin(): BunPlugin {
     };
 }
 
+// Build the chunks in production mode so their JSX compiles to `jsx`/`jsxs` from
+// react/jsx-runtime. Without it Bun takes the building process's NODE_ENV (unset
+// in the binary, so "development") and emits `jsxDEV` calls, which React's
+// production runtime (the prebuilt clients bundle it) leaves undefined: the
+// page throws on hydration and React unmounts it.
+const PRODUCTION = { "process.env.NODE_ENV": JSON.stringify("production") };
+
 function synthEntry(components: FederatedComponent[]): string {
     const imports = components
         .map((c, i) => `import __C${i} from ${JSON.stringify(c.importPath)};`)
@@ -95,6 +102,7 @@ export async function buildUserComponentsServer(
         naming: "user-components.js",
         plugins: [federationPlugin()],
         sourcemap: "none",
+        define: PRODUCTION,
     });
     if (!res.success) {
         throw new Error(`user-components (server) bundle failed:\n${res.logs.map((l) => String(l)).join("\n")}`);
@@ -122,6 +130,7 @@ export async function buildUserComponentsClient(
             plugins: [federationPlugin()],
             minify: true,
             sourcemap: "none",
+            define: PRODUCTION,
         });
         if (!res.success) {
             throw new Error(`user-components (client) bundle failed:\n${res.logs.map((l) => String(l)).join("\n")}`);

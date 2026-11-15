@@ -13,6 +13,17 @@
     --color-primary--active: color-mix(in srgb, var(--color-primary) 75%, transparent);
 }
 
+/* Links: the brand green is 3.2:1 on white, so text links (and the
+   reference's links) take a deeper shade of it in light mode. On the dark
+   page the brand green itself clears 4.5:1. A site that sets its own primary
+   (theme.appearance.colors) gets that colour instead, as before. */
+:root {
+    --gusto-link: var(--xyd-appearance-color-primary, #0b7d61);
+    --xyd-anchor-color: var(--gusto-link);
+    --xyd-anchor-color--hover: color-mix(in srgb, var(--gusto-link) 80%, black);
+    --XydAtlas-Ref-Palette-Primary-60: var(--gusto-link);
+}
+
 /* Utils */
 :root {
     --xyd-page-gutter: 0;
@@ -49,6 +60,16 @@
     --dark48: rgb(158,163,162);
     --xyd-codetabs-color: var(--black);
     --color-text: var(--black);
+
+    --gusto-link: var(--xyd-appearance-color-primary, #10a37f);
+    --xyd-anchor-color--hover: color-mix(in srgb, var(--gusto-link) 80%, white);
+
+    /* The reference keeps atlas-vars' dark accent, the text colour, whichever
+       way dark mode was chosen. Without this line the light mapping on :root
+       above, which comes after atlas-vars, would win over atlas-vars' rule for
+       a dark mode picked on the site (same specificity) but not over its
+       OS-dark rule. */
+    --XydAtlas-Ref-Palette-Primary-60: var(--color-text);
 }
 [data-color-scheme="dark"] {
     @mixin dark-theme;

@@ -12,6 +12,8 @@ import { sidebarComponentsEntrySrc } from "./sidebarComponents";
 import { collectFederatedComponents, buildUserComponentsServer, buildUserComponentsClient } from "./userComponentsFederation";
 import { prerenderPages } from "./prerenderPool";
 import { writeHtml } from "./htmlOut";
+import { resolveCssGroups } from "./cssGroups";
+import { notFoundPageHtml } from "./trailingSlash";
 
 /**
  * S3 static build (SSG). `XYD_BUN=1 xyd build` runs this instead of the two Vite
@@ -120,6 +122,7 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
         minify: true,
         sourcemap: "none",
         returnResult: true,
+        nodeEnv: "production",
       }
     );
     const clientEntry = clientRes.outputs.find((o: any) => o.kind === "entry-point").path;
@@ -391,6 +394,17 @@ export async function buildStatic(cwd: string = process.cwd()): Promise<void> {
   copyDirIfAbsent(publicSrc, clientDir);
   if (baseDir) copyDirIfAbsent(publicSrc, siteDir);
 
+  // 7c) A not-found page beside the pages, unless the project ships its own (a
+  // 404 page or public/404.html, both written above). Static hosts answer a
+  // miss with it, and its script sends a page's trailing-slash form
+  // (/cli/deploy/, which the flattened <slug>.html output has no file for) on
+  // to the page.
+  const notFound = path.join(siteDir, "404.html");
+  if (!fs.existsSync(notFound)) {
+    fs.writeFileSync(notFound, notFoundPageHtml(basename));
+    console.error(`[build] 404.html → ${path.relative(clientDir, notFound)}`);
+  }
+
   // FAIL LOUD on any page that failed to render — otherwise a broken page ships
   // as a 404 while the build reports success (silent broken deploy).
   if (missing.length) {
@@ -437,9 +451,9 @@ function emitRawRouteFiles(clientDir: string) {
   console.error(`[build] raw files → ${n} (incl. llms.txt)`);
 }
 
-/** Resolve the 4 package-dist CSS groups (same order the dev server serves),
- *  concat, content-hash, write to <assetsDir>/assets/, return the hrefs (order
- *  preserved) — each through `href`, which adds the asset base. */
+/** Resolve the 4 package-dist CSS groups (cssGroups.ts: the dev server's order,
+ *  theme last), concat, content-hash, write to <assetsDir>/assets/, return the
+ *  hrefs (order preserved) — each through `href`, which adds the asset base. */
 async function emitCss(
   HOST: string,
   themePkg: string,
@@ -460,19 +474,7 @@ async function emitCss(
       return null;
     }
   };
-  const groups: [string, (string | null)[]][] = [
-    ["theme", [rs(`${themePkg}/index.css`) || pkgDist(themePkg, "dist/index.css")]],
-    ["components", [rs("@xyd-js/components/index.css") || pkgDist("@xyd-js/components", "dist/index.css")]],
-    [
-      "atlas",
-      [
-        rs("@xyd-js/atlas/index.css") || pkgDist("@xyd-js/atlas", "index.css"),
-        rs("@xyd-js/atlas/tokens.css") || pkgDist("@xyd-js/atlas", "tokens.css"),
-        rs("@xyd-js/atlas/styles.css") || pkgDist("@xyd-js/atlas", "styles.css"),
-      ],
-    ],
-    ["ui", [rs("@xyd-js/ui/index.css") || pkgDist("@xyd-js/ui", "dist/index.css")]],
-  ];
+  const groups = resolveCssGroups(themePkg, rs, pkgDist);
   const links: string[] = [];
   for (const [label, files] of groups) {
     let css = "";

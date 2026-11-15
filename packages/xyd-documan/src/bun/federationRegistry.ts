@@ -18,20 +18,22 @@
 
 import * as React from "react";
 import * as ReactJsxRuntime from "react/jsx-runtime";
-// The unminified SERVER federated chunk emits jsxDEV (dev automatic runtime); the
-// minified CLIENT chunk emits jsx/jsxs. Register BOTH real runtimes so either
-// resolves regardless of how the chunk was built.
+// The chunks are built in production mode and call jsx/jsxs. jsx-dev-runtime
+// stays registered for a chunk that calls jsxDEV anyway: React's production
+// build leaves that undefined, so jsxDevRuntimeFor stands jsx/jsxs in for it.
 import * as ReactJsxDevRuntime from "react/jsx-dev-runtime";
 import * as FrameworkReact from "@xyd-js/framework/react";
 import * as Framework from "@xyd-js/framework";
 import * as Components from "@xyd-js/components";
+
+import { jsxDevRuntimeFor } from "./jsxDevRuntime";
 
 export function registerFederatedModules(): void {
     const g = globalThis as any;
     g.__xydModules = Object.assign(g.__xydModules || {}, {
         "react": React,
         "react/jsx-runtime": ReactJsxRuntime,
-        "react/jsx-dev-runtime": ReactJsxDevRuntime,
+        "react/jsx-dev-runtime": jsxDevRuntimeFor(ReactJsxDevRuntime, ReactJsxRuntime),
         "@xyd-js/framework/react": FrameworkReact,
         "@xyd-js/framework": Framework,
         "@xyd-js/components": Components,

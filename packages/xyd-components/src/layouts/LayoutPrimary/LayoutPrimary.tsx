@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { useContext, useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useId, useRef, useState } from "react"
 
 import { PageLayout } from '@xyd-js/core';
 
@@ -20,15 +20,21 @@ const LayoutPrimaryContext = React.createContext<{
     scrollRef: React.RefObject<HTMLDivElement | Window | null>;
     isMobileNavOpen: boolean;
     setIsMobileNavOpen: (isOpen: boolean) => void;
+    // The hamburger button, where focus goes back when the drawer closes.
+    mobileNavToggleRef: React.RefObject<HTMLButtonElement | null>;
+    mobileNavId?: string;
 }>({
     scrollRef: React.createRef(),
     isMobileNavOpen: false,
     setIsMobileNavOpen: () => { },
+    mobileNavToggleRef: React.createRef(),
 })
 
 // TODO: move scroller to xyd-foo
 export function LayoutPrimary(props: LayoutPrimaryProps) {
     const scrollRef = useRef<HTMLDivElement | Window>(null)
+    const mobileNavToggleRef = useRef<HTMLButtonElement>(null)
+    const mobileNavId = useId()
     const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
     const { hideMainHeader } = useSubHeader(props.subheader ? scrollRef : null, props.scrollKey)
 
@@ -36,10 +42,18 @@ export function LayoutPrimary(props: LayoutPrimaryProps) {
         scrollRef.current = window
     }, [])
 
+    // A new page (the key is the page's path) closes the mobile drawer: the
+    // link tapped in it has done its job, and the page should not open behind it.
+    useEffect(() => {
+        setIsMobileNavOpen(false)
+    }, [props.scrollKey])
+
     return <LayoutPrimaryContext value={{
         scrollRef,
         isMobileNavOpen,
-        setIsMobileNavOpen
+        setIsMobileNavOpen,
+        mobileNavToggleRef,
+        mobileNavId,
     }}
     >
         <xyd-layout-primary
@@ -80,10 +94,13 @@ LayoutPrimary.Header = function LayoutPrimaryHeader(props: LayoutPrimaryHeaderPr
 }
 
 LayoutPrimary.Hamburger = function LayoutPrimaryHamburger() {
-    const { isMobileNavOpen, setIsMobileNavOpen } = useContext(LayoutPrimaryContext)
+    const { isMobileNavOpen, setIsMobileNavOpen, mobileNavToggleRef, mobileNavId } = useContext(LayoutPrimaryContext)
     return <button
+        ref={mobileNavToggleRef}
         part="hamburger-button"
         aria-label="Toggle navigation menu"
+        aria-expanded={isMobileNavOpen}
+        aria-controls={mobileNavId}
         onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
     >
         <div part="hamburger-icon">
@@ -98,16 +115,71 @@ interface LayoutPrimaryMobileAsideProps {
     aside: React.ReactNode;
 }
 LayoutPrimary.MobileAside = function LayoutPrimaryAside(props: LayoutPrimaryMobileAsideProps) {
-    const { isMobileNavOpen, setIsMobileNavOpen } = useContext(LayoutPrimaryContext)
+    const { isMobileNavOpen, setIsMobileNavOpen, mobileNavToggleRef, mobileNavId } = useContext(LayoutPrimaryContext)
+    const asideRef = useRef<HTMLElement>(null)
+    const wasOpen = useRef(false)
+
+    useEffect(() => {
+        const aside = asideRef.current
+        if (isMobileNavOpen) {
+            wasOpen.current = true
+            // Open: focus moves into the drawer, on the current page's link when
+            // it is there, and Escape closes it again.
+            const current = aside?.querySelector('[aria-current="page"], [data-active="true"]')?.closest<HTMLElement>("a[href]")
+            const target = current || aside?.querySelector<HTMLElement>(FOCUSABLE) || null
+            target?.focus({ preventScroll: true })
+
+            const onKeyDown = (event: KeyboardEvent) => {
+                if (event.key === "Escape") {
+                    event.preventDefault()
+                    setIsMobileNavOpen(false)
+                }
+            }
+            document.addEventListener("keydown", onKeyDown)
+            return () => document.removeEventListener("keydown", onKeyDown)
+        }
+
+        if (wasOpen.current) {
+            wasOpen.current = false
+            // Closed: the drawer is inert now, so focus that was in it (or that
+            // fell back to the page) returns to the button that opened it.
+            const active = document.activeElement
+            if (!active || active === document.body || aside?.contains(active)) {
+                mobileNavToggleRef.current?.focus({ preventScroll: true })
+            }
+        }
+    }, [isMobileNavOpen])
+
+    // A link tapped in the drawer closes it at once, also when it points at
+    // the page already open (no new path to react to). A client-side link has
+    // already called preventDefault() by now, so that is not a reason to stay
+    // open; a modified click (a new tab or window) is.
+    function onAsideClick(event: React.MouseEvent<HTMLElement>) {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+            return
+        }
+        const link = (event.target as Element | null)?.closest?.("a[href]")
+        if (link && asideRef.current?.contains(link) && link.getAttribute("target") !== "_blank") {
+            setIsMobileNavOpen(false)
+        }
+    }
+
     return <>
         <div
             part="mobile-overlay"
             data-active={isMobileNavOpen}
+            aria-hidden="true"
             onClick={() => setIsMobileNavOpen(false)}
         />
         <aside
+            ref={asideRef}
+            id={mobileNavId}
             part="mobile-sidebar"
             data-active={isMobileNavOpen}
+            // Closed, the drawer is only slid off-screen: inert keeps its links
+            // out of the tab order and the accessibility tree.
+            inert={!isMobileNavOpen}
+            onClick={onAsideClick}
         >
             <div part="mobile-sidebar-aside">
                 {props.aside}
@@ -155,6 +227,8 @@ LayoutPrimary.Page = function LayoutPrimaryPage(props: LayoutPrimaryPageProps) {
         </div>
     </>
 }
+
+const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
 
 function $HamburgerLine({ active }: { active: boolean }) {
     return <span
