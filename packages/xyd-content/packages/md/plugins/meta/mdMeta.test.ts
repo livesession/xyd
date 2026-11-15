@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 
 import { VFile } from 'vfile';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 
 import { getMetaComponent, registerMetaComponent } from '@xyd-js/context';
 
@@ -28,21 +28,22 @@ const ACME = {
 };
 
 describe('mdMeta: a cli frontmatter', () => {
+    let cwdSpy: ReturnType<typeof vi.spyOn>;
     let dir: string;
-    let cwd: string;
     let atlas: ReturnType<typeof getMetaComponent>;
 
     beforeAll(() => {
         dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'md-meta-cli-')));
         fs.mkdirSync(path.join(dir, 'guides'));
         fs.writeFileSync(path.join(dir, 'acme.opencli.json'), JSON.stringify(ACME));
-        cwd = process.cwd();
-        process.chdir(dir);
+        // process.chdir is unsupported in vitest worker threads (the package's
+        // own vitest runs the threads pool): the code resolves against process.cwd().
+        cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(dir);
         atlas = getMetaComponent('atlas');
     });
 
     afterAll(() => {
-        process.chdir(cwd);
+        cwdSpy.mockRestore();
         fs.rmSync(dir, { recursive: true, force: true });
         if (atlas) {
             registerMetaComponent(atlas.name, atlas.componentName, atlas.transform);
