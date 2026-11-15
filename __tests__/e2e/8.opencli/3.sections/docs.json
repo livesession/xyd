@@ -1,0 +1,22 @@
+{
+  "theme": {
+    "name": "gusto",
+    "appearance": {
+      "search": false,
+      "colorScheme": false
+    }
+  },
+  "api": {
+    "cli": [
+      {
+        "source": "./acme.opencli.json",
+        "route": "cli",
+        "options": { "globalOptionsPerCommand": true }
+      },
+      {
+        "source": "./acme-agent.opencli.json",
+        "route": "agent-cli"
+      }
+    ]
+  }
+}
