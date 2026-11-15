@@ -1,0 +1,272 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "acme-agent",
+    "version": "0.3.0",
+    "summary": "An agent CLI for acme.",
+    "description": "Ask questions in a terminal UI, or once with -p."
+  },
+  "arguments": [
+    {
+      "name": "prompt",
+      "description": "A question to ask right away."
+    }
+  ],
+  "options": [
+    {
+      "name": "print",
+      "aliases": [
+        "p"
+      ],
+      "description": "Answer once and exit, without the UI."
+    },
+    {
+      "name": "resume",
+      "description": "Continue a conversation.",
+      "arguments": [
+        {
+          "name": "id",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "model",
+      "aliases": [
+        "m"
+      ],
+      "description": "The model to answer with.",
+      "recursive": true,
+      "arguments": [
+        {
+          "name": "name",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "profile",
+      "description": "The profile to use.",
+      "recursive": true,
+      "arguments": [
+        {
+          "name": "name",
+          "required": true
+        }
+      ]
+    },
+    {
+      "name": "debug",
+      "description": "Debug output.",
+      "recursive": true,
+      "hidden": true
+    }
+  ],
+  "commands": [
+    {
+      "name": "resume",
+      "description": "Continue a conversation in the UI.",
+      "arguments": [
+        {
+          "name": "id",
+          "description": "The conversation; the latest one when left out."
+        }
+      ],
+      "examples": [
+        "acme agent resume",
+        "acme agent resume 42"
+      ],
+      "interactive": true
+    },
+    {
+      "name": "history",
+      "description": "Past conversations.",
+      "commands": [
+        {
+          "name": "list",
+          "description": "List past conversations.",
+          "options": [
+            {
+              "name": "limit",
+              "description": "How many to show.",
+              "arguments": [
+                {
+                  "name": "n",
+                  "required": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "show",
+          "description": "Print one conversation.",
+          "arguments": [
+            {
+              "name": "id",
+              "required": true,
+              "description": "The conversation."
+            }
+          ],
+          "exitCodes": [
+            {
+              "code": 0,
+              "description": "Printed."
+            },
+            {
+              "code": 4,
+              "description": "No such conversation."
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "exitCodes": [
+    {
+      "code": 0,
+      "description": "Success."
+    },
+    {
+      "code": 1,
+      "description": "The answer failed."
+    },
+    {
+      "code": 2,
+      "description": "A usage error."
+    },
+    {
+      "code": 130,
+      "description": "Interrupted."
+    }
+  ],
+  "examples": [
+    "acme agent",
+    "acme agent \"Which pages are the slowest?\"",
+    "acme agent -p \"How many orders came in today?\""
+  ],
+  "interactive": true,
+  "x-interactive": {
+    "commands": [
+      {
+        "name": "new",
+        "aliases": [
+          "clear"
+        ],
+        "description": "Start a new conversation."
+      },
+      {
+        "name": "model",
+        "description": "Switch the model.",
+        "arguments": [
+          {
+            "name": "name",
+            "description": "The model; a picker when left out."
+          }
+        ]
+      },
+      {
+        "name": "export",
+        "description": "Write the conversation to a file.",
+        "arguments": [
+          {
+            "name": "path",
+            "required": true,
+            "description": "Where to write it."
+          }
+        ],
+        "options": [
+          {
+            "name": "format",
+            "description": "The file format.",
+            "arguments": [
+              {
+                "name": "format",
+                "required": true,
+                "acceptedValues": [
+                  "markdown",
+                  "json"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "memory",
+        "description": "What the agent remembers.",
+        "commands": [
+          {
+            "name": "forget",
+            "description": "Forget one memory.",
+            "arguments": [
+              {
+                "name": "id",
+                "required": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "inspect",
+        "description": "Internal.",
+        "hidden": true
+      },
+      {
+        "name": "exit",
+        "aliases": [
+          "quit",
+          "q"
+        ],
+        "description": "Leave the session."
+      }
+    ],
+    "keys": [
+      {
+        "keys": [
+          "enter"
+        ],
+        "description": "Send the question.",
+        "context": "composer"
+      },
+      {
+        "keys": [
+          "shift+enter",
+          "ctrl+j"
+        ],
+        "description": "Start a new line.",
+        "context": "composer"
+      },
+      {
+        "keys": [
+          "esc"
+        ],
+        "description": "Close the picker.",
+        "context": "picker"
+      },
+      {
+        "keys": [
+          "ctrl+c"
+        ],
+        "description": "Interrupt the answer; press again to quit."
+      }
+    ]
+  },
+  "x-environment": [
+    {
+      "name": "ACME_AGENT_COLOR",
+      "description": "The colours the UI draws with.",
+      "values": [
+        "truecolor",
+        "256",
+        "16",
+        "none"
+      ]
+    },
+    {
+      "name": "ACME_AGENT_HOME",
+      "description": "Where conversations are kept."
+    }
+  ]
+}

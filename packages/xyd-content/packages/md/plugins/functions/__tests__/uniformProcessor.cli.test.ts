@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { VFile } from 'vfile';
 
 import { processUniformFunctionCall } from '../uniformProcessor';
@@ -27,18 +27,19 @@ const ACME = {
 };
 
 describe('uniform processor: a generated CLI page', () => {
+    let cwdSpy: ReturnType<typeof vi.spyOn>;
     let dir: string;
-    let prevCwd: string;
 
     beforeAll(() => {
-        prevCwd = process.cwd();
         dir = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'cli-page-')));
         fs.writeFileSync(path.join(dir, 'acme.opencli.json'), JSON.stringify(ACME));
-        process.chdir(dir);
+        // process.chdir is unsupported in vitest worker threads (the package's
+        // own vitest runs the threads pool): the code resolves against process.cwd().
+        cwdSpy = vi.spyOn(process, 'cwd').mockReturnValue(dir);
     });
 
     afterAll(() => {
-        process.chdir(prevCwd);
+        cwdSpy.mockRestore();
         fs.rmSync(dir, { recursive: true, force: true });
     });
 

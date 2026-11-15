@@ -61,6 +61,7 @@ import {
 } from "./const";
 import { CLI } from "./cli";
 import { llmsTxtLinkUrl } from "./llmsTxtLinks";
+import { withGeneratedBody } from "./generatedBody";
 import { componentDependencies, componentsInstall } from "./componentsInstall";
 
 // gray-matter imported via ESM to avoid dynamic require issues in ESM builds
@@ -985,6 +986,9 @@ export async function pluginLLMMarkdown(respPluginDocs: PluginOutput) {
     // Access control: get access map to filter protected pages from llms.txt
     const accessMap: Record<string, string> = (globalThis as any).__xydAccessMap || {};
 
+    // The CLI documents the generated command pages name, loaded once per pass.
+    const cliSpecs = new Map<string, Promise<unknown>>();
+
     for (const key of paths) {
         // Skip protected pages - they must not appear in llms.txt
         const normalizedKey = key.startsWith("/") ? key : `/${key}`;
@@ -1010,7 +1014,12 @@ export async function pluginLLMMarkdown(respPluginDocs: PluginOutput) {
             const keyWithExt = formattedKey.endsWith(savePathExt)
                 ? formattedKey
                 : `${formattedKey}${savePathExt}`;
-            rawRouteFiles[keyWithExt] = content;
+            rawRouteFiles[keyWithExt] = await withGeneratedBody(
+                content,
+                savePath,
+                respPluginDocs.settings,
+                cliSpecs,
+            );
 
             // Parse frontmatter and create AST node
             const listItem = await parseFrontmatterAndCreateAST(

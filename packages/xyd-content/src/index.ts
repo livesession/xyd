@@ -14,3 +14,6 @@ export type { ComposedAsToc } from "./asToc"
 export type { VarCode } from "./types"
 
 export { resolveApiFileOptions, resolveCliFileOptions } from "./apiFileOptions"
+
+export { cliPageMarkdown, cliReferenceMarkdown, cliReferencesMarkdown } from "./cliMarkdown"
+export type { CliPageMarkdownOptions, CliSpecCache } from "./cliMarkdown"

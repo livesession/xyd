@@ -1,0 +1,34 @@
+{
+  "opencli": "1.0.0",
+  "info": {
+    "title": "Acme Tool",
+    "version": "1.0.0",
+    "description": "Run one acme task, or a command."
+  },
+  "arguments": [
+    {
+      "name": "task",
+      "description": "The task to run right away."
+    }
+  ],
+  "examples": [
+    "acme-tool build"
+  ],
+  "commands": [
+    {
+      "name": "acme-tool",
+      "description": "Print the version of the tool.",
+      "arguments": [
+        {
+          "name": "format",
+          "required": true,
+          "description": "The output format."
+        }
+      ]
+    },
+    {
+      "name": "status",
+      "description": "Show the last run."
+    }
+  ]
+}

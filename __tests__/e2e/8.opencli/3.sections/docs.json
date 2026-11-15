@@ -1,0 +1,37 @@
+{
+  "theme": {
+    "name": "gusto",
+    "appearance": {
+      "search": false,
+      "colorScheme": false
+    }
+  },
+  "engine": {
+    "paths": { "@acme/*": ["./*"] }
+  },
+  "navigation": {
+    "sidebar": [
+      {
+        "route": "guides",
+        "pages": [{ "group": "Guides", "pages": ["guides/sign-in", "guides/login-and-remotes"] }]
+      }
+    ]
+  },
+  "api": {
+    "cli": [
+      {
+        "source": "./acme.opencli.json",
+        "route": "cli",
+        "options": { "globalOptionsPerCommand": true }
+      },
+      {
+        "source": "./acme-agent.opencli.json",
+        "route": "agent-cli"
+      },
+      {
+        "source": "./acme-tool.opencli.json",
+        "route": "tool-cli"
+      }
+    ]
+  }
+}
